@@ -83,32 +83,6 @@ export default function RacesPage() {
     );
   }
 
-  function splitStages(rawText: string): { general: string, stages: string[] } {
-    // Découpe le texte en général + étapes (titre d'étape = "Étape X" ou "Etape X")
-    const lines = rawText.split(/\r?\n/);
-    let general = "";
-    const stages: string[] = [];
-    let currentStage: string[] = [];
-    let inStage = false;
-    for (const line of lines) {
-      if (/^\s*(Étape|Etape)\s*\d+/i.test(line)) {
-        if (currentStage.length > 0) {
-          stages.push(currentStage.join("\n"));
-          currentStage = [];
-        }
-        inStage = true;
-      }
-      if (inStage) {
-        currentStage.push(line);
-      } else {
-        general += (general ? "\n" : "") + line;
-      }
-    }
-    if (currentStage.length > 0) {
-      stages.push(currentStage.join("\n"));
-    }
-    return { general: general.trim(), stages };
-  }
 
   function handleAnalyze(rawText: string) {
     if (!rawText.trim()) {

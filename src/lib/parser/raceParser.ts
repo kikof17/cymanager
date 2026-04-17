@@ -101,19 +101,19 @@ function addWeights(
 }
 
 function detectWeights(normalized: string, raceType: RaceType, distanceKm: number): RaceProfileWeights {
-    // Détection explicite du plat/roulant/faible relief
-    if (
-      (normalized.includes("plat") || normalized.includes("roulant") || normalized.includes("faible relief") || normalized.includes("sans difficulté") || normalized.includes("sans difficulte")) &&
-      !normalized.includes("montagne") && !normalized.includes("col") && !normalized.includes("grimpe")
-    ) {
-      weights = addWeights(weights, {
-        flat: 55,
-        sprint: 25,
-        endurance: 12,
-        resistance: 10,
-      });
-    }
   let weights = { ...EMPTY_WEIGHTS };
+  // Détection explicite du plat/roulant/faible relief
+  if (
+    (normalized.includes("plat") || normalized.includes("roulant") || normalized.includes("faible relief") || normalized.includes("sans difficulté") || normalized.includes("sans difficulte")) &&
+    !normalized.includes("montagne") && !normalized.includes("col") && !normalized.includes("grimpe")
+  ) {
+    weights = addWeights(weights, {
+      flat: 55,
+      sprint: 25,
+      endurance: 12,
+      resistance: 10,
+    });
+  }
 
   if (normalized.includes("plaine")) {
     weights = addWeights(weights, {
