@@ -11,6 +11,22 @@ export default function RiderTable({ riders, onDelete }: RiderTableProps) {
     return <p>Aucun coureur enregistré pour le moment.</p>;
   }
 
+  // Fonction utilitaire pour la classe couleur
+  function getStatClass(note: number) {
+    if (note < 30) return "stat-red";
+    if (note < 50) return "stat-orange";
+    if (note < 70) return "stat-green";
+    return "stat-blue";
+  }
+
+  // Spécifique pour la colonne total
+  function getTotalClass(total: number) {
+    if (total < 600) return "stat-red";
+    if (total < 700) return "stat-orange";
+    if (total < 800) return "stat-green";
+    return "stat-blue";
+  }
+
   return (
     <div className="table-wrap">
       <table className="data-table">
@@ -43,14 +59,14 @@ export default function RiderTable({ riders, onDelete }: RiderTableProps) {
                 {rider.ageYears}a {rider.ageWeeks}s
               </td>
               <td>{rider.form}</td>
-              <td>{rider.total}</td>
-              <td>{rider.mountain}</td>
-              <td>{rider.hill}</td>
-              <td>{rider.flat}</td>
-              <td>{rider.sprint}</td>
-              <td>{rider.timeTrial}</td>
-              <td>{rider.cobble}</td>
-              <td>{rider.stageRace}</td>
+              <td className={getTotalClass(rider.total)}>{rider.total}</td>
+              <td className={getStatClass(rider.mountain)}>{rider.mountain}</td>
+              <td className={getStatClass(rider.hill)}>{rider.hill}</td>
+              <td className={getStatClass(rider.flat)}>{rider.flat}</td>
+              <td className={getStatClass(rider.sprint)}>{rider.sprint}</td>
+              <td className={getStatClass(rider.timeTrial)}>{rider.timeTrial}</td>
+              <td className={getStatClass(rider.cobble)}>{rider.cobble}</td>
+              <td className={getStatClass(rider.stageRace)}>{rider.stageRace}</td>
               <td>{formatInteger(rider.salaryWeekly)} €</td>
               <td>{formatCurrency(rider.value)}</td>
               <td>

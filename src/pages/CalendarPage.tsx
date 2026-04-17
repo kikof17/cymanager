@@ -175,7 +175,7 @@ const CalendarPage: React.FC = () => {
           title={isDone ? 'Marquer comme à faire' : 'Marquer comme fait'}
         />
         <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 600, fontSize: 16 }}>{todo.title}</div>
+          <div style={{ fontWeight: 600, fontSize: 16, color: '#181c24' }}>{todo.title}</div>
           <div style={{ fontSize: 13, color: '#444', margin: '2px 0 6px 0' }}>{todo.details?.split('\n').join(' | ')}</div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
             <span className={`todo-badge priority-${todo.priority}`}>{todo.priority}</span>

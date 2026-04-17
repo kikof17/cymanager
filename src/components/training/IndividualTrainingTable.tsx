@@ -16,17 +16,17 @@ export default function IndividualTrainingTable({
       <table className="data-table">
         <thead>
           <tr>
-            <th>Nom</th>
-            <th>Cat.</th>
-            <th>Âge</th>
-            <th>Primaire</th>
-            <th>Foncier</th>
-            <th>Cible</th>
-            <th>Écart</th>
-            <th>Priorité</th>
-            <th>Entraînement retenu</th>
-            <th>Risque salaire</th>
-            <th>Motif</th>
+            <th style={{color: '#181c24'}}>Nom</th>
+            <th style={{color: '#181c24'}}>Cat.</th>
+            <th style={{color: '#181c24'}}>Âge</th>
+            <th style={{color: '#181c24'}}>Primaire</th>
+            <th style={{color: '#181c24'}}>Foncier</th>
+            <th style={{color: '#181c24'}}>Cible</th>
+            <th style={{color: '#181c24'}}>Écart</th>
+            <th style={{color: '#181c24'}}>Priorité</th>
+            <th style={{color: '#181c24'}}>Entraînement retenu</th>
+            <th style={{color: '#181c24'}}>Risque salaire</th>
+            <th style={{color: '#181c24'}}>Motif</th>
           </tr>
         </thead>
 

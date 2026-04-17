@@ -158,9 +158,9 @@ function RankingPage() {
                 <table className="data-table styled-table">
                   <thead>
                     <tr>
-                      <th>Nom</th>
-                      <th>Équipe</th>
-                      <th>Points</th>
+                      <th style={{color: '#181c24'}}>Nom</th>
+                      <th style={{color: '#181c24'}}>Équipe</th>
+                      <th style={{color: '#181c24'}}>Points</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -249,8 +249,8 @@ function RankingPage() {
                 <table className="data-table styled-table">
                   <thead>
                     <tr>
-                      <th>Équipe</th>
-                      <th>Points</th>
+                      <th style={{color: '#181c24'}}>Équipe</th>
+                      <th style={{color: '#181c24'}}>Points</th>
                     </tr>
                   </thead>
                   <tbody>
