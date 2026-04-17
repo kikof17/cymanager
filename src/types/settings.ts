@@ -30,8 +30,13 @@ export type SalaryTolerance = "prudente" | "normale" | "agressive";
 export type ClubSettings = {
   facilities: Record<FacilityKey, FacilitySettings>;
   globalNotes: string;
+  // Division générale (pour rétrocompatibilité)
   currentDivision: DivisionLevel;
   targetDivision: DivisionLevel;
+  // Nouvelles divisions par équipe
+  divisionPro: DivisionLevel;
+  divisionU25: DivisionLevel;
+  divisionU21: DivisionLevel;
   clubObjective: ClubObjective;
   salaryTolerance: SalaryTolerance;
 };

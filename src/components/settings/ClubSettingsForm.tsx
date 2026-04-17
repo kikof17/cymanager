@@ -51,49 +51,97 @@ export default function ClubSettingsForm({
     });
   }
 
+
+
   return (
     <form className="page-stack" onSubmit={(event) => event.preventDefault()}>
-      <div className="settings-grid">
+      {/* Bloc divisions */}
+      <div className="settings-grid" style={{gridTemplateColumns: '1fr 1fr', gap: 24}}>
+        {/* Ligne Pro */}
         <div>
-          <label className="field-label" htmlFor="current-division">
-            Division actuelle
-          </label>
+          <label className="field-label" htmlFor="division-pro-actuelle">Division actuelle équipe Pro</label>
           <select
-            id="current-division"
+            id="division-pro-actuelle"
             className="input"
-            value={settings.currentDivision}
-            onChange={(event) =>
-              updateRoot("currentDivision", event.target.value as DivisionLevel)
-            }
+            value={settings.divisionPro}
+            onChange={e => updateRoot("divisionPro", e.target.value as DivisionLevel)}
           >
             {DIVISIONS.map((division) => (
-              <option key={division} value={division}>
-                {division}
-              </option>
+              <option key={division} value={division}>{division}</option>
             ))}
           </select>
         </div>
-
         <div>
-          <label className="field-label" htmlFor="target-division">
-            Division visée
-          </label>
+          <label className="field-label" htmlFor="division-pro-visee">Division visée équipe Pro</label>
           <select
-            id="target-division"
+            id="division-pro-visee"
             className="input"
             value={settings.targetDivision}
-            onChange={(event) =>
-              updateRoot("targetDivision", event.target.value as DivisionLevel)
-            }
+            onChange={e => updateRoot("targetDivision", e.target.value as DivisionLevel)}
           >
             {DIVISIONS.map((division) => (
-              <option key={division} value={division}>
-                {division}
-              </option>
+              <option key={division} value={division}>{division}</option>
             ))}
           </select>
         </div>
+        {/* Ligne U25 */}
+        <div>
+          <label className="field-label" htmlFor="division-u25-actuelle">Division actuelle équipe U25</label>
+          <select
+            id="division-u25-actuelle"
+            className="input"
+            value={settings.divisionU25}
+            onChange={e => updateRoot("divisionU25", e.target.value as DivisionLevel)}
+          >
+            {DIVISIONS.map((division) => (
+              <option key={division} value={division}>{division}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="field-label" htmlFor="division-u25-visee">Division visée équipe U25</label>
+          <select
+            id="division-u25-visee"
+            className="input"
+            value={settings.targetDivision}
+            onChange={e => updateRoot("targetDivision", e.target.value as DivisionLevel)}
+          >
+            {DIVISIONS.map((division) => (
+              <option key={division} value={division}>{division}</option>
+            ))}
+          </select>
+        </div>
+        {/* Ligne U21 */}
+        <div>
+          <label className="field-label" htmlFor="division-u21-actuelle">Division actuelle équipe U21</label>
+          <select
+            id="division-u21-actuelle"
+            className="input"
+            value={settings.divisionU21}
+            onChange={e => updateRoot("divisionU21", e.target.value as DivisionLevel)}
+          >
+            {DIVISIONS.map((division) => (
+              <option key={division} value={division}>{division}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="field-label" htmlFor="division-u21-visee">Division visée équipe U21</label>
+          <select
+            id="division-u21-visee"
+            className="input"
+            value={settings.targetDivision}
+            onChange={e => updateRoot("targetDivision", e.target.value as DivisionLevel)}
+          >
+            {DIVISIONS.map((division) => (
+              <option key={division} value={division}>{division}</option>
+            ))}
+          </select>
+        </div>
+      </div>
 
+      {/* Bloc autres réglages */}
+      <div className="settings-grid">
         <div>
           <label className="field-label" htmlFor="club-objective">
             Objectif club

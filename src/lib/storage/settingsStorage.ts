@@ -40,6 +40,9 @@ export const defaultClubSettings: ClubSettings = {
   globalNotes: "",
   currentDivision: "D9",
   targetDivision: "D8",
+  divisionPro: "D9",
+  divisionU25: "D9",
+  divisionU21: "D9",
   clubObjective: "mixte",
   salaryTolerance: "normale",
 };
@@ -81,6 +84,9 @@ export function loadClubSettings(): ClubSettings {
           ...(parsed.facilities?.shop ?? {}),
         },
       },
+      divisionPro: parsed.divisionPro ?? parsed.currentDivision ?? "D9",
+      divisionU25: parsed.divisionU25 ?? parsed.currentDivision ?? "D9",
+      divisionU21: parsed.divisionU21 ?? parsed.currentDivision ?? "D9",
     };
   } catch (error) {
     console.error("Erreur de lecture localStorage club settings", error);

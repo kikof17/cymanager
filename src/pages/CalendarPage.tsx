@@ -128,12 +128,14 @@ const CalendarPage: React.FC = () => {
     if (resultModalId) {
       // Sauvegarde dans localStorage
       const RESULT_KEY = 'cymanager:results';
-      let map: Record<string, string> = {};
+      let map: Record<string, any> = {};
       try {
         const raw = localStorage.getItem(RESULT_KEY);
         if (raw) map = JSON.parse(raw);
       } catch {}
-      map[resultModalId] = resultInput;
+      const course = calendarTodos.find(t => t.id === resultModalId);
+      const category = detectCourseCategory(course?.title || "");
+      map[resultModalId] = { result: resultInput, category };
       localStorage.setItem(RESULT_KEY, JSON.stringify(map));
     }
     setResultModalId(null);
@@ -228,6 +230,12 @@ const CalendarPage: React.FC = () => {
         </div>
       </div>
     );
+  }
+
+  function detectCourseCategory(title: string): "u25" | "u21" | "pro" {
+    if (/u25/i.test(title)) return "u25";
+    if (/u21/i.test(title)) return "u21";
+    return "pro";
   }
 
   return (
