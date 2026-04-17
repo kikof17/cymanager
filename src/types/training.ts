@@ -61,6 +61,9 @@ export type IndividualTrainingAdvice = {
   reassigned: boolean;
 };
 
+// Correction : ajout d'un type RiderTrainingAssignment minimal pour compatibilité
+export type RiderTrainingAssignment = IndividualTrainingAdvice;
+
 export type TrainingPlan = {
   selectedTypes: TrainingType[];
   rationale: string[];

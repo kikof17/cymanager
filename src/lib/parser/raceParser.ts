@@ -253,7 +253,7 @@ function buildSummary(
     ["Récupération", weights.recovery],
     ["CAE", weights.stageRace],
   ]
-    .sort((a, b) => b[1] - a[1])
+    .sort((a, b) => Number(b[1]) - Number(a[1]))
     .slice(0, 4)
     .map(([label, value]) => `${label} ${value}`);
 

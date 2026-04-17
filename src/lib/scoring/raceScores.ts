@@ -38,7 +38,7 @@ function buildReasons(rider: Rider, race: ParsedRace): string[] {
     ["Récupération", rider.recovery, race.weights.recovery],
     ["CAE", rider.stageRace, race.weights.stageRace],
   ]
-    .filter(([, , weight]) => weight > 0)
+    .filter(([, , weight]) => Number(weight) > 0)
     .map(([label, stat, weight]) => ({
       label,
       contribution: Number(stat) * Number(weight),
@@ -85,7 +85,7 @@ export function buildRaceAnalysis(riders: Rider[], race: ParsedRace): RaceAnalys
         riderForm: rider.form,
         riderCategory: rider.category,
         score,
-        role: "Remplaçant",
+        role: "Remplaçant" as const,
         reasons,
       };
     })

@@ -1,7 +1,8 @@
-import type { RiderTrainingAssignment } from "../../types/training";
+// Correction : le type RiderTrainingAssignment n'existe pas, on utilise IndividualTrainingAdvice
+import type { IndividualTrainingAdvice } from "../../types/training";
 
 type TrainingImpactTableProps = {
-  assignments: RiderTrainingAssignment[];
+  assignments: IndividualTrainingAdvice[];
 };
 
 export default function TrainingImpactTable({
@@ -17,25 +18,28 @@ export default function TrainingImpactTable({
         <thead>
           <tr>
             <th>Coureur</th>
-            <th>Entraînement attribué</th>
-            <th>Score</th>
-            <th>Primaire</th>
-            <th>Secondaires</th>
-            <th>Notes</th>
+            <th>Catégorie</th>
+            <th>Âge</th>
+            <th>Priorité</th>
+            <th>Entraînement idéal</th>
+            <th>Entraînement suggéré</th>
+            <th>Score d'urgence</th>
+            <th>Risque salaire</th>
+            <th>Raison</th>
           </tr>
         </thead>
-
         <tbody>
           {assignments.map((item) => (
             <tr key={item.riderId}>
               <td>{item.riderName}</td>
-              <td>{item.assignedTraining}</td>
-              <td>{item.assignmentScore}</td>
-              <td>{item.primaryStatLabel}</td>
-              <td>
-                {item.secondaryStatLabels[0]}, {item.secondaryStatLabels[1]}
-              </td>
-              <td>{item.notes.join(" · ")}</td>
+              <td>{item.riderCategory}</td>
+              <td>{item.riderAge}</td>
+              <td>{item.priority}</td>
+              <td>{item.idealTraining}</td>
+              <td>{item.suggestedTraining}</td>
+              <td>{item.urgencyScore}</td>
+              <td>{item.salaryRisk}</td>
+              <td>{item.reason}</td>
             </tr>
           ))}
         </tbody>

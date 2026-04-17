@@ -61,8 +61,8 @@ export default function HomePage() {
   const clubSettings = useMemo(() => loadClubSettings(), []);
 
   const trainingPlan = useMemo(() => {
-    return buildTrainingPlan(riders, "mixte", "polyvalent");
-  }, [riders]);
+    return buildTrainingPlan(riders, clubSettings);
+  }, [riders, clubSettings]);
 
   const raceSnapshot = useMemo(() => loadLastRaceSnapshot(), []);
   const raceKey = useMemo(() => buildRaceKey(raceSnapshot), [raceSnapshot]);

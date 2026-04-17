@@ -21,7 +21,7 @@ export default function TrainingOverviewCard({
           </div>
 
           <p>
-            <strong>Score global :</strong> {plan.totalScore}
+            <strong>Score global :</strong> {plan.individualAdvices?.reduce((acc, curr) => acc + (curr.urgencyScore || 0), 0)}
           </p>
 
           <ul className="clean-list">
