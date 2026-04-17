@@ -7,6 +7,7 @@ const links = [
   { to: "/entrainement", label: "Entraînement" },
   { to: "/courses", label: "Courses" },
   { to: "/calendrier", label: "Calendrier" },
+  { to: "/resultats", label: "Résultats" },
   { to: "/todo", label: "To-do" },
   { to: "/parametres", label: "Paramètres" },
 ];

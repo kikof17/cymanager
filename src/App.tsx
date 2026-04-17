@@ -9,6 +9,7 @@ import TodoPage from "./pages/TodoPage";
 import SettingsPage from "./pages/SettingsPage";
 
 import CalendarPage from "./pages/CalendarPage";
+import ResultPage from "./pages/ResultPage";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/todo" element={<TodoPage />} />
         <Route path="/parametres" element={<SettingsPage />} />
         <Route path="/calendrier" element={<CalendarPage />} />
+        <Route path="/resultats" element={<ResultPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AppLayout>
