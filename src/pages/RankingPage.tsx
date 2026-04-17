@@ -158,6 +158,7 @@ function RankingPage() {
                 <table className="data-table styled-table">
                   <thead>
                     <tr>
+                      <th style={{color: '#181c24'}}>Cl.</th>
                       <th style={{color: '#181c24'}}>Nom</th>
                       <th style={{color: '#181c24'}}>Équipe</th>
                       <th style={{color: '#181c24'}}>Points</th>
@@ -166,8 +167,11 @@ function RankingPage() {
                   <tbody>
                     {pro.map((r, i) => {
                       const isTeamRider = r.team === "Kritoff Team";
+                      const rank = i + 1;
+                      const suffix = rank === 1 ? 'er' : 'ème';
                       return (
                         <tr key={i} className={isTeamRider ? "highlight-row" : undefined}>
+                          <td>{rank}{suffix}</td>
                           <td>{r.name}</td>
                           <td>{r.team}</td>
                           <td>{r.points}</td>
@@ -187,6 +191,7 @@ function RankingPage() {
                 <table className="data-table styled-table">
                   <thead>
                     <tr>
+                      <th>Cl.</th>
                       <th>Nom</th>
                       <th>Équipe</th>
                       <th>Points</th>
@@ -195,8 +200,11 @@ function RankingPage() {
                   <tbody>
                     {u25.map((r, i) => {
                       const isTeamRider = r.team === "Kritoff Team";
+                      const rank = i + 1;
+                      const suffix = rank === 1 ? 'er' : 'ème';
                       return (
                         <tr key={i} className={isTeamRider ? "highlight-row" : undefined}>
+                          <td>{rank}{suffix}</td>
                           <td>{r.name}</td>
                           <td>{r.team}</td>
                           <td>{r.points}</td>
@@ -216,6 +224,7 @@ function RankingPage() {
                 <table className="data-table styled-table">
                   <thead>
                     <tr>
+                      <th>Cl.</th>
                       <th>Nom</th>
                       <th>Équipe</th>
                       <th>Points</th>
@@ -224,8 +233,11 @@ function RankingPage() {
                   <tbody>
                     {u21.map((r, i) => {
                       const isTeamRider = r.team === "Kritoff Team";
+                      const rank = i + 1;
+                      const suffix = rank === 1 ? 'er' : 'ème';
                       return (
                         <tr key={i} className={isTeamRider ? "highlight-row" : undefined}>
+                          <td>{rank}{suffix}</td>
                           <td>{r.name}</td>
                           <td>{r.team}</td>
                           <td>{r.points}</td>
