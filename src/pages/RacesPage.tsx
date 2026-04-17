@@ -1,3 +1,37 @@
+import type { ParsedRaceTable } from "../lib/parser/raceTableParser";
+// Adaptateur : ParsedRaceTable -> ParsedRace (pour compatibilité UI)
+function adaptRaceTableToParsedRace(parsed: ParsedRaceTable): ParsedRace {
+  return {
+    rawText: '',
+    name: parsed.name,
+    raceType: 'simple',
+    distanceKm: parsed.distanceKm,
+    detectedProfile: parsed.profil,
+    weights: {
+      flat: parsed.secteursPlats ? 40 : 0,
+      hill: parsed.secteursVallonnes ? 40 : 0,
+      mountain: parsed.secteursMontagneux ? 40 : 0,
+      sprint: parsed.arrivee.toLowerCase().includes('sprint') ? 30 : 0,
+      cobble: parsed.terrain.toLowerCase().includes('pavé') ? 30 : 0,
+      timeTrial: parsed.terrain.toLowerCase().includes('clm') ? 30 : 0,
+      breakaway: 0,
+      endurance: parsed.difficulte.toLowerCase().includes('long') ? 20 : 0,
+      resistance: parsed.difficulte.toLowerCase().includes('difficile') ? 20 : 0,
+      recovery: 0,
+      stageRace: 0,
+    },
+    summary: [
+      `Profil détecté : ${parsed.profil}`,
+      `Distance : ${parsed.distanceKm} km`,
+      `Dénivelé : ${parsed.elevation} m`,
+      `Cols : ${parsed.cols} | Côtes : ${parsed.cotes}`,
+      `Plats : ${parsed.secteursPlats} | Vallonné : ${parsed.secteursVallonnes} | Montagneux : ${parsed.secteursMontagneux}`,
+      `Arrivée : ${parsed.arrivee}`,
+      `Terrain : ${parsed.terrain}`,
+      `Difficulté : ${parsed.difficulte}`,
+    ],
+  };
+}
 import { useEffect, useState } from "react";
 import Card from "../components/common/Card";
 import PageTitle from "../components/common/PageTitle";
@@ -6,7 +40,7 @@ import RaceImportBox from "../components/races/RaceImportBox";
 import RaceSetupTable from "../components/races/RaceSetupTable";
 import RaceSummary from "../components/races/RaceSummary";
 import TeamSelectionTable from "../components/races/TeamSelectionTable";
-import { parseRaceText } from "../lib/parser/raceParser";
+import { parseRaceTable } from "../lib/parser/raceTableParser";
 import { buildDefaultRaceSetupMap } from "../lib/scoring/odcScores";
 import { buildRaceAnalysis } from "../lib/scoring/raceScores";
 import { loadRaceSetup } from "../lib/storage/raceStorage";
@@ -36,6 +70,18 @@ export default function RacesPage() {
     const storedRiders = loadRidersFromStorage();
     setRiders(storedRiders.length > 0 ? storedRiders : initialRiders);
   }, []);
+
+  // Filtrage spécial pour U25 : exclure U21 et >25 ans
+  function filterRidersForRace(race: ParsedRace, riders: Rider[]): Rider[] {
+    // Si le nom ou le résumé de la course contient U25, on filtre
+    const isU25 =
+      race.name.toLowerCase().includes("u25") ||
+      race.summary?.some((s) => s.toLowerCase().includes("u25"));
+    if (!isU25) return riders;
+    return riders.filter(
+      (r) => r.category === "U25" && r.ageYears >= 22 && r.ageYears <= 25
+    );
+  }
 
   function splitStages(rawText: string): { general: string, stages: string[] } {
     // Découpe le texte en général + étapes (titre d'étape = "Étape X" ou "Etape X")
@@ -70,23 +116,19 @@ export default function RacesPage() {
       return;
     }
 
-    const { general, stages } = splitStages(rawText);
-    setGeneralSummary(general);
-    if (stages.length === 0) {
-      // Cas : une seule étape ou texte non découpé
-      const parsed = parseRaceText(rawText);
-      setRaces([parsed]);
-      setMessages([
-        "Course analysée.",
-        `Profil détecté : ${parsed.detectedProfile}.`,
-        `Type : ${parsed.raceType === "etapes" ? "course à étapes" : "course simple"}.`,
-      ]);
-      return;
-    }
-    // Plusieurs étapes
-    const parsedStages = stages.map(txt => parseRaceText(txt));
-    setRaces(parsedStages);
-    setMessages([`Mini-tour détecté : ${parsedStages.length} étapes analysées.`]);
+    // Nouveau parser tableau + adaptation pour compatibilité UI
+    const parsedTable = parseRaceTable(rawText);
+    const parsed = adaptRaceTableToParsedRace(parsedTable);
+    setRaces([parsed]);
+    setMessages([
+      "================= DEBUG COURSE TABLEAU =================",
+      ...parsed.summary,
+      "================= FIN DEBUG ===================",
+      "Course analysée.",
+      `Profil détecté : ${parsed.detectedProfile}.`,
+      `Type : course simple.`,
+    ]);
+    return;
   }
 
   // Analyse et réglages pour chaque étape
@@ -251,7 +293,9 @@ export default function RacesPage() {
 
       {/* Affichage de chaque étape */}
       {races.map((race, idx) => {
-        const analysis = buildRaceAnalysis(riders, race);
+        // Filtrage spécial U25
+        const filteredRiders = filterRidersForRace(race, riders);
+        const analysis = buildRaceAnalysis(filteredRiders, race);
         const raceKey = buildRaceKey(race);
         const setupByRider = setupByRiderList[raceKey] || {};
         return (

@@ -1,3 +1,21 @@
+// Helper : détecte si un mot-clé est précédé d'une négation (ni, aucun, sans, pas de)
+function isNegated(normalized: string, keyword: string): boolean {
+  // Gère le pluriel automatiquement
+  const variants = [keyword, keyword + 's'];
+  const negations = [];
+  for (const variant of variants) {
+    negations.push(
+      `ni ${variant}`,
+      `aucun ${variant}`,
+      `aucune ${variant}`,
+      `sans ${variant}`,
+      `pas de ${variant}`,
+      `pas ${variant}`,
+      `0 ${variant}`
+    );
+  }
+  return negations.some((neg) => normalized.includes(neg));
+}
 import type {
   ParsedRace,
   RaceProfileType,
@@ -83,6 +101,18 @@ function addWeights(
 }
 
 function detectWeights(normalized: string, raceType: RaceType, distanceKm: number): RaceProfileWeights {
+    // Détection explicite du plat/roulant/faible relief
+    if (
+      (normalized.includes("plat") || normalized.includes("roulant") || normalized.includes("faible relief") || normalized.includes("sans difficulté") || normalized.includes("sans difficulte")) &&
+      !normalized.includes("montagne") && !normalized.includes("col") && !normalized.includes("grimpe")
+    ) {
+      weights = addWeights(weights, {
+        flat: 55,
+        sprint: 25,
+        endurance: 12,
+        resistance: 10,
+      });
+    }
   let weights = { ...EMPTY_WEIGHTS };
 
   if (normalized.includes("plaine")) {
@@ -104,7 +134,11 @@ function detectWeights(normalized: string, raceType: RaceType, distanceKm: numbe
     });
   }
 
-  if (normalized.includes("montagne") || normalized.includes("col") || normalized.includes("grimpe")) {
+  // Ajout montagne seulement si pas de négation
+  const montagneOk = normalized.includes("montagne") && !isNegated(normalized, "montagne");
+  const colOk = normalized.includes("col") && !isNegated(normalized, "col");
+  const grimpeOk = normalized.includes("grimpe") && !isNegated(normalized, "grimpe");
+  if (montagneOk || colOk || grimpeOk) {
     weights = addWeights(weights, {
       mountain: 48,
       resistance: 14,
@@ -204,25 +238,54 @@ function detectWeights(normalized: string, raceType: RaceType, distanceKm: numbe
 }
 
 function detectProfile(weights: RaceProfileWeights): RaceProfileType {
-  const candidates: Array<[RaceProfileType, number]> = [
-    ["Plaine", weights.flat + weights.sprint * 0.6],
-    ["Vallon", weights.hill + weights.breakaway * 0.4],
-    ["Montagne", weights.mountain + weights.stageRace * 0.2],
-    ["CLM", weights.timeTrial],
-    ["Pavé", weights.cobble],
-    ["Flandrien", weights.cobble * 0.6 + weights.flat * 0.4 + weights.hill * 0.4],
-  ];
+    // Forçage si la plaine est très dominante
+    if (weights.flat >= 50 && weights.mountain < 15 && weights.hill < 20) {
+      return "Plaine";
+    }
+  // On donne plus de poids à la plaine si la montagne est faible
+  const flatScore = weights.flat + weights.sprint * 0.6;
+  const hillScore = weights.hill + weights.breakaway * 0.4;
+  const mountainScore = weights.mountain + weights.stageRace * 0.2;
+  const clmScore = weights.timeTrial;
+  const cobbleScore = weights.cobble;
+  const flandrienScore = weights.cobble * 0.6 + weights.flat * 0.4 + weights.hill * 0.4;
 
-  candidates.sort((a, b) => b[1] - a[1]);
-
-  const [topType, topScore] = candidates[0];
-  const [, secondScore] = candidates[1];
-
-  if (Math.abs(topScore - secondScore) <= 8) {
-    return "Mixte";
+  // Si la montagne est faible (<15) et la plaine > montagne+10, on force plaine
+  if (mountainScore < 15 && flatScore > mountainScore + 10) {
+    if (flatScore > hillScore + 5) return "Plaine";
   }
 
-  return topType;
+  // Si la montagne est très dominante
+  if (mountainScore > flatScore + 10 && mountainScore > hillScore + 5) {
+    return "Montagne";
+  }
+
+  // Si le vallon est dominant
+  if (hillScore > flatScore + 5 && hillScore > mountainScore + 5) {
+    return "Vallon";
+  }
+
+  // CLM ou Pavé ou Flandrien
+  if (clmScore > 25 && clmScore > flatScore && clmScore > hillScore && clmScore > mountainScore) {
+    return "CLM";
+  }
+  if (cobbleScore > 25 && cobbleScore > flatScore && cobbleScore > hillScore && cobbleScore > mountainScore) {
+    return "Pavé";
+  }
+  if (flandrienScore > 25 && flandrienScore > flatScore && flandrienScore > hillScore && flandrienScore > mountainScore) {
+    return "Flandrien";
+  }
+
+  // Mixte si scores proches
+  const arr = [flatScore, hillScore, mountainScore];
+  const max = Math.max(...arr);
+  const min = Math.min(...arr);
+  if (max - min <= 8) return "Mixte";
+
+  // Sinon, le plus fort l'emporte
+  if (flatScore >= hillScore && flatScore >= mountainScore) return "Plaine";
+  if (hillScore >= flatScore && hillScore >= mountainScore) return "Vallon";
+  return "Montagne";
 }
 
 function buildSummary(
