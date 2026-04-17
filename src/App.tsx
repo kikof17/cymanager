@@ -8,6 +8,8 @@ import RacesPage from "./pages/RacesPage";
 import TodoPage from "./pages/TodoPage";
 import SettingsPage from "./pages/SettingsPage";
 
+import CalendarPage from "./pages/CalendarPage";
+
 export default function App() {
   return (
     <AppLayout>
@@ -19,6 +21,7 @@ export default function App() {
         <Route path="/courses" element={<RacesPage />} />
         <Route path="/todo" element={<TodoPage />} />
         <Route path="/parametres" element={<SettingsPage />} />
+        <Route path="/calendrier" element={<CalendarPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AppLayout>
