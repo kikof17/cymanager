@@ -127,7 +127,7 @@ export default function RacesPage() {
       });
     });
     // 2. Pour chaque course, appliquer la règle d'exclusion
-    races.forEach((race, idx) => {
+    races.forEach((race) => {
       let filteredRiders = riders;
       // Filtrage spécial U25
       const isU25 =
@@ -276,7 +276,7 @@ export default function RacesPage() {
     // Sauvegarder la tactique (ODC) courante ET le profil de course pour chaque course dans le localStorage
     try {
       const raw = localStorage.getItem('cymanager:race-setup');
-      let allSetups = {};
+      let allSetups: { [key: string]: any } = {};
       if (raw) allSetups = JSON.parse(raw);
       races.forEach((race) => {
         const raceKey = buildRaceKey(race);

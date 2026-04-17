@@ -20,6 +20,7 @@ export type TodoItem = {
   priority: TodoPriority;
   category: TodoCategory;
   createdAt: string;
+  raceKey?: string; // Ajout pour compatibilité ODC calendrier
 };
 
 export type ManualTodoDraft = {

@@ -4,7 +4,7 @@ import PageTitle from '../components/common/PageTitle';
 import RaceSetupTable from '../components/races/RaceSetupTable';
 import { getRiderStrengths } from '../lib/scoring/strengths';
 import { loadCalendarRaceProfile } from '../lib/storage/calendarRaceProfile';
-import { loadRidersFromStorage } from '../lib/storage/localStorage';
+
 import { saveManualTodos, loadManualTodos, loadTodoStatuses, saveTodoStatuses } from '../lib/storage/todoStorage';
 import type { TodoItem } from '../types/todo';
 
