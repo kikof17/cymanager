@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Card from '../components/common/Card';
 import PageTitle from '../components/common/PageTitle';
 import RaceSetupTable from '../components/races/RaceSetupTable';
+import ConfirmDialog from '../components/common/ConfirmDialog';
 import { getRiderStrengths } from '../lib/scoring/strengths';
 import { loadCalendarRaceProfile } from '../lib/storage/calendarRaceProfile';
 
@@ -41,6 +42,8 @@ const CalendarPage: React.FC = () => {
 
   // Affichage des étapes déjà ajoutées
   // Suppression d'une étape
+  // Confirmation suppression
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string|null>(null);
   function handleDeleteCalendarTodo(id: string) {
     setCalendarTodos((current) => {
       const next = current.filter((t) => t.id !== id);
@@ -56,6 +59,7 @@ const CalendarPage: React.FC = () => {
       });
       return next;
     });
+    setConfirmDeleteId(null);
   }
 
   // Gestion du module résultat (état local)
@@ -213,10 +217,18 @@ const CalendarPage: React.FC = () => {
             type="button"
             className="button button-danger button-small"
             style={{ marginLeft: 8, minWidth: 80 }}
-            onClick={() => handleDeleteCalendarTodo(todo.id)}
+            onClick={() => setConfirmDeleteId(todo.id)}
           >
             Supprimer
           </button>
+                {/* Dialog de confirmation suppression */}
+                <ConfirmDialog
+                  open={!!confirmDeleteId}
+                  title="Confirmer la suppression"
+                  message="Voulez-vous vraiment supprimer cette course du calendrier ? Cette action est irréversible."
+                  onConfirm={() => confirmDeleteId && handleDeleteCalendarTodo(confirmDeleteId)}
+                  onCancel={() => setConfirmDeleteId(null)}
+                />
           <button
             type="button"
             className="button button-primary button-small"
