@@ -1,0 +1,30 @@
+export type RiderCategory = "Pro" | "U25" | "U21";
+
+export type Rider = {
+  id: string;
+  name: string;
+  value: number;
+  salaryWeekly: number;
+  nationality: string;
+  ageYears: number;
+  ageWeeks: number;
+  form: number;
+  injury: string;
+  category: RiderCategory;
+  endurance: number;
+  resistance: number;
+  recovery: number;
+  flat: number;
+  hill: number;
+  sprint: number;
+  cobble: number;
+  agility: number;
+  breakaway: number;
+  mountain: number;
+  downhill: number;
+  timeTrial: number;
+  stageRace: number;
+  experience: number;
+  total: number;
+  updatedAt: string;
+};

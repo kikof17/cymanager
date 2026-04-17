@@ -1,0 +1,141 @@
+import { useMemo } from "react";
+import PageTitle from "../components/common/PageTitle";
+import ClubOverviewCard from "../components/home/ClubOverviewCard";
+import FacilitiesOverviewCard from "../components/home/FacilitiesOverviewCard";
+import RaceOverviewCard from "../components/home/RaceOverviewCard";
+import TodoOverviewCard from "../components/home/TodoOverviewCard";
+import TrainingOverviewCard from "../components/home/TrainingOverviewCard";
+import { buildRaceAnalysis } from "../lib/scoring/raceScores";
+import { buildTrainingPlan } from "../lib/scoring/trainingScores";
+import { loadRaceSetup } from "../lib/storage/raceStorage";
+import { loadRidersFromStorage } from "../lib/storage/localStorage";
+import { loadClubSettings } from "../lib/storage/settingsStorage";
+import { loadTodoStatuses, loadManualTodos } from "../lib/storage/todoStorage";
+import { buildTodoList } from "../lib/todo/buildTodoList";
+import { initialRiders } from "../store/initialState";
+import type { ParsedRace } from "../types/race";
+import type { Rider } from "../types/rider";
+
+type RaceSnapshot = {
+  name: string;
+  raceType: "simple" | "etapes";
+  distanceKm: number;
+  detectedProfile: ParsedRace["detectedProfile"];
+};
+
+function loadLastRaceSnapshot(): RaceSnapshot | null {
+  try {
+    const raw = localStorage.getItem("cymanager:last-race");
+
+    if (!raw) {
+      return null;
+    }
+
+    const parsed = JSON.parse(raw);
+
+    if (!parsed || typeof parsed !== "object") {
+      return null;
+    }
+
+    return parsed as RaceSnapshot;
+  } catch (error) {
+    console.error("Erreur de lecture localStorage last race", error);
+    return null;
+  }
+}
+
+function buildRaceKey(race: RaceSnapshot | null): string {
+  if (!race) {
+    return "";
+  }
+
+  return `${race.name}::${race.raceType}::${race.distanceKm}::${race.detectedProfile}`;
+}
+
+export default function HomePage() {
+  const riders = useMemo<Rider[]>(() => {
+    const stored = loadRidersFromStorage();
+    return stored.length > 0 ? stored : initialRiders;
+  }, []);
+
+  const clubSettings = useMemo(() => loadClubSettings(), []);
+
+  const trainingPlan = useMemo(() => {
+    return buildTrainingPlan(riders, "mixte", "polyvalent");
+  }, [riders]);
+
+  const raceSnapshot = useMemo(() => loadLastRaceSnapshot(), []);
+  const raceKey = useMemo(() => buildRaceKey(raceSnapshot), [raceSnapshot]);
+
+  const race = useMemo<ParsedRace | null>(() => {
+    if (!raceSnapshot) {
+      return null;
+    }
+
+    return {
+      rawText: "",
+      name: raceSnapshot.name,
+      raceType: raceSnapshot.raceType,
+      distanceKm: raceSnapshot.distanceKm,
+      detectedProfile: raceSnapshot.detectedProfile,
+      weights: {
+        flat: 0,
+        hill: 0,
+        mountain: 0,
+        sprint: 0,
+        cobble: 0,
+        timeTrial: 0,
+        breakaway: 0,
+        endurance: 0,
+        resistance: 0,
+        recovery: 0,
+        stageRace: 0,
+      },
+      summary: [],
+    };
+  }, [raceSnapshot]);
+
+  const raceSelected = useMemo(() => {
+    if (!race) {
+      return [];
+    }
+
+    return buildRaceAnalysis(riders, race).selected;
+  }, [race, riders]);
+
+  const todoItems = useMemo(() => {
+    const manualTodos = loadManualTodos();
+    const statuses = loadTodoStatuses();
+    const raceSetupCount = raceKey ? Object.keys(loadRaceSetup(raceKey)).length : 0;
+
+    const autoTodos = buildTodoList({
+      riders,
+      trainingExists: riders.length > 0,
+      race,
+      raceSetupCount,
+      clubSettings,
+    });
+
+    return [...autoTodos, ...manualTodos].map((item) => ({
+      ...item,
+      status: statuses[item.id] ?? item.status,
+    }));
+  }, [riders, race, raceKey, clubSettings]);
+
+  return (
+    <div className="page-stack">
+      <PageTitle
+        title="Accueil"
+        subtitle="Vue d'ensemble du club, des priorités et des décisions à prendre."
+      />
+
+      <div className="dashboard-grid">
+        <ClubOverviewCard riders={riders} />
+        <TrainingOverviewCard plan={trainingPlan} />
+        <RaceOverviewCard race={race} selected={raceSelected} />
+        <TodoOverviewCard items={todoItems} />
+        <FacilitiesOverviewCard settings={clubSettings} />
+      </div>
+    </div>
+  );
+}
