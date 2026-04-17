@@ -335,43 +335,7 @@ const CalendarPage: React.FC = () => {
         subtitle="Importe et visualise les étapes à venir ou passées. Ajoute-les à la todo pour planifier facilement."
       />
 
-      <div className="card-grid" style={{ alignItems: 'flex-start' }}>
-        <Card title="Import calendrier">
-          <div style={{ marginBottom: 12 }}>
-            <strong>Colle ici les lignes du calendrier</strong>
-            <p className="muted" style={{ margin: '4px 0 12px 0', fontSize: 13 }}>
-              Semaine, jour, date, type, lieu, étape, tactique, infos (une ligne par étape ou sélection)
-            </p>
-            <textarea
-              value={input}
-              onChange={e => { setInput(e.target.value); setSuccess(false); setParsedList([]); }}
-              rows={7}
-              className="input"
-              style={{ width: '100%', marginBottom: 12, fontFamily: 'inherit' }}
-              placeholder={"S5\tSam\t18/04/2026\tMT\tMontagne\tEtape 1 : Oviedo - Langreo by Zabak\tTactique\tInformations\nS5\tDim\t19/04/2026\tMT\t\tEtape 2 : GP Indurain by The Crow\tTactique\tInformations"}
-            />
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button className="button button-primary" onClick={handleParse} type="button">Analyser</button>
-              <button className="button" onClick={() => { setInput(''); setParsedList([]); setSuccess(false); }} type="button">Vider</button>
-              <button className="button button-primary" onClick={handleCreateTodos} disabled={!parsedList.length} type="button">
-                Ajouter toutes les étapes à la To-do
-              </button>
-            </div>
-            {success && (
-              <div style={{ color: 'green', marginTop: 12 }}>
-                ✅ Étapes ajoutées à la to-do !
-              </div>
-            )}
-          </div>
-        </Card>
 
-        <Card title="Aperçu des étapes détectées">
-          {parsedList.length === 0 && <div className="muted">Aucune étape détectée pour le moment.</div>}
-          <div className="page-stack">
-            {parsedList.map(renderStageCard)}
-          </div>
-        </Card>
-      </div>
 
       <Card title="Courses à venir et passées" style={{ marginTop: 32 }}>
         {calendarTodos.length === 0 && <div className="muted">Aucune étape ajoutée pour l'instant.</div>}

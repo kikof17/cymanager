@@ -95,6 +95,7 @@ export default function SettingsPage() {
           display: 'flex',
           flexDirection: 'column',
           gap: 10,
+          color: '#222',
         }}>
           <div style={{ fontSize: 22, fontWeight: 700, color: '#2d2d4d', marginBottom: 6 }}>Manager <span style={{ color: '#4b5fc0' }}>Kritoff</span></div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 18, fontSize: 15 }}>
