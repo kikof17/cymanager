@@ -6,6 +6,7 @@ type RaceSetupTableProps = {
   onRoleChange: (riderId: string, role: Exclude<RaceRole, "Remplaçant">) => void;
   onPercentChange: (riderId: string, effortPercent: number) => void;
   onBreakawayChange: (riderId: string, morningBreakaway: boolean) => void;
+  readOnly?: boolean;
 };
 
 const ROLE_OPTIONS: Array<Exclude<RaceRole, "Remplaçant">> = [
@@ -20,6 +21,7 @@ export default function RaceSetupTable({
   onRoleChange,
   onPercentChange,
   onBreakawayChange,
+  readOnly = false,
 }: RaceSetupTableProps) {
   if (riders.length === 0) {
     return <p>Aucun coureur sélectionné.</p>;
@@ -74,51 +76,65 @@ export default function RaceSetupTable({
                 <td>{rider.score}</td>
 
                 <td>
-                  <select
-                    className="input input-compact"
-                    value={setup?.role ?? "Équipier"}
-                    onChange={(event) =>
-                      onRoleChange(
-                        rider.riderId,
-                        event.target.value as Exclude<RaceRole, "Remplaçant">
-                      )
-                    }
-                  >
-                    {ROLE_OPTIONS.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
+                  {readOnly ? (
+                    <span>{setup?.role ?? "Équipier"}</span>
+                  ) : (
+                    <select
+                      className="input input-compact"
+                      value={setup?.role ?? "Équipier"}
+                      onChange={(event) =>
+                        onRoleChange(
+                          rider.riderId,
+                          event.target.value as Exclude<RaceRole, "Remplaçant">
+                        )
+                      }
+                    >
+                      {ROLE_OPTIONS.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                 </td>
 
                 <td>
                   <div className="effort-cell effort-cell-tight">
-                    <input
-                      type="range"
-                      min={0}
-                      max={100}
-                      step={5}
-                      value={setup?.effortPercent ?? 50}
-                      onChange={(event) =>
-                        onPercentChange(
-                          rider.riderId,
-                          Number.parseInt(event.target.value, 10)
-                        )
-                      }
-                    />
-                    <span className="effort-value">{setup?.effortPercent ?? 50}%</span>
+                    {readOnly ? (
+                      <span className="effort-value">{setup?.effortPercent ?? 50}%</span>
+                    ) : (
+                      <>
+                        <input
+                          type="range"
+                          min={0}
+                          max={100}
+                          step={5}
+                          value={setup?.effortPercent ?? 50}
+                          onChange={(event) =>
+                            onPercentChange(
+                              rider.riderId,
+                              Number.parseInt(event.target.value, 10)
+                            )
+                          }
+                        />
+                        <span className="effort-value">{setup?.effortPercent ?? 50}%</span>
+                      </>
+                    )}
                   </div>
                 </td>
 
                 <td>
-                  <input
-                    type="checkbox"
-                    checked={setup?.morningBreakaway ?? false}
-                    onChange={(event) =>
-                      onBreakawayChange(rider.riderId, event.target.checked)
-                    }
-                  />
+                  {readOnly ? (
+                    <input type="checkbox" checked={setup?.morningBreakaway ?? false} disabled readOnly />
+                  ) : (
+                    <input
+                      type="checkbox"
+                      checked={setup?.morningBreakaway ?? false}
+                      onChange={(event) =>
+                        onBreakawayChange(rider.riderId, event.target.checked)
+                      }
+                    />
+                  )}
                 </td>
 
                 <td>{rider.reasons.join(" · ")}</td>

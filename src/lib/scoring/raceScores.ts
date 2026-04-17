@@ -74,11 +74,11 @@ function assignRoleFromScoreIndex(
 }
 
 export function buildRaceAnalysis(riders: Rider[], race: ParsedRace): RaceAnalysisResult {
-  const ranking: RaceRiderScore[] = riders
+  // Sélection intelligente : priorité Pro, U25/U21 seulement si effectif Pro insuffisant ou score > plus faible Pro
+  const allRanked: RaceRiderScore[] = riders
     .map((rider) => {
       const score = weightedRaceScore(rider, race.weights);
       const reasons = buildReasons(rider, race);
-
       return {
         riderId: rider.id,
         riderName: rider.name,
@@ -89,29 +89,50 @@ export function buildRaceAnalysis(riders: Rider[], race: ParsedRace): RaceAnalys
         reasons,
       };
     })
-    .sort((a, b) => b.score - a.score)
-    .map((item, index) => {
-      if (index < 7) {
-        const rider = riders.find((r) => r.id === item.riderId)!;
+    .sort((a, b) => b.score - a.score);
 
-        return {
-          ...item,
-          role: assignRoleFromScoreIndex(index, rider, race),
-        };
-      }
+  // Séparer Pro et U25/U21
+  const proRanked = allRanked.filter(r => r.riderCategory === "Pro");
+  const u25u21Ranked = allRanked.filter(r => r.riderCategory === "U25" || r.riderCategory === "U21");
 
-      return item;
-    });
+  // Prendre d'abord les 7 meilleurs Pro
+  let selected: RaceRiderScore[] = proRanked.slice(0, 7);
 
-  const selected = ranking.slice(0, 7);
-  const substitutes = ranking.slice(7, 9).map((item) => ({
+  // Si moins de 7 Pro, compléter avec U25/U21
+  if (selected.length < 7) {
+    const needed = 7 - selected.length;
+    selected = selected.concat(u25u21Ranked.slice(0, needed));
+  } else {
+    // Si on a 7 Pro, vérifier si un U25/U21 a un score supérieur au plus faible Pro sélectionné
+    const minProScore = selected[selected.length - 1]?.score ?? -Infinity;
+    const betterU25U21 = u25u21Ranked.filter(r => r.score > minProScore);
+    if (betterU25U21.length > 0) {
+      // Remplacer le(s) plus faible(s) Pro par le(s) meilleur(s) U25/U21
+      const combined = selected.concat(betterU25U21).sort((a, b) => b.score - a.score).slice(0, 7);
+      // Toujours priorité au score
+      selected = combined;
+    }
+  }
+
+  // Mettre à jour le rôle selon le classement
+  selected = selected.map((item, index) => {
+    const rider = riders.find((r) => r.id === item.riderId)!;
+    return {
+      ...item,
+      role: assignRoleFromScoreIndex(index, rider, race),
+    };
+  });
+
+  // Substituts : les 8e et 9e meilleurs (hors sélection)
+  const selectedIds = new Set(selected.map(r => r.riderId));
+  const substitutes = allRanked.filter(r => !selectedIds.has(r.riderId)).slice(0, 2).map(item => ({
     ...item,
     role: "Remplaçant" as const,
   }));
 
   return {
     race,
-    ranking,
+    ranking: allRanked,
     selected,
     substitutes,
   };

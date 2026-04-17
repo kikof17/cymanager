@@ -47,6 +47,7 @@ import { loadRaceSetup } from "../lib/storage/raceStorage";
 import { loadRidersFromStorage } from "../lib/storage/localStorage";
 import { initialRiders } from "../store/initialState";
 import { saveManualTodos, loadManualTodos } from "../lib/storage/todoStorage";
+import { saveCalendarRaceProfile } from "../lib/storage/calendarRaceProfile";
 import type { TodoItem } from "../types/todo";
 import type { ParsedRace, RaceRole, RiderRaceSetup } from "../types/race";
 import type { Rider } from "../types/rider";
@@ -108,8 +109,44 @@ export default function RacesPage() {
   // Analyse et réglages pour chaque étape
   useEffect(() => {
     const next: Record<string, Record<string, RiderRaceSetup>> = {};
-    races.forEach((race) => {
+    // 1. Identifier les coureurs U25/U21 ayant fait une course Pro
+    const proRaceIndices: number[] = races
+      .map((race, idx) =>
+        race.name.toLowerCase().includes("pro") ? idx : -1
+      )
+      .filter(idx => idx !== -1);
+    // Set des IDs de U25/U21 ayant couru en Pro
+    const u25u21InPro = new Set<string>();
+    proRaceIndices.forEach(idx => {
+      const race = races[idx];
       const analysis = buildRaceAnalysis(riders, race);
+      analysis.selected.forEach(r => {
+        if (r.riderCategory === "U25" || r.riderCategory === "U21") {
+          u25u21InPro.add(r.riderId);
+        }
+      });
+    });
+    // 2. Pour chaque course, appliquer la règle d'exclusion
+    races.forEach((race, idx) => {
+      let filteredRiders = riders;
+      // Filtrage spécial U25
+      const isU25 =
+        race.name.toLowerCase().includes("u25") ||
+        race.summary?.some((s) => s.toLowerCase().includes("u25"));
+      const isU21 =
+        race.name.toLowerCase().includes("u21") ||
+        race.summary?.some((s) => s.toLowerCase().includes("u21"));
+      if (isU25) {
+        filteredRiders = filteredRiders.filter(
+          (r) => r.category === "U25" && r.ageYears >= 22 && r.ageYears <= 25 && !u25u21InPro.has(r.id)
+        );
+      } else if (isU21) {
+        filteredRiders = filteredRiders.filter(
+          (r) => r.category === "U21" && !u25u21InPro.has(r.id)
+        );
+      }
+      // Pour les autres courses, filtrage normal
+      const analysis = buildRaceAnalysis(filteredRiders, race);
       const raceKey = buildRaceKey(race);
       const saved = loadRaceSetup(raceKey);
       const hasSaved = Object.keys(saved).length > 0;
@@ -209,16 +246,49 @@ export default function RacesPage() {
   // Ajout au calendrier et todo
   function handleAddToCalendar() {
     if (!races.length) return;
-    const todos: TodoItem[] = races.map(race => ({
-      id: `calendar-${Date.now()}-${Math.floor(Math.random()*10000)}`,
-      title: `${race.name} (${race.distanceKm ? race.distanceKm + ' km' : ''})`,
-      details: `Profil: ${race.detectedProfile}\nType: ${race.raceType}\nRésumé: ${race.summary?.join(' | ')}`,
-      source: 'manual',
-      status: 'todo',
-      priority: 'moyenne',
-      category: 'courses',
-      createdAt: new Date().toISOString(),
-    }));
+    const todos: TodoItem[] = races.map(race => {
+      const raceKey = buildRaceKey(race);
+      // Recherche de la date si possible (depuis rawText ou summary)
+      let date = '';
+      if (race.rawText) {
+        const m = race.rawText.match(/Date\s*\|\s*([\d/\-]+)/i);
+        if (m) date = m[1];
+      }
+      if (!date && race.summary) {
+        const found = race.summary.find(s => s.toLowerCase().includes('date'));
+        if (found) {
+          const m = found.match(/([\d]{2}\/\d{2}\/\d{4})/);
+          if (m) date = m[1];
+        }
+      }
+      return {
+        id: `calendar-${Date.now()}-${Math.floor(Math.random()*10000)}`,
+        title: `${race.name} (${date ? date + ' · ' : ''}${race.distanceKm ? race.distanceKm + ' km' : ''})`,
+        details: `Date: ${date}\nProfil: ${race.detectedProfile}\nType: ${race.raceType}\nRésumé: ${race.summary?.join(' | ')}`,
+        source: 'manual',
+        status: 'todo',
+        priority: 'moyenne',
+        category: 'courses',
+        createdAt: new Date().toISOString(),
+        raceKey,
+      };
+    });
+    // Sauvegarder la tactique (ODC) courante ET le profil de course pour chaque course dans le localStorage
+    try {
+      const raw = localStorage.getItem('cymanager:race-setup');
+      let allSetups = {};
+      if (raw) allSetups = JSON.parse(raw);
+      races.forEach((race) => {
+        const raceKey = buildRaceKey(race);
+        const setup = setupByRiderList[raceKey];
+        if (setup && Object.keys(setup).length > 0) {
+          allSetups[raceKey] = setup;
+          // Sauvegarde du profil complet de la course pour le calendrier
+          saveCalendarRaceProfile(raceKey, race);
+        }
+      });
+      localStorage.setItem('cymanager:race-setup', JSON.stringify(allSetups));
+    } catch {}
     const existing = loadManualTodos();
     saveManualTodos([...todos, ...existing]);
     setMessages((msgs) => [

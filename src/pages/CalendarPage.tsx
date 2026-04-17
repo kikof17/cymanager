@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Card from '../components/common/Card';
 import PageTitle from '../components/common/PageTitle';
+import RaceSetupTable from '../components/races/RaceSetupTable';
+import { getRiderStrengths } from '../lib/scoring/strengths';
+import { loadCalendarRaceProfile } from '../lib/storage/calendarRaceProfile';
+import { loadRidersFromStorage } from '../lib/storage/localStorage';
 import { saveManualTodos, loadManualTodos, loadTodoStatuses, saveTodoStatuses } from '../lib/storage/todoStorage';
 import type { TodoItem } from '../types/todo';
 
@@ -52,9 +56,11 @@ const CalendarPage: React.FC = () => {
     const dataList = parseLines(input);
     if (!dataList.length) return;
 
+    // Ajout direct depuis CalendarPage (rare, mais on tente de générer une raceKey simple)
     const newTodos: TodoItem[] = dataList
       .map((data) => {
-        if (!data) return null; // Vérification si data est null
+        if (!data) return null;
+        const raceKey = `${(data.etape || data.lieu).replace(/\s+/g, '_')}::simple::${data.date}::unknown`;
         return {
           id: `calendar-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
           title: `${data.etape || data.lieu} (${data.date})`,
@@ -64,9 +70,10 @@ const CalendarPage: React.FC = () => {
           priority: 'moyenne',
           category: 'courses',
           createdAt: new Date().toISOString(),
-        } as TodoItem; // Forcer le typage ici
+          raceKey,
+        } as TodoItem;
       })
-      .filter((todo) => todo !== null) as TodoItem[]; // Filtrer et forcer le typage
+      .filter((todo) => todo !== null) as TodoItem[];
     const todos = loadManualTodos();
     saveManualTodos([...newTodos, ...todos]);
     setSuccess(true);
@@ -143,6 +150,8 @@ const CalendarPage: React.FC = () => {
   }
 
   // Affichage des étapes déjà ajoutées (code couleur harmonisé)
+  // Affichage ODC (tactique) déroulante
+  const [openTacticId, setOpenTacticId] = useState<string|null>(null);
   function renderCalendarTodo(todo: TodoItem) {
     const isDone = statuses[todo.id] === 'done';
     // Couleur bordure selon priorité/catégorie (comme todo)
@@ -150,6 +159,79 @@ const CalendarPage: React.FC = () => {
     if (todo.category === 'courses') borderColor = '#bfa600';
     if (todo.priority === 'haute') borderColor = '#b83a3a';
     if (todo.priority === 'basse') borderColor = '#4caf50';
+
+    // Récupérer l'ODC/réglages si dispo (clé = titre de la course)
+    let odcContent: React.ReactNode = null;
+    try {
+      const raceKey = todo.raceKey;
+      const raw = localStorage.getItem('cymanager:race-setup');
+      const rawRiders = localStorage.getItem('cymanager:riders');
+      let ridersArr: any[] = [];
+      if (rawRiders) {
+        try {
+          const arr = JSON.parse(rawRiders);
+          if (Array.isArray(arr)) ridersArr = arr;
+        } catch {}
+      }
+      if (raw && raceKey) {
+        const allSetups = JSON.parse(raw);
+        const setup = allSetups[raceKey];
+        if (setup) {
+          // Charger le vrai profil de course (ParsedRace) pour cette étape
+          const raceProfile = loadCalendarRaceProfile(raceKey);
+          const ridersForTable = Object.values(setup).map((r: any) => {
+            const rider = ridersArr.find(rr => rr.id === r.riderId);
+            return {
+              riderId: r.riderId,
+              riderName: rider?.name || r.riderName || r.riderId,
+              riderForm: rider?.form ?? 0,
+              riderCategory: rider?.category ?? '',
+              score: raceProfile && rider ? (
+                rider.flat * raceProfile.weights.flat +
+                rider.hill * raceProfile.weights.hill +
+                rider.mountain * raceProfile.weights.mountain +
+                rider.sprint * raceProfile.weights.sprint +
+                rider.cobble * raceProfile.weights.cobble +
+                rider.timeTrial * raceProfile.weights.timeTrial +
+                rider.breakaway * raceProfile.weights.breakaway +
+                rider.endurance * raceProfile.weights.endurance +
+                rider.resistance * raceProfile.weights.resistance +
+                rider.recovery * raceProfile.weights.recovery +
+                rider.stageRace * raceProfile.weights.stageRace
+              ) : (rider?.total ?? 0),
+              role: r.role,
+              reasons: rider && raceProfile ? getRiderStrengths(rider, raceProfile) : [],
+            };
+          });
+          odcContent = (
+            <div
+              style={{
+                marginTop: 10,
+                background: '#23242a',
+                borderRadius: 10,
+                padding: 16,
+                boxShadow: '0 2px 12px #0006',
+                border: '1px solid #333',
+              }}
+            >
+              <div style={{ overflowX: 'auto' }}>
+                <style>{`
+                  .race-setup-table thead th { color: #111 !important; background: #f7f7fa !important; }
+                `}</style>
+                <RaceSetupTable
+                  riders={ridersForTable}
+                  setupByRider={setup}
+                  onRoleChange={() => {}}
+                  onPercentChange={() => {}}
+                  onBreakawayChange={() => {}}
+                  readOnly
+                />
+              </div>
+            </div>
+          );
+        }
+      }
+    } catch {}
 
     return (
       <div
@@ -165,41 +247,49 @@ const CalendarPage: React.FC = () => {
           gap: 16,
           borderLeft: `6px solid ${borderColor}`,
           boxShadow: '0 1px 4px 0 #0001',
+          flexDirection: 'column',
         }}
       >
-        <input
-          type="checkbox"
-          checked={isDone}
-          onChange={() => handleToggleStatus(todo.id)}
-          style={{ marginRight: 12, width: 18, height: 18 }}
-          title={isDone ? 'Marquer comme à faire' : 'Marquer comme fait'}
-        />
-        <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 600, fontSize: 16, color: '#181c24' }}>{todo.title}</div>
-          <div style={{ fontSize: 13, color: '#444', margin: '2px 0 6px 0' }}>{todo.details?.split('\n').join(' | ')}</div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-            <span className={`todo-badge priority-${todo.priority}`}>{todo.priority}</span>
-            <span className="todo-badge">{todo.category}</span>
-            <span className="todo-badge">{todo.source}</span>
+        <div style={{ display: 'flex', width: '100%', alignItems: 'center', gap: 16 }}>
+          <input
+            type="checkbox"
+            checked={isDone}
+            onChange={() => handleToggleStatus(todo.id)}
+            style={{ marginRight: 12, width: 18, height: 18 }}
+            title={isDone ? 'Marquer comme à faire' : 'Marquer comme fait'}
+          />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 600, fontSize: 16, color: '#181c24' }}>{todo.title}</div>
+            <div style={{ fontSize: 13, color: '#444', margin: '2px 0 6px 0' }}>{todo.details?.split('\n').join(' | ')}</div>
             <span style={{ color: '#aaa', fontSize: 12 }}>{new Date(todo.createdAt).toLocaleDateString()}</span>
           </div>
+          <button
+            type="button"
+            className="button button-secondary button-small"
+            style={{ marginLeft: 8, minWidth: 80 }}
+            onClick={() => handleOpenResultModal(todo.id)}
+          >
+            Résultat
+          </button>
+          <button
+            type="button"
+            className="button button-danger button-small"
+            style={{ marginLeft: 8, minWidth: 80 }}
+            onClick={() => handleDeleteCalendarTodo(todo.id)}
+          >
+            Supprimer
+          </button>
+          <button
+            type="button"
+            className="button button-primary button-small"
+            style={{ marginLeft: 8, minWidth: 80 }}
+            onClick={() => setOpenTacticId(openTacticId === todo.id ? null : todo.id)}
+          >
+            Tactique
+          </button>
         </div>
-        <button
-          type="button"
-          className="button button-secondary button-small"
-          style={{ marginLeft: 8, minWidth: 80 }}
-          onClick={() => handleOpenResultModal(todo.id)}
-        >
-          Résultat
-        </button>
-        <button
-          type="button"
-          className="button button-danger button-small"
-          style={{ marginLeft: 8, minWidth: 80 }}
-          onClick={() => handleDeleteCalendarTodo(todo.id)}
-        >
-          Supprimer
-        </button>
+        {/* Affichage ODC déroulant */}
+        {openTacticId === todo.id && odcContent}
       </div>
     );
   }
