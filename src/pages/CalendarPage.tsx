@@ -10,34 +10,13 @@ import type { TodoItem } from '../types/todo';
 
 
 const CalendarPage: React.FC = () => {
-  const [input, setInput] = useState('');
-  const [parsedList, setParsedList] = useState<any[]>([]);
-  const [success, setSuccess] = useState(false);
-  const [addedCount, setAddedCount] = useState(0);
+  // Hooks inutilisés supprimés (input, parsedList, success)
+  const [addedCount] = useState(0);
   const [calendarTodos, setCalendarTodos] = useState<TodoItem[]>([]);
   const [statuses, setStatuses] = useState<Record<string, 'todo' | 'done'>>({});
 
   // Parsing multi-lignes
-  function parseLines(text: string) {
-    return text
-      .split(/\r?\n/)
-      .map((line) => {
-        const parts = line.split('\t');
-        if (parts.length < 6) return null;
-        // Gestion des lignes "sélection" (pas d'étape)
-        return {
-          semaine: parts[0],
-          jour: parts[1],
-          date: parts[2],
-          type: parts[3],
-          lieu: parts[4],
-          etape: parts[5] || '',
-          tactique: parts[6] || '',
-          infos: parts[7] || '',
-        };
-      })
-      .filter((x) => x && (x.etape || x.lieu));
-  }
+  // parseLines supprimé (plus utilisé)
 
   // Charger les todos "calendar" existants
   useEffect(() => {
@@ -46,51 +25,10 @@ const CalendarPage: React.FC = () => {
     setStatuses(loadTodoStatuses());
   }, [addedCount]);
 
-  function handleParse() {
-    const result = parseLines(input);
-    setParsedList(result);
-    setSuccess(false);
-  }
-
-  function handleCreateTodos() {
-    const dataList = parseLines(input);
-    if (!dataList.length) return;
-
-    // Ajout direct depuis CalendarPage (rare, mais on tente de générer une raceKey simple)
-    const newTodos: TodoItem[] = dataList
-      .map((data) => {
-        if (!data) return null;
-        const raceKey = `${(data.etape || data.lieu).replace(/\s+/g, '_')}::simple::${data.date}::unknown`;
-        return {
-          id: `calendar-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
-          title: `${data.etape || data.lieu} (${data.date})`,
-          details: `Tactique: ${data.tactique || ''}\nInfos: ${data.infos || ''}\nType: ${data.type || ''} - ${data.lieu || ''}`,
-          source: 'manual',
-          status: 'todo',
-          priority: 'moyenne',
-          category: 'courses',
-          createdAt: new Date().toISOString(),
-          raceKey,
-        } as TodoItem;
-      })
-      .filter((todo) => todo !== null) as TodoItem[];
-    const todos = loadManualTodos();
-    saveManualTodos([...newTodos, ...todos]);
-    setSuccess(true);
-    setAddedCount((c) => c + 1);
-  }
+  // handleParse et handleCreateTodos supprimés (plus utilisés)
 
   // Affichage graphique des étapes détectées
-  function renderStageCard(stage: any, idx: number) {
-    return (
-      <div key={idx} className="card" style={{ marginBottom: 8, padding: 12 }}>
-        <div style={{ fontWeight: 600 }}>{stage.etape || stage.lieu}</div>
-        <div style={{ fontSize: 13, color: '#666' }}>{stage.jour} {stage.date} | {stage.type}</div>
-        {stage.tactique && <div style={{ fontSize: 13 }}>Tactique: {stage.tactique}</div>}
-        {stage.infos && <div style={{ fontSize: 13 }}>Infos: {stage.infos}</div>}
-      </div>
-    );
-  }
+  // renderStageCard supprimé (plus utilisé)
 
   // Gestion du statut (coché ou non)
   function handleToggleStatus(id: string) {
