@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Card from '../components/common/Card';
 import PageTitle from '../components/common/PageTitle';
 import { loadManualTodos } from '../lib/storage/todoStorage';

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "../components/common/Card";
 import PageTitle from "../components/common/PageTitle";
 import OdcPresetSelector from "../components/races/OdcPresetSelector";
@@ -9,7 +9,7 @@ import TeamSelectionTable from "../components/races/TeamSelectionTable";
 import { parseRaceText } from "../lib/parser/raceParser";
 import { buildDefaultRaceSetupMap } from "../lib/scoring/odcScores";
 import { buildRaceAnalysis } from "../lib/scoring/raceScores";
-import { loadRaceSetup, saveRaceSetup } from "../lib/storage/raceStorage";
+import { loadRaceSetup } from "../lib/storage/raceStorage";
 import { loadRidersFromStorage } from "../lib/storage/localStorage";
 import { initialRiders } from "../store/initialState";
 import { saveManualTodos, loadManualTodos } from "../lib/storage/todoStorage";

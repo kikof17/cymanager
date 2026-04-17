@@ -52,16 +52,21 @@ const CalendarPage: React.FC = () => {
     const dataList = parseLines(input);
     if (!dataList.length) return;
 
-    const newTodos: TodoItem[] = dataList.map((data) => ({
-      id: `calendar-${Date.now()}-${Math.floor(Math.random()*10000)}`,
-      title: `${data.etape || data.lieu} (${data.date})`,
-      details: `Tactique: ${data.tactique}\nInfos: ${data.infos}\nType: ${data.type} - ${data.lieu}`,
-      source: 'manual',
-      status: 'todo',
-      priority: 'moyenne',
-      category: 'courses',
-      createdAt: new Date().toISOString(),
-    }));
+    const newTodos: TodoItem[] = dataList
+      .map((data) => {
+        if (!data) return null; // Vérification si data est null
+        return {
+          id: `calendar-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+          title: `${data.etape || data.lieu} (${data.date})`,
+          details: `Tactique: ${data.tactique || ''}\nInfos: ${data.infos || ''}\nType: ${data.type || ''} - ${data.lieu || ''}`,
+          source: 'manual',
+          status: 'todo',
+          priority: 'moyenne',
+          category: 'courses',
+          createdAt: new Date().toISOString(),
+        } as TodoItem; // Forcer le typage ici
+      })
+      .filter((todo) => todo !== null) as TodoItem[]; // Filtrer et forcer le typage
     const todos = loadManualTodos();
     saveManualTodos([...newTodos, ...todos]);
     setSuccess(true);
@@ -83,7 +88,7 @@ const CalendarPage: React.FC = () => {
   // Gestion du statut (coché ou non)
   function handleToggleStatus(id: string) {
     setStatuses((current) => {
-      const next = { ...current, [id]: current[id] === 'done' ? 'todo' : 'done' };
+      const next: Record<string, "todo" | "done"> = { ...current, [id]: current[id] === 'done' ? 'todo' : 'done' };
       saveTodoStatuses(next);
       return next;
     });
@@ -136,7 +141,7 @@ const CalendarPage: React.FC = () => {
   }
 
   // Affichage des étapes déjà ajoutées (code couleur harmonisé)
-  function renderCalendarTodo(todo: TodoItem, idx: number) {
+  function renderCalendarTodo(todo: TodoItem) {
     const isDone = statuses[todo.id] === 'done';
     // Couleur bordure selon priorité/catégorie (comme todo)
     let borderColor = '#bdbdbd';
