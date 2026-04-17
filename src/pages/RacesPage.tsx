@@ -91,19 +91,33 @@ export default function RacesPage() {
       return;
     }
 
-    // Nouveau parser tableau + adaptation pour compatibilité UI
-    const parsedTable = parseRaceTable(rawText);
-    const parsed = adaptRaceTableToParsedRace(parsedTable);
-    setRaces([parsed]);
+    // Découpage en plusieurs tableaux (séparateur : 2 lignes vides ou plus)
+    const tableBlocks = rawText.split(/(?:\r?\n){2,}/).map(b => b.trim()).filter(Boolean);
+    const parsedRaces: ParsedRace[] = [];
+    const debugMessages: string[] = [];
+
+    tableBlocks.forEach((block, idx) => {
+      try {
+        const parsedTable = parseRaceTable(block);
+        const parsed = adaptRaceTableToParsedRace(parsedTable);
+        parsedRaces.push(parsed);
+        debugMessages.push(
+          `--- Course ${idx + 1} ---`,
+          ...parsed.summary,
+          `Profil détecté : ${parsed.detectedProfile}`,
+          `Type : course simple.`
+        );
+      } catch (e) {
+        debugMessages.push(`Erreur lors de l'analyse du tableau ${idx + 1} : ${(e as Error).message}`);
+      }
+    });
+
+    setRaces(parsedRaces);
     setMessages([
-      "================= DEBUG COURSE TABLEAU =================",
-      ...parsed.summary,
-      "================= FIN DEBUG ===================",
-      "Course analysée.",
-      `Profil détecté : ${parsed.detectedProfile}.`,
-      `Type : course simple.`,
+      `Nombre de courses détectées : ${parsedRaces.length}`,
+      ...debugMessages,
+      parsedRaces.length === 0 ? "Aucune course valide détectée." : "Analyse terminée."
     ]);
-    return;
   }
 
   // Analyse et réglages pour chaque étape
@@ -307,6 +321,13 @@ export default function RacesPage() {
       <div className="two-columns">
         <Card title="Import course ou mini-tour">
           <RaceImportBox onAnalyze={handleAnalyze} />
+          {messages.length > 0 && (
+            <div style={{ margin: "1em 0", color: "#2b2" }}>
+              {messages.map((msg, i) => (
+                <div key={i}>{msg}</div>
+              ))}
+            </div>
+          )}
           <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
             <button className="button" onClick={() => { setRaces([]); setGeneralSummary(""); }} type="button">Vider</button>
             <button className="button button-primary" onClick={handleAddToCalendar} type="button" disabled={!races.length}>Ajouter au calendrier</button>
