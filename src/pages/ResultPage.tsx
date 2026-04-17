@@ -37,7 +37,8 @@ export default function ResultPage() {
   }, []);
 
   function renderResultTable(result: string) {
-    // Parsing simple : split lines, split tab, ignore header
+    const teamName = "Kritoff Team"; // Nom de votre équipe
+
     const lines = result.trim().split(/\r?\n/);
     if (lines.length < 2) return <div className="muted">Aucun résultat collé.</div>;
     const headers = lines[0].split('\t');
@@ -48,11 +49,15 @@ export default function ResultPage() {
             <tr>{headers.map((h, i) => <th key={i}>{h}</th>)}</tr>
           </thead>
           <tbody>
-            {lines.slice(1).map((line, i) => (
-              <tr key={i}>
-                {line.split('\t').map((cell, j) => <td key={j}>{cell}</td>)}
-              </tr>
-            ))}
+            {lines.slice(1).map((line, i) => {
+              const cells = line.split('\t');
+              const isTeamRider = cells.includes(teamName); // Vérifie si le coureur appartient à votre équipe
+              return (
+                <tr key={i} style={isTeamRider ? { backgroundColor: '#d1e7dd', fontWeight: 'bold' } : {}}>
+                  {cells.map((cell, j) => <td key={j}>{cell}</td>)}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
