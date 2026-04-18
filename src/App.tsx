@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "./components/layout/AppLayout";
 import HomePage from "./pages/HomePage";
 import BeginnerGuidePage from "./pages/BeginnerGuidePage";
+import FAQPage from "./pages/FAQPage";
 import RosterPage from "./pages/RosterPage";
 import TrainingPage from "./pages/TrainingPage";
 import RacesPage from "./pages/RacesPage";
@@ -18,6 +19,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/guide" element={<BeginnerGuidePage />} />
+        <Route path="/faq" element={<FAQPage />} />
         <Route path="/effectif" element={<RosterPage />} />
         <Route path="/entrainement" element={<TrainingPage />} />
         <Route path="/courses" element={<RacesPage />} />

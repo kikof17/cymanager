@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 const links = [
   { to: "/", label: "Accueil" },
   { to: "/guide", label: "Guide débutant" },
+  { to: "/faq", label: "FAQ" },
   { to: "/effectif", label: "Effectif" },
   { to: "/entrainement", label: "Entraînement" },
   { to: "/courses", label: "Courses" },
