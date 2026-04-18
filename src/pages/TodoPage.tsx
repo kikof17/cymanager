@@ -129,6 +129,7 @@ export default function TodoPage() {
               stageRace: 0,
             },
             summary: [],
+            category: null,
           }
         : null,
       raceSetupCount,

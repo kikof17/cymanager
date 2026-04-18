@@ -92,6 +92,7 @@ export default function HomePage() {
         stageRace: 0,
       },
       summary: [],
+      category: null,
     };
   }, [raceSnapshot]);
 

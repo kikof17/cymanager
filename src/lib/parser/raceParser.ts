@@ -343,5 +343,6 @@ export function parseRaceText(input: string): ParsedRace {
     detectedProfile,
     weights,
     summary,
+    category: null,
   };
 }

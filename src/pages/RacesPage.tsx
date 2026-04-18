@@ -30,6 +30,7 @@ function adaptRaceTableToParsedRace(parsed: ParsedRaceTable): ParsedRace {
       `Terrain : ${parsed.terrain}`,
       `Difficulté : ${parsed.difficulte}`,
     ],
+    category: parsed.category,
   };
 }
 import { useState } from "react";
@@ -81,54 +82,107 @@ function getInitialRiders(): Rider[] {
   return storedRiders.length > 0 ? storedRiders : initialRiders;
 }
 
-function buildSetupMap(
+function detectRaceCategory(race: ParsedRace): "U21" | "U25" | "Pro" | null {
+  if (race.category) {
+    return race.category;
+  }
+
+  const haystacks = [race.name, race.rawText, ...(race.summary ?? [])]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  if (haystacks.includes("u21")) {
+    return "U21";
+  }
+
+  if (haystacks.includes("u25")) {
+    return "U25";
+  }
+
+  if (haystacks.includes("pro")) {
+    return "Pro";
+  }
+
+  return null;
+}
+
+function getBlockedYoungRidersInProRaces(
   races: ParsedRace[],
   riders: Rider[]
-): Record<string, Record<string, RiderRaceSetup>> {
-  const next: Record<string, Record<string, RiderRaceSetup>> = {};
+): Set<string> {
+  const blocked = new Set<string>();
   const proRaceIndices: number[] = races
-    .map((race, idx) => (race.name.toLowerCase().includes("pro") ? idx : -1))
+    .map((race, idx) => (detectRaceCategory(race) === "Pro" ? idx : -1))
     .filter((idx) => idx !== -1);
-  const u25u21InPro = new Set<string>();
 
   proRaceIndices.forEach((idx) => {
     const race = races[idx];
     const analysis = buildRaceAnalysis(riders, race);
     analysis.selected.forEach((rider) => {
       if (rider.riderCategory === "U25" || rider.riderCategory === "U21") {
-        u25u21InPro.add(rider.riderId);
+        blocked.add(rider.riderId);
       }
     });
   });
 
+  return blocked;
+}
+
+function filterRidersForRace(
+  race: ParsedRace,
+  riders: Rider[],
+  blockedYoungRiders: Set<string> = new Set()
+): Rider[] {
+  const raceCategory = detectRaceCategory(race);
+
+  if (raceCategory === "U25") {
+    return riders.filter(
+      (rider) =>
+        rider.category === "U25" &&
+        rider.ageYears >= 22 &&
+        rider.ageYears <= 25 &&
+        !blockedYoungRiders.has(rider.id)
+    );
+  }
+
+  if (raceCategory === "U21") {
+    return riders.filter(
+      (rider) =>
+        rider.category === "U21" &&
+        rider.ageYears <= 21 &&
+        !blockedYoungRiders.has(rider.id)
+    );
+  }
+
+  return riders;
+}
+
+function sanitizeSavedSetup(
+  saved: Record<string, RiderRaceSetup>,
+  selectedRiders: { riderId: string }[]
+): Record<string, RiderRaceSetup> {
+  const allowedIds = new Set(selectedRiders.map((rider) => rider.riderId));
+  return Object.fromEntries(
+    Object.entries(saved).filter(([riderId]) => allowedIds.has(riderId))
+  );
+}
+
+function buildSetupMap(
+  races: ParsedRace[],
+  riders: Rider[]
+): Record<string, Record<string, RiderRaceSetup>> {
+  const next: Record<string, Record<string, RiderRaceSetup>> = {};
+  const u25u21InPro = getBlockedYoungRidersInProRaces(races, riders);
+
   races.forEach((race) => {
-    let filteredRiders = riders;
-    const isU25 =
-      race.name.toLowerCase().includes("u25") ||
-      race.summary?.some((summaryLine) => summaryLine.toLowerCase().includes("u25"));
-    const isU21 =
-      race.name.toLowerCase().includes("u21") ||
-      race.summary?.some((summaryLine) => summaryLine.toLowerCase().includes("u21"));
-
-    if (isU25) {
-      filteredRiders = filteredRiders.filter(
-        (rider) =>
-          rider.category === "U25" &&
-          rider.ageYears >= 22 &&
-          rider.ageYears <= 25 &&
-          !u25u21InPro.has(rider.id)
-      );
-    } else if (isU21) {
-      filteredRiders = filteredRiders.filter(
-        (rider) => rider.category === "U21" && rider.ageYears <= 21 && !u25u21InPro.has(rider.id)
-      );
-    }
-
+    const filteredRiders = filterRidersForRace(race, riders, u25u21InPro);
     const analysis = buildRaceAnalysis(filteredRiders, race);
     const raceKey = buildRaceKey(race);
     const saved = loadRaceSetup(raceKey);
-    next[raceKey] = Object.keys(saved).length > 0
-      ? saved
+    const sanitizedSaved = sanitizeSavedSetup(saved, analysis.selected);
+    next[raceKey] = Object.keys(sanitizedSaved).length > 0
+      ? sanitizedSaved
       : buildDefaultRaceSetupMap(analysis.race, analysis.selected);
   });
 
@@ -141,18 +195,6 @@ export default function RacesPage() {
   const [messages, setMessages] = useState<string[]>([]);
   const [setupByRiderList, setSetupByRiderList] = useState<Record<string, Record<string, RiderRaceSetup>>>({}); // par étape
   const [generalSummary, setGeneralSummary] = useState<string>("");
-
-  // Filtrage spécial pour U25 : exclure U21 et >25 ans
-  function filterRidersForRace(race: ParsedRace, riders: Rider[]): Rider[] {
-    // Si le nom ou le résumé de la course contient U25, on filtre
-    const isU25 =
-      race.name.toLowerCase().includes("u25") ||
-      race.summary?.some((s) => s.toLowerCase().includes("u25"));
-    if (!isU25) return riders;
-    return riders.filter(
-      (r) => r.category === "U25" && r.ageYears >= 22 && r.ageYears <= 25
-    );
-  }
 
 
   function handleAnalyze(rawText: string) {
@@ -170,10 +212,12 @@ export default function RacesPage() {
       try {
         const parsedTable = parseRaceTable(block);
         const parsed = adaptRaceTableToParsedRace(parsedTable);
+        parsed.rawText = block;
         parsedRaces.push(parsed);
         debugMessages.push(
           `--- Course ${idx + 1} ---`,
           ...parsed.summary,
+          `Catégorie détectée : ${detectRaceCategory(parsed) ?? "Aucune"}`,
           `Profil détecté : ${parsed.detectedProfile}`,
           `Type : course simple.`
         );
@@ -265,7 +309,9 @@ export default function RacesPage() {
 
   function handleApplyDefaultPresets(raceIdx: number) {
     const race = races[raceIdx];
-    const analysis = buildRaceAnalysis(riders, race);
+    const blockedYoungRiders = getBlockedYoungRidersInProRaces(races, riders);
+    const filteredRiders = filterRidersForRace(race, riders, blockedYoungRiders);
+    const analysis = buildRaceAnalysis(filteredRiders, race);
     const raceKey = buildRaceKey(race);
     const newSetup = buildDefaultRaceSetupMap(analysis.race, analysis.selected);
     setSetupByRiderList((current) => ({
@@ -381,8 +427,8 @@ export default function RacesPage() {
 
       {/* Affichage de chaque étape */}
       {races.map((race, idx) => {
-        // Filtrage spécial U25
-        const filteredRiders = filterRidersForRace(race, riders);
+        const blockedYoungRiders = getBlockedYoungRidersInProRaces(races, riders);
+        const filteredRiders = filterRidersForRace(race, riders, blockedYoungRiders);
         const analysis = buildRaceAnalysis(filteredRiders, race);
         const raceKey = buildRaceKey(race);
         const setupByRider = setupByRiderList[raceKey] || {};

@@ -31,6 +31,7 @@ export type ParsedRace = {
   detectedProfile: RaceProfileType;
   weights: RaceProfileWeights;
   summary: string[];
+  category: 'U21' | 'U25' | 'Pro' | null;
 };
 
 export type RaceRole = "Leader" | "Équipier" | "Électron libre" | "Remplaçant";

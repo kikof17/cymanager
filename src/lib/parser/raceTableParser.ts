@@ -15,6 +15,7 @@ export type ParsedRaceTable = {
   terrain: string;
   difficulte: string;
   profil: 'Plaine' | 'Vallon' | 'Montagne' | 'CLM' | 'Pavé' | 'Mixte';
+  category: 'U21' | 'U25' | 'Pro' | null;
 };
 
 export function parseRaceTable(input: string): ParsedRaceTable {
@@ -29,6 +30,11 @@ export function parseRaceTable(input: string): ParsedRaceTable {
   }
   // Extraction des champs
   const name = data['nom'] || '';
+  // Extraction explicite de la catégorie depuis le nom
+  let category: 'U21' | 'U25' | 'Pro' | null = null;
+  if (/\bU21\b/i.test(name)) category = 'U21';
+  else if (/\bU25\b/i.test(name)) category = 'U25';
+  else if (/\bPro\b/i.test(name)) category = 'Pro';
   const date = data['date'] || '';
   const distanceKm = parseFloat((data['distance(km)'] || '').replace(/[^\d.]/g, '')) || 0;
   const elevation = parseInt((data['dénivelétotal(m)'] || '').replace(/[^\d]/g, '')) || 0;
@@ -72,5 +78,6 @@ export function parseRaceTable(input: string): ParsedRaceTable {
     terrain,
     difficulte,
     profil,
+    category,
   };
 }
