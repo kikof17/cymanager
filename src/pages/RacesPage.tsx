@@ -120,7 +120,7 @@ function buildSetupMap(
       );
     } else if (isU21) {
       filteredRiders = filteredRiders.filter(
-        (rider) => rider.category === "U21" && !u25u21InPro.has(rider.id)
+        (rider) => rider.category === "U21" && rider.ageYears <= 21 && !u25u21InPro.has(rider.id)
       );
     }
 
