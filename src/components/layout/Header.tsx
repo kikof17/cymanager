@@ -7,7 +7,7 @@ export default function Header() {
       </div>
 
       <div className="topbar-actions">
-        <span className="status-badge">V1 en construction</span>
+        <span className="status-badge">V1 en ligne</span>
       </div>
     </header>
   );

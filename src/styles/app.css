@@ -250,7 +250,7 @@ a {
   align-items: center;
   padding: 8px 12px;
   border-radius: 999px;
-  background: var(--primary-soft);
+  background: var(--success);
   color: #fff;
   font-weight: 600;
 }
