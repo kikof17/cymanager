@@ -268,6 +268,252 @@ select, select option {
   background: #2d3445;
   color: #dfe6f5;
 }
+
+.stats-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.stats-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.stats-kpi-grid-sport,
+.stats-kpi-grid-finance {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.stats-kpi-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stats-kpi-label {
+  color: #5f6f86;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.stats-kpi-value {
+  font-size: 1.7rem;
+  line-height: 1.1;
+  color: #38506f;
+}
+
+.stats-two-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.stats-list-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stats-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #556880;
+}
+
+.stats-progress-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #dbe7ff;
+}
+
+.stats-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2f6fe4 0%, #5ea4ff 100%);
+}
+
+.stats-progress-track-warm {
+  background: #f5e4cf;
+}
+
+.stats-progress-fill-warm {
+  background: linear-gradient(90deg, #c67a2f 0%, #e1a452 100%);
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.transfer-layout {
+  grid-template-columns: 1.05fr 0.95fr;
+}
+
+.transfer-import-form {
+  gap: 16px;
+}
+
+.transfer-form-grid {
+  align-items: end;
+}
+
+.transfer-table td {
+  vertical-align: top;
+}
+
+.transfer-row-blocked td {
+  background: #fde8e7;
+}
+
+.transfer-row-blocked.highlight-row td {
+  background: #f4b8b5 !important;
+  color: #5a1813;
+}
+
+.transfer-best-badge {
+  margin-top: 6px;
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f0e1c8;
+  color: #8b5a21;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.transfer-blocked-badge {
+  margin-top: 6px;
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #d94b3d;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.transfer-checkbox-line {
+  justify-content: center;
+  min-width: 92px;
+}
+
+.transfer-score-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #edf5ff;
+  border: 1px solid #cfe0ff;
+}
+
+.transfer-score-recommendation {
+  color: #365676;
+  font-size: 1.2rem;
+}
+
+.transfer-comparison-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.transfer-mini-card {
+  padding: 16px;
+}
+
+.transfer-mini-value {
+  font-size: 1.3rem;
+}
+
+.transfer-actions {
+  margin-bottom: 8px;
+}
+
+.transfer-selection-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.transfer-selection-card {
+  padding: 16px;
+}
+
+.transfer-selection-card-blocked {
+  border: 1px solid #e7b0ab;
+  background: #fff3f2;
+}
+
+.transfer-selection-lines {
+  gap: 6px;
+}
+
+.transfer-selection-warning {
+  margin: 0;
+  color: #a12b20;
+  font-weight: 600;
+}
+
+.transfer-selection-actions {
+  justify-content: space-between;
+}
+
+.roster-analysis-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.roster-analysis-layout {
+  grid-template-columns: 1fr 1fr;
+}
+
+.roster-analysis-mini-columns {
+  grid-template-columns: 1fr 1fr;
+}
+
+.empty-placeholder {
+  color: #677992;
+}
+
+@media (max-width: 1100px) {
+  .field-grid,
+  .roster-analysis-grid,
+  .stats-kpi-grid,
+  .stats-kpi-grid-sport,
+  .stats-kpi-grid-finance,
+  .stats-two-columns,
+  .transfer-comparison-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .field-grid,
+  .roster-analysis-grid,
+  .stats-kpi-grid,
+  .stats-kpi-grid-sport,
+  .stats-kpi-grid-finance,
+  .stats-two-columns,
+  .transfer-comparison-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-tabs {
+    flex-direction: column;
+  }
+}
 body {
   font-family: Inter, Arial, Helvetica, sans-serif;
   background: var(--bg);
@@ -287,6 +533,8 @@ a {
 }
 
 .sidebar {
+  display: flex;
+  flex-direction: column;
   border-right: 1px solid var(--border);
   background: var(--surface);
   padding: 24px 18px;
@@ -325,6 +573,26 @@ a {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.sidebar-clock {
+  margin-top: auto;
+  padding: 16px 14px 4px;
+  border-top: 1px solid var(--border);
+}
+
+.sidebar-clock-time {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.sidebar-clock-date {
+  margin: 4px 0 0;
+  color: var(--text-soft);
+  font-size: 0.9rem;
+  text-transform: capitalize;
 }
 
 .nav-link {

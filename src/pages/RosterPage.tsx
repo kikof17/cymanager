@@ -1,15 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
 import Card from "../components/common/Card";
 import PageTitle from "../components/common/PageTitle";
-import RiderCard from "../components/roster/RiderCard";
+import RosterAnalysisPanel from "../components/roster/RosterAnalysisPanel";
 import RiderTable from "../components/roster/RiderTable";
 import RosterImportBox from "../components/roster/RosterImportBox";
 import RosterStats from "../components/roster/RosterStats";
 import type { Rider } from "../types/rider";
+import {
+  getAvailableHistoryWeeks,
+  getFinanceSnapshot,
+  getRecentPrizeIncomeByRider,
+} from "../lib/storage/financeStorage";
 import { loadRidersFromStorage, saveRidersToStorage } from "../lib/storage/localStorage";
+import { loadClubSettings } from "../lib/storage/settingsStorage";
+import { loadTeamStrategy, saveTeamStrategy } from "../lib/storage/teamStrategyStorage";
 import { mergeRidersByName, parseRosterText } from "../lib/parser/rosterParser";
 import { initialRiders } from "../store/initialState";
-import { buildRiderProfiles } from "../lib/scoring/riderProfile";
+import type { TeamBuildingStrategy } from "../types/teamStrategy";
 
 function getInitialRiders(): Rider[] {
   const storedRiders = loadRidersFromStorage();
@@ -21,6 +28,18 @@ export default function RosterPage() {
   const [riders, setRiders] = useState<Rider[]>(getInitialRiders);
   const [messages, setMessages] = useState<string[]>([]);
   const [filter, setFilter] = useState("");
+  const [teamStrategy, setTeamStrategy] = useState<TeamBuildingStrategy>(loadTeamStrategy);
+
+  const settings = useMemo(() => loadClubSettings(), []);
+  const financeSnapshot = useMemo(() => getFinanceSnapshot(settings, riders), [settings, riders]);
+  const recentPrizeIncomeByRider = useMemo(
+    () => getRecentPrizeIncomeByRider(financeSnapshot.state),
+    [financeSnapshot.state]
+  );
+  const availableHistoryWeeks = useMemo(
+    () => getAvailableHistoryWeeks(financeSnapshot.state),
+    [financeSnapshot.state]
+  );
 
   useEffect(() => {
     if (riders.length > 0) {
@@ -69,13 +88,10 @@ export default function RosterPage() {
     });
   }, [riders, filter]);
 
-  const profiles = useMemo(() => buildRiderProfiles(filteredRiders), [filteredRiders]);
-
-  const profileMap = useMemo(() => {
-    return new Map(profiles.map((profile) => [profile.riderId, profile]));
-  }, [profiles]);
-
-  const featuredRiders = filteredRiders.slice(0, 4);
+  function handleStrategyChange(nextStrategy: TeamBuildingStrategy) {
+    const normalized = saveTeamStrategy(nextStrategy);
+    setTeamStrategy(normalized);
+  }
 
   return (
     <div className="page-stack">
@@ -85,6 +101,21 @@ export default function RosterPage() {
       />
 
       <RosterStats riders={riders} />
+
+      <Card title={`Liste des coureurs (${filteredRiders.length})`}>
+        <RiderTable riders={filteredRiders} onDelete={handleDelete} />
+      </Card>
+
+      <RosterAnalysisPanel
+        riders={riders}
+        settings={settings}
+        currentBalance={financeSnapshot.currentBalance}
+        weeklyFixedCosts={financeSnapshot.weeklyFixedCosts}
+        recentPrizeIncomeByRider={recentPrizeIncomeByRider}
+        availableHistoryWeeks={availableHistoryWeeks}
+        strategy={teamStrategy}
+        onStrategyChange={handleStrategyChange}
+      />
 
       <div className="two-columns">
         <Card title="Import brut">
@@ -135,25 +166,6 @@ export default function RosterPage() {
         </Card>
       </div>
 
-      <Card title="Profils automatiques">
-        <div className="profile-card-grid">
-          {featuredRiders.length > 0 ? (
-            featuredRiders.map((rider) => (
-              <RiderCard
-                key={rider.id}
-                rider={rider}
-                profile={profileMap.get(rider.id)}
-              />
-            ))
-          ) : (
-            <p>Aucun coureur à afficher.</p>
-          )}
-        </div>
-      </Card>
-
-      <Card title={`Liste des coureurs (${filteredRiders.length})`}>
-        <RiderTable riders={filteredRiders} onDelete={handleDelete} />
-      </Card>
     </div>
   );
 }

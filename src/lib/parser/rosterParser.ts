@@ -7,6 +7,7 @@ type ParsedRosterResult = {
 };
 
 const labelMap: Record<string, keyof Rider | "age" | "name" | "ignore"> = {
+  Equipe: "currentTeam",
   Valeur: "value",
   Salaire: "salaryWeekly",
   Nationalité: "nationality",
@@ -40,10 +41,19 @@ function slugifyName(name: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+function normalizeRiderName(rawName: string): string {
+  return rawName
+    .replace(/\s*-\s*Informations générales\s*$/i, "")
+    .trim();
+}
+
 function createEmptyRider(name: string): Rider {
+  const normalizedName = normalizeRiderName(name);
+
   return {
-    id: slugifyName(name),
-    name,
+    id: slugifyName(normalizedName),
+    name: normalizedName,
+    currentTeam: "",
     value: 0,
     salaryWeekly: 0,
     nationality: "",
@@ -109,15 +119,42 @@ function isLikelyRiderName(line: string): boolean {
     return false;
   }
 
+  if (/^Informations générales$/i.test(line.trim())) {
+    return false;
+  }
+
   return true;
 }
 
 function splitIntoBlocks(input: string): string[] {
-  return input
-    .trim()
-    .split(/\n\s*\n/g)
-    .map((block) => block.trim())
-    .filter(Boolean);
+  const lines = input.replace(/\r/g, "").split("\n");
+  const blocks: string[] = [];
+  let currentBlock: string[] = [];
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+
+    if (!line) {
+      if (currentBlock.length > 0) {
+        currentBlock.push("");
+      }
+      continue;
+    }
+
+    if (isLikelyRiderName(line) && currentBlock.length > 0) {
+      blocks.push(currentBlock.join("\n").trim());
+      currentBlock = [line];
+      continue;
+    }
+
+    currentBlock.push(line);
+  }
+
+  if (currentBlock.length > 0) {
+    blocks.push(currentBlock.join("\n").trim());
+  }
+
+  return blocks.filter(Boolean);
 }
 
 function extractPairs(block: string): Array<[string, string]> {
@@ -194,7 +231,7 @@ function parseRiderBlock(block: string, index: number): Rider | null {
       continue;
     }
 
-    if (mapped === "nationality" || mapped === "injury") {
+    if (mapped === "currentTeam" || mapped === "nationality" || mapped === "injury") {
       rider[mapped] = value;
       continue;
     }

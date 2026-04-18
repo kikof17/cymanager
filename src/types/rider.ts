@@ -3,6 +3,7 @@ export type RiderCategory = "Pro" | "U25" | "U21";
 export type Rider = {
   id: string;
   name: string;
+  currentTeam?: string;
   value: number;
   salaryWeekly: number;
   nationality: string;

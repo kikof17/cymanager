@@ -10,6 +10,8 @@ import TodoPage from "./pages/TodoPage";
 import SettingsPage from "./pages/SettingsPage";
 import RankingPage from "./pages/RankingPage";
 import FinancePage from "./pages/FinancePage";
+import StatisticsPage from "./pages/StatisticsPage";
+import TransfersPage from "./pages/TransfersPage";
 
 import CalendarPage from "./pages/CalendarPage";
 import ResultPage from "./pages/ResultPage";
@@ -22,6 +24,7 @@ export default function App() {
         <Route path="/guide" element={<BeginnerGuidePage />} />
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/effectif" element={<RosterPage />} />
+        <Route path="/transferts" element={<TransfersPage />} />
         <Route path="/entrainement" element={<TrainingPage />} />
         <Route path="/courses" element={<RacesPage />} />
         <Route path="/todo" element={<TodoPage />} />
@@ -29,6 +32,7 @@ export default function App() {
         <Route path="/calendrier" element={<CalendarPage />} />
         <Route path="/resultats" element={<ResultPage />} />
         <Route path="/classement" element={<RankingPage />} />
+        <Route path="/statistiques" element={<StatisticsPage />} />
         <Route path="/finance" element={<FinancePage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -564,3 +564,72 @@ export function getFinanceSnapshot(settings: ClubSettings, riders: Rider[]) {
     prizeTables: PRIZE_REFERENCE_TABLES,
   };
 }
+
+function isEntryRecent(entry: FinanceEntry, withinDays: number): boolean {
+  const entryTime = new Date(entry.occurredAt).getTime();
+
+  if (Number.isNaN(entryTime)) {
+    return false;
+  }
+
+  const windowStart = Date.now() - withinDays * 24 * 60 * 60 * 1000;
+  return entryTime >= windowStart;
+}
+
+function extractRiderNameFromRacePrizeLabel(label: string): string | null {
+  if (!label.startsWith("Prime course - ")) {
+    return null;
+  }
+
+  const withoutPrefix = label.slice("Prime course - ".length);
+  const separatorIndex = withoutPrefix.lastIndexOf(" - ");
+
+  if (separatorIndex <= 0) {
+    return null;
+  }
+
+  return withoutPrefix.slice(0, separatorIndex).trim() || null;
+}
+
+export function getRecentPrizeIncomeByRider(
+  state: FinanceState,
+  withinDays = 7
+): Record<string, number> {
+  const totals: Record<string, number> = {};
+
+  state.entries
+    .filter(
+      (entry) =>
+        entry.category === "race-prize" &&
+        entry.amount > 0 &&
+        isEntryRecent(entry, withinDays)
+    )
+    .forEach((entry) => {
+      const riderName = extractRiderNameFromRacePrizeLabel(entry.label);
+
+      if (!riderName) {
+        return;
+      }
+
+      const key = normalizeComparable(riderName);
+      totals[key] = (totals[key] ?? 0) + entry.amount;
+    });
+
+  return totals;
+}
+
+export function getAvailableHistoryWeeks(state: FinanceState): number {
+  const timestamps = state.entries
+    .map((entry) => new Date(entry.occurredAt).getTime())
+    .filter((value) => !Number.isNaN(value));
+
+  if (timestamps.length === 0) {
+    return 1;
+  }
+
+  const oldestTimestamp = Math.min(...timestamps);
+  const elapsedMs = Math.max(0, Date.now() - oldestTimestamp);
+  const elapsedWeeks = Math.floor(elapsedMs / (7 * 24 * 60 * 60 * 1000));
+
+  return elapsedWeeks + 1;
+}
