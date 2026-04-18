@@ -247,10 +247,15 @@ export default function RacesPage() {
     const race = races[raceIdx];
     const analysis = buildRaceAnalysis(riders, race);
     const raceKey = buildRaceKey(race);
+    const newSetup = buildDefaultRaceSetupMap(analysis.race, analysis.selected);
     setSetupByRiderList((current) => ({
       ...current,
-      [raceKey]: buildDefaultRaceSetupMap(analysis.race, analysis.selected),
+      [raceKey]: newSetup,
     }));
+    // Sauvegarde dans le localStorage pour écraser l'ancien setup
+    import("../lib/storage/raceStorage").then(({ saveRaceSetup }) => {
+      saveRaceSetup(raceKey, newSetup);
+    });
     setMessages((current) => [
       `Réglages automatiques réappliqués pour l'étape ${raceIdx + 1}.`,
       ...current,
