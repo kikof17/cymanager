@@ -32,7 +32,7 @@ function adaptRaceTableToParsedRace(parsed: ParsedRaceTable): ParsedRace {
     ],
   };
 }
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Card from "../components/common/Card";
 import PageTitle from "../components/common/PageTitle";
 import OdcPresetSelector from "../components/races/OdcPresetSelector";
@@ -43,7 +43,7 @@ import TeamSelectionTable from "../components/races/TeamSelectionTable";
 import { parseRaceTable } from "../lib/parser/raceTableParser";
 import { buildDefaultRaceSetupMap } from "../lib/scoring/odcScores";
 import { buildRaceAnalysis } from "../lib/scoring/raceScores";
-import { loadRaceSetup } from "../lib/storage/raceStorage";
+import { loadRaceSetup, saveRaceSetup } from "../lib/storage/raceStorage";
 import { loadRidersFromStorage } from "../lib/storage/localStorage";
 import { initialRiders } from "../store/initialState";
 import { saveManualTodos, loadManualTodos } from "../lib/storage/todoStorage";
@@ -51,6 +51,22 @@ import { saveCalendarRaceProfile } from "../lib/storage/calendarRaceProfile";
 import type { TodoItem } from "../types/todo";
 import type { ParsedRace, RaceRole, RiderRaceSetup } from "../types/race";
 import type { Rider } from "../types/rider";
+
+type StoredRaceSetupMap = Record<string, Record<string, RiderRaceSetup>>;
+
+function loadStoredRaceSetups(): StoredRaceSetupMap {
+  try {
+    const raw = localStorage.getItem('cymanager:race-setup');
+    if (!raw) return {};
+
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return {};
+
+    return parsed as StoredRaceSetupMap;
+  } catch {
+    return {};
+  }
+}
 
 function buildRaceKey(race: ParsedRace | null): string {
   if (!race) {
@@ -60,17 +76,71 @@ function buildRaceKey(race: ParsedRace | null): string {
   return `${race.name}::${race.raceType}::${race.distanceKm}::${race.detectedProfile}`;
 }
 
+function getInitialRiders(): Rider[] {
+  const storedRiders = loadRidersFromStorage();
+  return storedRiders.length > 0 ? storedRiders : initialRiders;
+}
+
+function buildSetupMap(
+  races: ParsedRace[],
+  riders: Rider[]
+): Record<string, Record<string, RiderRaceSetup>> {
+  const next: Record<string, Record<string, RiderRaceSetup>> = {};
+  const proRaceIndices: number[] = races
+    .map((race, idx) => (race.name.toLowerCase().includes("pro") ? idx : -1))
+    .filter((idx) => idx !== -1);
+  const u25u21InPro = new Set<string>();
+
+  proRaceIndices.forEach((idx) => {
+    const race = races[idx];
+    const analysis = buildRaceAnalysis(riders, race);
+    analysis.selected.forEach((rider) => {
+      if (rider.riderCategory === "U25" || rider.riderCategory === "U21") {
+        u25u21InPro.add(rider.riderId);
+      }
+    });
+  });
+
+  races.forEach((race) => {
+    let filteredRiders = riders;
+    const isU25 =
+      race.name.toLowerCase().includes("u25") ||
+      race.summary?.some((summaryLine) => summaryLine.toLowerCase().includes("u25"));
+    const isU21 =
+      race.name.toLowerCase().includes("u21") ||
+      race.summary?.some((summaryLine) => summaryLine.toLowerCase().includes("u21"));
+
+    if (isU25) {
+      filteredRiders = filteredRiders.filter(
+        (rider) =>
+          rider.category === "U25" &&
+          rider.ageYears >= 22 &&
+          rider.ageYears <= 25 &&
+          !u25u21InPro.has(rider.id)
+      );
+    } else if (isU21) {
+      filteredRiders = filteredRiders.filter(
+        (rider) => rider.category === "U21" && !u25u21InPro.has(rider.id)
+      );
+    }
+
+    const analysis = buildRaceAnalysis(filteredRiders, race);
+    const raceKey = buildRaceKey(race);
+    const saved = loadRaceSetup(raceKey);
+    next[raceKey] = Object.keys(saved).length > 0
+      ? saved
+      : buildDefaultRaceSetupMap(analysis.race, analysis.selected);
+  });
+
+  return next;
+}
+
 export default function RacesPage() {
-  const [riders, setRiders] = useState<Rider[]>([]);
+  const [riders] = useState<Rider[]>(getInitialRiders);
   const [races, setRaces] = useState<ParsedRace[]>([]); // Plusieurs étapes
   const [messages, setMessages] = useState<string[]>([]);
   const [setupByRiderList, setSetupByRiderList] = useState<Record<string, Record<string, RiderRaceSetup>>>({}); // par étape
   const [generalSummary, setGeneralSummary] = useState<string>("");
-
-  useEffect(() => {
-    const storedRiders = loadRidersFromStorage();
-    setRiders(storedRiders.length > 0 ? storedRiders : initialRiders);
-  }, []);
 
   // Filtrage spécial pour U25 : exclure U21 et >25 ans
   function filterRidersForRace(race: ParsedRace, riders: Rider[]): Rider[] {
@@ -113,63 +183,13 @@ export default function RacesPage() {
     });
 
     setRaces(parsedRaces);
+    setSetupByRiderList(buildSetupMap(parsedRaces, riders));
     setMessages([
       `Nombre de courses détectées : ${parsedRaces.length}`,
       ...debugMessages,
       parsedRaces.length === 0 ? "Aucune course valide détectée." : "Analyse terminée."
     ]);
   }
-
-  // Analyse et réglages pour chaque étape
-  useEffect(() => {
-    const next: Record<string, Record<string, RiderRaceSetup>> = {};
-    // 1. Identifier les coureurs U25/U21 ayant fait une course Pro
-    const proRaceIndices: number[] = races
-      .map((race, idx) =>
-        race.name.toLowerCase().includes("pro") ? idx : -1
-      )
-      .filter(idx => idx !== -1);
-    // Set des IDs de U25/U21 ayant couru en Pro
-    const u25u21InPro = new Set<string>();
-    proRaceIndices.forEach(idx => {
-      const race = races[idx];
-      const analysis = buildRaceAnalysis(riders, race);
-      analysis.selected.forEach(r => {
-        if (r.riderCategory === "U25" || r.riderCategory === "U21") {
-          u25u21InPro.add(r.riderId);
-        }
-      });
-    });
-    // 2. Pour chaque course, appliquer la règle d'exclusion
-    races.forEach((race) => {
-      let filteredRiders = riders;
-      // Filtrage spécial U25
-      const isU25 =
-        race.name.toLowerCase().includes("u25") ||
-        race.summary?.some((s) => s.toLowerCase().includes("u25"));
-      const isU21 =
-        race.name.toLowerCase().includes("u21") ||
-        race.summary?.some((s) => s.toLowerCase().includes("u21"));
-      if (isU25) {
-        filteredRiders = filteredRiders.filter(
-          (r) => r.category === "U25" && r.ageYears >= 22 && r.ageYears <= 25 && !u25u21InPro.has(r.id)
-        );
-      } else if (isU21) {
-        filteredRiders = filteredRiders.filter(
-          (r) => r.category === "U21" && !u25u21InPro.has(r.id)
-        );
-      }
-      // Pour les autres courses, filtrage normal
-      const analysis = buildRaceAnalysis(filteredRiders, race);
-      const raceKey = buildRaceKey(race);
-      const saved = loadRaceSetup(raceKey);
-      const hasSaved = Object.keys(saved).length > 0;
-      next[raceKey] = hasSaved
-        ? saved
-        : buildDefaultRaceSetupMap(analysis.race, analysis.selected);
-    });
-    setSetupByRiderList(next);
-  }, [races, riders]);
 
   function handleRoleChange(raceIdx: number, riderId: string, role: Exclude<RaceRole, "Remplaçant">) {
     const race = races[raceIdx];
@@ -253,9 +273,7 @@ export default function RacesPage() {
       [raceKey]: newSetup,
     }));
     // Sauvegarde dans le localStorage pour écraser l'ancien setup
-    import("../lib/storage/raceStorage").then(({ saveRaceSetup }) => {
-      saveRaceSetup(raceKey, newSetup);
-    });
+    saveRaceSetup(raceKey, newSetup);
     setMessages((current) => [
       `Réglages automatiques réappliqués pour l'étape ${raceIdx + 1}.`,
       ...current,
@@ -270,7 +288,7 @@ export default function RacesPage() {
       // Recherche de la date si possible (depuis rawText ou summary)
       let date = '';
       if (race.rawText) {
-        const m = race.rawText.match(/Date\s*\|\s*([\d/\-]+)/i);
+        const m = race.rawText.match(/Date\s*\|\s*([\d/-]+)/i);
         if (m) date = m[1];
       }
       if (!date && race.summary) {
@@ -294,9 +312,7 @@ export default function RacesPage() {
     });
     // Sauvegarder la tactique (ODC) courante ET le profil de course pour chaque course dans le localStorage
     try {
-      const raw = localStorage.getItem('cymanager:race-setup');
-      let allSetups: { [key: string]: any } = {};
-      if (raw) allSetups = JSON.parse(raw);
+      const allSetups = loadStoredRaceSetups();
       races.forEach((race) => {
         const raceKey = buildRaceKey(race);
         const setup = setupByRiderList[raceKey];
@@ -307,7 +323,9 @@ export default function RacesPage() {
         }
       });
       localStorage.setItem('cymanager:race-setup', JSON.stringify(allSetups));
-    } catch {}
+    } catch (error) {
+      console.error('Erreur de sauvegarde des réglages de course', error);
+    }
     const existing = loadManualTodos();
     saveManualTodos([...todos, ...existing]);
     setMessages((msgs) => [

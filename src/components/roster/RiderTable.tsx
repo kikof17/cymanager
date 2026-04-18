@@ -8,6 +8,8 @@ type RiderTableProps = {
   onDelete: (riderId: string) => void;
 };
 
+type SortableRiderValue = string | number;
+
 
 export default function RiderTable({ riders, onDelete }: RiderTableProps) {
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
@@ -51,11 +53,11 @@ export default function RiderTable({ riders, onDelete }: RiderTableProps) {
   ];
 
   // Tri
-  let sortedRiders = [...riders];
+  const sortedRiders = [...riders];
   if (sortConfig) {
     sortedRiders.sort((a, b) => {
-      let aValue: any;
-      let bValue: any;
+      let aValue: SortableRiderValue | undefined;
+      let bValue: SortableRiderValue | undefined;
       if (sortConfig.key === "age") {
         aValue = a.ageYears * 100 + a.ageWeeks;
         bValue = b.ageYears * 100 + b.ageWeeks;

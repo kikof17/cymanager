@@ -22,7 +22,7 @@ export function parseRaceTable(input: string): ParsedRaceTable {
   const lines = input.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
   const data: Record<string, string> = {};
   for (const line of lines) {
-    const match = line.match(/^([\wÀ-ÿ\s\(\)]+)\s*\|\s*(.+)$/);
+    const match = line.match(/^([\wÀ-ÿ\s()]+)\s*\|\s*(.+)$/);
     if (match) {
       data[match[1].toLowerCase().replace(/\s+/g, '')] = match[2].trim();
     }

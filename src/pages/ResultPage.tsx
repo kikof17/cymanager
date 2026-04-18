@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Card from '../components/common/Card';
 import PageTitle from '../components/common/PageTitle';
 import { loadManualTodos } from '../lib/storage/todoStorage';
@@ -27,20 +27,14 @@ function loadResults(): ResultMap {
   }
 }
 
-export default function ResultPage() {
-  const [courses, setCourses] = useState<TodoItem[]>([]);
-  const [results, setResults] = useState<ResultMap>({});
-  const [selectedCourseId, setSelectedCourseId] = useState<string>("");
+function loadCourses(): TodoItem[] {
+  return loadManualTodos().filter((todo) => todo.id.startsWith('calendar-'));
+}
 
-  useEffect(() => {
-    const all = loadManualTodos();
-    const filtered = all.filter((t) => t.id.startsWith('calendar-'));
-    setCourses(filtered);
-    setResults(loadResults());
-    if (filtered.length > 0 && !selectedCourseId) {
-      setSelectedCourseId(filtered[0].id);
-    }
-  }, []);
+export default function ResultPage() {
+  const [courses] = useState<TodoItem[]>(loadCourses);
+  const [results] = useState<ResultMap>(loadResults);
+  const [selectedCourseId, setSelectedCourseId] = useState<string>(() => loadCourses()[0]?.id ?? '');
 
   function renderResultTable(result: string | { result: string }) {
     const teamName = "Kritoff Team"; // Nom de votre équipe

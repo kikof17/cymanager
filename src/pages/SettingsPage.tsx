@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Card from "../components/common/Card";
 import PageTitle from "../components/common/PageTitle";
 import ClubSettingsForm from "../components/settings/ClubSettingsForm";
@@ -44,14 +44,13 @@ function normalizeForForm(settings: ClubSettings): ClubSettings {
   return next;
 }
 
-export default function SettingsPage() {
-  const [settings, setSettings] = useState<ClubSettings>(defaultClubSettings);
-  const [message, setMessage] = useState("Paramètres chargés.");
+function getInitialSettings(): ClubSettings {
+  return normalizeForForm(loadClubSettings());
+}
 
-  useEffect(() => {
-    const loaded = loadClubSettings();
-    setSettings(normalizeForForm(loaded));
-  }, []);
+export default function SettingsPage() {
+  const [settings, setSettings] = useState<ClubSettings>(getInitialSettings);
+  const [message, setMessage] = useState("Paramètres chargés.");
 
   function handleChange(next: ClubSettings) {
     setSettings(next);

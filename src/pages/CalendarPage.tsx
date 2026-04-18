@@ -1,30 +1,69 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Card from '../components/common/Card';
 import PageTitle from '../components/common/PageTitle';
 import RaceSetupTable from '../components/races/RaceSetupTable';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { getRiderStrengths } from '../lib/scoring/strengths';
 import { loadCalendarRaceProfile } from '../lib/storage/calendarRaceProfile';
+import type { StoredResult } from '../lib/scoring/extractPoints';
 
 import { saveManualTodos, loadManualTodos, loadTodoStatuses, saveTodoStatuses } from '../lib/storage/todoStorage';
+import type { RaceRiderScore, RiderRaceSetup } from '../types/race';
 import type { TodoItem } from '../types/todo';
+import type { Rider } from '../types/rider';
+
+type StoredRaceSetupMap = Record<string, Record<string, RiderRaceSetup>>;
+
+function loadStoredResults(): Record<string, StoredResult> {
+  try {
+    const raw = localStorage.getItem('cymanager:results');
+    if (!raw) return {};
+
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return {};
+
+    return parsed as Record<string, StoredResult>;
+  } catch {
+    return {};
+  }
+}
+
+function loadStoredRiders(): Rider[] {
+  try {
+    const raw = localStorage.getItem('cymanager:riders');
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as Rider[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function loadStoredRaceSetups(): StoredRaceSetupMap {
+  try {
+    const raw = localStorage.getItem('cymanager:race-setup');
+    if (!raw) return {};
+
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return {};
+
+    return parsed as StoredRaceSetupMap;
+  } catch {
+    return {};
+  }
+}
 
 
 const CalendarPage: React.FC = () => {
   // Hooks inutilisés supprimés (input, parsedList, success)
-  const [addedCount] = useState(0);
-  const [calendarTodos, setCalendarTodos] = useState<TodoItem[]>([]);
-  const [statuses, setStatuses] = useState<Record<string, 'todo' | 'done'>>({});
+  const [calendarTodos, setCalendarTodos] = useState<TodoItem[]>(() =>
+    loadManualTodos().filter((todo) => todo.id.startsWith('calendar-'))
+  );
+  const [statuses, setStatuses] = useState<Record<string, 'todo' | 'done'>>(loadTodoStatuses);
 
   // Parsing multi-lignes
   // parseLines supprimé (plus utilisé)
-
-  // Charger les todos "calendar" existants
-  useEffect(() => {
-    const all = loadManualTodos();
-    setCalendarTodos(all.filter((t) => t.id.startsWith('calendar-')));
-    setStatuses(loadTodoStatuses());
-  }, [addedCount]);
 
   // handleParse et handleCreateTodos supprimés (plus utilisés)
 
@@ -76,16 +115,11 @@ const CalendarPage: React.FC = () => {
   function handleSaveResult() {
     if (resultModalId) {
       // Sauvegarde dans localStorage
-      const RESULT_KEY = 'cymanager:results';
-      let map: Record<string, any> = {};
-      try {
-        const raw = localStorage.getItem(RESULT_KEY);
-        if (raw) map = JSON.parse(raw);
-      } catch {}
+      const map = loadStoredResults();
       const course = calendarTodos.find(t => t.id === resultModalId);
       const category = detectCourseCategory(course?.title || "");
       map[resultModalId] = { result: resultInput, category };
-      localStorage.setItem(RESULT_KEY, JSON.stringify(map));
+      localStorage.setItem('cymanager:results', JSON.stringify(map));
     }
     setResultModalId(null);
     setResultInput('');
@@ -106,26 +140,18 @@ const CalendarPage: React.FC = () => {
     let odcContent: React.ReactNode = null;
     try {
       const raceKey = todo.raceKey;
-      const raw = localStorage.getItem('cymanager:race-setup');
-      const rawRiders = localStorage.getItem('cymanager:riders');
-      let ridersArr: any[] = [];
-      if (rawRiders) {
-        try {
-          const arr = JSON.parse(rawRiders);
-          if (Array.isArray(arr)) ridersArr = arr;
-        } catch {}
-      }
-      if (raw && raceKey) {
-        const allSetups = JSON.parse(raw);
+      const allSetups = loadStoredRaceSetups();
+      const ridersArr = loadStoredRiders();
+      if (raceKey) {
         const setup = allSetups[raceKey];
         if (setup) {
           // Charger le vrai profil de course (ParsedRace) pour cette étape
           const raceProfile = loadCalendarRaceProfile(raceKey);
-          const ridersForTable = Object.values(setup).map((r: any) => {
+          const ridersForTable: RaceRiderScore[] = Object.values(setup).map((r) => {
             const rider = ridersArr.find(rr => rr.id === r.riderId);
             return {
               riderId: r.riderId,
-              riderName: rider?.name || r.riderName || r.riderId,
+              riderName: rider?.name || r.riderId,
               riderForm: rider?.form ?? 0,
               riderCategory: rider?.category ?? '',
               score: raceProfile && rider ? (
@@ -173,7 +199,9 @@ const CalendarPage: React.FC = () => {
           );
         }
       }
-    } catch {}
+    } catch (error) {
+      console.error('Erreur de chargement de la tactique de course', error);
+    }
 
     return (
       <div

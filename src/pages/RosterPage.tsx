@@ -11,21 +11,16 @@ import { mergeRidersByName, parseRosterText } from "../lib/parser/rosterParser";
 import { initialRiders } from "../store/initialState";
 import { buildRiderProfiles } from "../lib/scoring/riderProfile";
 
+function getInitialRiders(): Rider[] {
+  const storedRiders = loadRidersFromStorage();
+
+  return storedRiders.length > 0 ? storedRiders : initialRiders;
+}
+
 export default function RosterPage() {
-  const [riders, setRiders] = useState<Rider[]>([]);
+  const [riders, setRiders] = useState<Rider[]>(getInitialRiders);
   const [messages, setMessages] = useState<string[]>([]);
   const [filter, setFilter] = useState("");
-
-  useEffect(() => {
-    const storedRiders = loadRidersFromStorage();
-
-    if (storedRiders.length > 0) {
-      setRiders(storedRiders);
-      return;
-    }
-
-    setRiders(initialRiders);
-  }, []);
 
   useEffect(() => {
     if (riders.length > 0) {

@@ -1,134 +1,130 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import PageTitle from "../components/common/PageTitle";
 import Card from "../components/common/Card";
 import { extractPointsFromResults, getAllResultsFromStorage } from "../lib/scoring/extractPoints";
 import { loadClubSettings } from "../lib/storage/settingsStorage";
-import type { RiderPoints } from "../lib/scoring/extractPoints";
+import type { RiderPoints, StoredResult } from "../lib/scoring/extractPoints";
 import { loadManualTodos } from "../lib/storage/todoStorage";
 import type { TodoItem } from "../types/todo";
-function RankingPage() {
-  function detectCourseCategory(title: string): "u25" | "u21" | "pro" {
-    if (/u25/i.test(title)) return "u25";
-    if (/u21/i.test(title)) return "u21";
-    return "pro";
+
+type TeamPoints = { team: string; points: number };
+type Divisions = { pro: string; u25: string; u21: string };
+type RankingData = {
+  divisions: Divisions;
+  pro: RiderPoints[];
+  u25: RiderPoints[];
+  u21: RiderPoints[];
+  proTeams: TeamPoints[];
+  u25Teams: TeamPoints[];
+  u21Teams: TeamPoints[];
+};
+
+function detectCourseCategory(title: string): "u25" | "u21" | "pro" {
+  if (/u25/i.test(title)) return "u25";
+  if (/u21/i.test(title)) return "u21";
+  return "pro";
+}
+
+function persistResults(results: Record<string, StoredResult>) {
+  try {
+    localStorage.setItem("cymanager:results", JSON.stringify(results));
+  } catch (error) {
+    console.error("Erreur d'écriture localStorage résultats", error);
+  }
+}
+
+function aggregateTeams(arr: RiderPoints[]): TeamPoints[] {
+  const map = new Map<string, number>();
+  arr.forEach(({ team, points }) => {
+    if (!team) return;
+    map.set(team, (map.get(team) || 0) + points);
+  });
+
+  return Array.from(map.entries())
+    .map(([team, points]) => ({ team, points }))
+    .sort((a, b) => b.points - a.points);
+}
+
+function buildRankingData(): RankingData {
+  const results = getAllResultsFromStorage();
+  const settings = loadClubSettings();
+  const divisions: Divisions = {
+    pro: settings.divisionPro,
+    u25: settings.divisionU25,
+    u21: settings.divisionU21,
+  };
+  const todos: TodoItem[] = loadManualTodos().filter((todo) => todo.id.startsWith("calendar-"));
+  const courseTitles: Record<string, string> = {};
+  todos.forEach((todo) => {
+    courseTitles[todo.id] = todo.title;
+  });
+
+  let shouldPersist = false;
+  Object.keys(results).forEach((courseId) => {
+    if (!todos.some((todo) => todo.id === courseId)) {
+      delete results[courseId];
+      shouldPersist = true;
+    }
+  });
+
+  Object.entries(results).forEach(([courseId, stored]) => {
+    if (typeof stored === "string") {
+      results[courseId] = {
+        result: stored,
+        category: detectCourseCategory(courseTitles[courseId] || ""),
+      };
+      shouldPersist = true;
+    }
+  });
+
+  if (shouldPersist) {
+    persistResults(results);
   }
 
-  const [pro, setPro] = useState<RiderPoints[]>([]);
-  const [u25, setU25] = useState<RiderPoints[]>([]);
-  const [u21, setU21] = useState<RiderPoints[]>([]);
-  const [divisions, setDivisions] = useState<{pro: string; u25: string; u21: string}>({pro: '', u25: '', u21: ''});
+  const proMap = new Map<string, RiderPoints>();
+  const u25Map = new Map<string, RiderPoints>();
+  const u21Map = new Map<string, RiderPoints>();
+
+  Object.entries(results).forEach(([courseId, stored]) => {
+    let category: "pro" | "u25" | "u21" = "pro";
+    let result = stored as string;
+    if (typeof stored === "object" && stored && "result" in stored && "category" in stored) {
+      result = stored.result;
+      category = stored.category;
+    }
+
+    const points = extractPointsFromResults({ [courseId]: result });
+    const targetMap = category === "u25" ? u25Map : category === "u21" ? u21Map : proMap;
+
+    points.forEach(({ name, team, points: riderPoints }) => {
+      if (!targetMap.has(name)) {
+        targetMap.set(name, { name, team, points: riderPoints });
+        return;
+      }
+
+      const previous = targetMap.get(name)!;
+      targetMap.set(name, { ...previous, points: previous.points + riderPoints });
+    });
+  });
+
+  const pro = Array.from(proMap.values()).sort((a, b) => b.points - a.points);
+  const u25 = Array.from(u25Map.values()).sort((a, b) => b.points - a.points);
+  const u21 = Array.from(u21Map.values()).sort((a, b) => b.points - a.points);
+
+  return {
+    divisions,
+    pro,
+    u25,
+    u21,
+    proTeams: aggregateTeams(pro),
+    u25Teams: aggregateTeams(u25),
+    u21Teams: aggregateTeams(u21),
+  };
+}
+
+function RankingPage() {
   const [tab, setTab] = useState<'individuel' | 'equipes'>('individuel');
-  const [proTeams, setProTeams] = useState<{team: string, points: number}[]>([]);
-  const [u25Teams, setU25Teams] = useState<{team: string, points: number}[]>([]);
-  const [u21Teams, setU21Teams] = useState<{team: string, points: number}[]>([]);
-
-  useEffect(() => {
-    let results = getAllResultsFromStorage();
-    // Charger les divisions depuis les paramètres club
-    const settings = loadClubSettings();
-    setDivisions({
-      pro: settings.divisionPro,
-      u25: settings.divisionU25,
-      u21: settings.divisionU21,
-    });
-    const todos: TodoItem[] = loadManualTodos().filter((t) => t.id.startsWith("calendar-"));
-    const courseTitles: Record<string, string> = {};
-    todos.forEach((t) => { courseTitles[t.id] = t.title; });
-
-    // Supprimer les résultats orphelins (sans course associée)
-    let changed = false;
-    Object.keys(results).forEach((courseId) => {
-      if (!todos.find(t => t.id === courseId)) {
-        delete results[courseId];
-        changed = true;
-      }
-    });
-    if (changed) {
-      try {
-        localStorage.setItem("cymanager:results", JSON.stringify(results));
-      } catch {}
-    }
-
-    // MIGRATION automatique des anciens résultats (string)
-    let migrated = false;
-    Object.entries(results).forEach(([courseId, stored]) => {
-      if (typeof stored === "string") {
-        const title = courseTitles[courseId] || "";
-        const category = detectCourseCategory(title);
-        results[courseId] = { result: stored, category };
-        migrated = true;
-      }
-    });
-    if (migrated) {
-      try {
-        localStorage.setItem("cymanager:results", JSON.stringify(results));
-      } catch {}
-    }
-
-    // Agrégation par catégorie
-    const proMap = new Map<string, RiderPoints>();
-    const u25Map = new Map<string, RiderPoints>();
-    const u21Map = new Map<string, RiderPoints>();
-
-    Object.entries(results).forEach(([courseId, stored]) => {
-      let category: "pro" | "u25" | "u21" = "pro";
-      let result = stored as string;
-      if (typeof stored === "object" && stored && "result" in stored && "category" in stored) {
-        result = stored.result;
-        category = stored.category;
-      }
-      const points = extractPointsFromResults({ [courseId]: result });
-      if (category === "u25") {
-        points.forEach(({ name, team, points }) => {
-          if (!u25Map.has(name)) {
-            u25Map.set(name, { name, team, points });
-          } else {
-            const prev = u25Map.get(name)!;
-            u25Map.set(name, { ...prev, points: prev.points + points });
-          }
-        });
-      } else if (category === "u21") {
-        points.forEach(({ name, team, points }) => {
-          if (!u21Map.has(name)) {
-            u21Map.set(name, { name, team, points });
-          } else {
-            const prev = u21Map.get(name)!;
-            u21Map.set(name, { ...prev, points: prev.points + points });
-          }
-        });
-      } else {
-        points.forEach(({ name, team, points }) => {
-          if (!proMap.has(name)) {
-            proMap.set(name, { name, team, points });
-          } else {
-            const prev = proMap.get(name)!;
-            proMap.set(name, { ...prev, points: prev.points + points });
-          }
-        });
-      }
-    });
-    const proArr = Array.from(proMap.values());
-    const u25Arr = Array.from(u25Map.values());
-    const u21Arr = Array.from(u21Map.values());
-    setPro(proArr.sort((a, b) => b.points - a.points));
-    setU25(u25Arr.sort((a, b) => b.points - a.points));
-    setU21(u21Arr.sort((a, b) => b.points - a.points));
-
-    // Classement par équipe
-    function aggregateTeams(arr: RiderPoints[]) {
-      const map = new Map<string, number>();
-      arr.forEach(({ team, points }) => {
-        if (!team) return;
-        map.set(team, (map.get(team) || 0) + points);
-      });
-      return Array.from(map.entries())
-        .map(([team, points]) => ({ team, points }))
-        .sort((a, b) => b.points - a.points);
-    }
-    setProTeams(aggregateTeams(proArr));
-    setU25Teams(aggregateTeams(u25Arr));
-    setU21Teams(aggregateTeams(u21Arr));
-  }, []);
+  const { divisions, pro, u25, u21, proTeams, u25Teams, u21Teams } = useMemo(() => buildRankingData(), []);
 
   return (
     <div className="page-content" style={{ maxWidth: 1200, margin: "0 auto" }}>
