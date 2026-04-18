@@ -1,3 +1,5 @@
+const APP_VERSION_LABEL = "CyManager Toolkit v1.0.1";
+
 export default function Header() {
   return (
     <header className="topbar">
@@ -7,7 +9,7 @@ export default function Header() {
       </div>
 
       <div className="topbar-actions">
-        <span className="status-badge">V1 en ligne</span>
+        <span className="status-badge">{APP_VERSION_LABEL}</span>
       </div>
     </header>
   );
