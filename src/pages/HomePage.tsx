@@ -122,6 +122,21 @@ export default function HomePage() {
     }));
   }, [riders, race, raceKey, clubSettings]);
 
+  // Bloc présentation équipe/manager (infos dynamiques)
+  // À adapter si tu veux rendre pays, id, date, etc. dynamiques (ici valeurs fixes ou issues des settings)
+  const country = "France"; // À rendre dynamique si besoin
+  const teamId = "55893"; // À rendre dynamique si besoin
+  const startDate = "15/04/2026 (Saison 97)"; // À rendre dynamique si besoin
+  // Divisions dynamiques depuis settings
+  const divisionPro = clubSettings.divisionPro || "D9";
+  const divisionU25 = clubSettings.divisionU25 || "D9";
+  const divisionU21 = clubSettings.divisionU21 || "D9";
+  // Installations dynamiques
+  const ss = clubSettings.facilities.headOffice.level;
+  const bt = clubSettings.facilities.shop.level;
+  const cde = clubSettings.facilities.trainingCenter.level;
+  const cdf = clubSettings.facilities.formationCenter.level;
+
   return (
     <div className="page-stack">
       <PageTitle
@@ -129,8 +144,48 @@ export default function HomePage() {
         subtitle="Vue d'ensemble du club, des priorités et des décisions à prendre."
       />
 
+      {/* Présentation équipe/manager */}
+      <div style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: 24,
+        marginBottom: 32,
+        justifyContent: 'center',
+      }}>
+        <div style={{
+          background: 'linear-gradient(90deg, #f7f7fa 60%, #e3e6f3 100%)',
+          borderRadius: 16,
+          boxShadow: '0 2px 12px #0001',
+          padding: '28px 36px',
+          minWidth: 340,
+          maxWidth: 480,
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 10,
+          color: '#222',
+        }}>
+          <div style={{ fontSize: 22, fontWeight: 700, color: '#2d2d4d', marginBottom: 6 }}>Manager <span style={{ color: '#4b5fc0' }}>Kritoff</span></div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 18, fontSize: 15 }}>
+            <div><b>Pays</b> : {country}</div>
+            <div><b>Id équipe</b> : {teamId}</div>
+          </div>
+          <div style={{ fontSize: 15 }}>
+            <b>Gère son équipe depuis</b> : {startDate}
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 18, fontSize: 15 }}>
+            <div><b>Division Pro</b> : {divisionPro}</div>
+            <div><b>U25</b> : {divisionU25}</div>
+            <div><b>U21</b> : {divisionU21}</div>
+          </div>
+          <div style={{ fontSize: 15 }}>
+            <b>Installations</b> : SS {ss} - Bt {bt} - CdE {cde} - CdF {cdf}
+          </div>
+        </div>
+      </div>
+
       <div className="dashboard-grid">
-        <ClubOverviewCard riders={riders} />
+        <ClubOverviewCard riders={riders} clubSettings={clubSettings} />
         <TrainingOverviewCard plan={trainingPlan} />
         <RaceOverviewCard race={race} selected={raceSelected} />
         <TodoOverviewCard items={todoItems} />

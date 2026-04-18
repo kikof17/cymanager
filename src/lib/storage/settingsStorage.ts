@@ -45,6 +45,7 @@ export const defaultClubSettings: ClubSettings = {
   divisionU21: "D9",
   clubObjective: "mixte",
   salaryTolerance: "normale",
+  financialBalance: 1000000, // Valeur par défaut : 1 000 000 €
 };
 
 export function loadClubSettings(): ClubSettings {

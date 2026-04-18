@@ -55,6 +55,20 @@ export default function ClubSettingsForm({
 
   return (
     <form className="page-stack" onSubmit={(event) => event.preventDefault()}>
+      {/* Solde financier */}
+      <div style={{ marginBottom: 18 }}>
+        <label className="field-label" htmlFor="financial-balance">Solde financier actuel (€)</label>
+        <input
+          id="financial-balance"
+          className="input"
+          type="number"
+          min={0}
+          step={1000}
+          value={settings.financialBalance}
+          onChange={e => updateRoot("financialBalance", Number(e.target.value))}
+          style={{ maxWidth: 200 }}
+        />
+      </div>
       {/* Bloc divisions */}
       <div className="settings-grid" style={{gridTemplateColumns: '1fr 1fr', gap: 24}}>
         {/* Ligne Pro */}

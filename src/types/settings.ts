@@ -39,4 +39,5 @@ export type ClubSettings = {
   divisionU21: DivisionLevel;
   clubObjective: ClubObjective;
   salaryTolerance: SalaryTolerance;
+  financialBalance: number; // Nouveau champ : solde financier
 };
