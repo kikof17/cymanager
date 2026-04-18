@@ -1,0 +1,3850 @@
+var e=Object.create,t=Object.defineProperty,n=Object.getOwnPropertyDescriptor,r=Object.getOwnPropertyNames,i=Object.getPrototypeOf,a=Object.prototype.hasOwnProperty,o=(e,t)=>()=>(t||e((t={exports:{}}).exports,t),t.exports),s=(e,i,o,s)=>{if(i&&typeof i==`object`||typeof i==`function`)for(var c=r(i),l=0,u=c.length,d;l<u;l++)d=c[l],!a.call(e,d)&&d!==o&&t(e,d,{get:(e=>i[e]).bind(null,d),enumerable:!(s=n(i,d))||s.enumerable});return e},c=(n,r,a)=>(a=n==null?{}:e(i(n)),s(r||!n||!n.__esModule?t(a,`default`,{value:n,enumerable:!0}):a,n));(function(){let e=document.createElement(`link`).relList;if(e&&e.supports&&e.supports(`modulepreload`))return;for(let e of document.querySelectorAll(`link[rel="modulepreload"]`))n(e);new MutationObserver(e=>{for(let t of e)if(t.type===`childList`)for(let e of t.addedNodes)e.tagName===`LINK`&&e.rel===`modulepreload`&&n(e)}).observe(document,{childList:!0,subtree:!0});function t(e){let t={};return e.integrity&&(t.integrity=e.integrity),e.referrerPolicy&&(t.referrerPolicy=e.referrerPolicy),e.crossOrigin===`use-credentials`?t.credentials=`include`:e.crossOrigin===`anonymous`?t.credentials=`omit`:t.credentials=`same-origin`,t}function n(e){if(e.ep)return;e.ep=!0;let n=t(e);fetch(e.href,n)}})();var l=o((e=>{var t=Symbol.for(`react.transitional.element`),n=Symbol.for(`react.portal`),r=Symbol.for(`react.fragment`),i=Symbol.for(`react.strict_mode`),a=Symbol.for(`react.profiler`),o=Symbol.for(`react.consumer`),s=Symbol.for(`react.context`),c=Symbol.for(`react.forward_ref`),l=Symbol.for(`react.suspense`),u=Symbol.for(`react.memo`),d=Symbol.for(`react.lazy`),f=Symbol.for(`react.activity`),p=Symbol.iterator;function m(e){return typeof e!=`object`||!e?null:(e=p&&e[p]||e[`@@iterator`],typeof e==`function`?e:null)}var h={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}},g=Object.assign,_={};function v(e,t,n){this.props=e,this.context=t,this.refs=_,this.updater=n||h}v.prototype.isReactComponent={},v.prototype.setState=function(e,t){if(typeof e!=`object`&&typeof e!=`function`&&e!=null)throw Error(`takes an object of state variables to update or a function which returns an object of state variables.`);this.updater.enqueueSetState(this,e,t,`setState`)},v.prototype.forceUpdate=function(e){this.updater.enqueueForceUpdate(this,e,`forceUpdate`)};function y(){}y.prototype=v.prototype;function b(e,t,n){this.props=e,this.context=t,this.refs=_,this.updater=n||h}var x=b.prototype=new y;x.constructor=b,g(x,v.prototype),x.isPureReactComponent=!0;var ee=Array.isArray;function S(){}var C={H:null,A:null,T:null,S:null},w=Object.prototype.hasOwnProperty;function T(e,n,r){var i=r.ref;return{$$typeof:t,type:e,key:n,ref:i===void 0?null:i,props:r}}function te(e,t){return T(e.type,t,e.props)}function E(e){return typeof e==`object`&&!!e&&e.$$typeof===t}function ne(e){var t={"=":`=0`,":":`=2`};return`$`+e.replace(/[=:]/g,function(e){return t[e]})}var re=/\/+/g;function ie(e,t){return typeof e==`object`&&e&&e.key!=null?ne(``+e.key):t.toString(36)}function ae(e){switch(e.status){case`fulfilled`:return e.value;case`rejected`:throw e.reason;default:switch(typeof e.status==`string`?e.then(S,S):(e.status=`pending`,e.then(function(t){e.status===`pending`&&(e.status=`fulfilled`,e.value=t)},function(t){e.status===`pending`&&(e.status=`rejected`,e.reason=t)})),e.status){case`fulfilled`:return e.value;case`rejected`:throw e.reason}}throw e}function oe(e,r,i,a,o){var s=typeof e;(s===`undefined`||s===`boolean`)&&(e=null);var c=!1;if(e===null)c=!0;else switch(s){case`bigint`:case`string`:case`number`:c=!0;break;case`object`:switch(e.$$typeof){case t:case n:c=!0;break;case d:return c=e._init,oe(c(e._payload),r,i,a,o)}}if(c)return o=o(e),c=a===``?`.`+ie(e,0):a,ee(o)?(i=``,c!=null&&(i=c.replace(re,`$&/`)+`/`),oe(o,r,i,``,function(e){return e})):o!=null&&(E(o)&&(o=te(o,i+(o.key==null||e&&e.key===o.key?``:(``+o.key).replace(re,`$&/`)+`/`)+c)),r.push(o)),1;c=0;var l=a===``?`.`:a+`:`;if(ee(e))for(var u=0;u<e.length;u++)a=e[u],s=l+ie(a,u),c+=oe(a,r,i,s,o);else if(u=m(e),typeof u==`function`)for(e=u.call(e),u=0;!(a=e.next()).done;)a=a.value,s=l+ie(a,u++),c+=oe(a,r,i,s,o);else if(s===`object`){if(typeof e.then==`function`)return oe(ae(e),r,i,a,o);throw r=String(e),Error(`Objects are not valid as a React child (found: `+(r===`[object Object]`?`object with keys {`+Object.keys(e).join(`, `)+`}`:r)+`). If you meant to render a collection of children, use an array instead.`)}return c}function se(e,t,n){if(e==null)return e;var r=[],i=0;return oe(e,r,``,``,function(e){return t.call(n,e,i++)}),r}function ce(e){if(e._status===-1){var t=e._result;t=t(),t.then(function(t){(e._status===0||e._status===-1)&&(e._status=1,e._result=t)},function(t){(e._status===0||e._status===-1)&&(e._status=2,e._result=t)}),e._status===-1&&(e._status=0,e._result=t)}if(e._status===1)return e._result.default;throw e._result}var D=typeof reportError==`function`?reportError:function(e){if(typeof window==`object`&&typeof window.ErrorEvent==`function`){var t=new window.ErrorEvent(`error`,{bubbles:!0,cancelable:!0,message:typeof e==`object`&&e&&typeof e.message==`string`?String(e.message):String(e),error:e});if(!window.dispatchEvent(t))return}else if(typeof process==`object`&&typeof process.emit==`function`){process.emit(`uncaughtException`,e);return}console.error(e)},O={map:se,forEach:function(e,t,n){se(e,function(){t.apply(this,arguments)},n)},count:function(e){var t=0;return se(e,function(){t++}),t},toArray:function(e){return se(e,function(e){return e})||[]},only:function(e){if(!E(e))throw Error(`React.Children.only expected to receive a single React element child.`);return e}};e.Activity=f,e.Children=O,e.Component=v,e.Fragment=r,e.Profiler=a,e.PureComponent=b,e.StrictMode=i,e.Suspense=l,e.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE=C,e.__COMPILER_RUNTIME={__proto__:null,c:function(e){return C.H.useMemoCache(e)}},e.cache=function(e){return function(){return e.apply(null,arguments)}},e.cacheSignal=function(){return null},e.cloneElement=function(e,t,n){if(e==null)throw Error(`The argument must be a React element, but you passed `+e+`.`);var r=g({},e.props),i=e.key;if(t!=null)for(a in t.key!==void 0&&(i=``+t.key),t)!w.call(t,a)||a===`key`||a===`__self`||a===`__source`||a===`ref`&&t.ref===void 0||(r[a]=t[a]);var a=arguments.length-2;if(a===1)r.children=n;else if(1<a){for(var o=Array(a),s=0;s<a;s++)o[s]=arguments[s+2];r.children=o}return T(e.type,i,r)},e.createContext=function(e){return e={$$typeof:s,_currentValue:e,_currentValue2:e,_threadCount:0,Provider:null,Consumer:null},e.Provider=e,e.Consumer={$$typeof:o,_context:e},e},e.createElement=function(e,t,n){var r,i={},a=null;if(t!=null)for(r in t.key!==void 0&&(a=``+t.key),t)w.call(t,r)&&r!==`key`&&r!==`__self`&&r!==`__source`&&(i[r]=t[r]);var o=arguments.length-2;if(o===1)i.children=n;else if(1<o){for(var s=Array(o),c=0;c<o;c++)s[c]=arguments[c+2];i.children=s}if(e&&e.defaultProps)for(r in o=e.defaultProps,o)i[r]===void 0&&(i[r]=o[r]);return T(e,a,i)},e.createRef=function(){return{current:null}},e.forwardRef=function(e){return{$$typeof:c,render:e}},e.isValidElement=E,e.lazy=function(e){return{$$typeof:d,_payload:{_status:-1,_result:e},_init:ce}},e.memo=function(e,t){return{$$typeof:u,type:e,compare:t===void 0?null:t}},e.startTransition=function(e){var t=C.T,n={};C.T=n;try{var r=e(),i=C.S;i!==null&&i(n,r),typeof r==`object`&&r&&typeof r.then==`function`&&r.then(S,D)}catch(e){D(e)}finally{t!==null&&n.types!==null&&(t.types=n.types),C.T=t}},e.unstable_useCacheRefresh=function(){return C.H.useCacheRefresh()},e.use=function(e){return C.H.use(e)},e.useActionState=function(e,t,n){return C.H.useActionState(e,t,n)},e.useCallback=function(e,t){return C.H.useCallback(e,t)},e.useContext=function(e){return C.H.useContext(e)},e.useDebugValue=function(){},e.useDeferredValue=function(e,t){return C.H.useDeferredValue(e,t)},e.useEffect=function(e,t){return C.H.useEffect(e,t)},e.useEffectEvent=function(e){return C.H.useEffectEvent(e)},e.useId=function(){return C.H.useId()},e.useImperativeHandle=function(e,t,n){return C.H.useImperativeHandle(e,t,n)},e.useInsertionEffect=function(e,t){return C.H.useInsertionEffect(e,t)},e.useLayoutEffect=function(e,t){return C.H.useLayoutEffect(e,t)},e.useMemo=function(e,t){return C.H.useMemo(e,t)},e.useOptimistic=function(e,t){return C.H.useOptimistic(e,t)},e.useReducer=function(e,t,n){return C.H.useReducer(e,t,n)},e.useRef=function(e){return C.H.useRef(e)},e.useState=function(e){return C.H.useState(e)},e.useSyncExternalStore=function(e,t,n){return C.H.useSyncExternalStore(e,t,n)},e.useTransition=function(){return C.H.useTransition()},e.version=`19.2.5`})),u=o(((e,t)=>{t.exports=l()})),d=o((e=>{function t(e,t){var n=e.length;e.push(t);a:for(;0<n;){var r=n-1>>>1,a=e[r];if(0<i(a,t))e[r]=t,e[n]=a,n=r;else break a}}function n(e){return e.length===0?null:e[0]}function r(e){if(e.length===0)return null;var t=e[0],n=e.pop();if(n!==t){e[0]=n;a:for(var r=0,a=e.length,o=a>>>1;r<o;){var s=2*(r+1)-1,c=e[s],l=s+1,u=e[l];if(0>i(c,n))l<a&&0>i(u,c)?(e[r]=u,e[l]=n,r=l):(e[r]=c,e[s]=n,r=s);else if(l<a&&0>i(u,n))e[r]=u,e[l]=n,r=l;else break a}}return t}function i(e,t){var n=e.sortIndex-t.sortIndex;return n===0?e.id-t.id:n}if(e.unstable_now=void 0,typeof performance==`object`&&typeof performance.now==`function`){var a=performance;e.unstable_now=function(){return a.now()}}else{var o=Date,s=o.now();e.unstable_now=function(){return o.now()-s}}var c=[],l=[],u=1,d=null,f=3,p=!1,m=!1,h=!1,g=!1,_=typeof setTimeout==`function`?setTimeout:null,v=typeof clearTimeout==`function`?clearTimeout:null,y=typeof setImmediate<`u`?setImmediate:null;function b(e){for(var i=n(l);i!==null;){if(i.callback===null)r(l);else if(i.startTime<=e)r(l),i.sortIndex=i.expirationTime,t(c,i);else break;i=n(l)}}function x(e){if(h=!1,b(e),!m)if(n(c)!==null)m=!0,ee||(ee=!0,E());else{var t=n(l);t!==null&&ie(x,t.startTime-e)}}var ee=!1,S=-1,C=5,w=-1;function T(){return g?!0:!(e.unstable_now()-w<C)}function te(){if(g=!1,ee){var t=e.unstable_now();w=t;var i=!0;try{a:{m=!1,h&&(h=!1,v(S),S=-1),p=!0;var a=f;try{b:{for(b(t),d=n(c);d!==null&&!(d.expirationTime>t&&T());){var o=d.callback;if(typeof o==`function`){d.callback=null,f=d.priorityLevel;var s=o(d.expirationTime<=t);if(t=e.unstable_now(),typeof s==`function`){d.callback=s,b(t),i=!0;break b}d===n(c)&&r(c),b(t)}else r(c);d=n(c)}if(d!==null)i=!0;else{var u=n(l);u!==null&&ie(x,u.startTime-t),i=!1}}break a}finally{d=null,f=a,p=!1}i=void 0}}finally{i?E():ee=!1}}}var E;if(typeof y==`function`)E=function(){y(te)};else if(typeof MessageChannel<`u`){var ne=new MessageChannel,re=ne.port2;ne.port1.onmessage=te,E=function(){re.postMessage(null)}}else E=function(){_(te,0)};function ie(t,n){S=_(function(){t(e.unstable_now())},n)}e.unstable_IdlePriority=5,e.unstable_ImmediatePriority=1,e.unstable_LowPriority=4,e.unstable_NormalPriority=3,e.unstable_Profiling=null,e.unstable_UserBlockingPriority=2,e.unstable_cancelCallback=function(e){e.callback=null},e.unstable_forceFrameRate=function(e){0>e||125<e?console.error(`forceFrameRate takes a positive int between 0 and 125, forcing frame rates higher than 125 fps is not supported`):C=0<e?Math.floor(1e3/e):5},e.unstable_getCurrentPriorityLevel=function(){return f},e.unstable_next=function(e){switch(f){case 1:case 2:case 3:var t=3;break;default:t=f}var n=f;f=t;try{return e()}finally{f=n}},e.unstable_requestPaint=function(){g=!0},e.unstable_runWithPriority=function(e,t){switch(e){case 1:case 2:case 3:case 4:case 5:break;default:e=3}var n=f;f=e;try{return t()}finally{f=n}},e.unstable_scheduleCallback=function(r,i,a){var o=e.unstable_now();switch(typeof a==`object`&&a?(a=a.delay,a=typeof a==`number`&&0<a?o+a:o):a=o,r){case 1:var s=-1;break;case 2:s=250;break;case 5:s=1073741823;break;case 4:s=1e4;break;default:s=5e3}return s=a+s,r={id:u++,callback:i,priorityLevel:r,startTime:a,expirationTime:s,sortIndex:-1},a>o?(r.sortIndex=a,t(l,r),n(c)===null&&r===n(l)&&(h?(v(S),S=-1):h=!0,ie(x,a-o))):(r.sortIndex=s,t(c,r),m||p||(m=!0,ee||(ee=!0,E()))),r},e.unstable_shouldYield=T,e.unstable_wrapCallback=function(e){var t=f;return function(){var n=f;f=t;try{return e.apply(this,arguments)}finally{f=n}}}})),f=o(((e,t)=>{t.exports=d()})),p=o((e=>{var t=u();function n(e){var t=`https://react.dev/errors/`+e;if(1<arguments.length){t+=`?args[]=`+encodeURIComponent(arguments[1]);for(var n=2;n<arguments.length;n++)t+=`&args[]=`+encodeURIComponent(arguments[n])}return`Minified React error #`+e+`; visit `+t+` for the full message or use the non-minified dev environment for full errors and additional helpful warnings.`}function r(){}var i={d:{f:r,r:function(){throw Error(n(522))},D:r,C:r,L:r,m:r,X:r,S:r,M:r},p:0,findDOMNode:null},a=Symbol.for(`react.portal`);function o(e,t,n){var r=3<arguments.length&&arguments[3]!==void 0?arguments[3]:null;return{$$typeof:a,key:r==null?null:``+r,children:e,containerInfo:t,implementation:n}}var s=t.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;function c(e,t){if(e===`font`)return``;if(typeof t==`string`)return t===`use-credentials`?t:``}e.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE=i,e.createPortal=function(e,t){var r=2<arguments.length&&arguments[2]!==void 0?arguments[2]:null;if(!t||t.nodeType!==1&&t.nodeType!==9&&t.nodeType!==11)throw Error(n(299));return o(e,t,null,r)},e.flushSync=function(e){var t=s.T,n=i.p;try{if(s.T=null,i.p=2,e)return e()}finally{s.T=t,i.p=n,i.d.f()}},e.preconnect=function(e,t){typeof e==`string`&&(t?(t=t.crossOrigin,t=typeof t==`string`?t===`use-credentials`?t:``:void 0):t=null,i.d.C(e,t))},e.prefetchDNS=function(e){typeof e==`string`&&i.d.D(e)},e.preinit=function(e,t){if(typeof e==`string`&&t&&typeof t.as==`string`){var n=t.as,r=c(n,t.crossOrigin),a=typeof t.integrity==`string`?t.integrity:void 0,o=typeof t.fetchPriority==`string`?t.fetchPriority:void 0;n===`style`?i.d.S(e,typeof t.precedence==`string`?t.precedence:void 0,{crossOrigin:r,integrity:a,fetchPriority:o}):n===`script`&&i.d.X(e,{crossOrigin:r,integrity:a,fetchPriority:o,nonce:typeof t.nonce==`string`?t.nonce:void 0})}},e.preinitModule=function(e,t){if(typeof e==`string`)if(typeof t==`object`&&t){if(t.as==null||t.as===`script`){var n=c(t.as,t.crossOrigin);i.d.M(e,{crossOrigin:n,integrity:typeof t.integrity==`string`?t.integrity:void 0,nonce:typeof t.nonce==`string`?t.nonce:void 0})}}else t??i.d.M(e)},e.preload=function(e,t){if(typeof e==`string`&&typeof t==`object`&&t&&typeof t.as==`string`){var n=t.as,r=c(n,t.crossOrigin);i.d.L(e,n,{crossOrigin:r,integrity:typeof t.integrity==`string`?t.integrity:void 0,nonce:typeof t.nonce==`string`?t.nonce:void 0,type:typeof t.type==`string`?t.type:void 0,fetchPriority:typeof t.fetchPriority==`string`?t.fetchPriority:void 0,referrerPolicy:typeof t.referrerPolicy==`string`?t.referrerPolicy:void 0,imageSrcSet:typeof t.imageSrcSet==`string`?t.imageSrcSet:void 0,imageSizes:typeof t.imageSizes==`string`?t.imageSizes:void 0,media:typeof t.media==`string`?t.media:void 0})}},e.preloadModule=function(e,t){if(typeof e==`string`)if(t){var n=c(t.as,t.crossOrigin);i.d.m(e,{as:typeof t.as==`string`&&t.as!==`script`?t.as:void 0,crossOrigin:n,integrity:typeof t.integrity==`string`?t.integrity:void 0})}else i.d.m(e)},e.requestFormReset=function(e){i.d.r(e)},e.unstable_batchedUpdates=function(e,t){return e(t)},e.useFormState=function(e,t,n){return s.H.useFormState(e,t,n)},e.useFormStatus=function(){return s.H.useHostTransitionStatus()},e.version=`19.2.5`})),m=o(((e,t)=>{function n(){if(!(typeof __REACT_DEVTOOLS_GLOBAL_HOOK__>`u`||typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE!=`function`))try{__REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE(n)}catch(e){console.error(e)}}n(),t.exports=p()})),h=o((e=>{var t=f(),n=u(),r=m();function i(e){var t=`https://react.dev/errors/`+e;if(1<arguments.length){t+=`?args[]=`+encodeURIComponent(arguments[1]);for(var n=2;n<arguments.length;n++)t+=`&args[]=`+encodeURIComponent(arguments[n])}return`Minified React error #`+e+`; visit `+t+` for the full message or use the non-minified dev environment for full errors and additional helpful warnings.`}function a(e){return!(!e||e.nodeType!==1&&e.nodeType!==9&&e.nodeType!==11)}function o(e){var t=e,n=e;if(e.alternate)for(;t.return;)t=t.return;else{e=t;do t=e,t.flags&4098&&(n=t.return),e=t.return;while(e)}return t.tag===3?n:null}function s(e){if(e.tag===13){var t=e.memoizedState;if(t===null&&(e=e.alternate,e!==null&&(t=e.memoizedState)),t!==null)return t.dehydrated}return null}function c(e){if(e.tag===31){var t=e.memoizedState;if(t===null&&(e=e.alternate,e!==null&&(t=e.memoizedState)),t!==null)return t.dehydrated}return null}function l(e){if(o(e)!==e)throw Error(i(188))}function d(e){var t=e.alternate;if(!t){if(t=o(e),t===null)throw Error(i(188));return t===e?e:null}for(var n=e,r=t;;){var a=n.return;if(a===null)break;var s=a.alternate;if(s===null){if(r=a.return,r!==null){n=r;continue}break}if(a.child===s.child){for(s=a.child;s;){if(s===n)return l(a),e;if(s===r)return l(a),t;s=s.sibling}throw Error(i(188))}if(n.return!==r.return)n=a,r=s;else{for(var c=!1,u=a.child;u;){if(u===n){c=!0,n=a,r=s;break}if(u===r){c=!0,r=a,n=s;break}u=u.sibling}if(!c){for(u=s.child;u;){if(u===n){c=!0,n=s,r=a;break}if(u===r){c=!0,r=s,n=a;break}u=u.sibling}if(!c)throw Error(i(189))}}if(n.alternate!==r)throw Error(i(190))}if(n.tag!==3)throw Error(i(188));return n.stateNode.current===n?e:t}function p(e){var t=e.tag;if(t===5||t===26||t===27||t===6)return e;for(e=e.child;e!==null;){if(t=p(e),t!==null)return t;e=e.sibling}return null}var h=Object.assign,g=Symbol.for(`react.element`),_=Symbol.for(`react.transitional.element`),v=Symbol.for(`react.portal`),y=Symbol.for(`react.fragment`),b=Symbol.for(`react.strict_mode`),x=Symbol.for(`react.profiler`),ee=Symbol.for(`react.consumer`),S=Symbol.for(`react.context`),C=Symbol.for(`react.forward_ref`),w=Symbol.for(`react.suspense`),T=Symbol.for(`react.suspense_list`),te=Symbol.for(`react.memo`),E=Symbol.for(`react.lazy`),ne=Symbol.for(`react.activity`),re=Symbol.for(`react.memo_cache_sentinel`),ie=Symbol.iterator;function ae(e){return typeof e!=`object`||!e?null:(e=ie&&e[ie]||e[`@@iterator`],typeof e==`function`?e:null)}var oe=Symbol.for(`react.client.reference`);function se(e){if(e==null)return null;if(typeof e==`function`)return e.$$typeof===oe?null:e.displayName||e.name||null;if(typeof e==`string`)return e;switch(e){case y:return`Fragment`;case x:return`Profiler`;case b:return`StrictMode`;case w:return`Suspense`;case T:return`SuspenseList`;case ne:return`Activity`}if(typeof e==`object`)switch(e.$$typeof){case v:return`Portal`;case S:return e.displayName||`Context`;case ee:return(e._context.displayName||`Context`)+`.Consumer`;case C:var t=e.render;return e=e.displayName,e||=(e=t.displayName||t.name||``,e===``?`ForwardRef`:`ForwardRef(`+e+`)`),e;case te:return t=e.displayName||null,t===null?se(e.type)||`Memo`:t;case E:t=e._payload,e=e._init;try{return se(e(t))}catch{}}return null}var ce=Array.isArray,D=n.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE,O=r.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE,le={pending:!1,data:null,method:null,action:null},ue=[],de=-1;function fe(e){return{current:e}}function pe(e){0>de||(e.current=ue[de],ue[de]=null,de--)}function k(e,t){de++,ue[de]=e.current,e.current=t}var me=fe(null),he=fe(null),ge=fe(null),_e=fe(null);function ve(e,t){switch(k(ge,t),k(he,e),k(me,null),t.nodeType){case 9:case 11:e=(e=t.documentElement)&&(e=e.namespaceURI)?Vd(e):0;break;default:if(e=t.tagName,t=t.namespaceURI)t=Vd(t),e=Hd(t,e);else switch(e){case`svg`:e=1;break;case`math`:e=2;break;default:e=0}}pe(me),k(me,e)}function ye(){pe(me),pe(he),pe(ge)}function be(e){e.memoizedState!==null&&k(_e,e);var t=me.current,n=Hd(t,e.type);t!==n&&(k(he,e),k(me,n))}function xe(e){he.current===e&&(pe(me),pe(he)),_e.current===e&&(pe(_e),Qf._currentValue=le)}var Se,Ce;function we(e){if(Se===void 0)try{throw Error()}catch(e){var t=e.stack.trim().match(/\n( *(at )?)/);Se=t&&t[1]||``,Ce=-1<e.stack.indexOf(`
+    at`)?` (<anonymous>)`:-1<e.stack.indexOf(`@`)?`@unknown:0:0`:``}return`
+`+Se+e+Ce}var Te=!1;function Ee(e,t){if(!e||Te)return``;Te=!0;var n=Error.prepareStackTrace;Error.prepareStackTrace=void 0;try{var r={DetermineComponentFrameRoot:function(){try{if(t){var n=function(){throw Error()};if(Object.defineProperty(n.prototype,`props`,{set:function(){throw Error()}}),typeof Reflect==`object`&&Reflect.construct){try{Reflect.construct(n,[])}catch(e){var r=e}Reflect.construct(e,[],n)}else{try{n.call()}catch(e){r=e}e.call(n.prototype)}}else{try{throw Error()}catch(e){r=e}(n=e())&&typeof n.catch==`function`&&n.catch(function(){})}}catch(e){if(e&&r&&typeof e.stack==`string`)return[e.stack,r.stack]}return[null,null]}};r.DetermineComponentFrameRoot.displayName=`DetermineComponentFrameRoot`;var i=Object.getOwnPropertyDescriptor(r.DetermineComponentFrameRoot,`name`);i&&i.configurable&&Object.defineProperty(r.DetermineComponentFrameRoot,`name`,{value:`DetermineComponentFrameRoot`});var a=r.DetermineComponentFrameRoot(),o=a[0],s=a[1];if(o&&s){var c=o.split(`
+`),l=s.split(`
+`);for(i=r=0;r<c.length&&!c[r].includes(`DetermineComponentFrameRoot`);)r++;for(;i<l.length&&!l[i].includes(`DetermineComponentFrameRoot`);)i++;if(r===c.length||i===l.length)for(r=c.length-1,i=l.length-1;1<=r&&0<=i&&c[r]!==l[i];)i--;for(;1<=r&&0<=i;r--,i--)if(c[r]!==l[i]){if(r!==1||i!==1)do if(r--,i--,0>i||c[r]!==l[i]){var u=`
+`+c[r].replace(` at new `,` at `);return e.displayName&&u.includes(`<anonymous>`)&&(u=u.replace(`<anonymous>`,e.displayName)),u}while(1<=r&&0<=i);break}}}finally{Te=!1,Error.prepareStackTrace=n}return(n=e?e.displayName||e.name:``)?we(n):``}function De(e,t){switch(e.tag){case 26:case 27:case 5:return we(e.type);case 16:return we(`Lazy`);case 13:return e.child!==t&&t!==null?we(`Suspense Fallback`):we(`Suspense`);case 19:return we(`SuspenseList`);case 0:case 15:return Ee(e.type,!1);case 11:return Ee(e.type.render,!1);case 1:return Ee(e.type,!0);case 31:return we(`Activity`);default:return``}}function Oe(e){try{var t=``,n=null;do t+=De(e,n),n=e,e=e.return;while(e);return t}catch(e){return`
+Error generating stack: `+e.message+`
+`+e.stack}}var ke=Object.prototype.hasOwnProperty,Ae=t.unstable_scheduleCallback,je=t.unstable_cancelCallback,Me=t.unstable_shouldYield,Ne=t.unstable_requestPaint,Pe=t.unstable_now,Fe=t.unstable_getCurrentPriorityLevel,Ie=t.unstable_ImmediatePriority,Le=t.unstable_UserBlockingPriority,Re=t.unstable_NormalPriority,ze=t.unstable_LowPriority,Be=t.unstable_IdlePriority,Ve=t.log,He=t.unstable_setDisableYieldValue,Ue=null,We=null;function Ge(e){if(typeof Ve==`function`&&He(e),We&&typeof We.setStrictMode==`function`)try{We.setStrictMode(Ue,e)}catch{}}var Ke=Math.clz32?Math.clz32:Ye,qe=Math.log,Je=Math.LN2;function Ye(e){return e>>>=0,e===0?32:31-(qe(e)/Je|0)|0}var Xe=256,Ze=262144,Qe=4194304;function $e(e){var t=e&42;if(t!==0)return t;switch(e&-e){case 1:return 1;case 2:return 2;case 4:return 4;case 8:return 8;case 16:return 16;case 32:return 32;case 64:return 64;case 128:return 128;case 256:case 512:case 1024:case 2048:case 4096:case 8192:case 16384:case 32768:case 65536:case 131072:return e&261888;case 262144:case 524288:case 1048576:case 2097152:return e&3932160;case 4194304:case 8388608:case 16777216:case 33554432:return e&62914560;case 67108864:return 67108864;case 134217728:return 134217728;case 268435456:return 268435456;case 536870912:return 536870912;case 1073741824:return 0;default:return e}}function et(e,t,n){var r=e.pendingLanes;if(r===0)return 0;var i=0,a=e.suspendedLanes,o=e.pingedLanes;e=e.warmLanes;var s=r&134217727;return s===0?(s=r&~a,s===0?o===0?n||(n=r&~e,n!==0&&(i=$e(n))):i=$e(o):i=$e(s)):(r=s&~a,r===0?(o&=s,o===0?n||(n=s&~e,n!==0&&(i=$e(n))):i=$e(o)):i=$e(r)),i===0?0:t!==0&&t!==i&&(t&a)===0&&(a=i&-i,n=t&-t,a>=n||a===32&&n&4194048)?t:i}function tt(e,t){return(e.pendingLanes&~(e.suspendedLanes&~e.pingedLanes)&t)===0}function nt(e,t){switch(e){case 1:case 2:case 4:case 8:case 64:return t+250;case 16:case 32:case 128:case 256:case 512:case 1024:case 2048:case 4096:case 8192:case 16384:case 32768:case 65536:case 131072:case 262144:case 524288:case 1048576:case 2097152:return t+5e3;case 4194304:case 8388608:case 16777216:case 33554432:return-1;case 67108864:case 134217728:case 268435456:case 536870912:case 1073741824:return-1;default:return-1}}function rt(){var e=Qe;return Qe<<=1,!(Qe&62914560)&&(Qe=4194304),e}function it(e){for(var t=[],n=0;31>n;n++)t.push(e);return t}function at(e,t){e.pendingLanes|=t,t!==268435456&&(e.suspendedLanes=0,e.pingedLanes=0,e.warmLanes=0)}function ot(e,t,n,r,i,a){var o=e.pendingLanes;e.pendingLanes=n,e.suspendedLanes=0,e.pingedLanes=0,e.warmLanes=0,e.expiredLanes&=n,e.entangledLanes&=n,e.errorRecoveryDisabledLanes&=n,e.shellSuspendCounter=0;var s=e.entanglements,c=e.expirationTimes,l=e.hiddenUpdates;for(n=o&~n;0<n;){var u=31-Ke(n),d=1<<u;s[u]=0,c[u]=-1;var f=l[u];if(f!==null)for(l[u]=null,u=0;u<f.length;u++){var p=f[u];p!==null&&(p.lane&=-536870913)}n&=~d}r!==0&&st(e,r,0),a!==0&&i===0&&e.tag!==0&&(e.suspendedLanes|=a&~(o&~t))}function st(e,t,n){e.pendingLanes|=t,e.suspendedLanes&=~t;var r=31-Ke(t);e.entangledLanes|=t,e.entanglements[r]=e.entanglements[r]|1073741824|n&261930}function ct(e,t){var n=e.entangledLanes|=t;for(e=e.entanglements;n;){var r=31-Ke(n),i=1<<r;i&t|e[r]&t&&(e[r]|=t),n&=~i}}function lt(e,t){var n=t&-t;return n=n&42?1:ut(n),(n&(e.suspendedLanes|t))===0?n:0}function ut(e){switch(e){case 2:e=1;break;case 8:e=4;break;case 32:e=16;break;case 256:case 512:case 1024:case 2048:case 4096:case 8192:case 16384:case 32768:case 65536:case 131072:case 262144:case 524288:case 1048576:case 2097152:case 4194304:case 8388608:case 16777216:case 33554432:e=128;break;case 268435456:e=134217728;break;default:e=0}return e}function dt(e){return e&=-e,2<e?8<e?e&134217727?32:268435456:8:2}function ft(){var e=O.p;return e===0?(e=window.event,e===void 0?32:mp(e.type)):e}function pt(e,t){var n=O.p;try{return O.p=e,t()}finally{O.p=n}}var mt=Math.random().toString(36).slice(2),ht=`__reactFiber$`+mt,gt=`__reactProps$`+mt,_t=`__reactContainer$`+mt,vt=`__reactEvents$`+mt,yt=`__reactListeners$`+mt,bt=`__reactHandles$`+mt,xt=`__reactResources$`+mt,St=`__reactMarker$`+mt;function Ct(e){delete e[ht],delete e[gt],delete e[vt],delete e[yt],delete e[bt]}function wt(e){var t=e[ht];if(t)return t;for(var n=e.parentNode;n;){if(t=n[_t]||n[ht]){if(n=t.alternate,t.child!==null||n!==null&&n.child!==null)for(e=df(e);e!==null;){if(n=e[ht])return n;e=df(e)}return t}e=n,n=e.parentNode}return null}function Tt(e){if(e=e[ht]||e[_t]){var t=e.tag;if(t===5||t===6||t===13||t===31||t===26||t===27||t===3)return e}return null}function Et(e){var t=e.tag;if(t===5||t===26||t===27||t===6)return e.stateNode;throw Error(i(33))}function Dt(e){var t=e[xt];return t||=e[xt]={hoistableStyles:new Map,hoistableScripts:new Map},t}function Ot(e){e[St]=!0}var kt=new Set,At={};function jt(e,t){Mt(e,t),Mt(e+`Capture`,t)}function Mt(e,t){for(At[e]=t,e=0;e<t.length;e++)kt.add(t[e])}var Nt=RegExp(`^[:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD][:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$`),Pt={},Ft={};function It(e){return ke.call(Ft,e)?!0:ke.call(Pt,e)?!1:Nt.test(e)?Ft[e]=!0:(Pt[e]=!0,!1)}function Lt(e,t,n){if(It(t))if(n===null)e.removeAttribute(t);else{switch(typeof n){case`undefined`:case`function`:case`symbol`:e.removeAttribute(t);return;case`boolean`:var r=t.toLowerCase().slice(0,5);if(r!==`data-`&&r!==`aria-`){e.removeAttribute(t);return}}e.setAttribute(t,``+n)}}function Rt(e,t,n){if(n===null)e.removeAttribute(t);else{switch(typeof n){case`undefined`:case`function`:case`symbol`:case`boolean`:e.removeAttribute(t);return}e.setAttribute(t,``+n)}}function zt(e,t,n,r){if(r===null)e.removeAttribute(n);else{switch(typeof r){case`undefined`:case`function`:case`symbol`:case`boolean`:e.removeAttribute(n);return}e.setAttributeNS(t,n,``+r)}}function Bt(e){switch(typeof e){case`bigint`:case`boolean`:case`number`:case`string`:case`undefined`:return e;case`object`:return e;default:return``}}function Vt(e){var t=e.type;return(e=e.nodeName)&&e.toLowerCase()===`input`&&(t===`checkbox`||t===`radio`)}function Ht(e,t,n){var r=Object.getOwnPropertyDescriptor(e.constructor.prototype,t);if(!e.hasOwnProperty(t)&&r!==void 0&&typeof r.get==`function`&&typeof r.set==`function`){var i=r.get,a=r.set;return Object.defineProperty(e,t,{configurable:!0,get:function(){return i.call(this)},set:function(e){n=``+e,a.call(this,e)}}),Object.defineProperty(e,t,{enumerable:r.enumerable}),{getValue:function(){return n},setValue:function(e){n=``+e},stopTracking:function(){e._valueTracker=null,delete e[t]}}}}function Ut(e){if(!e._valueTracker){var t=Vt(e)?`checked`:`value`;e._valueTracker=Ht(e,t,``+e[t])}}function Wt(e){if(!e)return!1;var t=e._valueTracker;if(!t)return!0;var n=t.getValue(),r=``;return e&&(r=Vt(e)?e.checked?`true`:`false`:e.value),e=r,e===n?!1:(t.setValue(e),!0)}function Gt(e){if(e||=typeof document<`u`?document:void 0,e===void 0)return null;try{return e.activeElement||e.body}catch{return e.body}}var Kt=/[\n"\\]/g;function qt(e){return e.replace(Kt,function(e){return`\\`+e.charCodeAt(0).toString(16)+` `})}function Jt(e,t,n,r,i,a,o,s){e.name=``,o!=null&&typeof o!=`function`&&typeof o!=`symbol`&&typeof o!=`boolean`?e.type=o:e.removeAttribute(`type`),t==null?o!==`submit`&&o!==`reset`||e.removeAttribute(`value`):o===`number`?(t===0&&e.value===``||e.value!=t)&&(e.value=``+Bt(t)):e.value!==``+Bt(t)&&(e.value=``+Bt(t)),t==null?n==null?r!=null&&e.removeAttribute(`value`):Xt(e,o,Bt(n)):Xt(e,o,Bt(t)),i==null&&a!=null&&(e.defaultChecked=!!a),i!=null&&(e.checked=i&&typeof i!=`function`&&typeof i!=`symbol`),s!=null&&typeof s!=`function`&&typeof s!=`symbol`&&typeof s!=`boolean`?e.name=``+Bt(s):e.removeAttribute(`name`)}function Yt(e,t,n,r,i,a,o,s){if(a!=null&&typeof a!=`function`&&typeof a!=`symbol`&&typeof a!=`boolean`&&(e.type=a),t!=null||n!=null){if(!(a!==`submit`&&a!==`reset`||t!=null)){Ut(e);return}n=n==null?``:``+Bt(n),t=t==null?n:``+Bt(t),s||t===e.value||(e.value=t),e.defaultValue=t}r??=i,r=typeof r!=`function`&&typeof r!=`symbol`&&!!r,e.checked=s?e.checked:!!r,e.defaultChecked=!!r,o!=null&&typeof o!=`function`&&typeof o!=`symbol`&&typeof o!=`boolean`&&(e.name=o),Ut(e)}function Xt(e,t,n){t===`number`&&Gt(e.ownerDocument)===e||e.defaultValue===``+n||(e.defaultValue=``+n)}function Zt(e,t,n,r){if(e=e.options,t){t={};for(var i=0;i<n.length;i++)t[`$`+n[i]]=!0;for(n=0;n<e.length;n++)i=t.hasOwnProperty(`$`+e[n].value),e[n].selected!==i&&(e[n].selected=i),i&&r&&(e[n].defaultSelected=!0)}else{for(n=``+Bt(n),t=null,i=0;i<e.length;i++){if(e[i].value===n){e[i].selected=!0,r&&(e[i].defaultSelected=!0);return}t!==null||e[i].disabled||(t=e[i])}t!==null&&(t.selected=!0)}}function Qt(e,t,n){if(t!=null&&(t=``+Bt(t),t!==e.value&&(e.value=t),n==null)){e.defaultValue!==t&&(e.defaultValue=t);return}e.defaultValue=n==null?``:``+Bt(n)}function $t(e,t,n,r){if(t==null){if(r!=null){if(n!=null)throw Error(i(92));if(ce(r)){if(1<r.length)throw Error(i(93));r=r[0]}n=r}n??=``,t=n}n=Bt(t),e.defaultValue=n,r=e.textContent,r===n&&r!==``&&r!==null&&(e.value=r),Ut(e)}function en(e,t){if(t){var n=e.firstChild;if(n&&n===e.lastChild&&n.nodeType===3){n.nodeValue=t;return}}e.textContent=t}var tn=new Set(`animationIterationCount aspectRatio borderImageOutset borderImageSlice borderImageWidth boxFlex boxFlexGroup boxOrdinalGroup columnCount columns flex flexGrow flexPositive flexShrink flexNegative flexOrder gridArea gridRow gridRowEnd gridRowSpan gridRowStart gridColumn gridColumnEnd gridColumnSpan gridColumnStart fontWeight lineClamp lineHeight opacity order orphans scale tabSize widows zIndex zoom fillOpacity floodOpacity stopOpacity strokeDasharray strokeDashoffset strokeMiterlimit strokeOpacity strokeWidth MozAnimationIterationCount MozBoxFlex MozBoxFlexGroup MozLineClamp msAnimationIterationCount msFlex msZoom msFlexGrow msFlexNegative msFlexOrder msFlexPositive msFlexShrink msGridColumn msGridColumnSpan msGridRow msGridRowSpan WebkitAnimationIterationCount WebkitBoxFlex WebKitBoxFlexGroup WebkitBoxOrdinalGroup WebkitColumnCount WebkitColumns WebkitFlex WebkitFlexGrow WebkitFlexPositive WebkitFlexShrink WebkitLineClamp`.split(` `));function nn(e,t,n){var r=t.indexOf(`--`)===0;n==null||typeof n==`boolean`||n===``?r?e.setProperty(t,``):t===`float`?e.cssFloat=``:e[t]=``:r?e.setProperty(t,n):typeof n!=`number`||n===0||tn.has(t)?t===`float`?e.cssFloat=n:e[t]=(``+n).trim():e[t]=n+`px`}function rn(e,t,n){if(t!=null&&typeof t!=`object`)throw Error(i(62));if(e=e.style,n!=null){for(var r in n)!n.hasOwnProperty(r)||t!=null&&t.hasOwnProperty(r)||(r.indexOf(`--`)===0?e.setProperty(r,``):r===`float`?e.cssFloat=``:e[r]=``);for(var a in t)r=t[a],t.hasOwnProperty(a)&&n[a]!==r&&nn(e,a,r)}else for(var o in t)t.hasOwnProperty(o)&&nn(e,o,t[o])}function an(e){if(e.indexOf(`-`)===-1)return!1;switch(e){case`annotation-xml`:case`color-profile`:case`font-face`:case`font-face-src`:case`font-face-uri`:case`font-face-format`:case`font-face-name`:case`missing-glyph`:return!1;default:return!0}}var on=new Map([[`acceptCharset`,`accept-charset`],[`htmlFor`,`for`],[`httpEquiv`,`http-equiv`],[`crossOrigin`,`crossorigin`],[`accentHeight`,`accent-height`],[`alignmentBaseline`,`alignment-baseline`],[`arabicForm`,`arabic-form`],[`baselineShift`,`baseline-shift`],[`capHeight`,`cap-height`],[`clipPath`,`clip-path`],[`clipRule`,`clip-rule`],[`colorInterpolation`,`color-interpolation`],[`colorInterpolationFilters`,`color-interpolation-filters`],[`colorProfile`,`color-profile`],[`colorRendering`,`color-rendering`],[`dominantBaseline`,`dominant-baseline`],[`enableBackground`,`enable-background`],[`fillOpacity`,`fill-opacity`],[`fillRule`,`fill-rule`],[`floodColor`,`flood-color`],[`floodOpacity`,`flood-opacity`],[`fontFamily`,`font-family`],[`fontSize`,`font-size`],[`fontSizeAdjust`,`font-size-adjust`],[`fontStretch`,`font-stretch`],[`fontStyle`,`font-style`],[`fontVariant`,`font-variant`],[`fontWeight`,`font-weight`],[`glyphName`,`glyph-name`],[`glyphOrientationHorizontal`,`glyph-orientation-horizontal`],[`glyphOrientationVertical`,`glyph-orientation-vertical`],[`horizAdvX`,`horiz-adv-x`],[`horizOriginX`,`horiz-origin-x`],[`imageRendering`,`image-rendering`],[`letterSpacing`,`letter-spacing`],[`lightingColor`,`lighting-color`],[`markerEnd`,`marker-end`],[`markerMid`,`marker-mid`],[`markerStart`,`marker-start`],[`overlinePosition`,`overline-position`],[`overlineThickness`,`overline-thickness`],[`paintOrder`,`paint-order`],[`panose-1`,`panose-1`],[`pointerEvents`,`pointer-events`],[`renderingIntent`,`rendering-intent`],[`shapeRendering`,`shape-rendering`],[`stopColor`,`stop-color`],[`stopOpacity`,`stop-opacity`],[`strikethroughPosition`,`strikethrough-position`],[`strikethroughThickness`,`strikethrough-thickness`],[`strokeDasharray`,`stroke-dasharray`],[`strokeDashoffset`,`stroke-dashoffset`],[`strokeLinecap`,`stroke-linecap`],[`strokeLinejoin`,`stroke-linejoin`],[`strokeMiterlimit`,`stroke-miterlimit`],[`strokeOpacity`,`stroke-opacity`],[`strokeWidth`,`stroke-width`],[`textAnchor`,`text-anchor`],[`textDecoration`,`text-decoration`],[`textRendering`,`text-rendering`],[`transformOrigin`,`transform-origin`],[`underlinePosition`,`underline-position`],[`underlineThickness`,`underline-thickness`],[`unicodeBidi`,`unicode-bidi`],[`unicodeRange`,`unicode-range`],[`unitsPerEm`,`units-per-em`],[`vAlphabetic`,`v-alphabetic`],[`vHanging`,`v-hanging`],[`vIdeographic`,`v-ideographic`],[`vMathematical`,`v-mathematical`],[`vectorEffect`,`vector-effect`],[`vertAdvY`,`vert-adv-y`],[`vertOriginX`,`vert-origin-x`],[`vertOriginY`,`vert-origin-y`],[`wordSpacing`,`word-spacing`],[`writingMode`,`writing-mode`],[`xmlnsXlink`,`xmlns:xlink`],[`xHeight`,`x-height`]]),sn=/^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*:/i;function cn(e){return sn.test(``+e)?`javascript:throw new Error('React has blocked a javascript: URL as a security precaution.')`:e}function ln(){}var un=null;function dn(e){return e=e.target||e.srcElement||window,e.correspondingUseElement&&(e=e.correspondingUseElement),e.nodeType===3?e.parentNode:e}var fn=null,pn=null;function mn(e){var t=Tt(e);if(t&&(e=t.stateNode)){var n=e[gt]||null;a:switch(e=t.stateNode,t.type){case`input`:if(Jt(e,n.value,n.defaultValue,n.defaultValue,n.checked,n.defaultChecked,n.type,n.name),t=n.name,n.type===`radio`&&t!=null){for(n=e;n.parentNode;)n=n.parentNode;for(n=n.querySelectorAll(`input[name="`+qt(``+t)+`"][type="radio"]`),t=0;t<n.length;t++){var r=n[t];if(r!==e&&r.form===e.form){var a=r[gt]||null;if(!a)throw Error(i(90));Jt(r,a.value,a.defaultValue,a.defaultValue,a.checked,a.defaultChecked,a.type,a.name)}}for(t=0;t<n.length;t++)r=n[t],r.form===e.form&&Wt(r)}break a;case`textarea`:Qt(e,n.value,n.defaultValue);break a;case`select`:t=n.value,t!=null&&Zt(e,!!n.multiple,t,!1)}}}var hn=!1;function gn(e,t,n){if(hn)return e(t,n);hn=!0;try{return e(t)}finally{if(hn=!1,(fn!==null||pn!==null)&&(bu(),fn&&(t=fn,e=pn,pn=fn=null,mn(t),e)))for(t=0;t<e.length;t++)mn(e[t])}}function _n(e,t){var n=e.stateNode;if(n===null)return null;var r=n[gt]||null;if(r===null)return null;n=r[t];a:switch(t){case`onClick`:case`onClickCapture`:case`onDoubleClick`:case`onDoubleClickCapture`:case`onMouseDown`:case`onMouseDownCapture`:case`onMouseMove`:case`onMouseMoveCapture`:case`onMouseUp`:case`onMouseUpCapture`:case`onMouseEnter`:(r=!r.disabled)||(e=e.type,r=!(e===`button`||e===`input`||e===`select`||e===`textarea`)),e=!r;break a;default:e=!1}if(e)return null;if(n&&typeof n!=`function`)throw Error(i(231,t,typeof n));return n}var vn=!(typeof window>`u`||window.document===void 0||window.document.createElement===void 0),yn=!1;if(vn)try{var bn={};Object.defineProperty(bn,`passive`,{get:function(){yn=!0}}),window.addEventListener(`test`,bn,bn),window.removeEventListener(`test`,bn,bn)}catch{yn=!1}var xn=null,Sn=null,Cn=null;function wn(){if(Cn)return Cn;var e,t=Sn,n=t.length,r,i=`value`in xn?xn.value:xn.textContent,a=i.length;for(e=0;e<n&&t[e]===i[e];e++);var o=n-e;for(r=1;r<=o&&t[n-r]===i[a-r];r++);return Cn=i.slice(e,1<r?1-r:void 0)}function Tn(e){var t=e.keyCode;return`charCode`in e?(e=e.charCode,e===0&&t===13&&(e=13)):e=t,e===10&&(e=13),32<=e||e===13?e:0}function En(){return!0}function Dn(){return!1}function On(e){function t(t,n,r,i,a){for(var o in this._reactName=t,this._targetInst=r,this.type=n,this.nativeEvent=i,this.target=a,this.currentTarget=null,e)e.hasOwnProperty(o)&&(t=e[o],this[o]=t?t(i):i[o]);return this.isDefaultPrevented=(i.defaultPrevented==null?!1===i.returnValue:i.defaultPrevented)?En:Dn,this.isPropagationStopped=Dn,this}return h(t.prototype,{preventDefault:function(){this.defaultPrevented=!0;var e=this.nativeEvent;e&&(e.preventDefault?e.preventDefault():typeof e.returnValue!=`unknown`&&(e.returnValue=!1),this.isDefaultPrevented=En)},stopPropagation:function(){var e=this.nativeEvent;e&&(e.stopPropagation?e.stopPropagation():typeof e.cancelBubble!=`unknown`&&(e.cancelBubble=!0),this.isPropagationStopped=En)},persist:function(){},isPersistent:En}),t}var kn={eventPhase:0,bubbles:0,cancelable:0,timeStamp:function(e){return e.timeStamp||Date.now()},defaultPrevented:0,isTrusted:0},An=On(kn),jn=h({},kn,{view:0,detail:0}),Mn=On(jn),Nn,Pn,Fn,In=h({},jn,{screenX:0,screenY:0,clientX:0,clientY:0,pageX:0,pageY:0,ctrlKey:0,shiftKey:0,altKey:0,metaKey:0,getModifierState:qn,button:0,buttons:0,relatedTarget:function(e){return e.relatedTarget===void 0?e.fromElement===e.srcElement?e.toElement:e.fromElement:e.relatedTarget},movementX:function(e){return`movementX`in e?e.movementX:(e!==Fn&&(Fn&&e.type===`mousemove`?(Nn=e.screenX-Fn.screenX,Pn=e.screenY-Fn.screenY):Pn=Nn=0,Fn=e),Nn)},movementY:function(e){return`movementY`in e?e.movementY:Pn}}),Ln=On(In),Rn=On(h({},In,{dataTransfer:0})),zn=On(h({},jn,{relatedTarget:0})),Bn=On(h({},kn,{animationName:0,elapsedTime:0,pseudoElement:0})),Vn=On(h({},kn,{clipboardData:function(e){return`clipboardData`in e?e.clipboardData:window.clipboardData}})),Hn=On(h({},kn,{data:0})),Un={Esc:`Escape`,Spacebar:` `,Left:`ArrowLeft`,Up:`ArrowUp`,Right:`ArrowRight`,Down:`ArrowDown`,Del:`Delete`,Win:`OS`,Menu:`ContextMenu`,Apps:`ContextMenu`,Scroll:`ScrollLock`,MozPrintableKey:`Unidentified`},Wn={8:`Backspace`,9:`Tab`,12:`Clear`,13:`Enter`,16:`Shift`,17:`Control`,18:`Alt`,19:`Pause`,20:`CapsLock`,27:`Escape`,32:` `,33:`PageUp`,34:`PageDown`,35:`End`,36:`Home`,37:`ArrowLeft`,38:`ArrowUp`,39:`ArrowRight`,40:`ArrowDown`,45:`Insert`,46:`Delete`,112:`F1`,113:`F2`,114:`F3`,115:`F4`,116:`F5`,117:`F6`,118:`F7`,119:`F8`,120:`F9`,121:`F10`,122:`F11`,123:`F12`,144:`NumLock`,145:`ScrollLock`,224:`Meta`},Gn={Alt:`altKey`,Control:`ctrlKey`,Meta:`metaKey`,Shift:`shiftKey`};function Kn(e){var t=this.nativeEvent;return t.getModifierState?t.getModifierState(e):(e=Gn[e])?!!t[e]:!1}function qn(){return Kn}var Jn=On(h({},jn,{key:function(e){if(e.key){var t=Un[e.key]||e.key;if(t!==`Unidentified`)return t}return e.type===`keypress`?(e=Tn(e),e===13?`Enter`:String.fromCharCode(e)):e.type===`keydown`||e.type===`keyup`?Wn[e.keyCode]||`Unidentified`:``},code:0,location:0,ctrlKey:0,shiftKey:0,altKey:0,metaKey:0,repeat:0,locale:0,getModifierState:qn,charCode:function(e){return e.type===`keypress`?Tn(e):0},keyCode:function(e){return e.type===`keydown`||e.type===`keyup`?e.keyCode:0},which:function(e){return e.type===`keypress`?Tn(e):e.type===`keydown`||e.type===`keyup`?e.keyCode:0}})),Yn=On(h({},In,{pointerId:0,width:0,height:0,pressure:0,tangentialPressure:0,tiltX:0,tiltY:0,twist:0,pointerType:0,isPrimary:0})),Xn=On(h({},jn,{touches:0,targetTouches:0,changedTouches:0,altKey:0,metaKey:0,ctrlKey:0,shiftKey:0,getModifierState:qn})),A=On(h({},kn,{propertyName:0,elapsedTime:0,pseudoElement:0})),Zn=On(h({},In,{deltaX:function(e){return`deltaX`in e?e.deltaX:`wheelDeltaX`in e?-e.wheelDeltaX:0},deltaY:function(e){return`deltaY`in e?e.deltaY:`wheelDeltaY`in e?-e.wheelDeltaY:`wheelDelta`in e?-e.wheelDelta:0},deltaZ:0,deltaMode:0})),Qn=On(h({},kn,{newState:0,oldState:0})),$n=[9,13,27,32],er=vn&&`CompositionEvent`in window,tr=null;vn&&`documentMode`in document&&(tr=document.documentMode);var nr=vn&&`TextEvent`in window&&!tr,rr=vn&&(!er||tr&&8<tr&&11>=tr),j=` `,ir=!1;function ar(e,t){switch(e){case`keyup`:return $n.indexOf(t.keyCode)!==-1;case`keydown`:return t.keyCode!==229;case`keypress`:case`mousedown`:case`focusout`:return!0;default:return!1}}function or(e){return e=e.detail,typeof e==`object`&&`data`in e?e.data:null}var sr=!1;function cr(e,t){switch(e){case`compositionend`:return or(t);case`keypress`:return t.which===32?(ir=!0,j):null;case`textInput`:return e=t.data,e===j&&ir?null:e;default:return null}}function lr(e,t){if(sr)return e===`compositionend`||!er&&ar(e,t)?(e=wn(),Cn=Sn=xn=null,sr=!1,e):null;switch(e){case`paste`:return null;case`keypress`:if(!(t.ctrlKey||t.altKey||t.metaKey)||t.ctrlKey&&t.altKey){if(t.char&&1<t.char.length)return t.char;if(t.which)return String.fromCharCode(t.which)}return null;case`compositionend`:return rr&&t.locale!==`ko`?null:t.data;default:return null}}var ur={color:!0,date:!0,datetime:!0,"datetime-local":!0,email:!0,month:!0,number:!0,password:!0,range:!0,search:!0,tel:!0,text:!0,time:!0,url:!0,week:!0};function dr(e){var t=e&&e.nodeName&&e.nodeName.toLowerCase();return t===`input`?!!ur[e.type]:t===`textarea`}function fr(e,t,n,r){fn?pn?pn.push(r):pn=[r]:fn=r,t=Ed(t,`onChange`),0<t.length&&(n=new An(`onChange`,`change`,null,n,r),e.push({event:n,listeners:t}))}var pr=null,mr=null;function hr(e){yd(e,0)}function gr(e){if(Wt(Et(e)))return e}function _r(e,t){if(e===`change`)return t}var vr=!1;if(vn){var yr;if(vn){var br=`oninput`in document;if(!br){var xr=document.createElement(`div`);xr.setAttribute(`oninput`,`return;`),br=typeof xr.oninput==`function`}yr=br}else yr=!1;vr=yr&&(!document.documentMode||9<document.documentMode)}function Sr(){pr&&(pr.detachEvent(`onpropertychange`,Cr),mr=pr=null)}function Cr(e){if(e.propertyName===`value`&&gr(mr)){var t=[];fr(t,mr,e,dn(e)),gn(hr,t)}}function wr(e,t,n){e===`focusin`?(Sr(),pr=t,mr=n,pr.attachEvent(`onpropertychange`,Cr)):e===`focusout`&&Sr()}function Tr(e){if(e===`selectionchange`||e===`keyup`||e===`keydown`)return gr(mr)}function Er(e,t){if(e===`click`)return gr(t)}function Dr(e,t){if(e===`input`||e===`change`)return gr(t)}function Or(e,t){return e===t&&(e!==0||1/e==1/t)||e!==e&&t!==t}var kr=typeof Object.is==`function`?Object.is:Or;function Ar(e,t){if(kr(e,t))return!0;if(typeof e!=`object`||!e||typeof t!=`object`||!t)return!1;var n=Object.keys(e),r=Object.keys(t);if(n.length!==r.length)return!1;for(r=0;r<n.length;r++){var i=n[r];if(!ke.call(t,i)||!kr(e[i],t[i]))return!1}return!0}function jr(e){for(;e&&e.firstChild;)e=e.firstChild;return e}function Mr(e,t){var n=jr(e);e=0;for(var r;n;){if(n.nodeType===3){if(r=e+n.textContent.length,e<=t&&r>=t)return{node:n,offset:t-e};e=r}a:{for(;n;){if(n.nextSibling){n=n.nextSibling;break a}n=n.parentNode}n=void 0}n=jr(n)}}function Nr(e,t){return e&&t?e===t?!0:e&&e.nodeType===3?!1:t&&t.nodeType===3?Nr(e,t.parentNode):`contains`in e?e.contains(t):e.compareDocumentPosition?!!(e.compareDocumentPosition(t)&16):!1:!1}function Pr(e){e=e!=null&&e.ownerDocument!=null&&e.ownerDocument.defaultView!=null?e.ownerDocument.defaultView:window;for(var t=Gt(e.document);t instanceof e.HTMLIFrameElement;){try{var n=typeof t.contentWindow.location.href==`string`}catch{n=!1}if(n)e=t.contentWindow;else break;t=Gt(e.document)}return t}function Fr(e){var t=e&&e.nodeName&&e.nodeName.toLowerCase();return t&&(t===`input`&&(e.type===`text`||e.type===`search`||e.type===`tel`||e.type===`url`||e.type===`password`)||t===`textarea`||e.contentEditable===`true`)}var Ir=vn&&`documentMode`in document&&11>=document.documentMode,Lr=null,Rr=null,zr=null,Br=!1;function Vr(e,t,n){var r=n.window===n?n.document:n.nodeType===9?n:n.ownerDocument;Br||Lr==null||Lr!==Gt(r)||(r=Lr,`selectionStart`in r&&Fr(r)?r={start:r.selectionStart,end:r.selectionEnd}:(r=(r.ownerDocument&&r.ownerDocument.defaultView||window).getSelection(),r={anchorNode:r.anchorNode,anchorOffset:r.anchorOffset,focusNode:r.focusNode,focusOffset:r.focusOffset}),zr&&Ar(zr,r)||(zr=r,r=Ed(Rr,`onSelect`),0<r.length&&(t=new An(`onSelect`,`select`,null,t,n),e.push({event:t,listeners:r}),t.target=Lr)))}function Hr(e,t){var n={};return n[e.toLowerCase()]=t.toLowerCase(),n[`Webkit`+e]=`webkit`+t,n[`Moz`+e]=`moz`+t,n}var Ur={animationend:Hr(`Animation`,`AnimationEnd`),animationiteration:Hr(`Animation`,`AnimationIteration`),animationstart:Hr(`Animation`,`AnimationStart`),transitionrun:Hr(`Transition`,`TransitionRun`),transitionstart:Hr(`Transition`,`TransitionStart`),transitioncancel:Hr(`Transition`,`TransitionCancel`),transitionend:Hr(`Transition`,`TransitionEnd`)},Wr={},Gr={};vn&&(Gr=document.createElement(`div`).style,`AnimationEvent`in window||(delete Ur.animationend.animation,delete Ur.animationiteration.animation,delete Ur.animationstart.animation),`TransitionEvent`in window||delete Ur.transitionend.transition);function Kr(e){if(Wr[e])return Wr[e];if(!Ur[e])return e;var t=Ur[e],n;for(n in t)if(t.hasOwnProperty(n)&&n in Gr)return Wr[e]=t[n];return e}var qr=Kr(`animationend`),Jr=Kr(`animationiteration`),Yr=Kr(`animationstart`),Xr=Kr(`transitionrun`),Zr=Kr(`transitionstart`),Qr=Kr(`transitioncancel`),$r=Kr(`transitionend`),ei=new Map,ti=`abort auxClick beforeToggle cancel canPlay canPlayThrough click close contextMenu copy cut drag dragEnd dragEnter dragExit dragLeave dragOver dragStart drop durationChange emptied encrypted ended error gotPointerCapture input invalid keyDown keyPress keyUp load loadedData loadedMetadata loadStart lostPointerCapture mouseDown mouseMove mouseOut mouseOver mouseUp paste pause play playing pointerCancel pointerDown pointerMove pointerOut pointerOver pointerUp progress rateChange reset resize seeked seeking stalled submit suspend timeUpdate touchCancel touchEnd touchStart volumeChange scroll toggle touchMove waiting wheel`.split(` `);ti.push(`scrollEnd`);function M(e,t){ei.set(e,t),jt(t,[e])}var ni=typeof reportError==`function`?reportError:function(e){if(typeof window==`object`&&typeof window.ErrorEvent==`function`){var t=new window.ErrorEvent(`error`,{bubbles:!0,cancelable:!0,message:typeof e==`object`&&e&&typeof e.message==`string`?String(e.message):String(e),error:e});if(!window.dispatchEvent(t))return}else if(typeof process==`object`&&typeof process.emit==`function`){process.emit(`uncaughtException`,e);return}console.error(e)},ri=[],ii=0,ai=0;function oi(){for(var e=ii,t=ai=ii=0;t<e;){var n=ri[t];ri[t++]=null;var r=ri[t];ri[t++]=null;var i=ri[t];ri[t++]=null;var a=ri[t];if(ri[t++]=null,r!==null&&i!==null){var o=r.pending;o===null?i.next=i:(i.next=o.next,o.next=i),r.pending=i}a!==0&&ui(n,i,a)}}function si(e,t,n,r){ri[ii++]=e,ri[ii++]=t,ri[ii++]=n,ri[ii++]=r,ai|=r,e.lanes|=r,e=e.alternate,e!==null&&(e.lanes|=r)}function ci(e,t,n,r){return si(e,t,n,r),di(e)}function li(e,t){return si(e,null,null,t),di(e)}function ui(e,t,n){e.lanes|=n;var r=e.alternate;r!==null&&(r.lanes|=n);for(var i=!1,a=e.return;a!==null;)a.childLanes|=n,r=a.alternate,r!==null&&(r.childLanes|=n),a.tag===22&&(e=a.stateNode,e===null||e._visibility&1||(i=!0)),e=a,a=a.return;return e.tag===3?(a=e.stateNode,i&&t!==null&&(i=31-Ke(n),e=a.hiddenUpdates,r=e[i],r===null?e[i]=[t]:r.push(t),t.lane=n|536870912),a):null}function di(e){if(50<du)throw du=0,fu=null,Error(i(185));for(var t=e.return;t!==null;)e=t,t=e.return;return e.tag===3?e.stateNode:null}var fi={};function pi(e,t,n,r){this.tag=e,this.key=n,this.sibling=this.child=this.return=this.stateNode=this.type=this.elementType=null,this.index=0,this.refCleanup=this.ref=null,this.pendingProps=t,this.dependencies=this.memoizedState=this.updateQueue=this.memoizedProps=null,this.mode=r,this.subtreeFlags=this.flags=0,this.deletions=null,this.childLanes=this.lanes=0,this.alternate=null}function mi(e,t,n,r){return new pi(e,t,n,r)}function hi(e){return e=e.prototype,!(!e||!e.isReactComponent)}function gi(e,t){var n=e.alternate;return n===null?(n=mi(e.tag,t,e.key,e.mode),n.elementType=e.elementType,n.type=e.type,n.stateNode=e.stateNode,n.alternate=e,e.alternate=n):(n.pendingProps=t,n.type=e.type,n.flags=0,n.subtreeFlags=0,n.deletions=null),n.flags=e.flags&65011712,n.childLanes=e.childLanes,n.lanes=e.lanes,n.child=e.child,n.memoizedProps=e.memoizedProps,n.memoizedState=e.memoizedState,n.updateQueue=e.updateQueue,t=e.dependencies,n.dependencies=t===null?null:{lanes:t.lanes,firstContext:t.firstContext},n.sibling=e.sibling,n.index=e.index,n.ref=e.ref,n.refCleanup=e.refCleanup,n}function _i(e,t){e.flags&=65011714;var n=e.alternate;return n===null?(e.childLanes=0,e.lanes=t,e.child=null,e.subtreeFlags=0,e.memoizedProps=null,e.memoizedState=null,e.updateQueue=null,e.dependencies=null,e.stateNode=null):(e.childLanes=n.childLanes,e.lanes=n.lanes,e.child=n.child,e.subtreeFlags=0,e.deletions=null,e.memoizedProps=n.memoizedProps,e.memoizedState=n.memoizedState,e.updateQueue=n.updateQueue,e.type=n.type,t=n.dependencies,e.dependencies=t===null?null:{lanes:t.lanes,firstContext:t.firstContext}),e}function vi(e,t,n,r,a,o){var s=0;if(r=e,typeof e==`function`)hi(e)&&(s=1);else if(typeof e==`string`)s=Uf(e,n,me.current)?26:e===`html`||e===`head`||e===`body`?27:5;else a:switch(e){case ne:return e=mi(31,n,t,a),e.elementType=ne,e.lanes=o,e;case y:return yi(n.children,a,o,t);case b:s=8,a|=24;break;case x:return e=mi(12,n,t,a|2),e.elementType=x,e.lanes=o,e;case w:return e=mi(13,n,t,a),e.elementType=w,e.lanes=o,e;case T:return e=mi(19,n,t,a),e.elementType=T,e.lanes=o,e;default:if(typeof e==`object`&&e)switch(e.$$typeof){case S:s=10;break a;case ee:s=9;break a;case C:s=11;break a;case te:s=14;break a;case E:s=16,r=null;break a}s=29,n=Error(i(130,e===null?`null`:typeof e,``)),r=null}return t=mi(s,n,t,a),t.elementType=e,t.type=r,t.lanes=o,t}function yi(e,t,n,r){return e=mi(7,e,r,t),e.lanes=n,e}function bi(e,t,n){return e=mi(6,e,null,t),e.lanes=n,e}function xi(e){var t=mi(18,null,null,0);return t.stateNode=e,t}function Si(e,t,n){return t=mi(4,e.children===null?[]:e.children,e.key,t),t.lanes=n,t.stateNode={containerInfo:e.containerInfo,pendingChildren:null,implementation:e.implementation},t}var Ci=new WeakMap;function wi(e,t){if(typeof e==`object`&&e){var n=Ci.get(e);return n===void 0?(t={value:e,source:t,stack:Oe(t)},Ci.set(e,t),t):n}return{value:e,source:t,stack:Oe(t)}}var Ti=[],Ei=0,Di=null,Oi=0,ki=[],Ai=0,ji=null,Mi=1,Ni=``;function Pi(e,t){Ti[Ei++]=Oi,Ti[Ei++]=Di,Di=e,Oi=t}function Fi(e,t,n){ki[Ai++]=Mi,ki[Ai++]=Ni,ki[Ai++]=ji,ji=e;var r=Mi;e=Ni;var i=32-Ke(r)-1;r&=~(1<<i),n+=1;var a=32-Ke(t)+i;if(30<a){var o=i-i%5;a=(r&(1<<o)-1).toString(32),r>>=o,i-=o,Mi=1<<32-Ke(t)+i|n<<i|r,Ni=a+e}else Mi=1<<a|n<<i|r,Ni=e}function Ii(e){e.return!==null&&(Pi(e,1),Fi(e,1,0))}function Li(e){for(;e===Di;)Di=Ti[--Ei],Ti[Ei]=null,Oi=Ti[--Ei],Ti[Ei]=null;for(;e===ji;)ji=ki[--Ai],ki[Ai]=null,Ni=ki[--Ai],ki[Ai]=null,Mi=ki[--Ai],ki[Ai]=null}function Ri(e,t){ki[Ai++]=Mi,ki[Ai++]=Ni,ki[Ai++]=ji,Mi=t.id,Ni=t.overflow,ji=e}var zi=null,N=null,P=!1,Bi=null,Vi=!1,Hi=Error(i(519));function Ui(e){throw Yi(wi(Error(i(418,1<arguments.length&&arguments[1]!==void 0&&arguments[1]?`text`:`HTML`,``)),e)),Hi}function Wi(e){var t=e.stateNode,n=e.type,r=e.memoizedProps;switch(t[ht]=e,t[gt]=r,n){case`dialog`:Q(`cancel`,t),Q(`close`,t);break;case`iframe`:case`object`:case`embed`:Q(`load`,t);break;case`video`:case`audio`:for(n=0;n<_d.length;n++)Q(_d[n],t);break;case`source`:Q(`error`,t);break;case`img`:case`image`:case`link`:Q(`error`,t),Q(`load`,t);break;case`details`:Q(`toggle`,t);break;case`input`:Q(`invalid`,t),Yt(t,r.value,r.defaultValue,r.checked,r.defaultChecked,r.type,r.name,!0);break;case`select`:Q(`invalid`,t);break;case`textarea`:Q(`invalid`,t),$t(t,r.value,r.defaultValue,r.children)}n=r.children,typeof n!=`string`&&typeof n!=`number`&&typeof n!=`bigint`||t.textContent===``+n||!0===r.suppressHydrationWarning||Md(t.textContent,n)?(r.popover!=null&&(Q(`beforetoggle`,t),Q(`toggle`,t)),r.onScroll!=null&&Q(`scroll`,t),r.onScrollEnd!=null&&Q(`scrollend`,t),r.onClick!=null&&(t.onclick=ln),t=!0):t=!1,t||Ui(e,!0)}function Gi(e){for(zi=e.return;zi;)switch(zi.tag){case 5:case 31:case 13:Vi=!1;return;case 27:case 3:Vi=!0;return;default:zi=zi.return}}function Ki(e){if(e!==zi)return!1;if(!P)return Gi(e),P=!0,!1;var t=e.tag,n;if((n=t!==3&&t!==27)&&((n=t===5)&&(n=e.type,n=!(n!==`form`&&n!==`button`)||Ud(e.type,e.memoizedProps)),n=!n),n&&N&&Ui(e),Gi(e),t===13){if(e=e.memoizedState,e=e===null?null:e.dehydrated,!e)throw Error(i(317));N=uf(e)}else if(t===31){if(e=e.memoizedState,e=e===null?null:e.dehydrated,!e)throw Error(i(317));N=uf(e)}else t===27?(t=N,Zd(e.type)?(e=lf,lf=null,N=e):N=t):N=zi?cf(e.stateNode.nextSibling):null;return!0}function qi(){N=zi=null,P=!1}function Ji(){var e=Bi;return e!==null&&(Zl===null?Zl=e:Zl.push.apply(Zl,e),Bi=null),e}function Yi(e){Bi===null?Bi=[e]:Bi.push(e)}var Xi=fe(null),Zi=null,Qi=null;function $i(e,t,n){k(Xi,t._currentValue),t._currentValue=n}function ea(e){e._currentValue=Xi.current,pe(Xi)}function ta(e,t,n){for(;e!==null;){var r=e.alternate;if((e.childLanes&t)===t?r!==null&&(r.childLanes&t)!==t&&(r.childLanes|=t):(e.childLanes|=t,r!==null&&(r.childLanes|=t)),e===n)break;e=e.return}}function na(e,t,n,r){var a=e.child;for(a!==null&&(a.return=e);a!==null;){var o=a.dependencies;if(o!==null){var s=a.child;o=o.firstContext;a:for(;o!==null;){var c=o;o=a;for(var l=0;l<t.length;l++)if(c.context===t[l]){o.lanes|=n,c=o.alternate,c!==null&&(c.lanes|=n),ta(o.return,n,e),r||(s=null);break a}o=c.next}}else if(a.tag===18){if(s=a.return,s===null)throw Error(i(341));s.lanes|=n,o=s.alternate,o!==null&&(o.lanes|=n),ta(s,n,e),s=null}else s=a.child;if(s!==null)s.return=a;else for(s=a;s!==null;){if(s===e){s=null;break}if(a=s.sibling,a!==null){a.return=s.return,s=a;break}s=s.return}a=s}}function ra(e,t,n,r){e=null;for(var a=t,o=!1;a!==null;){if(!o){if(a.flags&524288)o=!0;else if(a.flags&262144)break}if(a.tag===10){var s=a.alternate;if(s===null)throw Error(i(387));if(s=s.memoizedProps,s!==null){var c=a.type;kr(a.pendingProps.value,s.value)||(e===null?e=[c]:e.push(c))}}else if(a===_e.current){if(s=a.alternate,s===null)throw Error(i(387));s.memoizedState.memoizedState!==a.memoizedState.memoizedState&&(e===null?e=[Qf]:e.push(Qf))}a=a.return}e!==null&&na(t,e,n,r),t.flags|=262144}function ia(e){for(e=e.firstContext;e!==null;){if(!kr(e.context._currentValue,e.memoizedValue))return!0;e=e.next}return!1}function aa(e){Zi=e,Qi=null,e=e.dependencies,e!==null&&(e.firstContext=null)}function oa(e){return ca(Zi,e)}function sa(e,t){return Zi===null&&aa(e),ca(e,t)}function ca(e,t){var n=t._currentValue;if(t={context:t,memoizedValue:n,next:null},Qi===null){if(e===null)throw Error(i(308));Qi=t,e.dependencies={lanes:0,firstContext:t},e.flags|=524288}else Qi=Qi.next=t;return n}var la=typeof AbortController<`u`?AbortController:function(){var e=[],t=this.signal={aborted:!1,addEventListener:function(t,n){e.push(n)}};this.abort=function(){t.aborted=!0,e.forEach(function(e){return e()})}},ua=t.unstable_scheduleCallback,da=t.unstable_NormalPriority,F={$$typeof:S,Consumer:null,Provider:null,_currentValue:null,_currentValue2:null,_threadCount:0};function fa(){return{controller:new la,data:new Map,refCount:0}}function pa(e){e.refCount--,e.refCount===0&&ua(da,function(){e.controller.abort()})}var ma=null,ha=0,ga=0,_a=null;function va(e,t){if(ma===null){var n=ma=[];ha=0,ga=dd(),_a={status:`pending`,value:void 0,then:function(e){n.push(e)}}}return ha++,t.then(ya,ya),t}function ya(){if(--ha===0&&ma!==null){_a!==null&&(_a.status=`fulfilled`);var e=ma;ma=null,ga=0,_a=null;for(var t=0;t<e.length;t++)(0,e[t])()}}function ba(e,t){var n=[],r={status:`pending`,value:null,reason:null,then:function(e){n.push(e)}};return e.then(function(){r.status=`fulfilled`,r.value=t;for(var e=0;e<n.length;e++)(0,n[e])(t)},function(e){for(r.status=`rejected`,r.reason=e,e=0;e<n.length;e++)(0,n[e])(void 0)}),r}var xa=D.S;D.S=function(e,t){eu=Pe(),typeof t==`object`&&t&&typeof t.then==`function`&&va(e,t),xa!==null&&xa(e,t)};var Sa=fe(null);function Ca(){var e=Sa.current;return e===null?K.pooledCache:e}function wa(e,t){t===null?k(Sa,Sa.current):k(Sa,t.pool)}function Ta(){var e=Ca();return e===null?null:{parent:F._currentValue,pool:e}}var Ea=Error(i(460)),Da=Error(i(474)),Oa=Error(i(542)),ka={then:function(){}};function Aa(e){return e=e.status,e===`fulfilled`||e===`rejected`}function ja(e,t,n){switch(n=e[n],n===void 0?e.push(t):n!==t&&(t.then(ln,ln),t=n),t.status){case`fulfilled`:return t.value;case`rejected`:throw e=t.reason,Fa(e),e;default:if(typeof t.status==`string`)t.then(ln,ln);else{if(e=K,e!==null&&100<e.shellSuspendCounter)throw Error(i(482));e=t,e.status=`pending`,e.then(function(e){if(t.status===`pending`){var n=t;n.status=`fulfilled`,n.value=e}},function(e){if(t.status===`pending`){var n=t;n.status=`rejected`,n.reason=e}})}switch(t.status){case`fulfilled`:return t.value;case`rejected`:throw e=t.reason,Fa(e),e}throw Na=t,Ea}}function Ma(e){try{var t=e._init;return t(e._payload)}catch(e){throw typeof e==`object`&&e&&typeof e.then==`function`?(Na=e,Ea):e}}var Na=null;function Pa(){if(Na===null)throw Error(i(459));var e=Na;return Na=null,e}function Fa(e){if(e===Ea||e===Oa)throw Error(i(483))}var Ia=null,La=0;function Ra(e){var t=La;return La+=1,Ia===null&&(Ia=[]),ja(Ia,e,t)}function za(e,t){t=t.props.ref,e.ref=t===void 0?null:t}function Ba(e,t){throw t.$$typeof===g?Error(i(525)):(e=Object.prototype.toString.call(t),Error(i(31,e===`[object Object]`?`object with keys {`+Object.keys(t).join(`, `)+`}`:e)))}function Va(e){function t(t,n){if(e){var r=t.deletions;r===null?(t.deletions=[n],t.flags|=16):r.push(n)}}function n(n,r){if(!e)return null;for(;r!==null;)t(n,r),r=r.sibling;return null}function r(e){for(var t=new Map;e!==null;)e.key===null?t.set(e.index,e):t.set(e.key,e),e=e.sibling;return t}function a(e,t){return e=gi(e,t),e.index=0,e.sibling=null,e}function o(t,n,r){return t.index=r,e?(r=t.alternate,r===null?(t.flags|=67108866,n):(r=r.index,r<n?(t.flags|=67108866,n):r)):(t.flags|=1048576,n)}function s(t){return e&&t.alternate===null&&(t.flags|=67108866),t}function c(e,t,n,r){return t===null||t.tag!==6?(t=bi(n,e.mode,r),t.return=e,t):(t=a(t,n),t.return=e,t)}function l(e,t,n,r){var i=n.type;return i===y?d(e,t,n.props.children,r,n.key):t!==null&&(t.elementType===i||typeof i==`object`&&i&&i.$$typeof===E&&Ma(i)===t.type)?(t=a(t,n.props),za(t,n),t.return=e,t):(t=vi(n.type,n.key,n.props,null,e.mode,r),za(t,n),t.return=e,t)}function u(e,t,n,r){return t===null||t.tag!==4||t.stateNode.containerInfo!==n.containerInfo||t.stateNode.implementation!==n.implementation?(t=Si(n,e.mode,r),t.return=e,t):(t=a(t,n.children||[]),t.return=e,t)}function d(e,t,n,r,i){return t===null||t.tag!==7?(t=yi(n,e.mode,r,i),t.return=e,t):(t=a(t,n),t.return=e,t)}function f(e,t,n){if(typeof t==`string`&&t!==``||typeof t==`number`||typeof t==`bigint`)return t=bi(``+t,e.mode,n),t.return=e,t;if(typeof t==`object`&&t){switch(t.$$typeof){case _:return n=vi(t.type,t.key,t.props,null,e.mode,n),za(n,t),n.return=e,n;case v:return t=Si(t,e.mode,n),t.return=e,t;case E:return t=Ma(t),f(e,t,n)}if(ce(t)||ae(t))return t=yi(t,e.mode,n,null),t.return=e,t;if(typeof t.then==`function`)return f(e,Ra(t),n);if(t.$$typeof===S)return f(e,sa(e,t),n);Ba(e,t)}return null}function p(e,t,n,r){var i=t===null?null:t.key;if(typeof n==`string`&&n!==``||typeof n==`number`||typeof n==`bigint`)return i===null?c(e,t,``+n,r):null;if(typeof n==`object`&&n){switch(n.$$typeof){case _:return n.key===i?l(e,t,n,r):null;case v:return n.key===i?u(e,t,n,r):null;case E:return n=Ma(n),p(e,t,n,r)}if(ce(n)||ae(n))return i===null?d(e,t,n,r,null):null;if(typeof n.then==`function`)return p(e,t,Ra(n),r);if(n.$$typeof===S)return p(e,t,sa(e,n),r);Ba(e,n)}return null}function m(e,t,n,r,i){if(typeof r==`string`&&r!==``||typeof r==`number`||typeof r==`bigint`)return e=e.get(n)||null,c(t,e,``+r,i);if(typeof r==`object`&&r){switch(r.$$typeof){case _:return e=e.get(r.key===null?n:r.key)||null,l(t,e,r,i);case v:return e=e.get(r.key===null?n:r.key)||null,u(t,e,r,i);case E:return r=Ma(r),m(e,t,n,r,i)}if(ce(r)||ae(r))return e=e.get(n)||null,d(t,e,r,i,null);if(typeof r.then==`function`)return m(e,t,n,Ra(r),i);if(r.$$typeof===S)return m(e,t,n,sa(t,r),i);Ba(t,r)}return null}function h(i,a,s,c){for(var l=null,u=null,d=a,h=a=0,g=null;d!==null&&h<s.length;h++){d.index>h?(g=d,d=null):g=d.sibling;var _=p(i,d,s[h],c);if(_===null){d===null&&(d=g);break}e&&d&&_.alternate===null&&t(i,d),a=o(_,a,h),u===null?l=_:u.sibling=_,u=_,d=g}if(h===s.length)return n(i,d),P&&Pi(i,h),l;if(d===null){for(;h<s.length;h++)d=f(i,s[h],c),d!==null&&(a=o(d,a,h),u===null?l=d:u.sibling=d,u=d);return P&&Pi(i,h),l}for(d=r(d);h<s.length;h++)g=m(d,i,h,s[h],c),g!==null&&(e&&g.alternate!==null&&d.delete(g.key===null?h:g.key),a=o(g,a,h),u===null?l=g:u.sibling=g,u=g);return e&&d.forEach(function(e){return t(i,e)}),P&&Pi(i,h),l}function g(a,s,c,l){if(c==null)throw Error(i(151));for(var u=null,d=null,h=s,g=s=0,_=null,v=c.next();h!==null&&!v.done;g++,v=c.next()){h.index>g?(_=h,h=null):_=h.sibling;var y=p(a,h,v.value,l);if(y===null){h===null&&(h=_);break}e&&h&&y.alternate===null&&t(a,h),s=o(y,s,g),d===null?u=y:d.sibling=y,d=y,h=_}if(v.done)return n(a,h),P&&Pi(a,g),u;if(h===null){for(;!v.done;g++,v=c.next())v=f(a,v.value,l),v!==null&&(s=o(v,s,g),d===null?u=v:d.sibling=v,d=v);return P&&Pi(a,g),u}for(h=r(h);!v.done;g++,v=c.next())v=m(h,a,g,v.value,l),v!==null&&(e&&v.alternate!==null&&h.delete(v.key===null?g:v.key),s=o(v,s,g),d===null?u=v:d.sibling=v,d=v);return e&&h.forEach(function(e){return t(a,e)}),P&&Pi(a,g),u}function b(e,r,o,c){if(typeof o==`object`&&o&&o.type===y&&o.key===null&&(o=o.props.children),typeof o==`object`&&o){switch(o.$$typeof){case _:a:{for(var l=o.key;r!==null;){if(r.key===l){if(l=o.type,l===y){if(r.tag===7){n(e,r.sibling),c=a(r,o.props.children),c.return=e,e=c;break a}}else if(r.elementType===l||typeof l==`object`&&l&&l.$$typeof===E&&Ma(l)===r.type){n(e,r.sibling),c=a(r,o.props),za(c,o),c.return=e,e=c;break a}n(e,r);break}else t(e,r);r=r.sibling}o.type===y?(c=yi(o.props.children,e.mode,c,o.key),c.return=e,e=c):(c=vi(o.type,o.key,o.props,null,e.mode,c),za(c,o),c.return=e,e=c)}return s(e);case v:a:{for(l=o.key;r!==null;){if(r.key===l)if(r.tag===4&&r.stateNode.containerInfo===o.containerInfo&&r.stateNode.implementation===o.implementation){n(e,r.sibling),c=a(r,o.children||[]),c.return=e,e=c;break a}else{n(e,r);break}else t(e,r);r=r.sibling}c=Si(o,e.mode,c),c.return=e,e=c}return s(e);case E:return o=Ma(o),b(e,r,o,c)}if(ce(o))return h(e,r,o,c);if(ae(o)){if(l=ae(o),typeof l!=`function`)throw Error(i(150));return o=l.call(o),g(e,r,o,c)}if(typeof o.then==`function`)return b(e,r,Ra(o),c);if(o.$$typeof===S)return b(e,r,sa(e,o),c);Ba(e,o)}return typeof o==`string`&&o!==``||typeof o==`number`||typeof o==`bigint`?(o=``+o,r!==null&&r.tag===6?(n(e,r.sibling),c=a(r,o),c.return=e,e=c):(n(e,r),c=bi(o,e.mode,c),c.return=e,e=c),s(e)):n(e,r)}return function(e,t,n,r){try{La=0;var i=b(e,t,n,r);return Ia=null,i}catch(t){if(t===Ea||t===Oa)throw t;var a=mi(29,t,null,e.mode);return a.lanes=r,a.return=e,a}}}var Ha=Va(!0),Ua=Va(!1),Wa=!1;function Ga(e){e.updateQueue={baseState:e.memoizedState,firstBaseUpdate:null,lastBaseUpdate:null,shared:{pending:null,lanes:0,hiddenCallbacks:null},callbacks:null}}function Ka(e,t){e=e.updateQueue,t.updateQueue===e&&(t.updateQueue={baseState:e.baseState,firstBaseUpdate:e.firstBaseUpdate,lastBaseUpdate:e.lastBaseUpdate,shared:e.shared,callbacks:null})}function qa(e){return{lane:e,tag:0,payload:null,callback:null,next:null}}function Ja(e,t,n){var r=e.updateQueue;if(r===null)return null;if(r=r.shared,G&2){var i=r.pending;return i===null?t.next=t:(t.next=i.next,i.next=t),r.pending=t,t=di(e),ui(e,null,n),t}return si(e,r,t,n),di(e)}function Ya(e,t,n){if(t=t.updateQueue,t!==null&&(t=t.shared,n&4194048)){var r=t.lanes;r&=e.pendingLanes,n|=r,t.lanes=n,ct(e,n)}}function Xa(e,t){var n=e.updateQueue,r=e.alternate;if(r!==null&&(r=r.updateQueue,n===r)){var i=null,a=null;if(n=n.firstBaseUpdate,n!==null){do{var o={lane:n.lane,tag:n.tag,payload:n.payload,callback:null,next:null};a===null?i=a=o:a=a.next=o,n=n.next}while(n!==null);a===null?i=a=t:a=a.next=t}else i=a=t;n={baseState:r.baseState,firstBaseUpdate:i,lastBaseUpdate:a,shared:r.shared,callbacks:r.callbacks},e.updateQueue=n;return}e=n.lastBaseUpdate,e===null?n.firstBaseUpdate=t:e.next=t,n.lastBaseUpdate=t}var Za=!1;function Qa(){if(Za){var e=_a;if(e!==null)throw e}}function $a(e,t,n,r){Za=!1;var i=e.updateQueue;Wa=!1;var a=i.firstBaseUpdate,o=i.lastBaseUpdate,s=i.shared.pending;if(s!==null){i.shared.pending=null;var c=s,l=c.next;c.next=null,o===null?a=l:o.next=l,o=c;var u=e.alternate;u!==null&&(u=u.updateQueue,s=u.lastBaseUpdate,s!==o&&(s===null?u.firstBaseUpdate=l:s.next=l,u.lastBaseUpdate=c))}if(a!==null){var d=i.baseState;o=0,u=l=c=null,s=a;do{var f=s.lane&-536870913,p=f!==s.lane;if(p?(J&f)===f:(r&f)===f){f!==0&&f===ga&&(Za=!0),u!==null&&(u=u.next={lane:0,tag:s.tag,payload:s.payload,callback:null,next:null});a:{var m=e,g=s;f=t;var _=n;switch(g.tag){case 1:if(m=g.payload,typeof m==`function`){d=m.call(_,d,f);break a}d=m;break a;case 3:m.flags=m.flags&-65537|128;case 0:if(m=g.payload,f=typeof m==`function`?m.call(_,d,f):m,f==null)break a;d=h({},d,f);break a;case 2:Wa=!0}}f=s.callback,f!==null&&(e.flags|=64,p&&(e.flags|=8192),p=i.callbacks,p===null?i.callbacks=[f]:p.push(f))}else p={lane:f,tag:s.tag,payload:s.payload,callback:s.callback,next:null},u===null?(l=u=p,c=d):u=u.next=p,o|=f;if(s=s.next,s===null){if(s=i.shared.pending,s===null)break;p=s,s=p.next,p.next=null,i.lastBaseUpdate=p,i.shared.pending=null}}while(1);u===null&&(c=d),i.baseState=c,i.firstBaseUpdate=l,i.lastBaseUpdate=u,a===null&&(i.shared.lanes=0),Gl|=o,e.lanes=o,e.memoizedState=d}}function eo(e,t){if(typeof e!=`function`)throw Error(i(191,e));e.call(t)}function to(e,t){var n=e.callbacks;if(n!==null)for(e.callbacks=null,e=0;e<n.length;e++)eo(n[e],t)}var no=fe(null),ro=fe(0);function io(e,t){e=Wl,k(ro,e),k(no,t),Wl=e|t.baseLanes}function ao(){k(ro,Wl),k(no,no.current)}function oo(){Wl=ro.current,pe(no),pe(ro)}var so=fe(null),co=null;function lo(e){var t=e.alternate;k(I,I.current&1),k(so,e),co===null&&(t===null||no.current!==null||t.memoizedState!==null)&&(co=e)}function uo(e){k(I,I.current),k(so,e),co===null&&(co=e)}function fo(e){e.tag===22?(k(I,I.current),k(so,e),co===null&&(co=e)):po(e)}function po(){k(I,I.current),k(so,so.current)}function mo(e){pe(so),co===e&&(co=null),pe(I)}var I=fe(0);function ho(e){for(var t=e;t!==null;){if(t.tag===13){var n=t.memoizedState;if(n!==null&&(n=n.dehydrated,n===null||af(n)||of(n)))return t}else if(t.tag===19&&(t.memoizedProps.revealOrder===`forwards`||t.memoizedProps.revealOrder===`backwards`||t.memoizedProps.revealOrder===`unstable_legacy-backwards`||t.memoizedProps.revealOrder===`together`)){if(t.flags&128)return t}else if(t.child!==null){t.child.return=t,t=t.child;continue}if(t===e)break;for(;t.sibling===null;){if(t.return===null||t.return===e)return null;t=t.return}t.sibling.return=t.return,t=t.sibling}return null}var go=0,L=null,R=null,z=null,_o=!1,vo=!1,yo=!1,bo=0,xo=0,So=null,Co=0;function B(){throw Error(i(321))}function wo(e,t){if(t===null)return!1;for(var n=0;n<t.length&&n<e.length;n++)if(!kr(e[n],t[n]))return!1;return!0}function To(e,t,n,r,i,a){return go=a,L=t,t.memoizedState=null,t.updateQueue=null,t.lanes=0,D.H=e===null||e.memoizedState===null?Vs:Hs,yo=!1,a=n(r,i),yo=!1,vo&&(a=Do(t,n,r,i)),Eo(e),a}function Eo(e){D.H=Bs;var t=R!==null&&R.next!==null;if(go=0,z=R=L=null,_o=!1,xo=0,So=null,t)throw Error(i(300));e===null||ac||(e=e.dependencies,e!==null&&ia(e)&&(ac=!0))}function Do(e,t,n,r){L=e;var a=0;do{if(vo&&(So=null),xo=0,vo=!1,25<=a)throw Error(i(301));if(a+=1,z=R=null,e.updateQueue!=null){var o=e.updateQueue;o.lastEffect=null,o.events=null,o.stores=null,o.memoCache!=null&&(o.memoCache.index=0)}D.H=Us,o=t(n,r)}while(vo);return o}function Oo(){var e=D.H,t=e.useState()[0];return t=typeof t.then==`function`?Po(t):t,e=e.useState()[0],(R===null?null:R.memoizedState)!==e&&(L.flags|=1024),t}function ko(){var e=bo!==0;return bo=0,e}function Ao(e,t,n){t.updateQueue=e.updateQueue,t.flags&=-2053,e.lanes&=~n}function jo(e){if(_o){for(e=e.memoizedState;e!==null;){var t=e.queue;t!==null&&(t.pending=null),e=e.next}_o=!1}go=0,z=R=L=null,vo=!1,xo=bo=0,So=null}function Mo(){var e={memoizedState:null,baseState:null,baseQueue:null,queue:null,next:null};return z===null?L.memoizedState=z=e:z=z.next=e,z}function V(){if(R===null){var e=L.alternate;e=e===null?null:e.memoizedState}else e=R.next;var t=z===null?L.memoizedState:z.next;if(t!==null)z=t,R=e;else{if(e===null)throw L.alternate===null?Error(i(467)):Error(i(310));R=e,e={memoizedState:R.memoizedState,baseState:R.baseState,baseQueue:R.baseQueue,queue:R.queue,next:null},z===null?L.memoizedState=z=e:z=z.next=e}return z}function No(){return{lastEffect:null,events:null,stores:null,memoCache:null}}function Po(e){var t=xo;return xo+=1,So===null&&(So=[]),e=ja(So,e,t),t=L,(z===null?t.memoizedState:z.next)===null&&(t=t.alternate,D.H=t===null||t.memoizedState===null?Vs:Hs),e}function Fo(e){if(typeof e==`object`&&e){if(typeof e.then==`function`)return Po(e);if(e.$$typeof===S)return oa(e)}throw Error(i(438,String(e)))}function Io(e){var t=null,n=L.updateQueue;if(n!==null&&(t=n.memoCache),t==null){var r=L.alternate;r!==null&&(r=r.updateQueue,r!==null&&(r=r.memoCache,r!=null&&(t={data:r.data.map(function(e){return e.slice()}),index:0})))}if(t??={data:[],index:0},n===null&&(n=No(),L.updateQueue=n),n.memoCache=t,n=t.data[t.index],n===void 0)for(n=t.data[t.index]=Array(e),r=0;r<e;r++)n[r]=re;return t.index++,n}function Lo(e,t){return typeof t==`function`?t(e):t}function Ro(e){return zo(V(),R,e)}function zo(e,t,n){var r=e.queue;if(r===null)throw Error(i(311));r.lastRenderedReducer=n;var a=e.baseQueue,o=r.pending;if(o!==null){if(a!==null){var s=a.next;a.next=o.next,o.next=s}t.baseQueue=a=o,r.pending=null}if(o=e.baseState,a===null)e.memoizedState=o;else{t=a.next;var c=s=null,l=null,u=t,d=!1;do{var f=u.lane&-536870913;if(f===u.lane?(go&f)===f:(J&f)===f){var p=u.revertLane;if(p===0)l!==null&&(l=l.next={lane:0,revertLane:0,gesture:null,action:u.action,hasEagerState:u.hasEagerState,eagerState:u.eagerState,next:null}),f===ga&&(d=!0);else if((go&p)===p){u=u.next,p===ga&&(d=!0);continue}else f={lane:0,revertLane:u.revertLane,gesture:null,action:u.action,hasEagerState:u.hasEagerState,eagerState:u.eagerState,next:null},l===null?(c=l=f,s=o):l=l.next=f,L.lanes|=p,Gl|=p;f=u.action,yo&&n(o,f),o=u.hasEagerState?u.eagerState:n(o,f)}else p={lane:f,revertLane:u.revertLane,gesture:u.gesture,action:u.action,hasEagerState:u.hasEagerState,eagerState:u.eagerState,next:null},l===null?(c=l=p,s=o):l=l.next=p,L.lanes|=f,Gl|=f;u=u.next}while(u!==null&&u!==t);if(l===null?s=o:l.next=c,!kr(o,e.memoizedState)&&(ac=!0,d&&(n=_a,n!==null)))throw n;e.memoizedState=o,e.baseState=s,e.baseQueue=l,r.lastRenderedState=o}return a===null&&(r.lanes=0),[e.memoizedState,r.dispatch]}function Bo(e){var t=V(),n=t.queue;if(n===null)throw Error(i(311));n.lastRenderedReducer=e;var r=n.dispatch,a=n.pending,o=t.memoizedState;if(a!==null){n.pending=null;var s=a=a.next;do o=e(o,s.action),s=s.next;while(s!==a);kr(o,t.memoizedState)||(ac=!0),t.memoizedState=o,t.baseQueue===null&&(t.baseState=o),n.lastRenderedState=o}return[o,r]}function Vo(e,t,n){var r=L,a=V(),o=P;if(o){if(n===void 0)throw Error(i(407));n=n()}else n=t();var s=!kr((R||a).memoizedState,n);if(s&&(a.memoizedState=n,ac=!0),a=a.queue,fs(Wo.bind(null,r,a,e),[e]),a.getSnapshot!==t||s||z!==null&&z.memoizedState.tag&1){if(r.flags|=2048,ss(9,{destroy:void 0},Uo.bind(null,r,a,n,t),null),K===null)throw Error(i(349));o||go&127||Ho(r,t,n)}return n}function Ho(e,t,n){e.flags|=16384,e={getSnapshot:t,value:n},t=L.updateQueue,t===null?(t=No(),L.updateQueue=t,t.stores=[e]):(n=t.stores,n===null?t.stores=[e]:n.push(e))}function Uo(e,t,n,r){t.value=n,t.getSnapshot=r,Go(t)&&Ko(e)}function Wo(e,t,n){return n(function(){Go(t)&&Ko(e)})}function Go(e){var t=e.getSnapshot;e=e.value;try{var n=t();return!kr(e,n)}catch{return!0}}function Ko(e){var t=li(e,2);t!==null&&hu(t,e,2)}function qo(e){var t=Mo();if(typeof e==`function`){var n=e;if(e=n(),yo){Ge(!0);try{n()}finally{Ge(!1)}}}return t.memoizedState=t.baseState=e,t.queue={pending:null,lanes:0,dispatch:null,lastRenderedReducer:Lo,lastRenderedState:e},t}function Jo(e,t,n,r){return e.baseState=n,zo(e,R,typeof r==`function`?r:Lo)}function Yo(e,t,n,r,a){if(Ls(e))throw Error(i(485));if(e=t.action,e!==null){var o={payload:a,action:e,next:null,isTransition:!0,status:`pending`,value:null,reason:null,listeners:[],then:function(e){o.listeners.push(e)}};D.T===null?o.isTransition=!1:n(!0),r(o),n=t.pending,n===null?(o.next=t.pending=o,Xo(t,o)):(o.next=n.next,t.pending=n.next=o)}}function Xo(e,t){var n=t.action,r=t.payload,i=e.state;if(t.isTransition){var a=D.T,o={};D.T=o;try{var s=n(i,r),c=D.S;c!==null&&c(o,s),Zo(e,t,s)}catch(n){$o(e,t,n)}finally{a!==null&&o.types!==null&&(a.types=o.types),D.T=a}}else try{a=n(i,r),Zo(e,t,a)}catch(n){$o(e,t,n)}}function Zo(e,t,n){typeof n==`object`&&n&&typeof n.then==`function`?n.then(function(n){Qo(e,t,n)},function(n){return $o(e,t,n)}):Qo(e,t,n)}function Qo(e,t,n){t.status=`fulfilled`,t.value=n,es(t),e.state=n,t=e.pending,t!==null&&(n=t.next,n===t?e.pending=null:(n=n.next,t.next=n,Xo(e,n)))}function $o(e,t,n){var r=e.pending;if(e.pending=null,r!==null){r=r.next;do t.status=`rejected`,t.reason=n,es(t),t=t.next;while(t!==r)}e.action=null}function es(e){e=e.listeners;for(var t=0;t<e.length;t++)(0,e[t])()}function ts(e,t){return t}function ns(e,t){if(P){var n=K.formState;if(n!==null){a:{var r=L;if(P){if(N){b:{for(var i=N,a=Vi;i.nodeType!==8;){if(!a){i=null;break b}if(i=cf(i.nextSibling),i===null){i=null;break b}}a=i.data,i=a===`F!`||a===`F`?i:null}if(i){N=cf(i.nextSibling),r=i.data===`F!`;break a}}Ui(r)}r=!1}r&&(t=n[0])}}return n=Mo(),n.memoizedState=n.baseState=t,r={pending:null,lanes:0,dispatch:null,lastRenderedReducer:ts,lastRenderedState:t},n.queue=r,n=Ps.bind(null,L,r),r.dispatch=n,r=qo(!1),a=Is.bind(null,L,!1,r.queue),r=Mo(),i={state:t,dispatch:null,action:e,pending:null},r.queue=i,n=Yo.bind(null,L,i,a,n),i.dispatch=n,r.memoizedState=e,[t,n,!1]}function rs(e){return is(V(),R,e)}function is(e,t,n){if(t=zo(e,t,ts)[0],e=Ro(Lo)[0],typeof t==`object`&&t&&typeof t.then==`function`)try{var r=Po(t)}catch(e){throw e===Ea?Oa:e}else r=t;t=V();var i=t.queue,a=i.dispatch;return n!==t.memoizedState&&(L.flags|=2048,ss(9,{destroy:void 0},as.bind(null,i,n),null)),[r,a,e]}function as(e,t){e.action=t}function os(e){var t=V(),n=R;if(n!==null)return is(t,n,e);V(),t=t.memoizedState,n=V();var r=n.queue.dispatch;return n.memoizedState=e,[t,r,!1]}function ss(e,t,n,r){return e={tag:e,create:n,deps:r,inst:t,next:null},t=L.updateQueue,t===null&&(t=No(),L.updateQueue=t),n=t.lastEffect,n===null?t.lastEffect=e.next=e:(r=n.next,n.next=e,e.next=r,t.lastEffect=e),e}function cs(){return V().memoizedState}function ls(e,t,n,r){var i=Mo();L.flags|=e,i.memoizedState=ss(1|t,{destroy:void 0},n,r===void 0?null:r)}function us(e,t,n,r){var i=V();r=r===void 0?null:r;var a=i.memoizedState.inst;R!==null&&r!==null&&wo(r,R.memoizedState.deps)?i.memoizedState=ss(t,a,n,r):(L.flags|=e,i.memoizedState=ss(1|t,a,n,r))}function ds(e,t){ls(8390656,8,e,t)}function fs(e,t){us(2048,8,e,t)}function ps(e){L.flags|=4;var t=L.updateQueue;if(t===null)t=No(),L.updateQueue=t,t.events=[e];else{var n=t.events;n===null?t.events=[e]:n.push(e)}}function ms(e){var t=V().memoizedState;return ps({ref:t,nextImpl:e}),function(){if(G&2)throw Error(i(440));return t.impl.apply(void 0,arguments)}}function hs(e,t){return us(4,2,e,t)}function gs(e,t){return us(4,4,e,t)}function _s(e,t){if(typeof t==`function`){e=e();var n=t(e);return function(){typeof n==`function`?n():t(null)}}if(t!=null)return e=e(),t.current=e,function(){t.current=null}}function vs(e,t,n){n=n==null?null:n.concat([e]),us(4,4,_s.bind(null,t,e),n)}function ys(){}function bs(e,t){var n=V();t=t===void 0?null:t;var r=n.memoizedState;return t!==null&&wo(t,r[1])?r[0]:(n.memoizedState=[e,t],e)}function xs(e,t){var n=V();t=t===void 0?null:t;var r=n.memoizedState;if(t!==null&&wo(t,r[1]))return r[0];if(r=e(),yo){Ge(!0);try{e()}finally{Ge(!1)}}return n.memoizedState=[r,t],r}function Ss(e,t,n){return n===void 0||go&1073741824&&!(J&261930)?e.memoizedState=t:(e.memoizedState=n,e=mu(),L.lanes|=e,Gl|=e,n)}function Cs(e,t,n,r){return kr(n,t)?n:no.current===null?!(go&42)||go&1073741824&&!(J&261930)?(ac=!0,e.memoizedState=n):(e=mu(),L.lanes|=e,Gl|=e,t):(e=Ss(e,n,r),kr(e,t)||(ac=!0),e)}function ws(e,t,n,r,i){var a=O.p;O.p=a!==0&&8>a?a:8;var o=D.T,s={};D.T=s,Is(e,!1,t,n);try{var c=i(),l=D.S;l!==null&&l(s,c),typeof c==`object`&&c&&typeof c.then==`function`?Fs(e,t,ba(c,r),pu(e)):Fs(e,t,r,pu(e))}catch(n){Fs(e,t,{then:function(){},status:`rejected`,reason:n},pu())}finally{O.p=a,o!==null&&s.types!==null&&(o.types=s.types),D.T=o}}function Ts(){}function Es(e,t,n,r){if(e.tag!==5)throw Error(i(476));var a=Ds(e).queue;ws(e,a,t,le,n===null?Ts:function(){return Os(e),n(r)})}function Ds(e){var t=e.memoizedState;if(t!==null)return t;t={memoizedState:le,baseState:le,baseQueue:null,queue:{pending:null,lanes:0,dispatch:null,lastRenderedReducer:Lo,lastRenderedState:le},next:null};var n={};return t.next={memoizedState:n,baseState:n,baseQueue:null,queue:{pending:null,lanes:0,dispatch:null,lastRenderedReducer:Lo,lastRenderedState:n},next:null},e.memoizedState=t,e=e.alternate,e!==null&&(e.memoizedState=t),t}function Os(e){var t=Ds(e);t.next===null&&(t=e.alternate.memoizedState),Fs(e,t.next.queue,{},pu())}function ks(){return oa(Qf)}function As(){return V().memoizedState}function js(){return V().memoizedState}function Ms(e){for(var t=e.return;t!==null;){switch(t.tag){case 24:case 3:var n=pu();e=qa(n);var r=Ja(t,e,n);r!==null&&(hu(r,t,n),Ya(r,t,n)),t={cache:fa()},e.payload=t;return}t=t.return}}function Ns(e,t,n){var r=pu();n={lane:r,revertLane:0,gesture:null,action:n,hasEagerState:!1,eagerState:null,next:null},Ls(e)?Rs(t,n):(n=ci(e,t,n,r),n!==null&&(hu(n,e,r),zs(n,t,r)))}function Ps(e,t,n){Fs(e,t,n,pu())}function Fs(e,t,n,r){var i={lane:r,revertLane:0,gesture:null,action:n,hasEagerState:!1,eagerState:null,next:null};if(Ls(e))Rs(t,i);else{var a=e.alternate;if(e.lanes===0&&(a===null||a.lanes===0)&&(a=t.lastRenderedReducer,a!==null))try{var o=t.lastRenderedState,s=a(o,n);if(i.hasEagerState=!0,i.eagerState=s,kr(s,o))return si(e,t,i,0),K===null&&oi(),!1}catch{}if(n=ci(e,t,i,r),n!==null)return hu(n,e,r),zs(n,t,r),!0}return!1}function Is(e,t,n,r){if(r={lane:2,revertLane:dd(),gesture:null,action:r,hasEagerState:!1,eagerState:null,next:null},Ls(e)){if(t)throw Error(i(479))}else t=ci(e,n,r,2),t!==null&&hu(t,e,2)}function Ls(e){var t=e.alternate;return e===L||t!==null&&t===L}function Rs(e,t){vo=_o=!0;var n=e.pending;n===null?t.next=t:(t.next=n.next,n.next=t),e.pending=t}function zs(e,t,n){if(n&4194048){var r=t.lanes;r&=e.pendingLanes,n|=r,t.lanes=n,ct(e,n)}}var Bs={readContext:oa,use:Fo,useCallback:B,useContext:B,useEffect:B,useImperativeHandle:B,useLayoutEffect:B,useInsertionEffect:B,useMemo:B,useReducer:B,useRef:B,useState:B,useDebugValue:B,useDeferredValue:B,useTransition:B,useSyncExternalStore:B,useId:B,useHostTransitionStatus:B,useFormState:B,useActionState:B,useOptimistic:B,useMemoCache:B,useCacheRefresh:B};Bs.useEffectEvent=B;var Vs={readContext:oa,use:Fo,useCallback:function(e,t){return Mo().memoizedState=[e,t===void 0?null:t],e},useContext:oa,useEffect:ds,useImperativeHandle:function(e,t,n){n=n==null?null:n.concat([e]),ls(4194308,4,_s.bind(null,t,e),n)},useLayoutEffect:function(e,t){return ls(4194308,4,e,t)},useInsertionEffect:function(e,t){ls(4,2,e,t)},useMemo:function(e,t){var n=Mo();t=t===void 0?null:t;var r=e();if(yo){Ge(!0);try{e()}finally{Ge(!1)}}return n.memoizedState=[r,t],r},useReducer:function(e,t,n){var r=Mo();if(n!==void 0){var i=n(t);if(yo){Ge(!0);try{n(t)}finally{Ge(!1)}}}else i=t;return r.memoizedState=r.baseState=i,e={pending:null,lanes:0,dispatch:null,lastRenderedReducer:e,lastRenderedState:i},r.queue=e,e=e.dispatch=Ns.bind(null,L,e),[r.memoizedState,e]},useRef:function(e){var t=Mo();return e={current:e},t.memoizedState=e},useState:function(e){e=qo(e);var t=e.queue,n=Ps.bind(null,L,t);return t.dispatch=n,[e.memoizedState,n]},useDebugValue:ys,useDeferredValue:function(e,t){return Ss(Mo(),e,t)},useTransition:function(){var e=qo(!1);return e=ws.bind(null,L,e.queue,!0,!1),Mo().memoizedState=e,[!1,e]},useSyncExternalStore:function(e,t,n){var r=L,a=Mo();if(P){if(n===void 0)throw Error(i(407));n=n()}else{if(n=t(),K===null)throw Error(i(349));J&127||Ho(r,t,n)}a.memoizedState=n;var o={value:n,getSnapshot:t};return a.queue=o,ds(Wo.bind(null,r,o,e),[e]),r.flags|=2048,ss(9,{destroy:void 0},Uo.bind(null,r,o,n,t),null),n},useId:function(){var e=Mo(),t=K.identifierPrefix;if(P){var n=Ni,r=Mi;n=(r&~(1<<32-Ke(r)-1)).toString(32)+n,t=`_`+t+`R_`+n,n=bo++,0<n&&(t+=`H`+n.toString(32)),t+=`_`}else n=Co++,t=`_`+t+`r_`+n.toString(32)+`_`;return e.memoizedState=t},useHostTransitionStatus:ks,useFormState:ns,useActionState:ns,useOptimistic:function(e){var t=Mo();t.memoizedState=t.baseState=e;var n={pending:null,lanes:0,dispatch:null,lastRenderedReducer:null,lastRenderedState:null};return t.queue=n,t=Is.bind(null,L,!0,n),n.dispatch=t,[e,t]},useMemoCache:Io,useCacheRefresh:function(){return Mo().memoizedState=Ms.bind(null,L)},useEffectEvent:function(e){var t=Mo(),n={impl:e};return t.memoizedState=n,function(){if(G&2)throw Error(i(440));return n.impl.apply(void 0,arguments)}}},Hs={readContext:oa,use:Fo,useCallback:bs,useContext:oa,useEffect:fs,useImperativeHandle:vs,useInsertionEffect:hs,useLayoutEffect:gs,useMemo:xs,useReducer:Ro,useRef:cs,useState:function(){return Ro(Lo)},useDebugValue:ys,useDeferredValue:function(e,t){return Cs(V(),R.memoizedState,e,t)},useTransition:function(){var e=Ro(Lo)[0],t=V().memoizedState;return[typeof e==`boolean`?e:Po(e),t]},useSyncExternalStore:Vo,useId:As,useHostTransitionStatus:ks,useFormState:rs,useActionState:rs,useOptimistic:function(e,t){return Jo(V(),R,e,t)},useMemoCache:Io,useCacheRefresh:js};Hs.useEffectEvent=ms;var Us={readContext:oa,use:Fo,useCallback:bs,useContext:oa,useEffect:fs,useImperativeHandle:vs,useInsertionEffect:hs,useLayoutEffect:gs,useMemo:xs,useReducer:Bo,useRef:cs,useState:function(){return Bo(Lo)},useDebugValue:ys,useDeferredValue:function(e,t){var n=V();return R===null?Ss(n,e,t):Cs(n,R.memoizedState,e,t)},useTransition:function(){var e=Bo(Lo)[0],t=V().memoizedState;return[typeof e==`boolean`?e:Po(e),t]},useSyncExternalStore:Vo,useId:As,useHostTransitionStatus:ks,useFormState:os,useActionState:os,useOptimistic:function(e,t){var n=V();return R===null?(n.baseState=e,[e,n.queue.dispatch]):Jo(n,R,e,t)},useMemoCache:Io,useCacheRefresh:js};Us.useEffectEvent=ms;function Ws(e,t,n,r){t=e.memoizedState,n=n(r,t),n=n==null?t:h({},t,n),e.memoizedState=n,e.lanes===0&&(e.updateQueue.baseState=n)}var Gs={enqueueSetState:function(e,t,n){e=e._reactInternals;var r=pu(),i=qa(r);i.payload=t,n!=null&&(i.callback=n),t=Ja(e,i,r),t!==null&&(hu(t,e,r),Ya(t,e,r))},enqueueReplaceState:function(e,t,n){e=e._reactInternals;var r=pu(),i=qa(r);i.tag=1,i.payload=t,n!=null&&(i.callback=n),t=Ja(e,i,r),t!==null&&(hu(t,e,r),Ya(t,e,r))},enqueueForceUpdate:function(e,t){e=e._reactInternals;var n=pu(),r=qa(n);r.tag=2,t!=null&&(r.callback=t),t=Ja(e,r,n),t!==null&&(hu(t,e,n),Ya(t,e,n))}};function Ks(e,t,n,r,i,a,o){return e=e.stateNode,typeof e.shouldComponentUpdate==`function`?e.shouldComponentUpdate(r,a,o):t.prototype&&t.prototype.isPureReactComponent?!Ar(n,r)||!Ar(i,a):!0}function qs(e,t,n,r){e=t.state,typeof t.componentWillReceiveProps==`function`&&t.componentWillReceiveProps(n,r),typeof t.UNSAFE_componentWillReceiveProps==`function`&&t.UNSAFE_componentWillReceiveProps(n,r),t.state!==e&&Gs.enqueueReplaceState(t,t.state,null)}function Js(e,t){var n=t;if(`ref`in t)for(var r in n={},t)r!==`ref`&&(n[r]=t[r]);if(e=e.defaultProps)for(var i in n===t&&(n=h({},n)),e)n[i]===void 0&&(n[i]=e[i]);return n}function Ys(e){ni(e)}function Xs(e){console.error(e)}function Zs(e){ni(e)}function Qs(e,t){try{var n=e.onUncaughtError;n(t.value,{componentStack:t.stack})}catch(e){setTimeout(function(){throw e})}}function $s(e,t,n){try{var r=e.onCaughtError;r(n.value,{componentStack:n.stack,errorBoundary:t.tag===1?t.stateNode:null})}catch(e){setTimeout(function(){throw e})}}function ec(e,t,n){return n=qa(n),n.tag=3,n.payload={element:null},n.callback=function(){Qs(e,t)},n}function tc(e){return e=qa(e),e.tag=3,e}function nc(e,t,n,r){var i=n.type.getDerivedStateFromError;if(typeof i==`function`){var a=r.value;e.payload=function(){return i(a)},e.callback=function(){$s(t,n,r)}}var o=n.stateNode;o!==null&&typeof o.componentDidCatch==`function`&&(e.callback=function(){$s(t,n,r),typeof i!=`function`&&(ru===null?ru=new Set([this]):ru.add(this));var e=r.stack;this.componentDidCatch(r.value,{componentStack:e===null?``:e})})}function rc(e,t,n,r,a){if(n.flags|=32768,typeof r==`object`&&r&&typeof r.then==`function`){if(t=n.alternate,t!==null&&ra(t,n,a,!0),n=so.current,n!==null){switch(n.tag){case 31:case 13:return co===null?Du():n.alternate===null&&X===0&&(X=3),n.flags&=-257,n.flags|=65536,n.lanes=a,r===ka?n.flags|=16384:(t=n.updateQueue,t===null?n.updateQueue=new Set([r]):t.add(r),Gu(e,r,a)),!1;case 22:return n.flags|=65536,r===ka?n.flags|=16384:(t=n.updateQueue,t===null?(t={transitions:null,markerInstances:null,retryQueue:new Set([r])},n.updateQueue=t):(n=t.retryQueue,n===null?t.retryQueue=new Set([r]):n.add(r)),Gu(e,r,a)),!1}throw Error(i(435,n.tag))}return Gu(e,r,a),Du(),!1}if(P)return t=so.current,t===null?(r!==Hi&&(t=Error(i(423),{cause:r}),Yi(wi(t,n))),e=e.current.alternate,e.flags|=65536,a&=-a,e.lanes|=a,r=wi(r,n),a=ec(e.stateNode,r,a),Xa(e,a),X!==4&&(X=2)):(!(t.flags&65536)&&(t.flags|=256),t.flags|=65536,t.lanes=a,r!==Hi&&(e=Error(i(422),{cause:r}),Yi(wi(e,n)))),!1;var o=Error(i(520),{cause:r});if(o=wi(o,n),Xl===null?Xl=[o]:Xl.push(o),X!==4&&(X=2),t===null)return!0;r=wi(r,n),n=t;do{switch(n.tag){case 3:return n.flags|=65536,e=a&-a,n.lanes|=e,e=ec(n.stateNode,r,e),Xa(n,e),!1;case 1:if(t=n.type,o=n.stateNode,!(n.flags&128)&&(typeof t.getDerivedStateFromError==`function`||o!==null&&typeof o.componentDidCatch==`function`&&(ru===null||!ru.has(o))))return n.flags|=65536,a&=-a,n.lanes|=a,a=tc(a),nc(a,e,n,r),Xa(n,a),!1}n=n.return}while(n!==null);return!1}var ic=Error(i(461)),ac=!1;function oc(e,t,n,r){t.child=e===null?Ua(t,null,n,r):Ha(t,e.child,n,r)}function sc(e,t,n,r,i){n=n.render;var a=t.ref;if(`ref`in r){var o={};for(var s in r)s!==`ref`&&(o[s]=r[s])}else o=r;return aa(t),r=To(e,t,n,o,a,i),s=ko(),e!==null&&!ac?(Ao(e,t,i),jc(e,t,i)):(P&&s&&Ii(t),t.flags|=1,oc(e,t,r,i),t.child)}function cc(e,t,n,r,i){if(e===null){var a=n.type;return typeof a==`function`&&!hi(a)&&a.defaultProps===void 0&&n.compare===null?(t.tag=15,t.type=a,lc(e,t,a,r,i)):(e=vi(n.type,null,r,t,t.mode,i),e.ref=t.ref,e.return=t,t.child=e)}if(a=e.child,!Mc(e,i)){var o=a.memoizedProps;if(n=n.compare,n=n===null?Ar:n,n(o,r)&&e.ref===t.ref)return jc(e,t,i)}return t.flags|=1,e=gi(a,r),e.ref=t.ref,e.return=t,t.child=e}function lc(e,t,n,r,i){if(e!==null){var a=e.memoizedProps;if(Ar(a,r)&&e.ref===t.ref)if(ac=!1,t.pendingProps=r=a,Mc(e,i))e.flags&131072&&(ac=!0);else return t.lanes=e.lanes,jc(e,t,i)}return _c(e,t,n,r,i)}function uc(e,t,n,r){var i=r.children,a=e===null?null:e.memoizedState;if(e===null&&t.stateNode===null&&(t.stateNode={_visibility:1,_pendingMarkers:null,_retryCache:null,_transitions:null}),r.mode===`hidden`){if(t.flags&128){if(a=a===null?n:a.baseLanes|n,e!==null){for(r=t.child=e.child,i=0;r!==null;)i=i|r.lanes|r.childLanes,r=r.sibling;r=i&~a}else r=0,t.child=null;return fc(e,t,a,n,r)}if(n&536870912)t.memoizedState={baseLanes:0,cachePool:null},e!==null&&wa(t,a===null?null:a.cachePool),a===null?ao():io(t,a),fo(t);else return r=t.lanes=536870912,fc(e,t,a===null?n:a.baseLanes|n,n,r)}else a===null?(e!==null&&wa(t,null),ao(),po(t)):(wa(t,a.cachePool),io(t,a),po(t),t.memoizedState=null);return oc(e,t,i,n),t.child}function dc(e,t){return e!==null&&e.tag===22||t.stateNode!==null||(t.stateNode={_visibility:1,_pendingMarkers:null,_retryCache:null,_transitions:null}),t.sibling}function fc(e,t,n,r,i){var a=Ca();return a=a===null?null:{parent:F._currentValue,pool:a},t.memoizedState={baseLanes:n,cachePool:a},e!==null&&wa(t,null),ao(),fo(t),e!==null&&ra(e,t,r,!0),t.childLanes=i,null}function pc(e,t){return t=Ec({mode:t.mode,children:t.children},e.mode),t.ref=e.ref,e.child=t,t.return=e,t}function mc(e,t,n){return Ha(t,e.child,null,n),e=pc(t,t.pendingProps),e.flags|=2,mo(t),t.memoizedState=null,e}function hc(e,t,n){var r=t.pendingProps,a=(t.flags&128)!=0;if(t.flags&=-129,e===null){if(P){if(r.mode===`hidden`)return e=pc(t,r),t.lanes=536870912,dc(null,e);if(uo(t),(e=N)?(e=rf(e,Vi),e=e!==null&&e.data===`&`?e:null,e!==null&&(t.memoizedState={dehydrated:e,treeContext:ji===null?null:{id:Mi,overflow:Ni},retryLane:536870912,hydrationErrors:null},n=xi(e),n.return=t,t.child=n,zi=t,N=null)):e=null,e===null)throw Ui(t);return t.lanes=536870912,null}return pc(t,r)}var o=e.memoizedState;if(o!==null){var s=o.dehydrated;if(uo(t),a)if(t.flags&256)t.flags&=-257,t=mc(e,t,n);else if(t.memoizedState!==null)t.child=e.child,t.flags|=128,t=null;else throw Error(i(558));else if(ac||ra(e,t,n,!1),a=(n&e.childLanes)!==0,ac||a){if(r=K,r!==null&&(s=lt(r,n),s!==0&&s!==o.retryLane))throw o.retryLane=s,li(e,s),hu(r,e,s),ic;Du(),t=mc(e,t,n)}else e=o.treeContext,N=cf(s.nextSibling),zi=t,P=!0,Bi=null,Vi=!1,e!==null&&Ri(t,e),t=pc(t,r),t.flags|=4096;return t}return e=gi(e.child,{mode:r.mode,children:r.children}),e.ref=t.ref,t.child=e,e.return=t,e}function gc(e,t){var n=t.ref;if(n===null)e!==null&&e.ref!==null&&(t.flags|=4194816);else{if(typeof n!=`function`&&typeof n!=`object`)throw Error(i(284));(e===null||e.ref!==n)&&(t.flags|=4194816)}}function _c(e,t,n,r,i){return aa(t),n=To(e,t,n,r,void 0,i),r=ko(),e!==null&&!ac?(Ao(e,t,i),jc(e,t,i)):(P&&r&&Ii(t),t.flags|=1,oc(e,t,n,i),t.child)}function vc(e,t,n,r,i,a){return aa(t),t.updateQueue=null,n=Do(t,r,n,i),Eo(e),r=ko(),e!==null&&!ac?(Ao(e,t,a),jc(e,t,a)):(P&&r&&Ii(t),t.flags|=1,oc(e,t,n,a),t.child)}function yc(e,t,n,r,i){if(aa(t),t.stateNode===null){var a=fi,o=n.contextType;typeof o==`object`&&o&&(a=oa(o)),a=new n(r,a),t.memoizedState=a.state!==null&&a.state!==void 0?a.state:null,a.updater=Gs,t.stateNode=a,a._reactInternals=t,a=t.stateNode,a.props=r,a.state=t.memoizedState,a.refs={},Ga(t),o=n.contextType,a.context=typeof o==`object`&&o?oa(o):fi,a.state=t.memoizedState,o=n.getDerivedStateFromProps,typeof o==`function`&&(Ws(t,n,o,r),a.state=t.memoizedState),typeof n.getDerivedStateFromProps==`function`||typeof a.getSnapshotBeforeUpdate==`function`||typeof a.UNSAFE_componentWillMount!=`function`&&typeof a.componentWillMount!=`function`||(o=a.state,typeof a.componentWillMount==`function`&&a.componentWillMount(),typeof a.UNSAFE_componentWillMount==`function`&&a.UNSAFE_componentWillMount(),o!==a.state&&Gs.enqueueReplaceState(a,a.state,null),$a(t,r,a,i),Qa(),a.state=t.memoizedState),typeof a.componentDidMount==`function`&&(t.flags|=4194308),r=!0}else if(e===null){a=t.stateNode;var s=t.memoizedProps,c=Js(n,s);a.props=c;var l=a.context,u=n.contextType;o=fi,typeof u==`object`&&u&&(o=oa(u));var d=n.getDerivedStateFromProps;u=typeof d==`function`||typeof a.getSnapshotBeforeUpdate==`function`,s=t.pendingProps!==s,u||typeof a.UNSAFE_componentWillReceiveProps!=`function`&&typeof a.componentWillReceiveProps!=`function`||(s||l!==o)&&qs(t,a,r,o),Wa=!1;var f=t.memoizedState;a.state=f,$a(t,r,a,i),Qa(),l=t.memoizedState,s||f!==l||Wa?(typeof d==`function`&&(Ws(t,n,d,r),l=t.memoizedState),(c=Wa||Ks(t,n,c,r,f,l,o))?(u||typeof a.UNSAFE_componentWillMount!=`function`&&typeof a.componentWillMount!=`function`||(typeof a.componentWillMount==`function`&&a.componentWillMount(),typeof a.UNSAFE_componentWillMount==`function`&&a.UNSAFE_componentWillMount()),typeof a.componentDidMount==`function`&&(t.flags|=4194308)):(typeof a.componentDidMount==`function`&&(t.flags|=4194308),t.memoizedProps=r,t.memoizedState=l),a.props=r,a.state=l,a.context=o,r=c):(typeof a.componentDidMount==`function`&&(t.flags|=4194308),r=!1)}else{a=t.stateNode,Ka(e,t),o=t.memoizedProps,u=Js(n,o),a.props=u,d=t.pendingProps,f=a.context,l=n.contextType,c=fi,typeof l==`object`&&l&&(c=oa(l)),s=n.getDerivedStateFromProps,(l=typeof s==`function`||typeof a.getSnapshotBeforeUpdate==`function`)||typeof a.UNSAFE_componentWillReceiveProps!=`function`&&typeof a.componentWillReceiveProps!=`function`||(o!==d||f!==c)&&qs(t,a,r,c),Wa=!1,f=t.memoizedState,a.state=f,$a(t,r,a,i),Qa();var p=t.memoizedState;o!==d||f!==p||Wa||e!==null&&e.dependencies!==null&&ia(e.dependencies)?(typeof s==`function`&&(Ws(t,n,s,r),p=t.memoizedState),(u=Wa||Ks(t,n,u,r,f,p,c)||e!==null&&e.dependencies!==null&&ia(e.dependencies))?(l||typeof a.UNSAFE_componentWillUpdate!=`function`&&typeof a.componentWillUpdate!=`function`||(typeof a.componentWillUpdate==`function`&&a.componentWillUpdate(r,p,c),typeof a.UNSAFE_componentWillUpdate==`function`&&a.UNSAFE_componentWillUpdate(r,p,c)),typeof a.componentDidUpdate==`function`&&(t.flags|=4),typeof a.getSnapshotBeforeUpdate==`function`&&(t.flags|=1024)):(typeof a.componentDidUpdate!=`function`||o===e.memoizedProps&&f===e.memoizedState||(t.flags|=4),typeof a.getSnapshotBeforeUpdate!=`function`||o===e.memoizedProps&&f===e.memoizedState||(t.flags|=1024),t.memoizedProps=r,t.memoizedState=p),a.props=r,a.state=p,a.context=c,r=u):(typeof a.componentDidUpdate!=`function`||o===e.memoizedProps&&f===e.memoizedState||(t.flags|=4),typeof a.getSnapshotBeforeUpdate!=`function`||o===e.memoizedProps&&f===e.memoizedState||(t.flags|=1024),r=!1)}return a=r,gc(e,t),r=(t.flags&128)!=0,a||r?(a=t.stateNode,n=r&&typeof n.getDerivedStateFromError!=`function`?null:a.render(),t.flags|=1,e!==null&&r?(t.child=Ha(t,e.child,null,i),t.child=Ha(t,null,n,i)):oc(e,t,n,i),t.memoizedState=a.state,e=t.child):e=jc(e,t,i),e}function bc(e,t,n,r){return qi(),t.flags|=256,oc(e,t,n,r),t.child}var xc={dehydrated:null,treeContext:null,retryLane:0,hydrationErrors:null};function Sc(e){return{baseLanes:e,cachePool:Ta()}}function Cc(e,t,n){return e=e===null?0:e.childLanes&~n,t&&(e|=Jl),e}function wc(e,t,n){var r=t.pendingProps,a=!1,o=(t.flags&128)!=0,s;if((s=o)||(s=e!==null&&e.memoizedState===null?!1:(I.current&2)!=0),s&&(a=!0,t.flags&=-129),s=(t.flags&32)!=0,t.flags&=-33,e===null){if(P){if(a?lo(t):po(t),(e=N)?(e=rf(e,Vi),e=e!==null&&e.data!==`&`?e:null,e!==null&&(t.memoizedState={dehydrated:e,treeContext:ji===null?null:{id:Mi,overflow:Ni},retryLane:536870912,hydrationErrors:null},n=xi(e),n.return=t,t.child=n,zi=t,N=null)):e=null,e===null)throw Ui(t);return of(e)?t.lanes=32:t.lanes=536870912,null}var c=r.children;return r=r.fallback,a?(po(t),a=t.mode,c=Ec({mode:`hidden`,children:c},a),r=yi(r,a,n,null),c.return=t,r.return=t,c.sibling=r,t.child=c,r=t.child,r.memoizedState=Sc(n),r.childLanes=Cc(e,s,n),t.memoizedState=xc,dc(null,r)):(lo(t),Tc(t,c))}var l=e.memoizedState;if(l!==null&&(c=l.dehydrated,c!==null)){if(o)t.flags&256?(lo(t),t.flags&=-257,t=Dc(e,t,n)):t.memoizedState===null?(po(t),c=r.fallback,a=t.mode,r=Ec({mode:`visible`,children:r.children},a),c=yi(c,a,n,null),c.flags|=2,r.return=t,c.return=t,r.sibling=c,t.child=r,Ha(t,e.child,null,n),r=t.child,r.memoizedState=Sc(n),r.childLanes=Cc(e,s,n),t.memoizedState=xc,t=dc(null,r)):(po(t),t.child=e.child,t.flags|=128,t=null);else if(lo(t),of(c)){if(s=c.nextSibling&&c.nextSibling.dataset,s)var u=s.dgst;s=u,r=Error(i(419)),r.stack=``,r.digest=s,Yi({value:r,source:null,stack:null}),t=Dc(e,t,n)}else if(ac||ra(e,t,n,!1),s=(n&e.childLanes)!==0,ac||s){if(s=K,s!==null&&(r=lt(s,n),r!==0&&r!==l.retryLane))throw l.retryLane=r,li(e,r),hu(s,e,r),ic;af(c)||Du(),t=Dc(e,t,n)}else af(c)?(t.flags|=192,t.child=e.child,t=null):(e=l.treeContext,N=cf(c.nextSibling),zi=t,P=!0,Bi=null,Vi=!1,e!==null&&Ri(t,e),t=Tc(t,r.children),t.flags|=4096);return t}return a?(po(t),c=r.fallback,a=t.mode,l=e.child,u=l.sibling,r=gi(l,{mode:`hidden`,children:r.children}),r.subtreeFlags=l.subtreeFlags&65011712,u===null?(c=yi(c,a,n,null),c.flags|=2):c=gi(u,c),c.return=t,r.return=t,r.sibling=c,t.child=r,dc(null,r),r=t.child,c=e.child.memoizedState,c===null?c=Sc(n):(a=c.cachePool,a===null?a=Ta():(l=F._currentValue,a=a.parent===l?a:{parent:l,pool:l}),c={baseLanes:c.baseLanes|n,cachePool:a}),r.memoizedState=c,r.childLanes=Cc(e,s,n),t.memoizedState=xc,dc(e.child,r)):(lo(t),n=e.child,e=n.sibling,n=gi(n,{mode:`visible`,children:r.children}),n.return=t,n.sibling=null,e!==null&&(s=t.deletions,s===null?(t.deletions=[e],t.flags|=16):s.push(e)),t.child=n,t.memoizedState=null,n)}function Tc(e,t){return t=Ec({mode:`visible`,children:t},e.mode),t.return=e,e.child=t}function Ec(e,t){return e=mi(22,e,null,t),e.lanes=0,e}function Dc(e,t,n){return Ha(t,e.child,null,n),e=Tc(t,t.pendingProps.children),e.flags|=2,t.memoizedState=null,e}function Oc(e,t,n){e.lanes|=t;var r=e.alternate;r!==null&&(r.lanes|=t),ta(e.return,t,n)}function kc(e,t,n,r,i,a){var o=e.memoizedState;o===null?e.memoizedState={isBackwards:t,rendering:null,renderingStartTime:0,last:r,tail:n,tailMode:i,treeForkCount:a}:(o.isBackwards=t,o.rendering=null,o.renderingStartTime=0,o.last=r,o.tail=n,o.tailMode=i,o.treeForkCount=a)}function Ac(e,t,n){var r=t.pendingProps,i=r.revealOrder,a=r.tail;r=r.children;var o=I.current,s=(o&2)!=0;if(s?(o=o&1|2,t.flags|=128):o&=1,k(I,o),oc(e,t,r,n),r=P?Oi:0,!s&&e!==null&&e.flags&128)a:for(e=t.child;e!==null;){if(e.tag===13)e.memoizedState!==null&&Oc(e,n,t);else if(e.tag===19)Oc(e,n,t);else if(e.child!==null){e.child.return=e,e=e.child;continue}if(e===t)break a;for(;e.sibling===null;){if(e.return===null||e.return===t)break a;e=e.return}e.sibling.return=e.return,e=e.sibling}switch(i){case`forwards`:for(n=t.child,i=null;n!==null;)e=n.alternate,e!==null&&ho(e)===null&&(i=n),n=n.sibling;n=i,n===null?(i=t.child,t.child=null):(i=n.sibling,n.sibling=null),kc(t,!1,i,n,a,r);break;case`backwards`:case`unstable_legacy-backwards`:for(n=null,i=t.child,t.child=null;i!==null;){if(e=i.alternate,e!==null&&ho(e)===null){t.child=i;break}e=i.sibling,i.sibling=n,n=i,i=e}kc(t,!0,n,null,a,r);break;case`together`:kc(t,!1,null,null,void 0,r);break;default:t.memoizedState=null}return t.child}function jc(e,t,n){if(e!==null&&(t.dependencies=e.dependencies),Gl|=t.lanes,(n&t.childLanes)===0)if(e!==null){if(ra(e,t,n,!1),(n&t.childLanes)===0)return null}else return null;if(e!==null&&t.child!==e.child)throw Error(i(153));if(t.child!==null){for(e=t.child,n=gi(e,e.pendingProps),t.child=n,n.return=t;e.sibling!==null;)e=e.sibling,n=n.sibling=gi(e,e.pendingProps),n.return=t;n.sibling=null}return t.child}function Mc(e,t){return(e.lanes&t)===0?(e=e.dependencies,!!(e!==null&&ia(e))):!0}function Nc(e,t,n){switch(t.tag){case 3:ve(t,t.stateNode.containerInfo),$i(t,F,e.memoizedState.cache),qi();break;case 27:case 5:be(t);break;case 4:ve(t,t.stateNode.containerInfo);break;case 10:$i(t,t.type,t.memoizedProps.value);break;case 31:if(t.memoizedState!==null)return t.flags|=128,uo(t),null;break;case 13:var r=t.memoizedState;if(r!==null)return r.dehydrated===null?(n&t.child.childLanes)===0?(lo(t),e=jc(e,t,n),e===null?null:e.sibling):wc(e,t,n):(lo(t),t.flags|=128,null);lo(t);break;case 19:var i=(e.flags&128)!=0;if(r=(n&t.childLanes)!==0,r||=(ra(e,t,n,!1),(n&t.childLanes)!==0),i){if(r)return Ac(e,t,n);t.flags|=128}if(i=t.memoizedState,i!==null&&(i.rendering=null,i.tail=null,i.lastEffect=null),k(I,I.current),r)break;return null;case 22:return t.lanes=0,uc(e,t,n,t.pendingProps);case 24:$i(t,F,e.memoizedState.cache)}return jc(e,t,n)}function Pc(e,t,n){if(e!==null)if(e.memoizedProps!==t.pendingProps)ac=!0;else{if(!Mc(e,n)&&!(t.flags&128))return ac=!1,Nc(e,t,n);ac=!!(e.flags&131072)}else ac=!1,P&&t.flags&1048576&&Fi(t,Oi,t.index);switch(t.lanes=0,t.tag){case 16:a:{var r=t.pendingProps;if(e=Ma(t.elementType),t.type=e,typeof e==`function`)hi(e)?(r=Js(e,r),t.tag=1,t=yc(null,t,e,r,n)):(t.tag=0,t=_c(null,t,e,r,n));else{if(e!=null){var a=e.$$typeof;if(a===C){t.tag=11,t=sc(null,t,e,r,n);break a}else if(a===te){t.tag=14,t=cc(null,t,e,r,n);break a}}throw t=se(e)||e,Error(i(306,t,``))}}return t;case 0:return _c(e,t,t.type,t.pendingProps,n);case 1:return r=t.type,a=Js(r,t.pendingProps),yc(e,t,r,a,n);case 3:a:{if(ve(t,t.stateNode.containerInfo),e===null)throw Error(i(387));r=t.pendingProps;var o=t.memoizedState;a=o.element,Ka(e,t),$a(t,r,null,n);var s=t.memoizedState;if(r=s.cache,$i(t,F,r),r!==o.cache&&na(t,[F],n,!0),Qa(),r=s.element,o.isDehydrated)if(o={element:r,isDehydrated:!1,cache:s.cache},t.updateQueue.baseState=o,t.memoizedState=o,t.flags&256){t=bc(e,t,r,n);break a}else if(r!==a){a=wi(Error(i(424)),t),Yi(a),t=bc(e,t,r,n);break a}else{switch(e=t.stateNode.containerInfo,e.nodeType){case 9:e=e.body;break;default:e=e.nodeName===`HTML`?e.ownerDocument.body:e}for(N=cf(e.firstChild),zi=t,P=!0,Bi=null,Vi=!0,n=Ua(t,null,r,n),t.child=n;n;)n.flags=n.flags&-3|4096,n=n.sibling}else{if(qi(),r===a){t=jc(e,t,n);break a}oc(e,t,r,n)}t=t.child}return t;case 26:return gc(e,t),e===null?(n=kf(t.type,null,t.pendingProps,null))?t.memoizedState=n:P||(n=t.type,e=t.pendingProps,r=Bd(ge.current).createElement(n),r[ht]=t,r[gt]=e,Pd(r,n,e),Ot(r),t.stateNode=r):t.memoizedState=kf(t.type,e.memoizedProps,t.pendingProps,e.memoizedState),null;case 27:return be(t),e===null&&P&&(r=t.stateNode=ff(t.type,t.pendingProps,ge.current),zi=t,Vi=!0,a=N,Zd(t.type)?(lf=a,N=cf(r.firstChild)):N=a),oc(e,t,t.pendingProps.children,n),gc(e,t),e===null&&(t.flags|=4194304),t.child;case 5:return e===null&&P&&((a=r=N)&&(r=tf(r,t.type,t.pendingProps,Vi),r===null?a=!1:(t.stateNode=r,zi=t,N=cf(r.firstChild),Vi=!1,a=!0)),a||Ui(t)),be(t),a=t.type,o=t.pendingProps,s=e===null?null:e.memoizedProps,r=o.children,Ud(a,o)?r=null:s!==null&&Ud(a,s)&&(t.flags|=32),t.memoizedState!==null&&(a=To(e,t,Oo,null,null,n),Qf._currentValue=a),gc(e,t),oc(e,t,r,n),t.child;case 6:return e===null&&P&&((e=n=N)&&(n=nf(n,t.pendingProps,Vi),n===null?e=!1:(t.stateNode=n,zi=t,N=null,e=!0)),e||Ui(t)),null;case 13:return wc(e,t,n);case 4:return ve(t,t.stateNode.containerInfo),r=t.pendingProps,e===null?t.child=Ha(t,null,r,n):oc(e,t,r,n),t.child;case 11:return sc(e,t,t.type,t.pendingProps,n);case 7:return oc(e,t,t.pendingProps,n),t.child;case 8:return oc(e,t,t.pendingProps.children,n),t.child;case 12:return oc(e,t,t.pendingProps.children,n),t.child;case 10:return r=t.pendingProps,$i(t,t.type,r.value),oc(e,t,r.children,n),t.child;case 9:return a=t.type._context,r=t.pendingProps.children,aa(t),a=oa(a),r=r(a),t.flags|=1,oc(e,t,r,n),t.child;case 14:return cc(e,t,t.type,t.pendingProps,n);case 15:return lc(e,t,t.type,t.pendingProps,n);case 19:return Ac(e,t,n);case 31:return hc(e,t,n);case 22:return uc(e,t,n,t.pendingProps);case 24:return aa(t),r=oa(F),e===null?(a=Ca(),a===null&&(a=K,o=fa(),a.pooledCache=o,o.refCount++,o!==null&&(a.pooledCacheLanes|=n),a=o),t.memoizedState={parent:r,cache:a},Ga(t),$i(t,F,a)):((e.lanes&n)!==0&&(Ka(e,t),$a(t,null,null,n),Qa()),a=e.memoizedState,o=t.memoizedState,a.parent===r?(r=o.cache,$i(t,F,r),r!==a.cache&&na(t,[F],n,!0)):(a={parent:r,cache:r},t.memoizedState=a,t.lanes===0&&(t.memoizedState=t.updateQueue.baseState=a),$i(t,F,r))),oc(e,t,t.pendingProps.children,n),t.child;case 29:throw t.pendingProps}throw Error(i(156,t.tag))}function Fc(e){e.flags|=4}function Ic(e,t,n,r,i){if((t=(e.mode&32)!=0)&&(t=!1),t){if(e.flags|=16777216,(i&335544128)===i)if(e.stateNode.complete)e.flags|=8192;else if(wu())e.flags|=8192;else throw Na=ka,Da}else e.flags&=-16777217}function Lc(e,t){if(t.type!==`stylesheet`||t.state.loading&4)e.flags&=-16777217;else if(e.flags|=16777216,!Wf(t))if(wu())e.flags|=8192;else throw Na=ka,Da}function Rc(e,t){t!==null&&(e.flags|=4),e.flags&16384&&(t=e.tag===22?536870912:rt(),e.lanes|=t,Yl|=t)}function zc(e,t){if(!P)switch(e.tailMode){case`hidden`:t=e.tail;for(var n=null;t!==null;)t.alternate!==null&&(n=t),t=t.sibling;n===null?e.tail=null:n.sibling=null;break;case`collapsed`:n=e.tail;for(var r=null;n!==null;)n.alternate!==null&&(r=n),n=n.sibling;r===null?t||e.tail===null?e.tail=null:e.tail.sibling=null:r.sibling=null}}function H(e){var t=e.alternate!==null&&e.alternate.child===e.child,n=0,r=0;if(t)for(var i=e.child;i!==null;)n|=i.lanes|i.childLanes,r|=i.subtreeFlags&65011712,r|=i.flags&65011712,i.return=e,i=i.sibling;else for(i=e.child;i!==null;)n|=i.lanes|i.childLanes,r|=i.subtreeFlags,r|=i.flags,i.return=e,i=i.sibling;return e.subtreeFlags|=r,e.childLanes=n,t}function Bc(e,t,n){var r=t.pendingProps;switch(Li(t),t.tag){case 16:case 15:case 0:case 11:case 7:case 8:case 12:case 9:case 14:return H(t),null;case 1:return H(t),null;case 3:return n=t.stateNode,r=null,e!==null&&(r=e.memoizedState.cache),t.memoizedState.cache!==r&&(t.flags|=2048),ea(F),ye(),n.pendingContext&&(n.context=n.pendingContext,n.pendingContext=null),(e===null||e.child===null)&&(Ki(t)?Fc(t):e===null||e.memoizedState.isDehydrated&&!(t.flags&256)||(t.flags|=1024,Ji())),H(t),null;case 26:var a=t.type,o=t.memoizedState;return e===null?(Fc(t),o===null?(H(t),Ic(t,a,null,r,n)):(H(t),Lc(t,o))):o?o===e.memoizedState?(H(t),t.flags&=-16777217):(Fc(t),H(t),Lc(t,o)):(e=e.memoizedProps,e!==r&&Fc(t),H(t),Ic(t,a,e,r,n)),null;case 27:if(xe(t),n=ge.current,a=t.type,e!==null&&t.stateNode!=null)e.memoizedProps!==r&&Fc(t);else{if(!r){if(t.stateNode===null)throw Error(i(166));return H(t),null}e=me.current,Ki(t)?Wi(t,e):(e=ff(a,r,n),t.stateNode=e,Fc(t))}return H(t),null;case 5:if(xe(t),a=t.type,e!==null&&t.stateNode!=null)e.memoizedProps!==r&&Fc(t);else{if(!r){if(t.stateNode===null)throw Error(i(166));return H(t),null}if(o=me.current,Ki(t))Wi(t,o);else{var s=Bd(ge.current);switch(o){case 1:o=s.createElementNS(`http://www.w3.org/2000/svg`,a);break;case 2:o=s.createElementNS(`http://www.w3.org/1998/Math/MathML`,a);break;default:switch(a){case`svg`:o=s.createElementNS(`http://www.w3.org/2000/svg`,a);break;case`math`:o=s.createElementNS(`http://www.w3.org/1998/Math/MathML`,a);break;case`script`:o=s.createElement(`div`),o.innerHTML=`<script><\/script>`,o=o.removeChild(o.firstChild);break;case`select`:o=typeof r.is==`string`?s.createElement(`select`,{is:r.is}):s.createElement(`select`),r.multiple?o.multiple=!0:r.size&&(o.size=r.size);break;default:o=typeof r.is==`string`?s.createElement(a,{is:r.is}):s.createElement(a)}}o[ht]=t,o[gt]=r;a:for(s=t.child;s!==null;){if(s.tag===5||s.tag===6)o.appendChild(s.stateNode);else if(s.tag!==4&&s.tag!==27&&s.child!==null){s.child.return=s,s=s.child;continue}if(s===t)break a;for(;s.sibling===null;){if(s.return===null||s.return===t)break a;s=s.return}s.sibling.return=s.return,s=s.sibling}t.stateNode=o;a:switch(Pd(o,a,r),a){case`button`:case`input`:case`select`:case`textarea`:r=!!r.autoFocus;break a;case`img`:r=!0;break a;default:r=!1}r&&Fc(t)}}return H(t),Ic(t,t.type,e===null?null:e.memoizedProps,t.pendingProps,n),null;case 6:if(e&&t.stateNode!=null)e.memoizedProps!==r&&Fc(t);else{if(typeof r!=`string`&&t.stateNode===null)throw Error(i(166));if(e=ge.current,Ki(t)){if(e=t.stateNode,n=t.memoizedProps,r=null,a=zi,a!==null)switch(a.tag){case 27:case 5:r=a.memoizedProps}e[ht]=t,e=!!(e.nodeValue===n||r!==null&&!0===r.suppressHydrationWarning||Md(e.nodeValue,n)),e||Ui(t,!0)}else e=Bd(e).createTextNode(r),e[ht]=t,t.stateNode=e}return H(t),null;case 31:if(n=t.memoizedState,e===null||e.memoizedState!==null){if(r=Ki(t),n!==null){if(e===null){if(!r)throw Error(i(318));if(e=t.memoizedState,e=e===null?null:e.dehydrated,!e)throw Error(i(557));e[ht]=t}else qi(),!(t.flags&128)&&(t.memoizedState=null),t.flags|=4;H(t),e=!1}else n=Ji(),e!==null&&e.memoizedState!==null&&(e.memoizedState.hydrationErrors=n),e=!0;if(!e)return t.flags&256?(mo(t),t):(mo(t),null);if(t.flags&128)throw Error(i(558))}return H(t),null;case 13:if(r=t.memoizedState,e===null||e.memoizedState!==null&&e.memoizedState.dehydrated!==null){if(a=Ki(t),r!==null&&r.dehydrated!==null){if(e===null){if(!a)throw Error(i(318));if(a=t.memoizedState,a=a===null?null:a.dehydrated,!a)throw Error(i(317));a[ht]=t}else qi(),!(t.flags&128)&&(t.memoizedState=null),t.flags|=4;H(t),a=!1}else a=Ji(),e!==null&&e.memoizedState!==null&&(e.memoizedState.hydrationErrors=a),a=!0;if(!a)return t.flags&256?(mo(t),t):(mo(t),null)}return mo(t),t.flags&128?(t.lanes=n,t):(n=r!==null,e=e!==null&&e.memoizedState!==null,n&&(r=t.child,a=null,r.alternate!==null&&r.alternate.memoizedState!==null&&r.alternate.memoizedState.cachePool!==null&&(a=r.alternate.memoizedState.cachePool.pool),o=null,r.memoizedState!==null&&r.memoizedState.cachePool!==null&&(o=r.memoizedState.cachePool.pool),o!==a&&(r.flags|=2048)),n!==e&&n&&(t.child.flags|=8192),Rc(t,t.updateQueue),H(t),null);case 4:return ye(),e===null&&Sd(t.stateNode.containerInfo),H(t),null;case 10:return ea(t.type),H(t),null;case 19:if(pe(I),r=t.memoizedState,r===null)return H(t),null;if(a=(t.flags&128)!=0,o=r.rendering,o===null)if(a)zc(r,!1);else{if(X!==0||e!==null&&e.flags&128)for(e=t.child;e!==null;){if(o=ho(e),o!==null){for(t.flags|=128,zc(r,!1),e=o.updateQueue,t.updateQueue=e,Rc(t,e),t.subtreeFlags=0,e=n,n=t.child;n!==null;)_i(n,e),n=n.sibling;return k(I,I.current&1|2),P&&Pi(t,r.treeForkCount),t.child}e=e.sibling}r.tail!==null&&Pe()>tu&&(t.flags|=128,a=!0,zc(r,!1),t.lanes=4194304)}else{if(!a)if(e=ho(o),e!==null){if(t.flags|=128,a=!0,e=e.updateQueue,t.updateQueue=e,Rc(t,e),zc(r,!0),r.tail===null&&r.tailMode===`hidden`&&!o.alternate&&!P)return H(t),null}else 2*Pe()-r.renderingStartTime>tu&&n!==536870912&&(t.flags|=128,a=!0,zc(r,!1),t.lanes=4194304);r.isBackwards?(o.sibling=t.child,t.child=o):(e=r.last,e===null?t.child=o:e.sibling=o,r.last=o)}return r.tail===null?(H(t),null):(e=r.tail,r.rendering=e,r.tail=e.sibling,r.renderingStartTime=Pe(),e.sibling=null,n=I.current,k(I,a?n&1|2:n&1),P&&Pi(t,r.treeForkCount),e);case 22:case 23:return mo(t),oo(),r=t.memoizedState!==null,e===null?r&&(t.flags|=8192):e.memoizedState!==null!==r&&(t.flags|=8192),r?n&536870912&&!(t.flags&128)&&(H(t),t.subtreeFlags&6&&(t.flags|=8192)):H(t),n=t.updateQueue,n!==null&&Rc(t,n.retryQueue),n=null,e!==null&&e.memoizedState!==null&&e.memoizedState.cachePool!==null&&(n=e.memoizedState.cachePool.pool),r=null,t.memoizedState!==null&&t.memoizedState.cachePool!==null&&(r=t.memoizedState.cachePool.pool),r!==n&&(t.flags|=2048),e!==null&&pe(Sa),null;case 24:return n=null,e!==null&&(n=e.memoizedState.cache),t.memoizedState.cache!==n&&(t.flags|=2048),ea(F),H(t),null;case 25:return null;case 30:return null}throw Error(i(156,t.tag))}function Vc(e,t){switch(Li(t),t.tag){case 1:return e=t.flags,e&65536?(t.flags=e&-65537|128,t):null;case 3:return ea(F),ye(),e=t.flags,e&65536&&!(e&128)?(t.flags=e&-65537|128,t):null;case 26:case 27:case 5:return xe(t),null;case 31:if(t.memoizedState!==null){if(mo(t),t.alternate===null)throw Error(i(340));qi()}return e=t.flags,e&65536?(t.flags=e&-65537|128,t):null;case 13:if(mo(t),e=t.memoizedState,e!==null&&e.dehydrated!==null){if(t.alternate===null)throw Error(i(340));qi()}return e=t.flags,e&65536?(t.flags=e&-65537|128,t):null;case 19:return pe(I),null;case 4:return ye(),null;case 10:return ea(t.type),null;case 22:case 23:return mo(t),oo(),e!==null&&pe(Sa),e=t.flags,e&65536?(t.flags=e&-65537|128,t):null;case 24:return ea(F),null;case 25:return null;default:return null}}function Hc(e,t){switch(Li(t),t.tag){case 3:ea(F),ye();break;case 26:case 27:case 5:xe(t);break;case 4:ye();break;case 31:t.memoizedState!==null&&mo(t);break;case 13:mo(t);break;case 19:pe(I);break;case 10:ea(t.type);break;case 22:case 23:mo(t),oo(),e!==null&&pe(Sa);break;case 24:ea(F)}}function Uc(e,t){try{var n=t.updateQueue,r=n===null?null:n.lastEffect;if(r!==null){var i=r.next;n=i;do{if((n.tag&e)===e){r=void 0;var a=n.create,o=n.inst;r=a(),o.destroy=r}n=n.next}while(n!==i)}}catch(e){Z(t,t.return,e)}}function Wc(e,t,n){try{var r=t.updateQueue,i=r===null?null:r.lastEffect;if(i!==null){var a=i.next;r=a;do{if((r.tag&e)===e){var o=r.inst,s=o.destroy;if(s!==void 0){o.destroy=void 0,i=t;var c=n,l=s;try{l()}catch(e){Z(i,c,e)}}}r=r.next}while(r!==a)}}catch(e){Z(t,t.return,e)}}function Gc(e){var t=e.updateQueue;if(t!==null){var n=e.stateNode;try{to(t,n)}catch(t){Z(e,e.return,t)}}}function Kc(e,t,n){n.props=Js(e.type,e.memoizedProps),n.state=e.memoizedState;try{n.componentWillUnmount()}catch(n){Z(e,t,n)}}function qc(e,t){try{var n=e.ref;if(n!==null){switch(e.tag){case 26:case 27:case 5:var r=e.stateNode;break;case 30:r=e.stateNode;break;default:r=e.stateNode}typeof n==`function`?e.refCleanup=n(r):n.current=r}}catch(n){Z(e,t,n)}}function Jc(e,t){var n=e.ref,r=e.refCleanup;if(n!==null)if(typeof r==`function`)try{r()}catch(n){Z(e,t,n)}finally{e.refCleanup=null,e=e.alternate,e!=null&&(e.refCleanup=null)}else if(typeof n==`function`)try{n(null)}catch(n){Z(e,t,n)}else n.current=null}function Yc(e){var t=e.type,n=e.memoizedProps,r=e.stateNode;try{a:switch(t){case`button`:case`input`:case`select`:case`textarea`:n.autoFocus&&r.focus();break a;case`img`:n.src?r.src=n.src:n.srcSet&&(r.srcset=n.srcSet)}}catch(t){Z(e,e.return,t)}}function Xc(e,t,n){try{var r=e.stateNode;Fd(r,e.type,n,t),r[gt]=t}catch(t){Z(e,e.return,t)}}function Zc(e){return e.tag===5||e.tag===3||e.tag===26||e.tag===27&&Zd(e.type)||e.tag===4}function Qc(e){a:for(;;){for(;e.sibling===null;){if(e.return===null||Zc(e.return))return null;e=e.return}for(e.sibling.return=e.return,e=e.sibling;e.tag!==5&&e.tag!==6&&e.tag!==18;){if(e.tag===27&&Zd(e.type)||e.flags&2||e.child===null||e.tag===4)continue a;e.child.return=e,e=e.child}if(!(e.flags&2))return e.stateNode}}function $c(e,t,n){var r=e.tag;if(r===5||r===6)e=e.stateNode,t?(n.nodeType===9?n.body:n.nodeName===`HTML`?n.ownerDocument.body:n).insertBefore(e,t):(t=n.nodeType===9?n.body:n.nodeName===`HTML`?n.ownerDocument.body:n,t.appendChild(e),n=n._reactRootContainer,n!=null||t.onclick!==null||(t.onclick=ln));else if(r!==4&&(r===27&&Zd(e.type)&&(n=e.stateNode,t=null),e=e.child,e!==null))for($c(e,t,n),e=e.sibling;e!==null;)$c(e,t,n),e=e.sibling}function el(e,t,n){var r=e.tag;if(r===5||r===6)e=e.stateNode,t?n.insertBefore(e,t):n.appendChild(e);else if(r!==4&&(r===27&&Zd(e.type)&&(n=e.stateNode),e=e.child,e!==null))for(el(e,t,n),e=e.sibling;e!==null;)el(e,t,n),e=e.sibling}function tl(e){var t=e.stateNode,n=e.memoizedProps;try{for(var r=e.type,i=t.attributes;i.length;)t.removeAttributeNode(i[0]);Pd(t,r,n),t[ht]=e,t[gt]=n}catch(t){Z(e,e.return,t)}}var nl=!1,U=!1,rl=!1,il=typeof WeakSet==`function`?WeakSet:Set,al=null;function ol(e,t){if(e=e.containerInfo,Rd=sp,e=Pr(e),Fr(e)){if(`selectionStart`in e)var n={start:e.selectionStart,end:e.selectionEnd};else a:{n=(n=e.ownerDocument)&&n.defaultView||window;var r=n.getSelection&&n.getSelection();if(r&&r.rangeCount!==0){n=r.anchorNode;var a=r.anchorOffset,o=r.focusNode;r=r.focusOffset;try{n.nodeType,o.nodeType}catch{n=null;break a}var s=0,c=-1,l=-1,u=0,d=0,f=e,p=null;b:for(;;){for(var m;f!==n||a!==0&&f.nodeType!==3||(c=s+a),f!==o||r!==0&&f.nodeType!==3||(l=s+r),f.nodeType===3&&(s+=f.nodeValue.length),(m=f.firstChild)!==null;)p=f,f=m;for(;;){if(f===e)break b;if(p===n&&++u===a&&(c=s),p===o&&++d===r&&(l=s),(m=f.nextSibling)!==null)break;f=p,p=f.parentNode}f=m}n=c===-1||l===-1?null:{start:c,end:l}}else n=null}n||={start:0,end:0}}else n=null;for(zd={focusedElem:e,selectionRange:n},sp=!1,al=t;al!==null;)if(t=al,e=t.child,t.subtreeFlags&1028&&e!==null)e.return=t,al=e;else for(;al!==null;){switch(t=al,o=t.alternate,e=t.flags,t.tag){case 0:if(e&4&&(e=t.updateQueue,e=e===null?null:e.events,e!==null))for(n=0;n<e.length;n++)a=e[n],a.ref.impl=a.nextImpl;break;case 11:case 15:break;case 1:if(e&1024&&o!==null){e=void 0,n=t,a=o.memoizedProps,o=o.memoizedState,r=n.stateNode;try{var h=Js(n.type,a);e=r.getSnapshotBeforeUpdate(h,o),r.__reactInternalSnapshotBeforeUpdate=e}catch(e){Z(n,n.return,e)}}break;case 3:if(e&1024){if(e=t.stateNode.containerInfo,n=e.nodeType,n===9)ef(e);else if(n===1)switch(e.nodeName){case`HEAD`:case`HTML`:case`BODY`:ef(e);break;default:e.textContent=``}}break;case 5:case 26:case 27:case 6:case 4:case 17:break;default:if(e&1024)throw Error(i(163))}if(e=t.sibling,e!==null){e.return=t.return,al=e;break}al=t.return}}function sl(e,t,n){var r=n.flags;switch(n.tag){case 0:case 11:case 15:xl(e,n),r&4&&Uc(5,n);break;case 1:if(xl(e,n),r&4)if(e=n.stateNode,t===null)try{e.componentDidMount()}catch(e){Z(n,n.return,e)}else{var i=Js(n.type,t.memoizedProps);t=t.memoizedState;try{e.componentDidUpdate(i,t,e.__reactInternalSnapshotBeforeUpdate)}catch(e){Z(n,n.return,e)}}r&64&&Gc(n),r&512&&qc(n,n.return);break;case 3:if(xl(e,n),r&64&&(e=n.updateQueue,e!==null)){if(t=null,n.child!==null)switch(n.child.tag){case 27:case 5:t=n.child.stateNode;break;case 1:t=n.child.stateNode}try{to(e,t)}catch(e){Z(n,n.return,e)}}break;case 27:t===null&&r&4&&tl(n);case 26:case 5:xl(e,n),t===null&&r&4&&Yc(n),r&512&&qc(n,n.return);break;case 12:xl(e,n);break;case 31:xl(e,n),r&4&&fl(e,n);break;case 13:xl(e,n),r&4&&pl(e,n),r&64&&(e=n.memoizedState,e!==null&&(e=e.dehydrated,e!==null&&(n=Ju.bind(null,n),sf(e,n))));break;case 22:if(r=n.memoizedState!==null||nl,!r){t=t!==null&&t.memoizedState!==null||U,i=nl;var a=U;nl=r,(U=t)&&!a?Cl(e,n,(n.subtreeFlags&8772)!=0):xl(e,n),nl=i,U=a}break;case 30:break;default:xl(e,n)}}function cl(e){var t=e.alternate;t!==null&&(e.alternate=null,cl(t)),e.child=null,e.deletions=null,e.sibling=null,e.tag===5&&(t=e.stateNode,t!==null&&Ct(t)),e.stateNode=null,e.return=null,e.dependencies=null,e.memoizedProps=null,e.memoizedState=null,e.pendingProps=null,e.stateNode=null,e.updateQueue=null}var W=null,ll=!1;function ul(e,t,n){for(n=n.child;n!==null;)dl(e,t,n),n=n.sibling}function dl(e,t,n){if(We&&typeof We.onCommitFiberUnmount==`function`)try{We.onCommitFiberUnmount(Ue,n)}catch{}switch(n.tag){case 26:U||Jc(n,t),ul(e,t,n),n.memoizedState?n.memoizedState.count--:n.stateNode&&(n=n.stateNode,n.parentNode.removeChild(n));break;case 27:U||Jc(n,t);var r=W,i=ll;Zd(n.type)&&(W=n.stateNode,ll=!1),ul(e,t,n),pf(n.stateNode),W=r,ll=i;break;case 5:U||Jc(n,t);case 6:if(r=W,i=ll,W=null,ul(e,t,n),W=r,ll=i,W!==null)if(ll)try{(W.nodeType===9?W.body:W.nodeName===`HTML`?W.ownerDocument.body:W).removeChild(n.stateNode)}catch(e){Z(n,t,e)}else try{W.removeChild(n.stateNode)}catch(e){Z(n,t,e)}break;case 18:W!==null&&(ll?(e=W,Qd(e.nodeType===9?e.body:e.nodeName===`HTML`?e.ownerDocument.body:e,n.stateNode),Np(e)):Qd(W,n.stateNode));break;case 4:r=W,i=ll,W=n.stateNode.containerInfo,ll=!0,ul(e,t,n),W=r,ll=i;break;case 0:case 11:case 14:case 15:Wc(2,n,t),U||Wc(4,n,t),ul(e,t,n);break;case 1:U||(Jc(n,t),r=n.stateNode,typeof r.componentWillUnmount==`function`&&Kc(n,t,r)),ul(e,t,n);break;case 21:ul(e,t,n);break;case 22:U=(r=U)||n.memoizedState!==null,ul(e,t,n),U=r;break;default:ul(e,t,n)}}function fl(e,t){if(t.memoizedState===null&&(e=t.alternate,e!==null&&(e=e.memoizedState,e!==null))){e=e.dehydrated;try{Np(e)}catch(e){Z(t,t.return,e)}}}function pl(e,t){if(t.memoizedState===null&&(e=t.alternate,e!==null&&(e=e.memoizedState,e!==null&&(e=e.dehydrated,e!==null))))try{Np(e)}catch(e){Z(t,t.return,e)}}function ml(e){switch(e.tag){case 31:case 13:case 19:var t=e.stateNode;return t===null&&(t=e.stateNode=new il),t;case 22:return e=e.stateNode,t=e._retryCache,t===null&&(t=e._retryCache=new il),t;default:throw Error(i(435,e.tag))}}function hl(e,t){var n=ml(e);t.forEach(function(t){if(!n.has(t)){n.add(t);var r=Yu.bind(null,e,t);t.then(r,r)}})}function gl(e,t){var n=t.deletions;if(n!==null)for(var r=0;r<n.length;r++){var a=n[r],o=e,s=t,c=s;a:for(;c!==null;){switch(c.tag){case 27:if(Zd(c.type)){W=c.stateNode,ll=!1;break a}break;case 5:W=c.stateNode,ll=!1;break a;case 3:case 4:W=c.stateNode.containerInfo,ll=!0;break a}c=c.return}if(W===null)throw Error(i(160));dl(o,s,a),W=null,ll=!1,o=a.alternate,o!==null&&(o.return=null),a.return=null}if(t.subtreeFlags&13886)for(t=t.child;t!==null;)vl(t,e),t=t.sibling}var _l=null;function vl(e,t){var n=e.alternate,r=e.flags;switch(e.tag){case 0:case 11:case 14:case 15:gl(t,e),yl(e),r&4&&(Wc(3,e,e.return),Uc(3,e),Wc(5,e,e.return));break;case 1:gl(t,e),yl(e),r&512&&(U||n===null||Jc(n,n.return)),r&64&&nl&&(e=e.updateQueue,e!==null&&(r=e.callbacks,r!==null&&(n=e.shared.hiddenCallbacks,e.shared.hiddenCallbacks=n===null?r:n.concat(r))));break;case 26:var a=_l;if(gl(t,e),yl(e),r&512&&(U||n===null||Jc(n,n.return)),r&4){var o=n===null?null:n.memoizedState;if(r=e.memoizedState,n===null)if(r===null)if(e.stateNode===null){a:{r=e.type,n=e.memoizedProps,a=a.ownerDocument||a;b:switch(r){case`title`:o=a.getElementsByTagName(`title`)[0],(!o||o[St]||o[ht]||o.namespaceURI===`http://www.w3.org/2000/svg`||o.hasAttribute(`itemprop`))&&(o=a.createElement(r),a.head.insertBefore(o,a.querySelector(`head > title`))),Pd(o,r,n),o[ht]=e,Ot(o),r=o;break a;case`link`:var s=Vf(`link`,`href`,a).get(r+(n.href||``));if(s){for(var c=0;c<s.length;c++)if(o=s[c],o.getAttribute(`href`)===(n.href==null||n.href===``?null:n.href)&&o.getAttribute(`rel`)===(n.rel==null?null:n.rel)&&o.getAttribute(`title`)===(n.title==null?null:n.title)&&o.getAttribute(`crossorigin`)===(n.crossOrigin==null?null:n.crossOrigin)){s.splice(c,1);break b}}o=a.createElement(r),Pd(o,r,n),a.head.appendChild(o);break;case`meta`:if(s=Vf(`meta`,`content`,a).get(r+(n.content||``))){for(c=0;c<s.length;c++)if(o=s[c],o.getAttribute(`content`)===(n.content==null?null:``+n.content)&&o.getAttribute(`name`)===(n.name==null?null:n.name)&&o.getAttribute(`property`)===(n.property==null?null:n.property)&&o.getAttribute(`http-equiv`)===(n.httpEquiv==null?null:n.httpEquiv)&&o.getAttribute(`charset`)===(n.charSet==null?null:n.charSet)){s.splice(c,1);break b}}o=a.createElement(r),Pd(o,r,n),a.head.appendChild(o);break;default:throw Error(i(468,r))}o[ht]=e,Ot(o),r=o}e.stateNode=r}else Hf(a,e.type,e.stateNode);else e.stateNode=If(a,r,e.memoizedProps);else o===r?r===null&&e.stateNode!==null&&Xc(e,e.memoizedProps,n.memoizedProps):(o===null?n.stateNode!==null&&(n=n.stateNode,n.parentNode.removeChild(n)):o.count--,r===null?Hf(a,e.type,e.stateNode):If(a,r,e.memoizedProps))}break;case 27:gl(t,e),yl(e),r&512&&(U||n===null||Jc(n,n.return)),n!==null&&r&4&&Xc(e,e.memoizedProps,n.memoizedProps);break;case 5:if(gl(t,e),yl(e),r&512&&(U||n===null||Jc(n,n.return)),e.flags&32){a=e.stateNode;try{en(a,``)}catch(t){Z(e,e.return,t)}}r&4&&e.stateNode!=null&&(a=e.memoizedProps,Xc(e,a,n===null?a:n.memoizedProps)),r&1024&&(rl=!0);break;case 6:if(gl(t,e),yl(e),r&4){if(e.stateNode===null)throw Error(i(162));r=e.memoizedProps,n=e.stateNode;try{n.nodeValue=r}catch(t){Z(e,e.return,t)}}break;case 3:if(Bf=null,a=_l,_l=gf(t.containerInfo),gl(t,e),_l=a,yl(e),r&4&&n!==null&&n.memoizedState.isDehydrated)try{Np(t.containerInfo)}catch(t){Z(e,e.return,t)}rl&&(rl=!1,bl(e));break;case 4:r=_l,_l=gf(e.stateNode.containerInfo),gl(t,e),yl(e),_l=r;break;case 12:gl(t,e),yl(e);break;case 31:gl(t,e),yl(e),r&4&&(r=e.updateQueue,r!==null&&(e.updateQueue=null,hl(e,r)));break;case 13:gl(t,e),yl(e),e.child.flags&8192&&e.memoizedState!==null!=(n!==null&&n.memoizedState!==null)&&($l=Pe()),r&4&&(r=e.updateQueue,r!==null&&(e.updateQueue=null,hl(e,r)));break;case 22:a=e.memoizedState!==null;var l=n!==null&&n.memoizedState!==null,u=nl,d=U;if(nl=u||a,U=d||l,gl(t,e),U=d,nl=u,yl(e),r&8192)a:for(t=e.stateNode,t._visibility=a?t._visibility&-2:t._visibility|1,a&&(n===null||l||nl||U||Sl(e)),n=null,t=e;;){if(t.tag===5||t.tag===26){if(n===null){l=n=t;try{if(o=l.stateNode,a)s=o.style,typeof s.setProperty==`function`?s.setProperty(`display`,`none`,`important`):s.display=`none`;else{c=l.stateNode;var f=l.memoizedProps.style,p=f!=null&&f.hasOwnProperty(`display`)?f.display:null;c.style.display=p==null||typeof p==`boolean`?``:(``+p).trim()}}catch(e){Z(l,l.return,e)}}}else if(t.tag===6){if(n===null){l=t;try{l.stateNode.nodeValue=a?``:l.memoizedProps}catch(e){Z(l,l.return,e)}}}else if(t.tag===18){if(n===null){l=t;try{var m=l.stateNode;a?$d(m,!0):$d(l.stateNode,!1)}catch(e){Z(l,l.return,e)}}}else if((t.tag!==22&&t.tag!==23||t.memoizedState===null||t===e)&&t.child!==null){t.child.return=t,t=t.child;continue}if(t===e)break a;for(;t.sibling===null;){if(t.return===null||t.return===e)break a;n===t&&(n=null),t=t.return}n===t&&(n=null),t.sibling.return=t.return,t=t.sibling}r&4&&(r=e.updateQueue,r!==null&&(n=r.retryQueue,n!==null&&(r.retryQueue=null,hl(e,n))));break;case 19:gl(t,e),yl(e),r&4&&(r=e.updateQueue,r!==null&&(e.updateQueue=null,hl(e,r)));break;case 30:break;case 21:break;default:gl(t,e),yl(e)}}function yl(e){var t=e.flags;if(t&2){try{for(var n,r=e.return;r!==null;){if(Zc(r)){n=r;break}r=r.return}if(n==null)throw Error(i(160));switch(n.tag){case 27:var a=n.stateNode;el(e,Qc(e),a);break;case 5:var o=n.stateNode;n.flags&32&&(en(o,``),n.flags&=-33),el(e,Qc(e),o);break;case 3:case 4:var s=n.stateNode.containerInfo;$c(e,Qc(e),s);break;default:throw Error(i(161))}}catch(t){Z(e,e.return,t)}e.flags&=-3}t&4096&&(e.flags&=-4097)}function bl(e){if(e.subtreeFlags&1024)for(e=e.child;e!==null;){var t=e;bl(t),t.tag===5&&t.flags&1024&&t.stateNode.reset(),e=e.sibling}}function xl(e,t){if(t.subtreeFlags&8772)for(t=t.child;t!==null;)sl(e,t.alternate,t),t=t.sibling}function Sl(e){for(e=e.child;e!==null;){var t=e;switch(t.tag){case 0:case 11:case 14:case 15:Wc(4,t,t.return),Sl(t);break;case 1:Jc(t,t.return);var n=t.stateNode;typeof n.componentWillUnmount==`function`&&Kc(t,t.return,n),Sl(t);break;case 27:pf(t.stateNode);case 26:case 5:Jc(t,t.return),Sl(t);break;case 22:t.memoizedState===null&&Sl(t);break;case 30:Sl(t);break;default:Sl(t)}e=e.sibling}}function Cl(e,t,n){for(n&&=(t.subtreeFlags&8772)!=0,t=t.child;t!==null;){var r=t.alternate,i=e,a=t,o=a.flags;switch(a.tag){case 0:case 11:case 15:Cl(i,a,n),Uc(4,a);break;case 1:if(Cl(i,a,n),r=a,i=r.stateNode,typeof i.componentDidMount==`function`)try{i.componentDidMount()}catch(e){Z(r,r.return,e)}if(r=a,i=r.updateQueue,i!==null){var s=r.stateNode;try{var c=i.shared.hiddenCallbacks;if(c!==null)for(i.shared.hiddenCallbacks=null,i=0;i<c.length;i++)eo(c[i],s)}catch(e){Z(r,r.return,e)}}n&&o&64&&Gc(a),qc(a,a.return);break;case 27:tl(a);case 26:case 5:Cl(i,a,n),n&&r===null&&o&4&&Yc(a),qc(a,a.return);break;case 12:Cl(i,a,n);break;case 31:Cl(i,a,n),n&&o&4&&fl(i,a);break;case 13:Cl(i,a,n),n&&o&4&&pl(i,a);break;case 22:a.memoizedState===null&&Cl(i,a,n),qc(a,a.return);break;case 30:break;default:Cl(i,a,n)}t=t.sibling}}function wl(e,t){var n=null;e!==null&&e.memoizedState!==null&&e.memoizedState.cachePool!==null&&(n=e.memoizedState.cachePool.pool),e=null,t.memoizedState!==null&&t.memoizedState.cachePool!==null&&(e=t.memoizedState.cachePool.pool),e!==n&&(e!=null&&e.refCount++,n!=null&&pa(n))}function Tl(e,t){e=null,t.alternate!==null&&(e=t.alternate.memoizedState.cache),t=t.memoizedState.cache,t!==e&&(t.refCount++,e!=null&&pa(e))}function El(e,t,n,r){if(t.subtreeFlags&10256)for(t=t.child;t!==null;)Dl(e,t,n,r),t=t.sibling}function Dl(e,t,n,r){var i=t.flags;switch(t.tag){case 0:case 11:case 15:El(e,t,n,r),i&2048&&Uc(9,t);break;case 1:El(e,t,n,r);break;case 3:El(e,t,n,r),i&2048&&(e=null,t.alternate!==null&&(e=t.alternate.memoizedState.cache),t=t.memoizedState.cache,t!==e&&(t.refCount++,e!=null&&pa(e)));break;case 12:if(i&2048){El(e,t,n,r),e=t.stateNode;try{var a=t.memoizedProps,o=a.id,s=a.onPostCommit;typeof s==`function`&&s(o,t.alternate===null?`mount`:`update`,e.passiveEffectDuration,-0)}catch(e){Z(t,t.return,e)}}else El(e,t,n,r);break;case 31:El(e,t,n,r);break;case 13:El(e,t,n,r);break;case 23:break;case 22:a=t.stateNode,o=t.alternate,t.memoizedState===null?a._visibility&2?El(e,t,n,r):(a._visibility|=2,Ol(e,t,n,r,(t.subtreeFlags&10256)!=0||!1)):a._visibility&2?El(e,t,n,r):kl(e,t),i&2048&&wl(o,t);break;case 24:El(e,t,n,r),i&2048&&Tl(t.alternate,t);break;default:El(e,t,n,r)}}function Ol(e,t,n,r,i){for(i&&=(t.subtreeFlags&10256)!=0||!1,t=t.child;t!==null;){var a=e,o=t,s=n,c=r,l=o.flags;switch(o.tag){case 0:case 11:case 15:Ol(a,o,s,c,i),Uc(8,o);break;case 23:break;case 22:var u=o.stateNode;o.memoizedState===null?(u._visibility|=2,Ol(a,o,s,c,i)):u._visibility&2?Ol(a,o,s,c,i):kl(a,o),i&&l&2048&&wl(o.alternate,o);break;case 24:Ol(a,o,s,c,i),i&&l&2048&&Tl(o.alternate,o);break;default:Ol(a,o,s,c,i)}t=t.sibling}}function kl(e,t){if(t.subtreeFlags&10256)for(t=t.child;t!==null;){var n=e,r=t,i=r.flags;switch(r.tag){case 22:kl(n,r),i&2048&&wl(r.alternate,r);break;case 24:kl(n,r),i&2048&&Tl(r.alternate,r);break;default:kl(n,r)}t=t.sibling}}var Al=8192;function jl(e,t,n){if(e.subtreeFlags&Al)for(e=e.child;e!==null;)Ml(e,t,n),e=e.sibling}function Ml(e,t,n){switch(e.tag){case 26:jl(e,t,n),e.flags&Al&&e.memoizedState!==null&&Gf(n,_l,e.memoizedState,e.memoizedProps);break;case 5:jl(e,t,n);break;case 3:case 4:var r=_l;_l=gf(e.stateNode.containerInfo),jl(e,t,n),_l=r;break;case 22:e.memoizedState===null&&(r=e.alternate,r!==null&&r.memoizedState!==null?(r=Al,Al=16777216,jl(e,t,n),Al=r):jl(e,t,n));break;default:jl(e,t,n)}}function Nl(e){var t=e.alternate;if(t!==null&&(e=t.child,e!==null)){t.child=null;do t=e.sibling,e.sibling=null,e=t;while(e!==null)}}function Pl(e){var t=e.deletions;if(e.flags&16){if(t!==null)for(var n=0;n<t.length;n++){var r=t[n];al=r,Ll(r,e)}Nl(e)}if(e.subtreeFlags&10256)for(e=e.child;e!==null;)Fl(e),e=e.sibling}function Fl(e){switch(e.tag){case 0:case 11:case 15:Pl(e),e.flags&2048&&Wc(9,e,e.return);break;case 3:Pl(e);break;case 12:Pl(e);break;case 22:var t=e.stateNode;e.memoizedState!==null&&t._visibility&2&&(e.return===null||e.return.tag!==13)?(t._visibility&=-3,Il(e)):Pl(e);break;default:Pl(e)}}function Il(e){var t=e.deletions;if(e.flags&16){if(t!==null)for(var n=0;n<t.length;n++){var r=t[n];al=r,Ll(r,e)}Nl(e)}for(e=e.child;e!==null;){switch(t=e,t.tag){case 0:case 11:case 15:Wc(8,t,t.return),Il(t);break;case 22:n=t.stateNode,n._visibility&2&&(n._visibility&=-3,Il(t));break;default:Il(t)}e=e.sibling}}function Ll(e,t){for(;al!==null;){var n=al;switch(n.tag){case 0:case 11:case 15:Wc(8,n,t);break;case 23:case 22:if(n.memoizedState!==null&&n.memoizedState.cachePool!==null){var r=n.memoizedState.cachePool.pool;r!=null&&r.refCount++}break;case 24:pa(n.memoizedState.cache)}if(r=n.child,r!==null)r.return=n,al=r;else a:for(n=e;al!==null;){r=al;var i=r.sibling,a=r.return;if(cl(r),r===n){al=null;break a}if(i!==null){i.return=a,al=i;break a}al=a}}}var Rl={getCacheForType:function(e){var t=oa(F),n=t.data.get(e);return n===void 0&&(n=e(),t.data.set(e,n)),n},cacheSignal:function(){return oa(F).controller.signal}},zl=typeof WeakMap==`function`?WeakMap:Map,G=0,K=null,q=null,J=0,Y=0,Bl=null,Vl=!1,Hl=!1,Ul=!1,Wl=0,X=0,Gl=0,Kl=0,ql=0,Jl=0,Yl=0,Xl=null,Zl=null,Ql=!1,$l=0,eu=0,tu=1/0,nu=null,ru=null,iu=0,au=null,ou=null,su=0,cu=0,lu=null,uu=null,du=0,fu=null;function pu(){return G&2&&J!==0?J&-J:D.T===null?ft():dd()}function mu(){if(Jl===0)if(!(J&536870912)||P){var e=Ze;Ze<<=1,!(Ze&3932160)&&(Ze=262144),Jl=e}else Jl=536870912;return e=so.current,e!==null&&(e.flags|=32),Jl}function hu(e,t,n){(e===K&&(Y===2||Y===9)||e.cancelPendingCommit!==null)&&(Su(e,0),yu(e,J,Jl,!1)),at(e,n),(!(G&2)||e!==K)&&(e===K&&(!(G&2)&&(Kl|=n),X===4&&yu(e,J,Jl,!1)),rd(e))}function gu(e,t,n){if(G&6)throw Error(i(327));var r=!n&&(t&127)==0&&(t&e.expiredLanes)===0||tt(e,t),a=r?Au(e,t):Ou(e,t,!0),o=r;do{if(a===0){Hl&&!r&&yu(e,t,0,!1);break}else{if(n=e.current.alternate,o&&!vu(n)){a=Ou(e,t,!1),o=!1;continue}if(a===2){if(o=t,e.errorRecoveryDisabledLanes&o)var s=0;else s=e.pendingLanes&-536870913,s=s===0?s&536870912?536870912:0:s;if(s!==0){t=s;a:{var c=e;a=Xl;var l=c.current.memoizedState.isDehydrated;if(l&&(Su(c,s).flags|=256),s=Ou(c,s,!1),s!==2){if(Ul&&!l){c.errorRecoveryDisabledLanes|=o,Kl|=o,a=4;break a}o=Zl,Zl=a,o!==null&&(Zl===null?Zl=o:Zl.push.apply(Zl,o))}a=s}if(o=!1,a!==2)continue}}if(a===1){Su(e,0),yu(e,t,0,!0);break}a:{switch(r=e,o=a,o){case 0:case 1:throw Error(i(345));case 4:if((t&4194048)!==t)break;case 6:yu(r,t,Jl,!Vl);break a;case 2:Zl=null;break;case 3:case 5:break;default:throw Error(i(329))}if((t&62914560)===t&&(a=$l+300-Pe(),10<a)){if(yu(r,t,Jl,!Vl),et(r,0,!0)!==0)break a;su=t,r.timeoutHandle=Kd(_u.bind(null,r,n,Zl,nu,Ql,t,Jl,Kl,Yl,Vl,o,`Throttled`,-0,0),a);break a}_u(r,n,Zl,nu,Ql,t,Jl,Kl,Yl,Vl,o,null,-0,0)}}break}while(1);rd(e)}function _u(e,t,n,r,i,a,o,s,c,l,u,d,f,p){if(e.timeoutHandle=-1,d=t.subtreeFlags,d&8192||(d&16785408)==16785408){d={stylesheets:null,count:0,imgCount:0,imgBytes:0,suspenseyImages:[],waitingForImages:!0,waitingForViewTransition:!1,unsuspend:ln},Ml(t,a,d);var m=(a&62914560)===a?$l-Pe():(a&4194048)===a?eu-Pe():0;if(m=qf(d,m),m!==null){su=a,e.cancelPendingCommit=m(Lu.bind(null,e,t,a,n,r,i,o,s,c,u,d,null,f,p)),yu(e,a,o,!l);return}}Lu(e,t,a,n,r,i,o,s,c)}function vu(e){for(var t=e;;){var n=t.tag;if((n===0||n===11||n===15)&&t.flags&16384&&(n=t.updateQueue,n!==null&&(n=n.stores,n!==null)))for(var r=0;r<n.length;r++){var i=n[r],a=i.getSnapshot;i=i.value;try{if(!kr(a(),i))return!1}catch{return!1}}if(n=t.child,t.subtreeFlags&16384&&n!==null)n.return=t,t=n;else{if(t===e)break;for(;t.sibling===null;){if(t.return===null||t.return===e)return!0;t=t.return}t.sibling.return=t.return,t=t.sibling}}return!0}function yu(e,t,n,r){t&=~ql,t&=~Kl,e.suspendedLanes|=t,e.pingedLanes&=~t,r&&(e.warmLanes|=t),r=e.expirationTimes;for(var i=t;0<i;){var a=31-Ke(i),o=1<<a;r[a]=-1,i&=~o}n!==0&&st(e,n,t)}function bu(){return G&6?!0:(id(0,!1),!1)}function xu(){if(q!==null){if(Y===0)var e=q.return;else e=q,Qi=Zi=null,jo(e),Ia=null,La=0,e=q;for(;e!==null;)Hc(e.alternate,e),e=e.return;q=null}}function Su(e,t){var n=e.timeoutHandle;n!==-1&&(e.timeoutHandle=-1,qd(n)),n=e.cancelPendingCommit,n!==null&&(e.cancelPendingCommit=null,n()),su=0,xu(),K=e,q=n=gi(e.current,null),J=t,Y=0,Bl=null,Vl=!1,Hl=tt(e,t),Ul=!1,Yl=Jl=ql=Kl=Gl=X=0,Zl=Xl=null,Ql=!1,t&8&&(t|=t&32);var r=e.entangledLanes;if(r!==0)for(e=e.entanglements,r&=t;0<r;){var i=31-Ke(r),a=1<<i;t|=e[i],r&=~a}return Wl=t,oi(),n}function Cu(e,t){L=null,D.H=Bs,t===Ea||t===Oa?(t=Pa(),Y=3):t===Da?(t=Pa(),Y=4):Y=t===ic?8:typeof t==`object`&&t&&typeof t.then==`function`?6:1,Bl=t,q===null&&(X=1,Qs(e,wi(t,e.current)))}function wu(){var e=so.current;return e===null?!0:(J&4194048)===J?co===null:(J&62914560)===J||J&536870912?e===co:!1}function Tu(){var e=D.H;return D.H=Bs,e===null?Bs:e}function Eu(){var e=D.A;return D.A=Rl,e}function Du(){X=4,Vl||(J&4194048)!==J&&so.current!==null||(Hl=!0),!(Gl&134217727)&&!(Kl&134217727)||K===null||yu(K,J,Jl,!1)}function Ou(e,t,n){var r=G;G|=2;var i=Tu(),a=Eu();(K!==e||J!==t)&&(nu=null,Su(e,t)),t=!1;var o=X;a:do try{if(Y!==0&&q!==null){var s=q,c=Bl;switch(Y){case 8:xu(),o=6;break a;case 3:case 2:case 9:case 6:so.current===null&&(t=!0);var l=Y;if(Y=0,Bl=null,Pu(e,s,c,l),n&&Hl){o=0;break a}break;default:l=Y,Y=0,Bl=null,Pu(e,s,c,l)}}ku(),o=X;break}catch(t){Cu(e,t)}while(1);return t&&e.shellSuspendCounter++,Qi=Zi=null,G=r,D.H=i,D.A=a,q===null&&(K=null,J=0,oi()),o}function ku(){for(;q!==null;)Mu(q)}function Au(e,t){var n=G;G|=2;var r=Tu(),a=Eu();K!==e||J!==t?(nu=null,tu=Pe()+500,Su(e,t)):Hl=tt(e,t);a:do try{if(Y!==0&&q!==null){t=q;var o=Bl;b:switch(Y){case 1:Y=0,Bl=null,Pu(e,t,o,1);break;case 2:case 9:if(Aa(o)){Y=0,Bl=null,Nu(t);break}t=function(){Y!==2&&Y!==9||K!==e||(Y=7),rd(e)},o.then(t,t);break a;case 3:Y=7;break a;case 4:Y=5;break a;case 7:Aa(o)?(Y=0,Bl=null,Nu(t)):(Y=0,Bl=null,Pu(e,t,o,7));break;case 5:var s=null;switch(q.tag){case 26:s=q.memoizedState;case 5:case 27:var c=q;if(s?Wf(s):c.stateNode.complete){Y=0,Bl=null;var l=c.sibling;if(l!==null)q=l;else{var u=c.return;u===null?q=null:(q=u,Fu(u))}break b}}Y=0,Bl=null,Pu(e,t,o,5);break;case 6:Y=0,Bl=null,Pu(e,t,o,6);break;case 8:xu(),X=6;break a;default:throw Error(i(462))}}ju();break}catch(t){Cu(e,t)}while(1);return Qi=Zi=null,D.H=r,D.A=a,G=n,q===null?(K=null,J=0,oi(),X):0}function ju(){for(;q!==null&&!Me();)Mu(q)}function Mu(e){var t=Pc(e.alternate,e,Wl);e.memoizedProps=e.pendingProps,t===null?Fu(e):q=t}function Nu(e){var t=e,n=t.alternate;switch(t.tag){case 15:case 0:t=vc(n,t,t.pendingProps,t.type,void 0,J);break;case 11:t=vc(n,t,t.pendingProps,t.type.render,t.ref,J);break;case 5:jo(t);default:Hc(n,t),t=q=_i(t,Wl),t=Pc(n,t,Wl)}e.memoizedProps=e.pendingProps,t===null?Fu(e):q=t}function Pu(e,t,n,r){Qi=Zi=null,jo(t),Ia=null,La=0;var i=t.return;try{if(rc(e,i,t,n,J)){X=1,Qs(e,wi(n,e.current)),q=null;return}}catch(t){if(i!==null)throw q=i,t;X=1,Qs(e,wi(n,e.current)),q=null;return}t.flags&32768?(P||r===1?e=!0:Hl||J&536870912?e=!1:(Vl=e=!0,(r===2||r===9||r===3||r===6)&&(r=so.current,r!==null&&r.tag===13&&(r.flags|=16384))),Iu(t,e)):Fu(t)}function Fu(e){var t=e;do{if(t.flags&32768){Iu(t,Vl);return}e=t.return;var n=Bc(t.alternate,t,Wl);if(n!==null){q=n;return}if(t=t.sibling,t!==null){q=t;return}q=t=e}while(t!==null);X===0&&(X=5)}function Iu(e,t){do{var n=Vc(e.alternate,e);if(n!==null){n.flags&=32767,q=n;return}if(n=e.return,n!==null&&(n.flags|=32768,n.subtreeFlags=0,n.deletions=null),!t&&(e=e.sibling,e!==null)){q=e;return}q=e=n}while(e!==null);X=6,q=null}function Lu(e,t,n,r,a,o,s,c,l){e.cancelPendingCommit=null;do Hu();while(iu!==0);if(G&6)throw Error(i(327));if(t!==null){if(t===e.current)throw Error(i(177));if(o=t.lanes|t.childLanes,o|=ai,ot(e,n,o,s,c,l),e===K&&(q=K=null,J=0),ou=t,au=e,su=n,cu=o,lu=a,uu=r,t.subtreeFlags&10256||t.flags&10256?(e.callbackNode=null,e.callbackPriority=0,Xu(Re,function(){return Uu(),null})):(e.callbackNode=null,e.callbackPriority=0),r=(t.flags&13878)!=0,t.subtreeFlags&13878||r){r=D.T,D.T=null,a=O.p,O.p=2,s=G,G|=4;try{ol(e,t,n)}finally{G=s,O.p=a,D.T=r}}iu=1,Ru(),zu(),Bu()}}function Ru(){if(iu===1){iu=0;var e=au,t=ou,n=(t.flags&13878)!=0;if(t.subtreeFlags&13878||n){n=D.T,D.T=null;var r=O.p;O.p=2;var i=G;G|=4;try{vl(t,e);var a=zd,o=Pr(e.containerInfo),s=a.focusedElem,c=a.selectionRange;if(o!==s&&s&&s.ownerDocument&&Nr(s.ownerDocument.documentElement,s)){if(c!==null&&Fr(s)){var l=c.start,u=c.end;if(u===void 0&&(u=l),`selectionStart`in s)s.selectionStart=l,s.selectionEnd=Math.min(u,s.value.length);else{var d=s.ownerDocument||document,f=d&&d.defaultView||window;if(f.getSelection){var p=f.getSelection(),m=s.textContent.length,h=Math.min(c.start,m),g=c.end===void 0?h:Math.min(c.end,m);!p.extend&&h>g&&(o=g,g=h,h=o);var _=Mr(s,h),v=Mr(s,g);if(_&&v&&(p.rangeCount!==1||p.anchorNode!==_.node||p.anchorOffset!==_.offset||p.focusNode!==v.node||p.focusOffset!==v.offset)){var y=d.createRange();y.setStart(_.node,_.offset),p.removeAllRanges(),h>g?(p.addRange(y),p.extend(v.node,v.offset)):(y.setEnd(v.node,v.offset),p.addRange(y))}}}}for(d=[],p=s;p=p.parentNode;)p.nodeType===1&&d.push({element:p,left:p.scrollLeft,top:p.scrollTop});for(typeof s.focus==`function`&&s.focus(),s=0;s<d.length;s++){var b=d[s];b.element.scrollLeft=b.left,b.element.scrollTop=b.top}}sp=!!Rd,zd=Rd=null}finally{G=i,O.p=r,D.T=n}}e.current=t,iu=2}}function zu(){if(iu===2){iu=0;var e=au,t=ou,n=(t.flags&8772)!=0;if(t.subtreeFlags&8772||n){n=D.T,D.T=null;var r=O.p;O.p=2;var i=G;G|=4;try{sl(e,t.alternate,t)}finally{G=i,O.p=r,D.T=n}}iu=3}}function Bu(){if(iu===4||iu===3){iu=0,Ne();var e=au,t=ou,n=su,r=uu;t.subtreeFlags&10256||t.flags&10256?iu=5:(iu=0,ou=au=null,Vu(e,e.pendingLanes));var i=e.pendingLanes;if(i===0&&(ru=null),dt(n),t=t.stateNode,We&&typeof We.onCommitFiberRoot==`function`)try{We.onCommitFiberRoot(Ue,t,void 0,(t.current.flags&128)==128)}catch{}if(r!==null){t=D.T,i=O.p,O.p=2,D.T=null;try{for(var a=e.onRecoverableError,o=0;o<r.length;o++){var s=r[o];a(s.value,{componentStack:s.stack})}}finally{D.T=t,O.p=i}}su&3&&Hu(),rd(e),i=e.pendingLanes,n&261930&&i&42?e===fu?du++:(du=0,fu=e):du=0,id(0,!1)}}function Vu(e,t){(e.pooledCacheLanes&=t)===0&&(t=e.pooledCache,t!=null&&(e.pooledCache=null,pa(t)))}function Hu(){return Ru(),zu(),Bu(),Uu()}function Uu(){if(iu!==5)return!1;var e=au,t=cu;cu=0;var n=dt(su),r=D.T,a=O.p;try{O.p=32>n?32:n,D.T=null,n=lu,lu=null;var o=au,s=su;if(iu=0,ou=au=null,su=0,G&6)throw Error(i(331));var c=G;if(G|=4,Fl(o.current),Dl(o,o.current,s,n),G=c,id(0,!1),We&&typeof We.onPostCommitFiberRoot==`function`)try{We.onPostCommitFiberRoot(Ue,o)}catch{}return!0}finally{O.p=a,D.T=r,Vu(e,t)}}function Wu(e,t,n){t=wi(n,t),t=ec(e.stateNode,t,2),e=Ja(e,t,2),e!==null&&(at(e,2),rd(e))}function Z(e,t,n){if(e.tag===3)Wu(e,e,n);else for(;t!==null;){if(t.tag===3){Wu(t,e,n);break}else if(t.tag===1){var r=t.stateNode;if(typeof t.type.getDerivedStateFromError==`function`||typeof r.componentDidCatch==`function`&&(ru===null||!ru.has(r))){e=wi(n,e),n=tc(2),r=Ja(t,n,2),r!==null&&(nc(n,r,t,e),at(r,2),rd(r));break}}t=t.return}}function Gu(e,t,n){var r=e.pingCache;if(r===null){r=e.pingCache=new zl;var i=new Set;r.set(t,i)}else i=r.get(t),i===void 0&&(i=new Set,r.set(t,i));i.has(n)||(Ul=!0,i.add(n),e=Ku.bind(null,e,t,n),t.then(e,e))}function Ku(e,t,n){var r=e.pingCache;r!==null&&r.delete(t),e.pingedLanes|=e.suspendedLanes&n,e.warmLanes&=~n,K===e&&(J&n)===n&&(X===4||X===3&&(J&62914560)===J&&300>Pe()-$l?!(G&2)&&Su(e,0):ql|=n,Yl===J&&(Yl=0)),rd(e)}function qu(e,t){t===0&&(t=rt()),e=li(e,t),e!==null&&(at(e,t),rd(e))}function Ju(e){var t=e.memoizedState,n=0;t!==null&&(n=t.retryLane),qu(e,n)}function Yu(e,t){var n=0;switch(e.tag){case 31:case 13:var r=e.stateNode,a=e.memoizedState;a!==null&&(n=a.retryLane);break;case 19:r=e.stateNode;break;case 22:r=e.stateNode._retryCache;break;default:throw Error(i(314))}r!==null&&r.delete(t),qu(e,n)}function Xu(e,t){return Ae(e,t)}var Zu=null,Qu=null,$u=!1,ed=!1,td=!1,nd=0;function rd(e){e!==Qu&&e.next===null&&(Qu===null?Zu=Qu=e:Qu=Qu.next=e),ed=!0,$u||($u=!0,ud())}function id(e,t){if(!td&&ed){td=!0;do for(var n=!1,r=Zu;r!==null;){if(!t)if(e!==0){var i=r.pendingLanes;if(i===0)var a=0;else{var o=r.suspendedLanes,s=r.pingedLanes;a=(1<<31-Ke(42|e)+1)-1,a&=i&~(o&~s),a=a&201326741?a&201326741|1:a?a|2:0}a!==0&&(n=!0,ld(r,a))}else a=J,a=et(r,r===K?a:0,r.cancelPendingCommit!==null||r.timeoutHandle!==-1),!(a&3)||tt(r,a)||(n=!0,ld(r,a));r=r.next}while(n);td=!1}}function ad(){od()}function od(){ed=$u=!1;var e=0;nd!==0&&Gd()&&(e=nd);for(var t=Pe(),n=null,r=Zu;r!==null;){var i=r.next,a=sd(r,t);a===0?(r.next=null,n===null?Zu=i:n.next=i,i===null&&(Qu=n)):(n=r,(e!==0||a&3)&&(ed=!0)),r=i}iu!==0&&iu!==5||id(e,!1),nd!==0&&(nd=0)}function sd(e,t){for(var n=e.suspendedLanes,r=e.pingedLanes,i=e.expirationTimes,a=e.pendingLanes&-62914561;0<a;){var o=31-Ke(a),s=1<<o,c=i[o];c===-1?((s&n)===0||(s&r)!==0)&&(i[o]=nt(s,t)):c<=t&&(e.expiredLanes|=s),a&=~s}if(t=K,n=J,n=et(e,e===t?n:0,e.cancelPendingCommit!==null||e.timeoutHandle!==-1),r=e.callbackNode,n===0||e===t&&(Y===2||Y===9)||e.cancelPendingCommit!==null)return r!==null&&r!==null&&je(r),e.callbackNode=null,e.callbackPriority=0;if(!(n&3)||tt(e,n)){if(t=n&-n,t===e.callbackPriority)return t;switch(r!==null&&je(r),dt(n)){case 2:case 8:n=Le;break;case 32:n=Re;break;case 268435456:n=Be;break;default:n=Re}return r=cd.bind(null,e),n=Ae(n,r),e.callbackPriority=t,e.callbackNode=n,t}return r!==null&&r!==null&&je(r),e.callbackPriority=2,e.callbackNode=null,2}function cd(e,t){if(iu!==0&&iu!==5)return e.callbackNode=null,e.callbackPriority=0,null;var n=e.callbackNode;if(Hu()&&e.callbackNode!==n)return null;var r=J;return r=et(e,e===K?r:0,e.cancelPendingCommit!==null||e.timeoutHandle!==-1),r===0?null:(gu(e,r,t),sd(e,Pe()),e.callbackNode!=null&&e.callbackNode===n?cd.bind(null,e):null)}function ld(e,t){if(Hu())return null;gu(e,t,!0)}function ud(){Yd(function(){G&6?Ae(Ie,ad):od()})}function dd(){if(nd===0){var e=ga;e===0&&(e=Xe,Xe<<=1,!(Xe&261888)&&(Xe=256)),nd=e}return nd}function fd(e){return e==null||typeof e==`symbol`||typeof e==`boolean`?null:typeof e==`function`?e:cn(``+e)}function pd(e,t){var n=t.ownerDocument.createElement(`input`);return n.name=t.name,n.value=t.value,e.id&&n.setAttribute(`form`,e.id),t.parentNode.insertBefore(n,t),e=new FormData(e),n.parentNode.removeChild(n),e}function md(e,t,n,r,i){if(t===`submit`&&n&&n.stateNode===i){var a=fd((i[gt]||null).action),o=r.submitter;o&&(t=(t=o[gt]||null)?fd(t.formAction):o.getAttribute(`formAction`),t!==null&&(a=t,o=null));var s=new An(`action`,`action`,null,r,i);e.push({event:s,listeners:[{instance:null,listener:function(){if(r.defaultPrevented){if(nd!==0){var e=o?pd(i,o):new FormData(i);Es(n,{pending:!0,data:e,method:i.method,action:a},null,e)}}else typeof a==`function`&&(s.preventDefault(),e=o?pd(i,o):new FormData(i),Es(n,{pending:!0,data:e,method:i.method,action:a},a,e))},currentTarget:i}]})}}for(var hd=0;hd<ti.length;hd++){var gd=ti[hd];M(gd.toLowerCase(),`on`+(gd[0].toUpperCase()+gd.slice(1)))}M(qr,`onAnimationEnd`),M(Jr,`onAnimationIteration`),M(Yr,`onAnimationStart`),M(`dblclick`,`onDoubleClick`),M(`focusin`,`onFocus`),M(`focusout`,`onBlur`),M(Xr,`onTransitionRun`),M(Zr,`onTransitionStart`),M(Qr,`onTransitionCancel`),M($r,`onTransitionEnd`),Mt(`onMouseEnter`,[`mouseout`,`mouseover`]),Mt(`onMouseLeave`,[`mouseout`,`mouseover`]),Mt(`onPointerEnter`,[`pointerout`,`pointerover`]),Mt(`onPointerLeave`,[`pointerout`,`pointerover`]),jt(`onChange`,`change click focusin focusout input keydown keyup selectionchange`.split(` `)),jt(`onSelect`,`focusout contextmenu dragend focusin keydown keyup mousedown mouseup selectionchange`.split(` `)),jt(`onBeforeInput`,[`compositionend`,`keypress`,`textInput`,`paste`]),jt(`onCompositionEnd`,`compositionend focusout keydown keypress keyup mousedown`.split(` `)),jt(`onCompositionStart`,`compositionstart focusout keydown keypress keyup mousedown`.split(` `)),jt(`onCompositionUpdate`,`compositionupdate focusout keydown keypress keyup mousedown`.split(` `));var _d=`abort canplay canplaythrough durationchange emptied encrypted ended error loadeddata loadedmetadata loadstart pause play playing progress ratechange resize seeked seeking stalled suspend timeupdate volumechange waiting`.split(` `),vd=new Set(`beforetoggle cancel close invalid load scroll scrollend toggle`.split(` `).concat(_d));function yd(e,t){t=(t&4)!=0;for(var n=0;n<e.length;n++){var r=e[n],i=r.event;r=r.listeners;a:{var a=void 0;if(t)for(var o=r.length-1;0<=o;o--){var s=r[o],c=s.instance,l=s.currentTarget;if(s=s.listener,c!==a&&i.isPropagationStopped())break a;a=s,i.currentTarget=l;try{a(i)}catch(e){ni(e)}i.currentTarget=null,a=c}else for(o=0;o<r.length;o++){if(s=r[o],c=s.instance,l=s.currentTarget,s=s.listener,c!==a&&i.isPropagationStopped())break a;a=s,i.currentTarget=l;try{a(i)}catch(e){ni(e)}i.currentTarget=null,a=c}}}}function Q(e,t){var n=t[vt];n===void 0&&(n=t[vt]=new Set);var r=e+`__bubble`;n.has(r)||(Cd(t,e,2,!1),n.add(r))}function bd(e,t,n){var r=0;t&&(r|=4),Cd(n,e,r,t)}var xd=`_reactListening`+Math.random().toString(36).slice(2);function Sd(e){if(!e[xd]){e[xd]=!0,kt.forEach(function(t){t!==`selectionchange`&&(vd.has(t)||bd(t,!1,e),bd(t,!0,e))});var t=e.nodeType===9?e:e.ownerDocument;t===null||t[xd]||(t[xd]=!0,bd(`selectionchange`,!1,t))}}function Cd(e,t,n,r){switch(mp(t)){case 2:var i=cp;break;case 8:i=lp;break;default:i=up}n=i.bind(null,t,n,e),i=void 0,!yn||t!==`touchstart`&&t!==`touchmove`&&t!==`wheel`||(i=!0),r?i===void 0?e.addEventListener(t,n,!0):e.addEventListener(t,n,{capture:!0,passive:i}):i===void 0?e.addEventListener(t,n,!1):e.addEventListener(t,n,{passive:i})}function wd(e,t,n,r,i){var a=r;if(!(t&1)&&!(t&2)&&r!==null)a:for(;;){if(r===null)return;var s=r.tag;if(s===3||s===4){var c=r.stateNode.containerInfo;if(c===i)break;if(s===4)for(s=r.return;s!==null;){var l=s.tag;if((l===3||l===4)&&s.stateNode.containerInfo===i)return;s=s.return}for(;c!==null;){if(s=wt(c),s===null)return;if(l=s.tag,l===5||l===6||l===26||l===27){r=a=s;continue a}c=c.parentNode}}r=r.return}gn(function(){var r=a,i=dn(n),s=[];a:{var c=ei.get(e);if(c!==void 0){var l=An,u=e;switch(e){case`keypress`:if(Tn(n)===0)break a;case`keydown`:case`keyup`:l=Jn;break;case`focusin`:u=`focus`,l=zn;break;case`focusout`:u=`blur`,l=zn;break;case`beforeblur`:case`afterblur`:l=zn;break;case`click`:if(n.button===2)break a;case`auxclick`:case`dblclick`:case`mousedown`:case`mousemove`:case`mouseup`:case`mouseout`:case`mouseover`:case`contextmenu`:l=Ln;break;case`drag`:case`dragend`:case`dragenter`:case`dragexit`:case`dragleave`:case`dragover`:case`dragstart`:case`drop`:l=Rn;break;case`touchcancel`:case`touchend`:case`touchmove`:case`touchstart`:l=Xn;break;case qr:case Jr:case Yr:l=Bn;break;case $r:l=A;break;case`scroll`:case`scrollend`:l=Mn;break;case`wheel`:l=Zn;break;case`copy`:case`cut`:case`paste`:l=Vn;break;case`gotpointercapture`:case`lostpointercapture`:case`pointercancel`:case`pointerdown`:case`pointermove`:case`pointerout`:case`pointerover`:case`pointerup`:l=Yn;break;case`toggle`:case`beforetoggle`:l=Qn}var d=(t&4)!=0,f=!d&&(e===`scroll`||e===`scrollend`),p=d?c===null?null:c+`Capture`:c;d=[];for(var m=r,h;m!==null;){var g=m;if(h=g.stateNode,g=g.tag,g!==5&&g!==26&&g!==27||h===null||p===null||(g=_n(m,p),g!=null&&d.push(Td(m,g,h))),f)break;m=m.return}0<d.length&&(c=new l(c,u,null,n,i),s.push({event:c,listeners:d}))}}if(!(t&7)){a:{if(c=e===`mouseover`||e===`pointerover`,l=e===`mouseout`||e===`pointerout`,c&&n!==un&&(u=n.relatedTarget||n.fromElement)&&(wt(u)||u[_t]))break a;if((l||c)&&(c=i.window===i?i:(c=i.ownerDocument)?c.defaultView||c.parentWindow:window,l?(u=n.relatedTarget||n.toElement,l=r,u=u?wt(u):null,u!==null&&(f=o(u),d=u.tag,u!==f||d!==5&&d!==27&&d!==6)&&(u=null)):(l=null,u=r),l!==u)){if(d=Ln,g=`onMouseLeave`,p=`onMouseEnter`,m=`mouse`,(e===`pointerout`||e===`pointerover`)&&(d=Yn,g=`onPointerLeave`,p=`onPointerEnter`,m=`pointer`),f=l==null?c:Et(l),h=u==null?c:Et(u),c=new d(g,m+`leave`,l,n,i),c.target=f,c.relatedTarget=h,g=null,wt(i)===r&&(d=new d(p,m+`enter`,u,n,i),d.target=h,d.relatedTarget=f,g=d),f=g,l&&u)b:{for(d=Dd,p=l,m=u,h=0,g=p;g;g=d(g))h++;g=0;for(var _=m;_;_=d(_))g++;for(;0<h-g;)p=d(p),h--;for(;0<g-h;)m=d(m),g--;for(;h--;){if(p===m||m!==null&&p===m.alternate){d=p;break b}p=d(p),m=d(m)}d=null}else d=null;l!==null&&Od(s,c,l,d,!1),u!==null&&f!==null&&Od(s,f,u,d,!0)}}a:{if(c=r?Et(r):window,l=c.nodeName&&c.nodeName.toLowerCase(),l===`select`||l===`input`&&c.type===`file`)var v=_r;else if(dr(c))if(vr)v=Dr;else{v=Tr;var y=wr}else l=c.nodeName,!l||l.toLowerCase()!==`input`||c.type!==`checkbox`&&c.type!==`radio`?r&&an(r.elementType)&&(v=_r):v=Er;if(v&&=v(e,r)){fr(s,v,n,i);break a}y&&y(e,c,r),e===`focusout`&&r&&c.type===`number`&&r.memoizedProps.value!=null&&Xt(c,`number`,c.value)}switch(y=r?Et(r):window,e){case`focusin`:(dr(y)||y.contentEditable===`true`)&&(Lr=y,Rr=r,zr=null);break;case`focusout`:zr=Rr=Lr=null;break;case`mousedown`:Br=!0;break;case`contextmenu`:case`mouseup`:case`dragend`:Br=!1,Vr(s,n,i);break;case`selectionchange`:if(Ir)break;case`keydown`:case`keyup`:Vr(s,n,i)}var b;if(er)b:{switch(e){case`compositionstart`:var x=`onCompositionStart`;break b;case`compositionend`:x=`onCompositionEnd`;break b;case`compositionupdate`:x=`onCompositionUpdate`;break b}x=void 0}else sr?ar(e,n)&&(x=`onCompositionEnd`):e===`keydown`&&n.keyCode===229&&(x=`onCompositionStart`);x&&(rr&&n.locale!==`ko`&&(sr||x!==`onCompositionStart`?x===`onCompositionEnd`&&sr&&(b=wn()):(xn=i,Sn=`value`in xn?xn.value:xn.textContent,sr=!0)),y=Ed(r,x),0<y.length&&(x=new Hn(x,e,null,n,i),s.push({event:x,listeners:y}),b?x.data=b:(b=or(n),b!==null&&(x.data=b)))),(b=nr?cr(e,n):lr(e,n))&&(x=Ed(r,`onBeforeInput`),0<x.length&&(y=new Hn(`onBeforeInput`,`beforeinput`,null,n,i),s.push({event:y,listeners:x}),y.data=b)),md(s,e,r,n,i)}yd(s,t)})}function Td(e,t,n){return{instance:e,listener:t,currentTarget:n}}function Ed(e,t){for(var n=t+`Capture`,r=[];e!==null;){var i=e,a=i.stateNode;if(i=i.tag,i!==5&&i!==26&&i!==27||a===null||(i=_n(e,n),i!=null&&r.unshift(Td(e,i,a)),i=_n(e,t),i!=null&&r.push(Td(e,i,a))),e.tag===3)return r;e=e.return}return[]}function Dd(e){if(e===null)return null;do e=e.return;while(e&&e.tag!==5&&e.tag!==27);return e||null}function Od(e,t,n,r,i){for(var a=t._reactName,o=[];n!==null&&n!==r;){var s=n,c=s.alternate,l=s.stateNode;if(s=s.tag,c!==null&&c===r)break;s!==5&&s!==26&&s!==27||l===null||(c=l,i?(l=_n(n,a),l!=null&&o.unshift(Td(n,l,c))):i||(l=_n(n,a),l!=null&&o.push(Td(n,l,c)))),n=n.return}o.length!==0&&e.push({event:t,listeners:o})}var kd=/\r\n?/g,Ad=/\u0000|\uFFFD/g;function jd(e){return(typeof e==`string`?e:``+e).replace(kd,`
+`).replace(Ad,``)}function Md(e,t){return t=jd(t),jd(e)===t}function $(e,t,n,r,a,o){switch(n){case`children`:typeof r==`string`?t===`body`||t===`textarea`&&r===``||en(e,r):(typeof r==`number`||typeof r==`bigint`)&&t!==`body`&&en(e,``+r);break;case`className`:Rt(e,`class`,r);break;case`tabIndex`:Rt(e,`tabindex`,r);break;case`dir`:case`role`:case`viewBox`:case`width`:case`height`:Rt(e,n,r);break;case`style`:rn(e,r,o);break;case`data`:if(t!==`object`){Rt(e,`data`,r);break}case`src`:case`href`:if(r===``&&(t!==`a`||n!==`href`)){e.removeAttribute(n);break}if(r==null||typeof r==`function`||typeof r==`symbol`||typeof r==`boolean`){e.removeAttribute(n);break}r=cn(``+r),e.setAttribute(n,r);break;case`action`:case`formAction`:if(typeof r==`function`){e.setAttribute(n,`javascript:throw new Error('A React form was unexpectedly submitted. If you called form.submit() manually, consider using form.requestSubmit() instead. If you\\'re trying to use event.stopPropagation() in a submit event handler, consider also calling event.preventDefault().')`);break}else typeof o==`function`&&(n===`formAction`?(t!==`input`&&$(e,t,`name`,a.name,a,null),$(e,t,`formEncType`,a.formEncType,a,null),$(e,t,`formMethod`,a.formMethod,a,null),$(e,t,`formTarget`,a.formTarget,a,null)):($(e,t,`encType`,a.encType,a,null),$(e,t,`method`,a.method,a,null),$(e,t,`target`,a.target,a,null)));if(r==null||typeof r==`symbol`||typeof r==`boolean`){e.removeAttribute(n);break}r=cn(``+r),e.setAttribute(n,r);break;case`onClick`:r!=null&&(e.onclick=ln);break;case`onScroll`:r!=null&&Q(`scroll`,e);break;case`onScrollEnd`:r!=null&&Q(`scrollend`,e);break;case`dangerouslySetInnerHTML`:if(r!=null){if(typeof r!=`object`||!(`__html`in r))throw Error(i(61));if(n=r.__html,n!=null){if(a.children!=null)throw Error(i(60));e.innerHTML=n}}break;case`multiple`:e.multiple=r&&typeof r!=`function`&&typeof r!=`symbol`;break;case`muted`:e.muted=r&&typeof r!=`function`&&typeof r!=`symbol`;break;case`suppressContentEditableWarning`:case`suppressHydrationWarning`:case`defaultValue`:case`defaultChecked`:case`innerHTML`:case`ref`:break;case`autoFocus`:break;case`xlinkHref`:if(r==null||typeof r==`function`||typeof r==`boolean`||typeof r==`symbol`){e.removeAttribute(`xlink:href`);break}n=cn(``+r),e.setAttributeNS(`http://www.w3.org/1999/xlink`,`xlink:href`,n);break;case`contentEditable`:case`spellCheck`:case`draggable`:case`value`:case`autoReverse`:case`externalResourcesRequired`:case`focusable`:case`preserveAlpha`:r!=null&&typeof r!=`function`&&typeof r!=`symbol`?e.setAttribute(n,``+r):e.removeAttribute(n);break;case`inert`:case`allowFullScreen`:case`async`:case`autoPlay`:case`controls`:case`default`:case`defer`:case`disabled`:case`disablePictureInPicture`:case`disableRemotePlayback`:case`formNoValidate`:case`hidden`:case`loop`:case`noModule`:case`noValidate`:case`open`:case`playsInline`:case`readOnly`:case`required`:case`reversed`:case`scoped`:case`seamless`:case`itemScope`:r&&typeof r!=`function`&&typeof r!=`symbol`?e.setAttribute(n,``):e.removeAttribute(n);break;case`capture`:case`download`:!0===r?e.setAttribute(n,``):!1!==r&&r!=null&&typeof r!=`function`&&typeof r!=`symbol`?e.setAttribute(n,r):e.removeAttribute(n);break;case`cols`:case`rows`:case`size`:case`span`:r!=null&&typeof r!=`function`&&typeof r!=`symbol`&&!isNaN(r)&&1<=r?e.setAttribute(n,r):e.removeAttribute(n);break;case`rowSpan`:case`start`:r==null||typeof r==`function`||typeof r==`symbol`||isNaN(r)?e.removeAttribute(n):e.setAttribute(n,r);break;case`popover`:Q(`beforetoggle`,e),Q(`toggle`,e),Lt(e,`popover`,r);break;case`xlinkActuate`:zt(e,`http://www.w3.org/1999/xlink`,`xlink:actuate`,r);break;case`xlinkArcrole`:zt(e,`http://www.w3.org/1999/xlink`,`xlink:arcrole`,r);break;case`xlinkRole`:zt(e,`http://www.w3.org/1999/xlink`,`xlink:role`,r);break;case`xlinkShow`:zt(e,`http://www.w3.org/1999/xlink`,`xlink:show`,r);break;case`xlinkTitle`:zt(e,`http://www.w3.org/1999/xlink`,`xlink:title`,r);break;case`xlinkType`:zt(e,`http://www.w3.org/1999/xlink`,`xlink:type`,r);break;case`xmlBase`:zt(e,`http://www.w3.org/XML/1998/namespace`,`xml:base`,r);break;case`xmlLang`:zt(e,`http://www.w3.org/XML/1998/namespace`,`xml:lang`,r);break;case`xmlSpace`:zt(e,`http://www.w3.org/XML/1998/namespace`,`xml:space`,r);break;case`is`:Lt(e,`is`,r);break;case`innerText`:case`textContent`:break;default:(!(2<n.length)||n[0]!==`o`&&n[0]!==`O`||n[1]!==`n`&&n[1]!==`N`)&&(n=on.get(n)||n,Lt(e,n,r))}}function Nd(e,t,n,r,a,o){switch(n){case`style`:rn(e,r,o);break;case`dangerouslySetInnerHTML`:if(r!=null){if(typeof r!=`object`||!(`__html`in r))throw Error(i(61));if(n=r.__html,n!=null){if(a.children!=null)throw Error(i(60));e.innerHTML=n}}break;case`children`:typeof r==`string`?en(e,r):(typeof r==`number`||typeof r==`bigint`)&&en(e,``+r);break;case`onScroll`:r!=null&&Q(`scroll`,e);break;case`onScrollEnd`:r!=null&&Q(`scrollend`,e);break;case`onClick`:r!=null&&(e.onclick=ln);break;case`suppressContentEditableWarning`:case`suppressHydrationWarning`:case`innerHTML`:case`ref`:break;case`innerText`:case`textContent`:break;default:if(!At.hasOwnProperty(n))a:{if(n[0]===`o`&&n[1]===`n`&&(a=n.endsWith(`Capture`),t=n.slice(2,a?n.length-7:void 0),o=e[gt]||null,o=o==null?null:o[n],typeof o==`function`&&e.removeEventListener(t,o,a),typeof r==`function`)){typeof o!=`function`&&o!==null&&(n in e?e[n]=null:e.hasAttribute(n)&&e.removeAttribute(n)),e.addEventListener(t,r,a);break a}n in e?e[n]=r:!0===r?e.setAttribute(n,``):Lt(e,n,r)}}}function Pd(e,t,n){switch(t){case`div`:case`span`:case`svg`:case`path`:case`a`:case`g`:case`p`:case`li`:break;case`img`:Q(`error`,e),Q(`load`,e);var r=!1,a=!1,o;for(o in n)if(n.hasOwnProperty(o)){var s=n[o];if(s!=null)switch(o){case`src`:r=!0;break;case`srcSet`:a=!0;break;case`children`:case`dangerouslySetInnerHTML`:throw Error(i(137,t));default:$(e,t,o,s,n,null)}}a&&$(e,t,`srcSet`,n.srcSet,n,null),r&&$(e,t,`src`,n.src,n,null);return;case`input`:Q(`invalid`,e);var c=o=s=a=null,l=null,u=null;for(r in n)if(n.hasOwnProperty(r)){var d=n[r];if(d!=null)switch(r){case`name`:a=d;break;case`type`:s=d;break;case`checked`:l=d;break;case`defaultChecked`:u=d;break;case`value`:o=d;break;case`defaultValue`:c=d;break;case`children`:case`dangerouslySetInnerHTML`:if(d!=null)throw Error(i(137,t));break;default:$(e,t,r,d,n,null)}}Yt(e,o,c,l,u,s,a,!1);return;case`select`:for(a in Q(`invalid`,e),r=s=o=null,n)if(n.hasOwnProperty(a)&&(c=n[a],c!=null))switch(a){case`value`:o=c;break;case`defaultValue`:s=c;break;case`multiple`:r=c;default:$(e,t,a,c,n,null)}t=o,n=s,e.multiple=!!r,t==null?n!=null&&Zt(e,!!r,n,!0):Zt(e,!!r,t,!1);return;case`textarea`:for(s in Q(`invalid`,e),o=a=r=null,n)if(n.hasOwnProperty(s)&&(c=n[s],c!=null))switch(s){case`value`:r=c;break;case`defaultValue`:a=c;break;case`children`:o=c;break;case`dangerouslySetInnerHTML`:if(c!=null)throw Error(i(91));break;default:$(e,t,s,c,n,null)}$t(e,r,a,o);return;case`option`:for(l in n)if(n.hasOwnProperty(l)&&(r=n[l],r!=null))switch(l){case`selected`:e.selected=r&&typeof r!=`function`&&typeof r!=`symbol`;break;default:$(e,t,l,r,n,null)}return;case`dialog`:Q(`beforetoggle`,e),Q(`toggle`,e),Q(`cancel`,e),Q(`close`,e);break;case`iframe`:case`object`:Q(`load`,e);break;case`video`:case`audio`:for(r=0;r<_d.length;r++)Q(_d[r],e);break;case`image`:Q(`error`,e),Q(`load`,e);break;case`details`:Q(`toggle`,e);break;case`embed`:case`source`:case`link`:Q(`error`,e),Q(`load`,e);case`area`:case`base`:case`br`:case`col`:case`hr`:case`keygen`:case`meta`:case`param`:case`track`:case`wbr`:case`menuitem`:for(u in n)if(n.hasOwnProperty(u)&&(r=n[u],r!=null))switch(u){case`children`:case`dangerouslySetInnerHTML`:throw Error(i(137,t));default:$(e,t,u,r,n,null)}return;default:if(an(t)){for(d in n)n.hasOwnProperty(d)&&(r=n[d],r!==void 0&&Nd(e,t,d,r,n,void 0));return}}for(c in n)n.hasOwnProperty(c)&&(r=n[c],r!=null&&$(e,t,c,r,n,null))}function Fd(e,t,n,r){switch(t){case`div`:case`span`:case`svg`:case`path`:case`a`:case`g`:case`p`:case`li`:break;case`input`:var a=null,o=null,s=null,c=null,l=null,u=null,d=null;for(m in n){var f=n[m];if(n.hasOwnProperty(m)&&f!=null)switch(m){case`checked`:break;case`value`:break;case`defaultValue`:l=f;default:r.hasOwnProperty(m)||$(e,t,m,null,r,f)}}for(var p in r){var m=r[p];if(f=n[p],r.hasOwnProperty(p)&&(m!=null||f!=null))switch(p){case`type`:o=m;break;case`name`:a=m;break;case`checked`:u=m;break;case`defaultChecked`:d=m;break;case`value`:s=m;break;case`defaultValue`:c=m;break;case`children`:case`dangerouslySetInnerHTML`:if(m!=null)throw Error(i(137,t));break;default:m!==f&&$(e,t,p,m,r,f)}}Jt(e,s,c,l,u,d,o,a);return;case`select`:for(o in m=s=c=p=null,n)if(l=n[o],n.hasOwnProperty(o)&&l!=null)switch(o){case`value`:break;case`multiple`:m=l;default:r.hasOwnProperty(o)||$(e,t,o,null,r,l)}for(a in r)if(o=r[a],l=n[a],r.hasOwnProperty(a)&&(o!=null||l!=null))switch(a){case`value`:p=o;break;case`defaultValue`:c=o;break;case`multiple`:s=o;default:o!==l&&$(e,t,a,o,r,l)}t=c,n=s,r=m,p==null?!!r!=!!n&&(t==null?Zt(e,!!n,n?[]:``,!1):Zt(e,!!n,t,!0)):Zt(e,!!n,p,!1);return;case`textarea`:for(c in m=p=null,n)if(a=n[c],n.hasOwnProperty(c)&&a!=null&&!r.hasOwnProperty(c))switch(c){case`value`:break;case`children`:break;default:$(e,t,c,null,r,a)}for(s in r)if(a=r[s],o=n[s],r.hasOwnProperty(s)&&(a!=null||o!=null))switch(s){case`value`:p=a;break;case`defaultValue`:m=a;break;case`children`:break;case`dangerouslySetInnerHTML`:if(a!=null)throw Error(i(91));break;default:a!==o&&$(e,t,s,a,r,o)}Qt(e,p,m);return;case`option`:for(var h in n)if(p=n[h],n.hasOwnProperty(h)&&p!=null&&!r.hasOwnProperty(h))switch(h){case`selected`:e.selected=!1;break;default:$(e,t,h,null,r,p)}for(l in r)if(p=r[l],m=n[l],r.hasOwnProperty(l)&&p!==m&&(p!=null||m!=null))switch(l){case`selected`:e.selected=p&&typeof p!=`function`&&typeof p!=`symbol`;break;default:$(e,t,l,p,r,m)}return;case`img`:case`link`:case`area`:case`base`:case`br`:case`col`:case`embed`:case`hr`:case`keygen`:case`meta`:case`param`:case`source`:case`track`:case`wbr`:case`menuitem`:for(var g in n)p=n[g],n.hasOwnProperty(g)&&p!=null&&!r.hasOwnProperty(g)&&$(e,t,g,null,r,p);for(u in r)if(p=r[u],m=n[u],r.hasOwnProperty(u)&&p!==m&&(p!=null||m!=null))switch(u){case`children`:case`dangerouslySetInnerHTML`:if(p!=null)throw Error(i(137,t));break;default:$(e,t,u,p,r,m)}return;default:if(an(t)){for(var _ in n)p=n[_],n.hasOwnProperty(_)&&p!==void 0&&!r.hasOwnProperty(_)&&Nd(e,t,_,void 0,r,p);for(d in r)p=r[d],m=n[d],!r.hasOwnProperty(d)||p===m||p===void 0&&m===void 0||Nd(e,t,d,p,r,m);return}}for(var v in n)p=n[v],n.hasOwnProperty(v)&&p!=null&&!r.hasOwnProperty(v)&&$(e,t,v,null,r,p);for(f in r)p=r[f],m=n[f],!r.hasOwnProperty(f)||p===m||p==null&&m==null||$(e,t,f,p,r,m)}function Id(e){switch(e){case`css`:case`script`:case`font`:case`img`:case`image`:case`input`:case`link`:return!0;default:return!1}}function Ld(){if(typeof performance.getEntriesByType==`function`){for(var e=0,t=0,n=performance.getEntriesByType(`resource`),r=0;r<n.length;r++){var i=n[r],a=i.transferSize,o=i.initiatorType,s=i.duration;if(a&&s&&Id(o)){for(o=0,s=i.responseEnd,r+=1;r<n.length;r++){var c=n[r],l=c.startTime;if(l>s)break;var u=c.transferSize,d=c.initiatorType;u&&Id(d)&&(c=c.responseEnd,o+=u*(c<s?1:(s-l)/(c-l)))}if(--r,t+=8*(a+o)/(i.duration/1e3),e++,10<e)break}}if(0<e)return t/e/1e6}return navigator.connection&&(e=navigator.connection.downlink,typeof e==`number`)?e:5}var Rd=null,zd=null;function Bd(e){return e.nodeType===9?e:e.ownerDocument}function Vd(e){switch(e){case`http://www.w3.org/2000/svg`:return 1;case`http://www.w3.org/1998/Math/MathML`:return 2;default:return 0}}function Hd(e,t){if(e===0)switch(t){case`svg`:return 1;case`math`:return 2;default:return 0}return e===1&&t===`foreignObject`?0:e}function Ud(e,t){return e===`textarea`||e===`noscript`||typeof t.children==`string`||typeof t.children==`number`||typeof t.children==`bigint`||typeof t.dangerouslySetInnerHTML==`object`&&t.dangerouslySetInnerHTML!==null&&t.dangerouslySetInnerHTML.__html!=null}var Wd=null;function Gd(){var e=window.event;return e&&e.type===`popstate`?e===Wd?!1:(Wd=e,!0):(Wd=null,!1)}var Kd=typeof setTimeout==`function`?setTimeout:void 0,qd=typeof clearTimeout==`function`?clearTimeout:void 0,Jd=typeof Promise==`function`?Promise:void 0,Yd=typeof queueMicrotask==`function`?queueMicrotask:Jd===void 0?Kd:function(e){return Jd.resolve(null).then(e).catch(Xd)};function Xd(e){setTimeout(function(){throw e})}function Zd(e){return e===`head`}function Qd(e,t){var n=t,r=0;do{var i=n.nextSibling;if(e.removeChild(n),i&&i.nodeType===8)if(n=i.data,n===`/$`||n===`/&`){if(r===0){e.removeChild(i),Np(t);return}r--}else if(n===`$`||n===`$?`||n===`$~`||n===`$!`||n===`&`)r++;else if(n===`html`)pf(e.ownerDocument.documentElement);else if(n===`head`){n=e.ownerDocument.head,pf(n);for(var a=n.firstChild;a;){var o=a.nextSibling,s=a.nodeName;a[St]||s===`SCRIPT`||s===`STYLE`||s===`LINK`&&a.rel.toLowerCase()===`stylesheet`||n.removeChild(a),a=o}}else n===`body`&&pf(e.ownerDocument.body);n=i}while(n);Np(t)}function $d(e,t){var n=e;e=0;do{var r=n.nextSibling;if(n.nodeType===1?t?(n._stashedDisplay=n.style.display,n.style.display=`none`):(n.style.display=n._stashedDisplay||``,n.getAttribute(`style`)===``&&n.removeAttribute(`style`)):n.nodeType===3&&(t?(n._stashedText=n.nodeValue,n.nodeValue=``):n.nodeValue=n._stashedText||``),r&&r.nodeType===8)if(n=r.data,n===`/$`){if(e===0)break;e--}else n!==`$`&&n!==`$?`&&n!==`$~`&&n!==`$!`||e++;n=r}while(n)}function ef(e){var t=e.firstChild;for(t&&t.nodeType===10&&(t=t.nextSibling);t;){var n=t;switch(t=t.nextSibling,n.nodeName){case`HTML`:case`HEAD`:case`BODY`:ef(n),Ct(n);continue;case`SCRIPT`:case`STYLE`:continue;case`LINK`:if(n.rel.toLowerCase()===`stylesheet`)continue}e.removeChild(n)}}function tf(e,t,n,r){for(;e.nodeType===1;){var i=n;if(e.nodeName.toLowerCase()!==t.toLowerCase()){if(!r&&(e.nodeName!==`INPUT`||e.type!==`hidden`))break}else if(!r)if(t===`input`&&e.type===`hidden`){var a=i.name==null?null:``+i.name;if(i.type===`hidden`&&e.getAttribute(`name`)===a)return e}else return e;else if(!e[St])switch(t){case`meta`:if(!e.hasAttribute(`itemprop`))break;return e;case`link`:if(a=e.getAttribute(`rel`),a===`stylesheet`&&e.hasAttribute(`data-precedence`)||a!==i.rel||e.getAttribute(`href`)!==(i.href==null||i.href===``?null:i.href)||e.getAttribute(`crossorigin`)!==(i.crossOrigin==null?null:i.crossOrigin)||e.getAttribute(`title`)!==(i.title==null?null:i.title))break;return e;case`style`:if(e.hasAttribute(`data-precedence`))break;return e;case`script`:if(a=e.getAttribute(`src`),(a!==(i.src==null?null:i.src)||e.getAttribute(`type`)!==(i.type==null?null:i.type)||e.getAttribute(`crossorigin`)!==(i.crossOrigin==null?null:i.crossOrigin))&&a&&e.hasAttribute(`async`)&&!e.hasAttribute(`itemprop`))break;return e;default:return e}if(e=cf(e.nextSibling),e===null)break}return null}function nf(e,t,n){if(t===``)return null;for(;e.nodeType!==3;)if((e.nodeType!==1||e.nodeName!==`INPUT`||e.type!==`hidden`)&&!n||(e=cf(e.nextSibling),e===null))return null;return e}function rf(e,t){for(;e.nodeType!==8;)if((e.nodeType!==1||e.nodeName!==`INPUT`||e.type!==`hidden`)&&!t||(e=cf(e.nextSibling),e===null))return null;return e}function af(e){return e.data===`$?`||e.data===`$~`}function of(e){return e.data===`$!`||e.data===`$?`&&e.ownerDocument.readyState!==`loading`}function sf(e,t){var n=e.ownerDocument;if(e.data===`$~`)e._reactRetry=t;else if(e.data!==`$?`||n.readyState!==`loading`)t();else{var r=function(){t(),n.removeEventListener(`DOMContentLoaded`,r)};n.addEventListener(`DOMContentLoaded`,r),e._reactRetry=r}}function cf(e){for(;e!=null;e=e.nextSibling){var t=e.nodeType;if(t===1||t===3)break;if(t===8){if(t=e.data,t===`$`||t===`$!`||t===`$?`||t===`$~`||t===`&`||t===`F!`||t===`F`)break;if(t===`/$`||t===`/&`)return null}}return e}var lf=null;function uf(e){e=e.nextSibling;for(var t=0;e;){if(e.nodeType===8){var n=e.data;if(n===`/$`||n===`/&`){if(t===0)return cf(e.nextSibling);t--}else n!==`$`&&n!==`$!`&&n!==`$?`&&n!==`$~`&&n!==`&`||t++}e=e.nextSibling}return null}function df(e){e=e.previousSibling;for(var t=0;e;){if(e.nodeType===8){var n=e.data;if(n===`$`||n===`$!`||n===`$?`||n===`$~`||n===`&`){if(t===0)return e;t--}else n!==`/$`&&n!==`/&`||t++}e=e.previousSibling}return null}function ff(e,t,n){switch(t=Bd(n),e){case`html`:if(e=t.documentElement,!e)throw Error(i(452));return e;case`head`:if(e=t.head,!e)throw Error(i(453));return e;case`body`:if(e=t.body,!e)throw Error(i(454));return e;default:throw Error(i(451))}}function pf(e){for(var t=e.attributes;t.length;)e.removeAttributeNode(t[0]);Ct(e)}var mf=new Map,hf=new Set;function gf(e){return typeof e.getRootNode==`function`?e.getRootNode():e.nodeType===9?e:e.ownerDocument}var _f=O.d;O.d={f:vf,r:yf,D:Sf,C:Cf,L:wf,m:Tf,X:Df,S:Ef,M:Of};function vf(){var e=_f.f(),t=bu();return e||t}function yf(e){var t=Tt(e);t!==null&&t.tag===5&&t.type===`form`?Os(t):_f.r(e)}var bf=typeof document>`u`?null:document;function xf(e,t,n){var r=bf;if(r&&typeof t==`string`&&t){var i=qt(t);i=`link[rel="`+e+`"][href="`+i+`"]`,typeof n==`string`&&(i+=`[crossorigin="`+n+`"]`),hf.has(i)||(hf.add(i),e={rel:e,crossOrigin:n,href:t},r.querySelector(i)===null&&(t=r.createElement(`link`),Pd(t,`link`,e),Ot(t),r.head.appendChild(t)))}}function Sf(e){_f.D(e),xf(`dns-prefetch`,e,null)}function Cf(e,t){_f.C(e,t),xf(`preconnect`,e,t)}function wf(e,t,n){_f.L(e,t,n);var r=bf;if(r&&e&&t){var i=`link[rel="preload"][as="`+qt(t)+`"]`;t===`image`&&n&&n.imageSrcSet?(i+=`[imagesrcset="`+qt(n.imageSrcSet)+`"]`,typeof n.imageSizes==`string`&&(i+=`[imagesizes="`+qt(n.imageSizes)+`"]`)):i+=`[href="`+qt(e)+`"]`;var a=i;switch(t){case`style`:a=Af(e);break;case`script`:a=Pf(e)}mf.has(a)||(e=h({rel:`preload`,href:t===`image`&&n&&n.imageSrcSet?void 0:e,as:t},n),mf.set(a,e),r.querySelector(i)!==null||t===`style`&&r.querySelector(jf(a))||t===`script`&&r.querySelector(Ff(a))||(t=r.createElement(`link`),Pd(t,`link`,e),Ot(t),r.head.appendChild(t)))}}function Tf(e,t){_f.m(e,t);var n=bf;if(n&&e){var r=t&&typeof t.as==`string`?t.as:`script`,i=`link[rel="modulepreload"][as="`+qt(r)+`"][href="`+qt(e)+`"]`,a=i;switch(r){case`audioworklet`:case`paintworklet`:case`serviceworker`:case`sharedworker`:case`worker`:case`script`:a=Pf(e)}if(!mf.has(a)&&(e=h({rel:`modulepreload`,href:e},t),mf.set(a,e),n.querySelector(i)===null)){switch(r){case`audioworklet`:case`paintworklet`:case`serviceworker`:case`sharedworker`:case`worker`:case`script`:if(n.querySelector(Ff(a)))return}r=n.createElement(`link`),Pd(r,`link`,e),Ot(r),n.head.appendChild(r)}}}function Ef(e,t,n){_f.S(e,t,n);var r=bf;if(r&&e){var i=Dt(r).hoistableStyles,a=Af(e);t||=`default`;var o=i.get(a);if(!o){var s={loading:0,preload:null};if(o=r.querySelector(jf(a)))s.loading=5;else{e=h({rel:`stylesheet`,href:e,"data-precedence":t},n),(n=mf.get(a))&&Rf(e,n);var c=o=r.createElement(`link`);Ot(c),Pd(c,`link`,e),c._p=new Promise(function(e,t){c.onload=e,c.onerror=t}),c.addEventListener(`load`,function(){s.loading|=1}),c.addEventListener(`error`,function(){s.loading|=2}),s.loading|=4,Lf(o,t,r)}o={type:`stylesheet`,instance:o,count:1,state:s},i.set(a,o)}}}function Df(e,t){_f.X(e,t);var n=bf;if(n&&e){var r=Dt(n).hoistableScripts,i=Pf(e),a=r.get(i);a||(a=n.querySelector(Ff(i)),a||(e=h({src:e,async:!0},t),(t=mf.get(i))&&zf(e,t),a=n.createElement(`script`),Ot(a),Pd(a,`link`,e),n.head.appendChild(a)),a={type:`script`,instance:a,count:1,state:null},r.set(i,a))}}function Of(e,t){_f.M(e,t);var n=bf;if(n&&e){var r=Dt(n).hoistableScripts,i=Pf(e),a=r.get(i);a||(a=n.querySelector(Ff(i)),a||(e=h({src:e,async:!0,type:`module`},t),(t=mf.get(i))&&zf(e,t),a=n.createElement(`script`),Ot(a),Pd(a,`link`,e),n.head.appendChild(a)),a={type:`script`,instance:a,count:1,state:null},r.set(i,a))}}function kf(e,t,n,r){var a=(a=ge.current)?gf(a):null;if(!a)throw Error(i(446));switch(e){case`meta`:case`title`:return null;case`style`:return typeof n.precedence==`string`&&typeof n.href==`string`?(t=Af(n.href),n=Dt(a).hoistableStyles,r=n.get(t),r||(r={type:`style`,instance:null,count:0,state:null},n.set(t,r)),r):{type:`void`,instance:null,count:0,state:null};case`link`:if(n.rel===`stylesheet`&&typeof n.href==`string`&&typeof n.precedence==`string`){e=Af(n.href);var o=Dt(a).hoistableStyles,s=o.get(e);if(s||(a=a.ownerDocument||a,s={type:`stylesheet`,instance:null,count:0,state:{loading:0,preload:null}},o.set(e,s),(o=a.querySelector(jf(e)))&&!o._p&&(s.instance=o,s.state.loading=5),mf.has(e)||(n={rel:`preload`,as:`style`,href:n.href,crossOrigin:n.crossOrigin,integrity:n.integrity,media:n.media,hrefLang:n.hrefLang,referrerPolicy:n.referrerPolicy},mf.set(e,n),o||Nf(a,e,n,s.state))),t&&r===null)throw Error(i(528,``));return s}if(t&&r!==null)throw Error(i(529,``));return null;case`script`:return t=n.async,n=n.src,typeof n==`string`&&t&&typeof t!=`function`&&typeof t!=`symbol`?(t=Pf(n),n=Dt(a).hoistableScripts,r=n.get(t),r||(r={type:`script`,instance:null,count:0,state:null},n.set(t,r)),r):{type:`void`,instance:null,count:0,state:null};default:throw Error(i(444,e))}}function Af(e){return`href="`+qt(e)+`"`}function jf(e){return`link[rel="stylesheet"][`+e+`]`}function Mf(e){return h({},e,{"data-precedence":e.precedence,precedence:null})}function Nf(e,t,n,r){e.querySelector(`link[rel="preload"][as="style"][`+t+`]`)?r.loading=1:(t=e.createElement(`link`),r.preload=t,t.addEventListener(`load`,function(){return r.loading|=1}),t.addEventListener(`error`,function(){return r.loading|=2}),Pd(t,`link`,n),Ot(t),e.head.appendChild(t))}function Pf(e){return`[src="`+qt(e)+`"]`}function Ff(e){return`script[async]`+e}function If(e,t,n){if(t.count++,t.instance===null)switch(t.type){case`style`:var r=e.querySelector(`style[data-href~="`+qt(n.href)+`"]`);if(r)return t.instance=r,Ot(r),r;var a=h({},n,{"data-href":n.href,"data-precedence":n.precedence,href:null,precedence:null});return r=(e.ownerDocument||e).createElement(`style`),Ot(r),Pd(r,`style`,a),Lf(r,n.precedence,e),t.instance=r;case`stylesheet`:a=Af(n.href);var o=e.querySelector(jf(a));if(o)return t.state.loading|=4,t.instance=o,Ot(o),o;r=Mf(n),(a=mf.get(a))&&Rf(r,a),o=(e.ownerDocument||e).createElement(`link`),Ot(o);var s=o;return s._p=new Promise(function(e,t){s.onload=e,s.onerror=t}),Pd(o,`link`,r),t.state.loading|=4,Lf(o,n.precedence,e),t.instance=o;case`script`:return o=Pf(n.src),(a=e.querySelector(Ff(o)))?(t.instance=a,Ot(a),a):(r=n,(a=mf.get(o))&&(r=h({},n),zf(r,a)),e=e.ownerDocument||e,a=e.createElement(`script`),Ot(a),Pd(a,`link`,r),e.head.appendChild(a),t.instance=a);case`void`:return null;default:throw Error(i(443,t.type))}else t.type===`stylesheet`&&!(t.state.loading&4)&&(r=t.instance,t.state.loading|=4,Lf(r,n.precedence,e));return t.instance}function Lf(e,t,n){for(var r=n.querySelectorAll(`link[rel="stylesheet"][data-precedence],style[data-precedence]`),i=r.length?r[r.length-1]:null,a=i,o=0;o<r.length;o++){var s=r[o];if(s.dataset.precedence===t)a=s;else if(a!==i)break}a?a.parentNode.insertBefore(e,a.nextSibling):(t=n.nodeType===9?n.head:n,t.insertBefore(e,t.firstChild))}function Rf(e,t){e.crossOrigin??=t.crossOrigin,e.referrerPolicy??=t.referrerPolicy,e.title??=t.title}function zf(e,t){e.crossOrigin??=t.crossOrigin,e.referrerPolicy??=t.referrerPolicy,e.integrity??=t.integrity}var Bf=null;function Vf(e,t,n){if(Bf===null){var r=new Map,i=Bf=new Map;i.set(n,r)}else i=Bf,r=i.get(n),r||(r=new Map,i.set(n,r));if(r.has(e))return r;for(r.set(e,null),n=n.getElementsByTagName(e),i=0;i<n.length;i++){var a=n[i];if(!(a[St]||a[ht]||e===`link`&&a.getAttribute(`rel`)===`stylesheet`)&&a.namespaceURI!==`http://www.w3.org/2000/svg`){var o=a.getAttribute(t)||``;o=e+o;var s=r.get(o);s?s.push(a):r.set(o,[a])}}return r}function Hf(e,t,n){e=e.ownerDocument||e,e.head.insertBefore(n,t===`title`?e.querySelector(`head > title`):null)}function Uf(e,t,n){if(n===1||t.itemProp!=null)return!1;switch(e){case`meta`:case`title`:return!0;case`style`:if(typeof t.precedence!=`string`||typeof t.href!=`string`||t.href===``)break;return!0;case`link`:if(typeof t.rel!=`string`||typeof t.href!=`string`||t.href===``||t.onLoad||t.onError)break;switch(t.rel){case`stylesheet`:return e=t.disabled,typeof t.precedence==`string`&&e==null;default:return!0}case`script`:if(t.async&&typeof t.async!=`function`&&typeof t.async!=`symbol`&&!t.onLoad&&!t.onError&&t.src&&typeof t.src==`string`)return!0}return!1}function Wf(e){return!(e.type===`stylesheet`&&!(e.state.loading&3))}function Gf(e,t,n,r){if(n.type===`stylesheet`&&(typeof r.media!=`string`||!1!==matchMedia(r.media).matches)&&!(n.state.loading&4)){if(n.instance===null){var i=Af(r.href),a=t.querySelector(jf(i));if(a){t=a._p,typeof t==`object`&&t&&typeof t.then==`function`&&(e.count++,e=Jf.bind(e),t.then(e,e)),n.state.loading|=4,n.instance=a,Ot(a);return}a=t.ownerDocument||t,r=Mf(r),(i=mf.get(i))&&Rf(r,i),a=a.createElement(`link`),Ot(a);var o=a;o._p=new Promise(function(e,t){o.onload=e,o.onerror=t}),Pd(a,`link`,r),n.instance=a}e.stylesheets===null&&(e.stylesheets=new Map),e.stylesheets.set(n,t),(t=n.state.preload)&&!(n.state.loading&3)&&(e.count++,n=Jf.bind(e),t.addEventListener(`load`,n),t.addEventListener(`error`,n))}}var Kf=0;function qf(e,t){return e.stylesheets&&e.count===0&&Xf(e,e.stylesheets),0<e.count||0<e.imgCount?function(n){var r=setTimeout(function(){if(e.stylesheets&&Xf(e,e.stylesheets),e.unsuspend){var t=e.unsuspend;e.unsuspend=null,t()}},6e4+t);0<e.imgBytes&&Kf===0&&(Kf=62500*Ld());var i=setTimeout(function(){if(e.waitingForImages=!1,e.count===0&&(e.stylesheets&&Xf(e,e.stylesheets),e.unsuspend)){var t=e.unsuspend;e.unsuspend=null,t()}},(e.imgBytes>Kf?50:800)+t);return e.unsuspend=n,function(){e.unsuspend=null,clearTimeout(r),clearTimeout(i)}}:null}function Jf(){if(this.count--,this.count===0&&(this.imgCount===0||!this.waitingForImages)){if(this.stylesheets)Xf(this,this.stylesheets);else if(this.unsuspend){var e=this.unsuspend;this.unsuspend=null,e()}}}var Yf=null;function Xf(e,t){e.stylesheets=null,e.unsuspend!==null&&(e.count++,Yf=new Map,t.forEach(Zf,e),Yf=null,Jf.call(e))}function Zf(e,t){if(!(t.state.loading&4)){var n=Yf.get(e);if(n)var r=n.get(null);else{n=new Map,Yf.set(e,n);for(var i=e.querySelectorAll(`link[data-precedence],style[data-precedence]`),a=0;a<i.length;a++){var o=i[a];(o.nodeName===`LINK`||o.getAttribute(`media`)!==`not all`)&&(n.set(o.dataset.precedence,o),r=o)}r&&n.set(null,r)}i=t.instance,o=i.getAttribute(`data-precedence`),a=n.get(o)||r,a===r&&n.set(null,i),n.set(o,i),this.count++,r=Jf.bind(this),i.addEventListener(`load`,r),i.addEventListener(`error`,r),a?a.parentNode.insertBefore(i,a.nextSibling):(e=e.nodeType===9?e.head:e,e.insertBefore(i,e.firstChild)),t.state.loading|=4}}var Qf={$$typeof:S,Provider:null,Consumer:null,_currentValue:le,_currentValue2:le,_threadCount:0};function $f(e,t,n,r,i,a,o,s,c){this.tag=1,this.containerInfo=e,this.pingCache=this.current=this.pendingChildren=null,this.timeoutHandle=-1,this.callbackNode=this.next=this.pendingContext=this.context=this.cancelPendingCommit=null,this.callbackPriority=0,this.expirationTimes=it(-1),this.entangledLanes=this.shellSuspendCounter=this.errorRecoveryDisabledLanes=this.expiredLanes=this.warmLanes=this.pingedLanes=this.suspendedLanes=this.pendingLanes=0,this.entanglements=it(0),this.hiddenUpdates=it(null),this.identifierPrefix=r,this.onUncaughtError=i,this.onCaughtError=a,this.onRecoverableError=o,this.pooledCache=null,this.pooledCacheLanes=0,this.formState=c,this.incompleteTransitions=new Map}function ep(e,t,n,r,i,a,o,s,c,l,u,d){return e=new $f(e,t,n,o,c,l,u,d,s),t=1,!0===a&&(t|=24),a=mi(3,null,null,t),e.current=a,a.stateNode=e,t=fa(),t.refCount++,e.pooledCache=t,t.refCount++,a.memoizedState={element:r,isDehydrated:n,cache:t},Ga(a),e}function tp(e){return e?(e=fi,e):fi}function np(e,t,n,r,i,a){i=tp(i),r.context===null?r.context=i:r.pendingContext=i,r=qa(t),r.payload={element:n},a=a===void 0?null:a,a!==null&&(r.callback=a),n=Ja(e,r,t),n!==null&&(hu(n,e,t),Ya(n,e,t))}function rp(e,t){if(e=e.memoizedState,e!==null&&e.dehydrated!==null){var n=e.retryLane;e.retryLane=n!==0&&n<t?n:t}}function ip(e,t){rp(e,t),(e=e.alternate)&&rp(e,t)}function ap(e){if(e.tag===13||e.tag===31){var t=li(e,67108864);t!==null&&hu(t,e,67108864),ip(e,67108864)}}function op(e){if(e.tag===13||e.tag===31){var t=pu();t=ut(t);var n=li(e,t);n!==null&&hu(n,e,t),ip(e,t)}}var sp=!0;function cp(e,t,n,r){var i=D.T;D.T=null;var a=O.p;try{O.p=2,up(e,t,n,r)}finally{O.p=a,D.T=i}}function lp(e,t,n,r){var i=D.T;D.T=null;var a=O.p;try{O.p=8,up(e,t,n,r)}finally{O.p=a,D.T=i}}function up(e,t,n,r){if(sp){var i=dp(r);if(i===null)wd(e,t,r,fp,n),Cp(e,r);else if(Tp(i,e,t,n,r))r.stopPropagation();else if(Cp(e,r),t&4&&-1<Sp.indexOf(e)){for(;i!==null;){var a=Tt(i);if(a!==null)switch(a.tag){case 3:if(a=a.stateNode,a.current.memoizedState.isDehydrated){var o=$e(a.pendingLanes);if(o!==0){var s=a;for(s.pendingLanes|=2,s.entangledLanes|=2;o;){var c=1<<31-Ke(o);s.entanglements[1]|=c,o&=~c}rd(a),!(G&6)&&(tu=Pe()+500,id(0,!1))}}break;case 31:case 13:s=li(a,2),s!==null&&hu(s,a,2),bu(),ip(a,2)}if(a=dp(r),a===null&&wd(e,t,r,fp,n),a===i)break;i=a}i!==null&&r.stopPropagation()}else wd(e,t,r,null,n)}}function dp(e){return e=dn(e),pp(e)}var fp=null;function pp(e){if(fp=null,e=wt(e),e!==null){var t=o(e);if(t===null)e=null;else{var n=t.tag;if(n===13){if(e=s(t),e!==null)return e;e=null}else if(n===31){if(e=c(t),e!==null)return e;e=null}else if(n===3){if(t.stateNode.current.memoizedState.isDehydrated)return t.tag===3?t.stateNode.containerInfo:null;e=null}else t!==e&&(e=null)}}return fp=e,null}function mp(e){switch(e){case`beforetoggle`:case`cancel`:case`click`:case`close`:case`contextmenu`:case`copy`:case`cut`:case`auxclick`:case`dblclick`:case`dragend`:case`dragstart`:case`drop`:case`focusin`:case`focusout`:case`input`:case`invalid`:case`keydown`:case`keypress`:case`keyup`:case`mousedown`:case`mouseup`:case`paste`:case`pause`:case`play`:case`pointercancel`:case`pointerdown`:case`pointerup`:case`ratechange`:case`reset`:case`resize`:case`seeked`:case`submit`:case`toggle`:case`touchcancel`:case`touchend`:case`touchstart`:case`volumechange`:case`change`:case`selectionchange`:case`textInput`:case`compositionstart`:case`compositionend`:case`compositionupdate`:case`beforeblur`:case`afterblur`:case`beforeinput`:case`blur`:case`fullscreenchange`:case`focus`:case`hashchange`:case`popstate`:case`select`:case`selectstart`:return 2;case`drag`:case`dragenter`:case`dragexit`:case`dragleave`:case`dragover`:case`mousemove`:case`mouseout`:case`mouseover`:case`pointermove`:case`pointerout`:case`pointerover`:case`scroll`:case`touchmove`:case`wheel`:case`mouseenter`:case`mouseleave`:case`pointerenter`:case`pointerleave`:return 8;case`message`:switch(Fe()){case Ie:return 2;case Le:return 8;case Re:case ze:return 32;case Be:return 268435456;default:return 32}default:return 32}}var hp=!1,gp=null,_p=null,vp=null,yp=new Map,bp=new Map,xp=[],Sp=`mousedown mouseup touchcancel touchend touchstart auxclick dblclick pointercancel pointerdown pointerup dragend dragstart drop compositionend compositionstart keydown keypress keyup input textInput copy cut paste click change contextmenu reset`.split(` `);function Cp(e,t){switch(e){case`focusin`:case`focusout`:gp=null;break;case`dragenter`:case`dragleave`:_p=null;break;case`mouseover`:case`mouseout`:vp=null;break;case`pointerover`:case`pointerout`:yp.delete(t.pointerId);break;case`gotpointercapture`:case`lostpointercapture`:bp.delete(t.pointerId)}}function wp(e,t,n,r,i,a){return e===null||e.nativeEvent!==a?(e={blockedOn:t,domEventName:n,eventSystemFlags:r,nativeEvent:a,targetContainers:[i]},t!==null&&(t=Tt(t),t!==null&&ap(t)),e):(e.eventSystemFlags|=r,t=e.targetContainers,i!==null&&t.indexOf(i)===-1&&t.push(i),e)}function Tp(e,t,n,r,i){switch(t){case`focusin`:return gp=wp(gp,e,t,n,r,i),!0;case`dragenter`:return _p=wp(_p,e,t,n,r,i),!0;case`mouseover`:return vp=wp(vp,e,t,n,r,i),!0;case`pointerover`:var a=i.pointerId;return yp.set(a,wp(yp.get(a)||null,e,t,n,r,i)),!0;case`gotpointercapture`:return a=i.pointerId,bp.set(a,wp(bp.get(a)||null,e,t,n,r,i)),!0}return!1}function Ep(e){var t=wt(e.target);if(t!==null){var n=o(t);if(n!==null){if(t=n.tag,t===13){if(t=s(n),t!==null){e.blockedOn=t,pt(e.priority,function(){op(n)});return}}else if(t===31){if(t=c(n),t!==null){e.blockedOn=t,pt(e.priority,function(){op(n)});return}}else if(t===3&&n.stateNode.current.memoizedState.isDehydrated){e.blockedOn=n.tag===3?n.stateNode.containerInfo:null;return}}}e.blockedOn=null}function Dp(e){if(e.blockedOn!==null)return!1;for(var t=e.targetContainers;0<t.length;){var n=dp(e.nativeEvent);if(n===null){n=e.nativeEvent;var r=new n.constructor(n.type,n);un=r,n.target.dispatchEvent(r),un=null}else return t=Tt(n),t!==null&&ap(t),e.blockedOn=n,!1;t.shift()}return!0}function Op(e,t,n){Dp(e)&&n.delete(t)}function kp(){hp=!1,gp!==null&&Dp(gp)&&(gp=null),_p!==null&&Dp(_p)&&(_p=null),vp!==null&&Dp(vp)&&(vp=null),yp.forEach(Op),bp.forEach(Op)}function Ap(e,n){e.blockedOn===n&&(e.blockedOn=null,hp||(hp=!0,t.unstable_scheduleCallback(t.unstable_NormalPriority,kp)))}var jp=null;function Mp(e){jp!==e&&(jp=e,t.unstable_scheduleCallback(t.unstable_NormalPriority,function(){jp===e&&(jp=null);for(var t=0;t<e.length;t+=3){var n=e[t],r=e[t+1],i=e[t+2];if(typeof r!=`function`){if(pp(r||n)===null)continue;break}var a=Tt(n);a!==null&&(e.splice(t,3),t-=3,Es(a,{pending:!0,data:i,method:n.method,action:r},r,i))}}))}function Np(e){function t(t){return Ap(t,e)}gp!==null&&Ap(gp,e),_p!==null&&Ap(_p,e),vp!==null&&Ap(vp,e),yp.forEach(t),bp.forEach(t);for(var n=0;n<xp.length;n++){var r=xp[n];r.blockedOn===e&&(r.blockedOn=null)}for(;0<xp.length&&(n=xp[0],n.blockedOn===null);)Ep(n),n.blockedOn===null&&xp.shift();if(n=(e.ownerDocument||e).$$reactFormReplay,n!=null)for(r=0;r<n.length;r+=3){var i=n[r],a=n[r+1],o=i[gt]||null;if(typeof a==`function`)o||Mp(n);else if(o){var s=null;if(a&&a.hasAttribute(`formAction`)){if(i=a,o=a[gt]||null)s=o.formAction;else if(pp(i)!==null)continue}else s=o.action;typeof s==`function`?n[r+1]=s:(n.splice(r,3),r-=3),Mp(n)}}}function Pp(){function e(e){e.canIntercept&&e.info===`react-transition`&&e.intercept({handler:function(){return new Promise(function(e){return i=e})},focusReset:`manual`,scroll:`manual`})}function t(){i!==null&&(i(),i=null),r||setTimeout(n,20)}function n(){if(!r&&!navigation.transition){var e=navigation.currentEntry;e&&e.url!=null&&navigation.navigate(e.url,{state:e.getState(),info:`react-transition`,history:`replace`})}}if(typeof navigation==`object`){var r=!1,i=null;return navigation.addEventListener(`navigate`,e),navigation.addEventListener(`navigatesuccess`,t),navigation.addEventListener(`navigateerror`,t),setTimeout(n,100),function(){r=!0,navigation.removeEventListener(`navigate`,e),navigation.removeEventListener(`navigatesuccess`,t),navigation.removeEventListener(`navigateerror`,t),i!==null&&(i(),i=null)}}}function Fp(e){this._internalRoot=e}Ip.prototype.render=Fp.prototype.render=function(e){var t=this._internalRoot;if(t===null)throw Error(i(409));var n=t.current;np(n,pu(),e,t,null,null)},Ip.prototype.unmount=Fp.prototype.unmount=function(){var e=this._internalRoot;if(e!==null){this._internalRoot=null;var t=e.containerInfo;np(e.current,2,null,e,null,null),bu(),t[_t]=null}};function Ip(e){this._internalRoot=e}Ip.prototype.unstable_scheduleHydration=function(e){if(e){var t=ft();e={blockedOn:null,target:e,priority:t};for(var n=0;n<xp.length&&t!==0&&t<xp[n].priority;n++);xp.splice(n,0,e),n===0&&Ep(e)}};var Lp=n.version;if(Lp!==`19.2.5`)throw Error(i(527,Lp,`19.2.5`));O.findDOMNode=function(e){var t=e._reactInternals;if(t===void 0)throw typeof e.render==`function`?Error(i(188)):(e=Object.keys(e).join(`,`),Error(i(268,e)));return e=d(t),e=e===null?null:p(e),e=e===null?null:e.stateNode,e};var Rp={bundleType:0,version:`19.2.5`,rendererPackageName:`react-dom`,currentDispatcherRef:D,reconcilerVersion:`19.2.5`};if(typeof __REACT_DEVTOOLS_GLOBAL_HOOK__<`u`){var zp=__REACT_DEVTOOLS_GLOBAL_HOOK__;if(!zp.isDisabled&&zp.supportsFiber)try{Ue=zp.inject(Rp),We=zp}catch{}}e.createRoot=function(e,t){if(!a(e))throw Error(i(299));var n=!1,r=``,o=Ys,s=Xs,c=Zs;return t!=null&&(!0===t.unstable_strictMode&&(n=!0),t.identifierPrefix!==void 0&&(r=t.identifierPrefix),t.onUncaughtError!==void 0&&(o=t.onUncaughtError),t.onCaughtError!==void 0&&(s=t.onCaughtError),t.onRecoverableError!==void 0&&(c=t.onRecoverableError)),t=ep(e,1,!1,null,null,n,r,null,o,s,c,Pp),e[_t]=t.current,Sd(e),new Fp(t)}})),g=o(((e,t)=>{function n(){if(!(typeof __REACT_DEVTOOLS_GLOBAL_HOOK__>`u`||typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE!=`function`))try{__REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE(n)}catch(e){console.error(e)}}n(),t.exports=h()})),_=`modulepreload`,v=function(e){return`/cymanager/`+e},y={},b=function(e,t,n){let r=Promise.resolve();if(t&&t.length>0){let e=document.getElementsByTagName(`link`),i=document.querySelector(`meta[property=csp-nonce]`),a=i?.nonce||i?.getAttribute(`nonce`);function o(e){return Promise.all(e.map(e=>Promise.resolve(e).then(e=>({status:`fulfilled`,value:e}),e=>({status:`rejected`,reason:e}))))}r=o(t.map(t=>{if(t=v(t,n),t in y)return;y[t]=!0;let r=t.endsWith(`.css`),i=r?`[rel="stylesheet"]`:``;if(n)for(let n=e.length-1;n>=0;n--){let i=e[n];if(i.href===t&&(!r||i.rel===`stylesheet`))return}else if(document.querySelector(`link[href="${t}"]${i}`))return;let o=document.createElement(`link`);if(o.rel=r?`stylesheet`:_,r||(o.as=`script`),o.crossOrigin=``,o.href=t,a&&o.setAttribute(`nonce`,a),document.head.appendChild(o),r)return new Promise((e,n)=>{o.addEventListener(`load`,e),o.addEventListener(`error`,()=>n(Error(`Unable to preload CSS for ${t}`)))})}))}function i(e){let t=new Event(`vite:preloadError`,{cancelable:!0});if(t.payload=e,window.dispatchEvent(t),!t.defaultPrevented)throw e}return r.then(t=>{for(let e of t||[])e.status===`rejected`&&i(e.reason);return e().catch(i)})},x=c(u(),1),ee=`popstate`;function S(e){return typeof e==`object`&&!!e&&`pathname`in e&&`search`in e&&`hash`in e&&`state`in e&&`key`in e}function C(e={}){function t(e,t){let{pathname:n=`/`,search:r=``,hash:i=``}=ie(e.location.hash.substring(1));return!n.startsWith(`/`)&&!n.startsWith(`.`)&&(n=`/`+n),ne(``,{pathname:n,search:r,hash:i},t.state&&t.state.usr||null,t.state&&t.state.key||`default`)}function n(e,t){let n=e.document.querySelector(`base`),r=``;if(n&&n.getAttribute(`href`)){let t=e.location.href,n=t.indexOf(`#`);r=n===-1?t:t.slice(0,n)}return r+`#`+(typeof t==`string`?t:re(t))}function r(e,t){T(e.pathname.charAt(0)===`/`,`relative pathnames are not supported in hash history.push(${JSON.stringify(t)})`)}return ae(t,n,r,e)}function w(e,t){if(e===!1||e==null)throw Error(t)}function T(e,t){if(!e){typeof console<`u`&&console.warn(t);try{throw Error(t)}catch{}}}function te(){return Math.random().toString(36).substring(2,10)}function E(e,t){return{usr:e.state,key:e.key,idx:t,masked:e.unstable_mask?{pathname:e.pathname,search:e.search,hash:e.hash}:void 0}}function ne(e,t,n=null,r,i){return{pathname:typeof e==`string`?e:e.pathname,search:``,hash:``,...typeof t==`string`?ie(t):t,state:n,key:t&&t.key||r||te(),unstable_mask:i}}function re({pathname:e=`/`,search:t=``,hash:n=``}){return t&&t!==`?`&&(e+=t.charAt(0)===`?`?t:`?`+t),n&&n!==`#`&&(e+=n.charAt(0)===`#`?n:`#`+n),e}function ie(e){let t={};if(e){let n=e.indexOf(`#`);n>=0&&(t.hash=e.substring(n),e=e.substring(0,n));let r=e.indexOf(`?`);r>=0&&(t.search=e.substring(r),e=e.substring(0,r)),e&&(t.pathname=e)}return t}function ae(e,t,n,r={}){let{window:i=document.defaultView,v5Compat:a=!1}=r,o=i.history,s=`POP`,c=null,l=u();l??(l=0,o.replaceState({...o.state,idx:l},``));function u(){return(o.state||{idx:null}).idx}function d(){s=`POP`;let e=u(),t=e==null?null:e-l;l=e,c&&c({action:s,location:h.location,delta:t})}function f(e,t){s=`PUSH`;let r=S(e)?e:ne(h.location,e,t);n&&n(r,e),l=u()+1;let d=E(r,l),f=h.createHref(r.unstable_mask||r);try{o.pushState(d,``,f)}catch(e){if(e instanceof DOMException&&e.name===`DataCloneError`)throw e;i.location.assign(f)}a&&c&&c({action:s,location:h.location,delta:1})}function p(e,t){s=`REPLACE`;let r=S(e)?e:ne(h.location,e,t);n&&n(r,e),l=u();let i=E(r,l),d=h.createHref(r.unstable_mask||r);o.replaceState(i,``,d),a&&c&&c({action:s,location:h.location,delta:0})}function m(e){return oe(e)}let h={get action(){return s},get location(){return e(i,o)},listen(e){if(c)throw Error(`A history only accepts one active listener`);return i.addEventListener(ee,d),c=e,()=>{i.removeEventListener(ee,d),c=null}},createHref(e){return t(i,e)},createURL:m,encodeLocation(e){let t=m(e);return{pathname:t.pathname,search:t.search,hash:t.hash}},push:f,replace:p,go(e){return o.go(e)}};return h}function oe(e,t=!1){let n=`http://localhost`;typeof window<`u`&&(n=window.location.origin===`null`?window.location.href:window.location.origin),w(n,`No window.location.(origin|href) available to create URL`);let r=typeof e==`string`?e:re(e);return r=r.replace(/ $/,`%20`),!t&&r.startsWith(`//`)&&(r=n+r),new URL(r,n)}function se(e,t,n=`/`){return ce(e,t,n,!1)}function ce(e,t,n,r){let i=Ce((typeof t==`string`?ie(t):t).pathname||`/`,n);if(i==null)return null;let a=O(e);ue(a);let o=null;for(let e=0;o==null&&e<a.length;++e){let t=Se(i);o=ye(a[e],t,r)}return o}function D(e,t){let{route:n,pathname:r,params:i}=e;return{id:n.id,pathname:r,params:i,data:t[n.id],loaderData:t[n.id],handle:n.handle}}function O(e,t=[],n=[],r=``,i=!1){let a=(e,a,o=i,s)=>{let c={relativePath:s===void 0?e.path||``:s,caseSensitive:e.caseSensitive===!0,childrenIndex:a,route:e};if(c.relativePath.startsWith(`/`)){if(!c.relativePath.startsWith(r)&&o)return;w(c.relativePath.startsWith(r),`Absolute route path "${c.relativePath}" nested under path "${r}" is not valid. An absolute child route path must start with the combined path of all its parent routes.`),c.relativePath=c.relativePath.slice(r.length)}let l=Me([r,c.relativePath]),u=n.concat(c);e.children&&e.children.length>0&&(w(e.index!==!0,`Index routes must not have child routes. Please remove all child routes from route path "${l}".`),O(e.children,t,u,l,o)),!(e.path==null&&!e.index)&&t.push({path:l,score:_e(l,e.index),routesMeta:u})};return e.forEach((e,t)=>{if(e.path===``||!e.path?.includes(`?`))a(e,t);else for(let n of le(e.path))a(e,t,!0,n)}),t}function le(e){let t=e.split(`/`);if(t.length===0)return[];let[n,...r]=t,i=n.endsWith(`?`),a=n.replace(/\?$/,``);if(r.length===0)return i?[a,``]:[a];let o=le(r.join(`/`)),s=[];return s.push(...o.map(e=>e===``?a:[a,e].join(`/`))),i&&s.push(...o),s.map(t=>e.startsWith(`/`)&&t===``?`/`:t)}function ue(e){e.sort((e,t)=>e.score===t.score?ve(e.routesMeta.map(e=>e.childrenIndex),t.routesMeta.map(e=>e.childrenIndex)):t.score-e.score)}var de=/^:[\w-]+$/,fe=3,pe=2,k=1,me=10,he=-2,ge=e=>e===`*`;function _e(e,t){let n=e.split(`/`),r=n.length;return n.some(ge)&&(r+=he),t&&(r+=pe),n.filter(e=>!ge(e)).reduce((e,t)=>e+(de.test(t)?fe:t===``?k:me),r)}function ve(e,t){return e.length===t.length&&e.slice(0,-1).every((e,n)=>e===t[n])?e[e.length-1]-t[t.length-1]:0}function ye(e,t,n=!1){let{routesMeta:r}=e,i={},a=`/`,o=[];for(let e=0;e<r.length;++e){let s=r[e],c=e===r.length-1,l=a===`/`?t:t.slice(a.length)||`/`,u=be({path:s.relativePath,caseSensitive:s.caseSensitive,end:c},l),d=s.route;if(!u&&c&&n&&!r[r.length-1].route.index&&(u=be({path:s.relativePath,caseSensitive:s.caseSensitive,end:!1},l)),!u)return null;Object.assign(i,u.params),o.push({params:i,pathname:Me([a,u.pathname]),pathnameBase:Pe(Me([a,u.pathnameBase])),route:d}),u.pathnameBase!==`/`&&(a=Me([a,u.pathnameBase]))}return o}function be(e,t){typeof e==`string`&&(e={path:e,caseSensitive:!1,end:!0});let[n,r]=xe(e.path,e.caseSensitive,e.end),i=t.match(n);if(!i)return null;let a=i[0],o=a.replace(/(.)\/+$/,`$1`),s=i.slice(1);return{params:r.reduce((e,{paramName:t,isOptional:n},r)=>{if(t===`*`){let e=s[r]||``;o=a.slice(0,a.length-e.length).replace(/(.)\/+$/,`$1`)}let i=s[r];return n&&!i?e[t]=void 0:e[t]=(i||``).replace(/%2F/g,`/`),e},{}),pathname:a,pathnameBase:o,pattern:e}}function xe(e,t=!1,n=!0){T(e===`*`||!e.endsWith(`*`)||e.endsWith(`/*`),`Route path "${e}" will be treated as if it were "${e.replace(/\*$/,`/*`)}" because the \`*\` character must always follow a \`/\` in the pattern. To get rid of this warning, please change the route path to "${e.replace(/\*$/,`/*`)}".`);let r=[],i=`^`+e.replace(/\/*\*?$/,``).replace(/^\/*/,`/`).replace(/[\\.*+^${}|()[\]]/g,`\\$&`).replace(/\/:([\w-]+)(\?)?/g,(e,t,n,i,a)=>{if(r.push({paramName:t,isOptional:n!=null}),n){let t=a.charAt(i+e.length);return t&&t!==`/`?`/([^\\/]*)`:`(?:/([^\\/]*))?`}return`/([^\\/]+)`}).replace(/\/([\w-]+)\?(\/|$)/g,`(/$1)?$2`);return e.endsWith(`*`)?(r.push({paramName:`*`}),i+=e===`*`||e===`/*`?`(.*)$`:`(?:\\/(.+)|\\/*)$`):n?i+=`\\/*$`:e!==``&&e!==`/`&&(i+=`(?:(?=\\/|$))`),[new RegExp(i,t?void 0:`i`),r]}function Se(e){try{return e.split(`/`).map(e=>decodeURIComponent(e).replace(/\//g,`%2F`)).join(`/`)}catch(t){return T(!1,`The URL path "${e}" could not be decoded because it is a malformed URL segment. This is probably due to a bad percent encoding (${t}).`),e}}function Ce(e,t){if(t===`/`)return e;if(!e.toLowerCase().startsWith(t.toLowerCase()))return null;let n=t.endsWith(`/`)?t.length-1:t.length,r=e.charAt(n);return r&&r!==`/`?null:e.slice(n)||`/`}var we=/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;function Te(e,t=`/`){let{pathname:n,search:r=``,hash:i=``}=typeof e==`string`?ie(e):e,a;return n?(n=je(n),a=n.startsWith(`/`)?Ee(n.substring(1),`/`):Ee(n,t)):a=t,{pathname:a,search:Fe(r),hash:Ie(i)}}function Ee(e,t){let n=Ne(t).split(`/`);return e.split(`/`).forEach(e=>{e===`..`?n.length>1&&n.pop():e!==`.`&&n.push(e)}),n.length>1?n.join(`/`):`/`}function De(e,t,n,r){return`Cannot include a '${e}' character in a manually specified \`to.${t}\` field [${JSON.stringify(r)}].  Please separate it out to the \`to.${n}\` field. Alternatively you may provide the full path as a string in <Link to="..."> and the router will parse it for you.`}function Oe(e){return e.filter((e,t)=>t===0||e.route.path&&e.route.path.length>0)}function ke(e){let t=Oe(e);return t.map((e,n)=>n===t.length-1?e.pathname:e.pathnameBase)}function Ae(e,t,n,r=!1){let i;typeof e==`string`?i=ie(e):(i={...e},w(!i.pathname||!i.pathname.includes(`?`),De(`?`,`pathname`,`search`,i)),w(!i.pathname||!i.pathname.includes(`#`),De(`#`,`pathname`,`hash`,i)),w(!i.search||!i.search.includes(`#`),De(`#`,`search`,`hash`,i)));let a=e===``||i.pathname===``,o=a?`/`:i.pathname,s;if(o==null)s=n;else{let e=t.length-1;if(!r&&o.startsWith(`..`)){let t=o.split(`/`);for(;t[0]===`..`;)t.shift(),--e;i.pathname=t.join(`/`)}s=e>=0?t[e]:`/`}let c=Te(i,s),l=o&&o!==`/`&&o.endsWith(`/`),u=(a||o===`.`)&&n.endsWith(`/`);return!c.pathname.endsWith(`/`)&&(l||u)&&(c.pathname+=`/`),c}var je=e=>e.replace(/\/\/+/g,`/`),Me=e=>je(e.join(`/`)),Ne=e=>e.replace(/\/+$/,``),Pe=e=>Ne(e).replace(/^\/*/,`/`),Fe=e=>!e||e===`?`?``:e.startsWith(`?`)?e:`?`+e,Ie=e=>!e||e===`#`?``:e.startsWith(`#`)?e:`#`+e,Le=class{constructor(e,t,n,r=!1){this.status=e,this.statusText=t||``,this.internal=r,n instanceof Error?(this.data=n.toString(),this.error=n):this.data=n}};function Re(e){return e!=null&&typeof e.status==`number`&&typeof e.statusText==`string`&&typeof e.internal==`boolean`&&`data`in e}function ze(e){return Me(e.map(e=>e.route.path).filter(Boolean))||`/`}var Be=typeof window<`u`&&window.document!==void 0&&window.document.createElement!==void 0;function Ve(e,t){let n=e;if(typeof n!=`string`||!we.test(n))return{absoluteURL:void 0,isExternal:!1,to:n};let r=n,i=!1;if(Be)try{let e=new URL(window.location.href),r=n.startsWith(`//`)?new URL(e.protocol+n):new URL(n),a=Ce(r.pathname,t);r.origin===e.origin&&a!=null?n=a+r.search+r.hash:i=!0}catch{T(!1,`<Link to="${n}"> contains an invalid URL which will probably break when clicked - please update to a valid URL path.`)}return{absoluteURL:r,isExternal:i,to:n}}Object.getOwnPropertyNames(Object.prototype).sort().join(`\0`);var He=[`POST`,`PUT`,`PATCH`,`DELETE`];new Set(He);var Ue=[`GET`,...He];new Set(Ue);var We=x.createContext(null);We.displayName=`DataRouter`;var Ge=x.createContext(null);Ge.displayName=`DataRouterState`;var Ke=x.createContext(!1);function qe(){return x.useContext(Ke)}var Je=x.createContext({isTransitioning:!1});Je.displayName=`ViewTransition`;var Ye=x.createContext(new Map);Ye.displayName=`Fetchers`;var Xe=x.createContext(null);Xe.displayName=`Await`;var Ze=x.createContext(null);Ze.displayName=`Navigation`;var Qe=x.createContext(null);Qe.displayName=`Location`;var $e=x.createContext({outlet:null,matches:[],isDataRoute:!1});$e.displayName=`Route`;var et=x.createContext(null);et.displayName=`RouteError`;var tt=`REACT_ROUTER_ERROR`,nt=`REDIRECT`,rt=`ROUTE_ERROR_RESPONSE`;function it(e){if(e.startsWith(`${tt}:${nt}:{`))try{let t=JSON.parse(e.slice(28));if(typeof t==`object`&&t&&typeof t.status==`number`&&typeof t.statusText==`string`&&typeof t.location==`string`&&typeof t.reloadDocument==`boolean`&&typeof t.replace==`boolean`)return t}catch{}}function at(e){if(e.startsWith(`${tt}:${rt}:{`))try{let t=JSON.parse(e.slice(40));if(typeof t==`object`&&t&&typeof t.status==`number`&&typeof t.statusText==`string`)return new Le(t.status,t.statusText,t.data)}catch{}}function ot(e,{relative:t}={}){w(st(),`useHref() may be used only in the context of a <Router> component.`);let{basename:n,navigator:r}=x.useContext(Ze),{hash:i,pathname:a,search:o}=pt(e,{relative:t}),s=a;return n!==`/`&&(s=a===`/`?n:Me([n,a])),r.createHref({pathname:s,search:o,hash:i})}function st(){return x.useContext(Qe)!=null}function ct(){return w(st(),`useLocation() may be used only in the context of a <Router> component.`),x.useContext(Qe).location}var lt=`You should call navigate() in a React.useEffect(), not when your component is first rendered.`;function ut(e){x.useContext(Ze).static||x.useLayoutEffect(e)}function dt(){let{isDataRoute:e}=x.useContext($e);return e?Mt():ft()}function ft(){w(st(),`useNavigate() may be used only in the context of a <Router> component.`);let e=x.useContext(We),{basename:t,navigator:n}=x.useContext(Ze),{matches:r}=x.useContext($e),{pathname:i}=ct(),a=JSON.stringify(ke(r)),o=x.useRef(!1);return ut(()=>{o.current=!0}),x.useCallback((r,s={})=>{if(T(o.current,lt),!o.current)return;if(typeof r==`number`){n.go(r);return}let c=Ae(r,JSON.parse(a),i,s.relative===`path`);e==null&&t!==`/`&&(c.pathname=c.pathname===`/`?t:Me([t,c.pathname])),(s.replace?n.replace:n.push)(c,s.state,s)},[t,n,a,i,e])}x.createContext(null);function pt(e,{relative:t}={}){let{matches:n}=x.useContext($e),{pathname:r}=ct(),i=JSON.stringify(ke(n));return x.useMemo(()=>Ae(e,JSON.parse(i),r,t===`path`),[e,i,r,t])}function mt(e,t){return ht(e,t)}function ht(e,t,n){w(st(),`useRoutes() may be used only in the context of a <Router> component.`);let{navigator:r}=x.useContext(Ze),{matches:i}=x.useContext($e),a=i[i.length-1],o=a?a.params:{},s=a?a.pathname:`/`,c=a?a.pathnameBase:`/`,l=a&&a.route;{let e=l&&l.path||``;Pt(s,!l||e.endsWith(`*`)||e.endsWith(`*?`),`You rendered descendant <Routes> (or called \`useRoutes()\`) at "${s}" (under <Route path="${e}">) but the parent route path has no trailing "*". This means if you navigate deeper, the parent won't match anymore and therefore the child routes will never render.
+
+Please change the parent <Route path="${e}"> to <Route path="${e===`/`?`*`:`${e}/*`}">.`)}let u=ct(),d;if(t){let e=typeof t==`string`?ie(t):t;w(c===`/`||e.pathname?.startsWith(c),`When overriding the location using \`<Routes location>\` or \`useRoutes(routes, location)\`, the location pathname must begin with the portion of the URL pathname that was matched by all parent routes. The current pathname base is "${c}" but pathname "${e.pathname}" was given in the \`location\` prop.`),d=e}else d=u;let f=d.pathname||`/`,p=f;if(c!==`/`){let e=c.replace(/^\//,``).split(`/`);p=`/`+f.replace(/^\//,``).split(`/`).slice(e.length).join(`/`)}let m=se(e,{pathname:p});T(l||m!=null,`No routes matched location "${d.pathname}${d.search}${d.hash}" `),T(m==null||m[m.length-1].route.element!==void 0||m[m.length-1].route.Component!==void 0||m[m.length-1].route.lazy!==void 0,`Matched leaf route at location "${d.pathname}${d.search}${d.hash}" does not have an element or Component. This means it will render an <Outlet /> with a null value by default resulting in an "empty" page.`);let h=St(m&&m.map(e=>Object.assign({},e,{params:Object.assign({},o,e.params),pathname:Me([c,r.encodeLocation?r.encodeLocation(e.pathname.replace(/%/g,`%25`).replace(/\?/g,`%3F`).replace(/#/g,`%23`)).pathname:e.pathname]),pathnameBase:e.pathnameBase===`/`?c:Me([c,r.encodeLocation?r.encodeLocation(e.pathnameBase.replace(/%/g,`%25`).replace(/\?/g,`%3F`).replace(/#/g,`%23`)).pathname:e.pathnameBase])})),i,n);return t&&h?x.createElement(Qe.Provider,{value:{location:{pathname:`/`,search:``,hash:``,state:null,key:`default`,unstable_mask:void 0,...d},navigationType:`POP`}},h):h}function gt(){let e=jt(),t=Re(e)?`${e.status} ${e.statusText}`:e instanceof Error?e.message:JSON.stringify(e),n=e instanceof Error?e.stack:null,r=`rgba(200,200,200, 0.5)`,i={padding:`0.5rem`,backgroundColor:r},a={padding:`2px 4px`,backgroundColor:r},o=null;return console.error(`Error handled by React Router default ErrorBoundary:`,e),o=x.createElement(x.Fragment,null,x.createElement(`p`,null,`💿 Hey developer 👋`),x.createElement(`p`,null,`You can provide a way better UX than this when your app throws errors by providing your own `,x.createElement(`code`,{style:a},`ErrorBoundary`),` or`,` `,x.createElement(`code`,{style:a},`errorElement`),` prop on your route.`)),x.createElement(x.Fragment,null,x.createElement(`h2`,null,`Unexpected Application Error!`),x.createElement(`h3`,{style:{fontStyle:`italic`}},t),n?x.createElement(`pre`,{style:i},n):null,o)}var _t=x.createElement(gt,null),vt=class extends x.Component{constructor(e){super(e),this.state={location:e.location,revalidation:e.revalidation,error:e.error}}static getDerivedStateFromError(e){return{error:e}}static getDerivedStateFromProps(e,t){return t.location!==e.location||t.revalidation!==`idle`&&e.revalidation===`idle`?{error:e.error,location:e.location,revalidation:e.revalidation}:{error:e.error===void 0?t.error:e.error,location:t.location,revalidation:e.revalidation||t.revalidation}}componentDidCatch(e,t){this.props.onError?this.props.onError(e,t):console.error(`React Router caught the following error during render`,e)}render(){let e=this.state.error;if(this.context&&typeof e==`object`&&e&&`digest`in e&&typeof e.digest==`string`){let t=at(e.digest);t&&(e=t)}let t=e===void 0?this.props.children:x.createElement($e.Provider,{value:this.props.routeContext},x.createElement(et.Provider,{value:e,children:this.props.component}));return this.context?x.createElement(bt,{error:e},t):t}};vt.contextType=Ke;var yt=new WeakMap;function bt({children:e,error:t}){let{basename:n}=x.useContext(Ze);if(typeof t==`object`&&t&&`digest`in t&&typeof t.digest==`string`){let e=it(t.digest);if(e){let r=yt.get(t);if(r)throw r;let i=Ve(e.location,n);if(Be&&!yt.get(t))if(i.isExternal||e.reloadDocument)window.location.href=i.absoluteURL||i.to;else{let n=Promise.resolve().then(()=>window.__reactRouterDataRouter.navigate(i.to,{replace:e.replace}));throw yt.set(t,n),n}return x.createElement(`meta`,{httpEquiv:`refresh`,content:`0;url=${i.absoluteURL||i.to}`})}}return e}function xt({routeContext:e,match:t,children:n}){let r=x.useContext(We);return r&&r.static&&r.staticContext&&(t.route.errorElement||t.route.ErrorBoundary)&&(r.staticContext._deepestRenderedBoundaryId=t.route.id),x.createElement($e.Provider,{value:e},n)}function St(e,t=[],n){let r=n?.state;if(e==null){if(!r)return null;if(r.errors)e=r.matches;else if(t.length===0&&!r.initialized&&r.matches.length>0)e=r.matches;else return null}let i=e,a=r?.errors;if(a!=null){let e=i.findIndex(e=>e.route.id&&a?.[e.route.id]!==void 0);w(e>=0,`Could not find a matching route for errors on route IDs: ${Object.keys(a).join(`,`)}`),i=i.slice(0,Math.min(i.length,e+1))}let o=!1,s=-1;if(n&&r){o=r.renderFallback;for(let e=0;e<i.length;e++){let t=i[e];if((t.route.HydrateFallback||t.route.hydrateFallbackElement)&&(s=e),t.route.id){let{loaderData:e,errors:a}=r,c=t.route.loader&&!e.hasOwnProperty(t.route.id)&&(!a||a[t.route.id]===void 0);if(t.route.lazy||c){n.isStatic&&(o=!0),i=s>=0?i.slice(0,s+1):[i[0]];break}}}}let c=n?.onError,l=r&&c?(e,t)=>{c(e,{location:r.location,params:r.matches?.[0]?.params??{},unstable_pattern:ze(r.matches),errorInfo:t})}:void 0;return i.reduceRight((e,n,c)=>{let u,d=!1,f=null,p=null;r&&(u=a&&n.route.id?a[n.route.id]:void 0,f=n.route.errorElement||_t,o&&(s<0&&c===0?(Pt(`route-fallback`,!1,"No `HydrateFallback` element provided to render during initial hydration"),d=!0,p=null):s===c&&(d=!0,p=n.route.hydrateFallbackElement||null)));let m=t.concat(i.slice(0,c+1)),h=()=>{let t;return t=u?f:d?p:n.route.Component?x.createElement(n.route.Component,null):n.route.element?n.route.element:e,x.createElement(xt,{match:n,routeContext:{outlet:e,matches:m,isDataRoute:r!=null},children:t})};return r&&(n.route.ErrorBoundary||n.route.errorElement||c===0)?x.createElement(vt,{location:r.location,revalidation:r.revalidation,component:f,error:u,children:h(),routeContext:{outlet:null,matches:m,isDataRoute:!0},onError:l}):h()},null)}function Ct(e){return`${e} must be used within a data router.  See https://reactrouter.com/en/main/routers/picking-a-router.`}function wt(e){let t=x.useContext(We);return w(t,Ct(e)),t}function Tt(e){let t=x.useContext(Ge);return w(t,Ct(e)),t}function Et(e){let t=x.useContext($e);return w(t,Ct(e)),t}function Dt(e){let t=Et(e),n=t.matches[t.matches.length-1];return w(n.route.id,`${e} can only be used on routes that contain a unique "id"`),n.route.id}function Ot(){return Dt(`useRouteId`)}function kt(){return Tt(`useNavigation`).navigation}function At(){let{matches:e,loaderData:t}=Tt(`useMatches`);return x.useMemo(()=>e.map(e=>D(e,t)),[e,t])}function jt(){let e=x.useContext(et),t=Tt(`useRouteError`),n=Dt(`useRouteError`);return e===void 0?t.errors?.[n]:e}function Mt(){let{router:e}=wt(`useNavigate`),t=Dt(`useNavigate`),n=x.useRef(!1);return ut(()=>{n.current=!0}),x.useCallback(async(r,i={})=>{T(n.current,lt),n.current&&(typeof r==`number`?await e.navigate(r):await e.navigate(r,{fromRouteId:t,...i}))},[e,t])}var Nt={};function Pt(e,t,n){!t&&!Nt[e]&&(Nt[e]=!0,T(!1,n))}x.useOptimistic,x.memo(Ft);function Ft({routes:e,future:t,state:n,isStatic:r,onError:i}){return ht(e,void 0,{state:n,isStatic:r,onError:i,future:t})}function It({to:e,replace:t,state:n,relative:r}){w(st(),`<Navigate> may be used only in the context of a <Router> component.`);let{static:i}=x.useContext(Ze);T(!i,`<Navigate> must not be used on the initial render in a <StaticRouter>. This is a no-op, but you should modify your code so the <Navigate> is only ever rendered in response to some user interaction or state change.`);let{matches:a}=x.useContext($e),{pathname:o}=ct(),s=dt(),c=Ae(e,ke(a),o,r===`path`),l=JSON.stringify(c);return x.useEffect(()=>{s(JSON.parse(l),{replace:t,state:n,relative:r})},[s,l,r,t,n]),null}function Lt(e){w(!1,`A <Route> is only ever to be used as the child of <Routes> element, never rendered directly. Please wrap your <Route> in a <Routes>.`)}function Rt({basename:e=`/`,children:t=null,location:n,navigationType:r=`POP`,navigator:i,static:a=!1,unstable_useTransitions:o}){w(!st(),`You cannot render a <Router> inside another <Router>. You should never have more than one in your app.`);let s=e.replace(/^\/*/,`/`),c=x.useMemo(()=>({basename:s,navigator:i,static:a,unstable_useTransitions:o,future:{}}),[s,i,a,o]);typeof n==`string`&&(n=ie(n));let{pathname:l=`/`,search:u=``,hash:d=``,state:f=null,key:p=`default`,unstable_mask:m}=n,h=x.useMemo(()=>{let e=Ce(l,s);return e==null?null:{location:{pathname:e,search:u,hash:d,state:f,key:p,unstable_mask:m},navigationType:r}},[s,l,u,d,f,p,r,m]);return T(h!=null,`<Router basename="${s}"> is not able to match the URL "${l}${u}${d}" because it does not start with the basename, so the <Router> won't render anything.`),h==null?null:x.createElement(Ze.Provider,{value:c},x.createElement(Qe.Provider,{children:t,value:h}))}function zt({children:e,location:t}){return mt(Bt(e),t)}x.Component;function Bt(e,t=[]){let n=[];return x.Children.forEach(e,(e,r)=>{if(!x.isValidElement(e))return;let i=[...t,r];if(e.type===x.Fragment){n.push.apply(n,Bt(e.props.children,i));return}w(e.type===Lt,`[${typeof e.type==`string`?e.type:e.type.name}] is not a <Route> component. All component children of <Routes> must be a <Route> or <React.Fragment>`),w(!e.props.index||!e.props.children,`An index route cannot have child routes.`);let a={id:e.props.id||i.join(`-`),caseSensitive:e.props.caseSensitive,element:e.props.element,Component:e.props.Component,index:e.props.index,path:e.props.path,middleware:e.props.middleware,loader:e.props.loader,action:e.props.action,hydrateFallbackElement:e.props.hydrateFallbackElement,HydrateFallback:e.props.HydrateFallback,errorElement:e.props.errorElement,ErrorBoundary:e.props.ErrorBoundary,hasErrorBoundary:e.props.hasErrorBoundary===!0||e.props.ErrorBoundary!=null||e.props.errorElement!=null,shouldRevalidate:e.props.shouldRevalidate,handle:e.props.handle,lazy:e.props.lazy};e.props.children&&(a.children=Bt(e.props.children,i)),n.push(a)}),n}var Vt=`get`,Ht=`application/x-www-form-urlencoded`;function Ut(e){return typeof HTMLElement<`u`&&e instanceof HTMLElement}function Wt(e){return Ut(e)&&e.tagName.toLowerCase()===`button`}function Gt(e){return Ut(e)&&e.tagName.toLowerCase()===`form`}function Kt(e){return Ut(e)&&e.tagName.toLowerCase()===`input`}function qt(e){return!!(e.metaKey||e.altKey||e.ctrlKey||e.shiftKey)}function Jt(e,t){return e.button===0&&(!t||t===`_self`)&&!qt(e)}var Yt=null;function Xt(){if(Yt===null)try{new FormData(document.createElement(`form`),0),Yt=!1}catch{Yt=!0}return Yt}var Zt=new Set([`application/x-www-form-urlencoded`,`multipart/form-data`,`text/plain`]);function Qt(e){return e!=null&&!Zt.has(e)?(T(!1,`"${e}" is not a valid \`encType\` for \`<Form>\`/\`<fetcher.Form>\` and will default to "${Ht}"`),null):e}function $t(e,t){let n,r,i,a,o;if(Gt(e)){let o=e.getAttribute(`action`);r=o?Ce(o,t):null,n=e.getAttribute(`method`)||Vt,i=Qt(e.getAttribute(`enctype`))||Ht,a=new FormData(e)}else if(Wt(e)||Kt(e)&&(e.type===`submit`||e.type===`image`)){let o=e.form;if(o==null)throw Error(`Cannot submit a <button> or <input type="submit"> without a <form>`);let s=e.getAttribute(`formaction`)||o.getAttribute(`action`);if(r=s?Ce(s,t):null,n=e.getAttribute(`formmethod`)||o.getAttribute(`method`)||Vt,i=Qt(e.getAttribute(`formenctype`))||Qt(o.getAttribute(`enctype`))||Ht,a=new FormData(o,e),!Xt()){let{name:t,type:n,value:r}=e;if(n===`image`){let e=t?`${t}.`:``;a.append(`${e}x`,`0`),a.append(`${e}y`,`0`)}else t&&a.append(t,r)}}else if(Ut(e))throw Error(`Cannot submit element that is not <form>, <button>, or <input type="submit|image">`);else n=Vt,r=null,i=Ht,o=e;return a&&i===`text/plain`&&(o=a,a=void 0),{action:r,method:n.toLowerCase(),encType:i,formData:a,body:o}}Object.getOwnPropertyNames(Object.prototype).sort().join(`\0`);var en={"&":`\\u0026`,">":`\\u003e`,"<":`\\u003c`,"\u2028":`\\u2028`,"\u2029":`\\u2029`},tn=/[&><\u2028\u2029]/g;function nn(e){return e.replace(tn,e=>en[e])}function rn(e,t){if(e===!1||e==null)throw Error(t)}function an(e,t,n,r){let i=typeof e==`string`?new URL(e,typeof window>`u`?`server://singlefetch/`:window.location.origin):e;return n?i.pathname.endsWith(`/`)?i.pathname=`${i.pathname}_.${r}`:i.pathname=`${i.pathname}.${r}`:i.pathname===`/`?i.pathname=`_root.${r}`:t&&Ce(i.pathname,t)===`/`?i.pathname=`${Ne(t)}/_root.${r}`:i.pathname=`${Ne(i.pathname)}.${r}`,i}async function on(e,t){if(e.id in t)return t[e.id];try{let n=await b(()=>import(e.module),[]);return t[e.id]=n,n}catch(t){return console.error(`Error loading route module \`${e.module}\`, reloading page...`),console.error(t),window.__reactRouterContext&&window.__reactRouterContext.isSpaMode,window.location.reload(),new Promise(()=>{})}}function sn(e){return e!=null&&typeof e.page==`string`}function cn(e){return e==null?!1:e.href==null?e.rel===`preload`&&typeof e.imageSrcSet==`string`&&typeof e.imageSizes==`string`:typeof e.rel==`string`&&typeof e.href==`string`}async function ln(e,t,n){return mn((await Promise.all(e.map(async e=>{let r=t.routes[e.route.id];if(r){let e=await on(r,n);return e.links?e.links():[]}return[]}))).flat(1).filter(cn).filter(e=>e.rel===`stylesheet`||e.rel===`preload`).map(e=>e.rel===`stylesheet`?{...e,rel:`prefetch`,as:`style`}:{...e,rel:`prefetch`}))}function un(e,t,n,r,i,a){let o=(e,t)=>n[t]?e.route.id!==n[t].route.id:!0,s=(e,t)=>n[t].pathname!==e.pathname||n[t].route.path?.endsWith(`*`)&&n[t].params[`*`]!==e.params[`*`];return a===`assets`?t.filter((e,t)=>o(e,t)||s(e,t)):a===`data`?t.filter((t,a)=>{let c=r.routes[t.route.id];if(!c||!c.hasLoader)return!1;if(o(t,a)||s(t,a))return!0;if(t.route.shouldRevalidate){let r=t.route.shouldRevalidate({currentUrl:new URL(i.pathname+i.search+i.hash,window.origin),currentParams:n[0]?.params||{},nextUrl:new URL(e,window.origin),nextParams:t.params,defaultShouldRevalidate:!0});if(typeof r==`boolean`)return r}return!0}):[]}function dn(e,t,{includeHydrateFallback:n}={}){return fn(e.map(e=>{let r=t.routes[e.route.id];if(!r)return[];let i=[r.module];return r.clientActionModule&&(i=i.concat(r.clientActionModule)),r.clientLoaderModule&&(i=i.concat(r.clientLoaderModule)),n&&r.hydrateFallbackModule&&(i=i.concat(r.hydrateFallbackModule)),r.imports&&(i=i.concat(r.imports)),i}).flat(1))}function fn(e){return[...new Set(e)]}function pn(e){let t={},n=Object.keys(e).sort();for(let r of n)t[r]=e[r];return t}function mn(e,t){let n=new Set,r=new Set(t);return e.reduce((e,i)=>{if(t&&!sn(i)&&i.as===`script`&&i.href&&r.has(i.href))return e;let a=JSON.stringify(pn(i));return n.has(a)||(n.add(a),e.push({key:a,link:i})),e},[])}function hn(){let e=x.useContext(We);return rn(e,`You must render this element inside a <DataRouterContext.Provider> element`),e}function gn(){let e=x.useContext(Ge);return rn(e,`You must render this element inside a <DataRouterStateContext.Provider> element`),e}var _n=x.createContext(void 0);_n.displayName=`FrameworkContext`;function vn(){let e=x.useContext(_n);return rn(e,`You must render this element inside a <HydratedRouter> element`),e}function yn(e,t){let n=x.useContext(_n),[r,i]=x.useState(!1),[a,o]=x.useState(!1),{onFocus:s,onBlur:c,onMouseEnter:l,onMouseLeave:u,onTouchStart:d}=t,f=x.useRef(null);x.useEffect(()=>{if(e===`render`&&o(!0),e===`viewport`){let e=new IntersectionObserver(e=>{e.forEach(e=>{o(e.isIntersecting)})},{threshold:.5});return f.current&&e.observe(f.current),()=>{e.disconnect()}}},[e]),x.useEffect(()=>{if(r){let e=setTimeout(()=>{o(!0)},100);return()=>{clearTimeout(e)}}},[r]);let p=()=>{i(!0)},m=()=>{i(!1),o(!1)};return n?e===`intent`?[a,f,{onFocus:bn(s,p),onBlur:bn(c,m),onMouseEnter:bn(l,p),onMouseLeave:bn(u,m),onTouchStart:bn(d,p)}]:[a,f,{}]:[!1,f,{}]}function bn(e,t){return n=>{e&&e(n),n.defaultPrevented||t(n)}}function xn({page:e,...t}){let n=qe(),{router:r}=hn(),i=x.useMemo(()=>se(r.routes,e,r.basename),[r.routes,e,r.basename]);return i?n?x.createElement(Cn,{page:e,matches:i,...t}):x.createElement(wn,{page:e,matches:i,...t}):null}function Sn(e){let{manifest:t,routeModules:n}=vn(),[r,i]=x.useState([]);return x.useEffect(()=>{let r=!1;return ln(e,t,n).then(e=>{r||i(e)}),()=>{r=!0}},[e,t,n]),r}function Cn({page:e,matches:t,...n}){let r=ct(),{future:i}=vn(),{basename:a}=hn(),o=x.useMemo(()=>{if(e===r.pathname+r.search+r.hash)return[];let n=an(e,a,i.unstable_trailingSlashAwareDataRequests,`rsc`),o=!1,s=[];for(let e of t)typeof e.route.shouldRevalidate==`function`?o=!0:s.push(e.route.id);return o&&s.length>0&&n.searchParams.set(`_routes`,s.join(`,`)),[n.pathname+n.search]},[a,i.unstable_trailingSlashAwareDataRequests,e,r,t]);return x.createElement(x.Fragment,null,o.map(e=>x.createElement(`link`,{key:e,rel:`prefetch`,as:`fetch`,href:e,...n})))}function wn({page:e,matches:t,...n}){let r=ct(),{future:i,manifest:a,routeModules:o}=vn(),{basename:s}=hn(),{loaderData:c,matches:l}=gn(),u=x.useMemo(()=>un(e,t,l,a,r,`data`),[e,t,l,a,r]),d=x.useMemo(()=>un(e,t,l,a,r,`assets`),[e,t,l,a,r]),f=x.useMemo(()=>{if(e===r.pathname+r.search+r.hash)return[];let n=new Set,l=!1;if(t.forEach(e=>{let t=a.routes[e.route.id];!t||!t.hasLoader||(!u.some(t=>t.route.id===e.route.id)&&e.route.id in c&&o[e.route.id]?.shouldRevalidate||t.hasClientLoader?l=!0:n.add(e.route.id))}),n.size===0)return[];let d=an(e,s,i.unstable_trailingSlashAwareDataRequests,`data`);return l&&n.size>0&&d.searchParams.set(`_routes`,t.filter(e=>n.has(e.route.id)).map(e=>e.route.id).join(`,`)),[d.pathname+d.search]},[s,i.unstable_trailingSlashAwareDataRequests,c,r,a,u,t,e,o]),p=x.useMemo(()=>dn(d,a),[d,a]),m=Sn(d);return x.createElement(x.Fragment,null,f.map(e=>x.createElement(`link`,{key:e,rel:`prefetch`,as:`fetch`,href:e,...n})),p.map(e=>x.createElement(`link`,{key:e,rel:`modulepreload`,href:e,...n})),m.map(({key:e,link:t})=>x.createElement(`link`,{key:e,nonce:n.nonce,...t,crossOrigin:t.crossOrigin??n.crossOrigin})))}function Tn(...e){return t=>{e.forEach(e=>{typeof e==`function`?e(t):e!=null&&(e.current=t)})}}x.Component;var En=typeof window<`u`&&window.document!==void 0&&window.document.createElement!==void 0;try{En&&(window.__reactRouterVersion=`7.14.1`)}catch{}function Dn({basename:e,children:t,unstable_useTransitions:n,window:r}){let i=x.useRef();i.current??=C({window:r,v5Compat:!0});let a=i.current,[o,s]=x.useState({action:a.action,location:a.location}),c=x.useCallback(e=>{n===!1?s(e):x.startTransition(()=>s(e))},[n]);return x.useLayoutEffect(()=>a.listen(c),[a,c]),x.createElement(Rt,{basename:e,children:t,location:o.location,navigationType:o.action,navigator:a,unstable_useTransitions:n})}function On({basename:e,children:t,history:n,unstable_useTransitions:r}){let[i,a]=x.useState({action:n.action,location:n.location}),o=x.useCallback(e=>{r===!1?a(e):x.startTransition(()=>a(e))},[r]);return x.useLayoutEffect(()=>n.listen(o),[n,o]),x.createElement(Rt,{basename:e,children:t,location:i.location,navigationType:i.action,navigator:n,unstable_useTransitions:r})}On.displayName=`unstable_HistoryRouter`;var kn=/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i,An=x.forwardRef(function({onClick:e,discover:t=`render`,prefetch:n=`none`,relative:r,reloadDocument:i,replace:a,unstable_mask:o,state:s,target:c,to:l,preventScrollReset:u,viewTransition:d,unstable_defaultShouldRevalidate:f,...p},m){let{basename:h,navigator:g,unstable_useTransitions:_}=x.useContext(Ze),v=typeof l==`string`&&kn.test(l),y=Ve(l,h);l=y.to;let b=ot(l,{relative:r}),ee=ct(),S=null;if(o){let e=Ae(o,[],ee.unstable_mask?ee.unstable_mask.pathname:`/`,!0);h!==`/`&&(e.pathname=e.pathname===`/`?h:Me([h,e.pathname])),S=g.createHref(e)}let[C,w,T]=yn(n,p),te=Ln(l,{replace:a,unstable_mask:o,state:s,target:c,preventScrollReset:u,relative:r,viewTransition:d,unstable_defaultShouldRevalidate:f,unstable_useTransitions:_});function E(t){e&&e(t),t.defaultPrevented||te(t)}let ne=!(y.isExternal||i),re=x.createElement(`a`,{...p,...T,href:(ne?S:void 0)||y.absoluteURL||b,onClick:ne?E:e,ref:Tn(m,w),target:c,"data-discover":!v&&t===`render`?`true`:void 0});return C&&!v?x.createElement(x.Fragment,null,re,x.createElement(xn,{page:b})):re});An.displayName=`Link`;var jn=x.forwardRef(function({"aria-current":e=`page`,caseSensitive:t=!1,className:n=``,end:r=!1,style:i,to:a,viewTransition:o,children:s,...c},l){let u=pt(a,{relative:c.relative}),d=ct(),f=x.useContext(Ge),{navigator:p,basename:m}=x.useContext(Ze),h=f!=null&&qn(u)&&o===!0,g=p.encodeLocation?p.encodeLocation(u).pathname:u.pathname,_=d.pathname,v=f&&f.navigation&&f.navigation.location?f.navigation.location.pathname:null;t||(_=_.toLowerCase(),v=v?v.toLowerCase():null,g=g.toLowerCase()),v&&m&&(v=Ce(v,m)||v);let y=g!==`/`&&g.endsWith(`/`)?g.length-1:g.length,b=_===g||!r&&_.startsWith(g)&&_.charAt(y)===`/`,ee=v!=null&&(v===g||!r&&v.startsWith(g)&&v.charAt(g.length)===`/`),S={isActive:b,isPending:ee,isTransitioning:h},C=b?e:void 0,w;w=typeof n==`function`?n(S):[n,b?`active`:null,ee?`pending`:null,h?`transitioning`:null].filter(Boolean).join(` `);let T=typeof i==`function`?i(S):i;return x.createElement(An,{...c,"aria-current":C,className:w,ref:l,style:T,to:a,viewTransition:o},typeof s==`function`?s(S):s)});jn.displayName=`NavLink`;var Mn=x.forwardRef(({discover:e=`render`,fetcherKey:t,navigate:n,reloadDocument:r,replace:i,state:a,method:o=Vt,action:s,onSubmit:c,relative:l,preventScrollReset:u,viewTransition:d,unstable_defaultShouldRevalidate:f,...p},m)=>{let{unstable_useTransitions:h}=x.useContext(Ze),g=Bn(),_=Vn(s,{relative:l}),v=o.toLowerCase()===`get`?`get`:`post`,y=typeof s==`string`&&kn.test(s);return x.createElement(`form`,{ref:m,method:v,action:_,onSubmit:r?c:e=>{if(c&&c(e),e.defaultPrevented)return;e.preventDefault();let r=e.nativeEvent.submitter,s=r?.getAttribute(`formmethod`)||o,p=()=>g(r||e.currentTarget,{fetcherKey:t,method:s,navigate:n,replace:i,state:a,relative:l,preventScrollReset:u,viewTransition:d,unstable_defaultShouldRevalidate:f});h&&n!==!1?x.startTransition(()=>p()):p()},...p,"data-discover":!y&&e===`render`?`true`:void 0})});Mn.displayName=`Form`;function Nn({getKey:e,storageKey:t,...n}){let r=x.useContext(_n),{basename:i}=x.useContext(Ze),a=ct(),o=At();Gn({getKey:e,storageKey:t});let s=x.useMemo(()=>{if(!r||!e)return null;let t=Wn(a,o,i,e);return t===a.key?null:t},[]);if(!r||r.isSpaMode)return null;let c=((e,t)=>{if(!window.history.state||!window.history.state.key){let e=Math.random().toString(32).slice(2);window.history.replaceState({key:e},``)}try{let n=JSON.parse(sessionStorage.getItem(e)||`{}`)[t||window.history.state.key];typeof n==`number`&&window.scrollTo(0,n)}catch(t){console.error(t),sessionStorage.removeItem(e)}}).toString();return x.createElement(`script`,{...n,suppressHydrationWarning:!0,dangerouslySetInnerHTML:{__html:`(${c})(${nn(JSON.stringify(t||Hn))}, ${nn(JSON.stringify(s))})`}})}Nn.displayName=`ScrollRestoration`;function Pn(e){return`${e} must be used within a data router.  See https://reactrouter.com/en/main/routers/picking-a-router.`}function Fn(e){let t=x.useContext(We);return w(t,Pn(e)),t}function In(e){let t=x.useContext(Ge);return w(t,Pn(e)),t}function Ln(e,{target:t,replace:n,unstable_mask:r,state:i,preventScrollReset:a,relative:o,viewTransition:s,unstable_defaultShouldRevalidate:c,unstable_useTransitions:l}={}){let u=dt(),d=ct(),f=pt(e,{relative:o});return x.useCallback(p=>{if(Jt(p,t)){p.preventDefault();let t=n===void 0?re(d)===re(f):n,m=()=>u(e,{replace:t,unstable_mask:r,state:i,preventScrollReset:a,relative:o,viewTransition:s,unstable_defaultShouldRevalidate:c});l?x.startTransition(()=>m()):m()}},[d,u,f,n,r,i,t,e,a,o,s,c,l])}var Rn=0,zn=()=>`__${String(++Rn)}__`;function Bn(){let{router:e}=Fn(`useSubmit`),{basename:t}=x.useContext(Ze),n=Ot(),r=e.fetch,i=e.navigate;return x.useCallback(async(e,a={})=>{let{action:o,method:s,encType:c,formData:l,body:u}=$t(e,t);a.navigate===!1?await r(a.fetcherKey||zn(),n,a.action||o,{unstable_defaultShouldRevalidate:a.unstable_defaultShouldRevalidate,preventScrollReset:a.preventScrollReset,formData:l,body:u,formMethod:a.method||s,formEncType:a.encType||c,flushSync:a.flushSync}):await i(a.action||o,{unstable_defaultShouldRevalidate:a.unstable_defaultShouldRevalidate,preventScrollReset:a.preventScrollReset,formData:l,body:u,formMethod:a.method||s,formEncType:a.encType||c,replace:a.replace,state:a.state,fromRouteId:n,flushSync:a.flushSync,viewTransition:a.viewTransition})},[r,i,t,n])}function Vn(e,{relative:t}={}){let{basename:n}=x.useContext(Ze),r=x.useContext($e);w(r,`useFormAction must be used inside a RouteContext`);let[i]=r.matches.slice(-1),a={...pt(e||`.`,{relative:t})},o=ct();if(e==null){a.search=o.search;let e=new URLSearchParams(a.search),t=e.getAll(`index`);if(t.some(e=>e===``)){e.delete(`index`),t.filter(e=>e).forEach(t=>e.append(`index`,t));let n=e.toString();a.search=n?`?${n}`:``}}return(!e||e===`.`)&&i.route.index&&(a.search=a.search?a.search.replace(/^\?/,`?index&`):`?index`),n!==`/`&&(a.pathname=a.pathname===`/`?n:Me([n,a.pathname])),re(a)}var Hn=`react-router-scroll-positions`,Un={};function Wn(e,t,n,r){let i=null;return r&&(i=r(n===`/`?e:{...e,pathname:Ce(e.pathname,n)||e.pathname},t)),i??=e.key,i}function Gn({getKey:e,storageKey:t}={}){let{router:n}=Fn(`useScrollRestoration`),{restoreScrollPosition:r,preventScrollReset:i}=In(`useScrollRestoration`),{basename:a}=x.useContext(Ze),o=ct(),s=At(),c=kt();x.useEffect(()=>(window.history.scrollRestoration=`manual`,()=>{window.history.scrollRestoration=`auto`}),[]),Kn(x.useCallback(()=>{if(c.state===`idle`){let t=Wn(o,s,a,e);Un[t]=window.scrollY}try{sessionStorage.setItem(t||Hn,JSON.stringify(Un))}catch(e){T(!1,`Failed to save scroll positions in sessionStorage, <ScrollRestoration /> will not work properly (${e}).`)}window.history.scrollRestoration=`auto`},[c.state,e,a,o,s,t])),typeof document<`u`&&(x.useLayoutEffect(()=>{try{let e=sessionStorage.getItem(t||Hn);e&&(Un=JSON.parse(e))}catch{}},[t]),x.useLayoutEffect(()=>{let t=n?.enableScrollRestoration(Un,()=>window.scrollY,e?(t,n)=>Wn(t,n,a,e):void 0);return()=>t&&t()},[n,a,e]),x.useLayoutEffect(()=>{if(r!==!1){if(typeof r==`number`){window.scrollTo(0,r);return}try{if(o.hash){let e=document.getElementById(decodeURIComponent(o.hash.slice(1)));if(e){e.scrollIntoView();return}}}catch{T(!1,`"${o.hash.slice(1)}" is not a decodable element ID. The view will not scroll to it.`)}i!==!0&&window.scrollTo(0,0)}},[o,r,i]))}function Kn(e,t){let{capture:n}=t||{};x.useEffect(()=>{let t=n==null?void 0:{capture:n};return window.addEventListener(`pagehide`,e,t),()=>{window.removeEventListener(`pagehide`,e,t)}},[e,n])}function qn(e,{relative:t}={}){let n=x.useContext(Je);w(n!=null,"`useViewTransitionState` must be used within `react-router-dom`'s `RouterProvider`.  Did you accidentally import `RouterProvider` from `react-router`?");let{basename:r}=Fn(`useViewTransitionState`),i=pt(e,{relative:t});if(!n.isTransitioning)return!1;let a=Ce(n.currentLocation.pathname,r)||n.currentLocation.pathname,o=Ce(n.nextLocation.pathname,r)||n.nextLocation.pathname;return be(i.pathname,o)!=null||be(i.pathname,a)!=null}var Jn=o((e=>{var t=Symbol.for(`react.transitional.element`),n=Symbol.for(`react.fragment`);function r(e,n,r){var i=null;if(r!==void 0&&(i=``+r),n.key!==void 0&&(i=``+n.key),`key`in n)for(var a in r={},n)a!==`key`&&(r[a]=n[a]);else r=n;return n=r.ref,{$$typeof:t,type:e,key:i,ref:n===void 0?null:n,props:r}}e.Fragment=n,e.jsx=r,e.jsxs=r})),Yn=o(((e,t)=>{t.exports=Jn()})),Xn=c(g(),1),A=Yn(),Zn=`CyManager Toolkit v1.0.2`;function Qn(){return(0,A.jsxs)(`header`,{className:`topbar`,children:[(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`p`,{className:`eyebrow`,children:`CyManager Toolkit`}),(0,A.jsx)(`h1`,{className:`topbar-title`,children:`Assistant club`})]}),(0,A.jsx)(`div`,{className:`topbar-actions`,children:(0,A.jsx)(`span`,{className:`status-badge`,children:Zn})})]})}var $n=[{to:`/`,label:`Accueil`},{to:`/guide`,label:`Guide débutant`},{to:`/faq`,label:`FAQ`},{to:`/effectif`,label:`Effectif`},{to:`/entrainement`,label:`Entraînement`},{to:`/courses`,label:`Courses`},{to:`/calendrier`,label:`Calendrier`},{to:`/resultats`,label:`Résultats`},{to:`/classement`,label:`Classement`},{to:`/todo`,label:`To-do`},{to:`/parametres`,label:`Paramètres`}];function er(){return(0,A.jsxs)(`aside`,{className:`sidebar`,children:[(0,A.jsxs)(`div`,{className:`sidebar-brand`,children:[(0,A.jsx)(`div`,{className:`sidebar-logo`,children:`CM`}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`strong`,{children:`CyManager`}),(0,A.jsx)(`p`,{className:`sidebar-subtitle`,children:`Gestion club`})]})]}),(0,A.jsx)(`nav`,{className:`sidebar-nav`,children:$n.map(e=>(0,A.jsx)(jn,{to:e.to,end:e.to===`/`,className:({isActive:e})=>e?`nav-link active`:`nav-link`,children:e.label},e.to))})]})}function tr(){return(0,A.jsxs)(`footer`,{className:`footer`,children:[(0,A.jsx)(`span`,{children:`CyManager Toolkit`}),(0,A.jsx)(`span`,{children:`React + Vite + TypeScript`})]})}function nr({children:e}){return(0,A.jsxs)(`div`,{className:`app-shell`,children:[(0,A.jsx)(er,{}),(0,A.jsxs)(`div`,{className:`app-main`,children:[(0,A.jsx)(Qn,{}),(0,A.jsx)(`main`,{className:`page-content`,children:e}),(0,A.jsx)(tr,{})]})]})}function rr({title:e,subtitle:t}){return(0,A.jsxs)(`div`,{className:`page-title-wrap`,children:[(0,A.jsx)(`h2`,{className:`page-title`,children:e}),t?(0,A.jsx)(`p`,{className:`page-subtitle`,children:t}):null]})}function j({title:e,children:t,style:n}){return(0,A.jsxs)(`section`,{className:`card`,style:n,children:[` `,e?(0,A.jsx)(`h3`,{className:`card-title`,children:e}):null,t]})}function ir(e){let t=e.replace(/[^\d-]/g,``);return t?Number.parseInt(t,10):0}function ar(e){return new Intl.NumberFormat(`fr-FR`).format(e)}function or(e){return new Intl.NumberFormat(`fr-FR`,{style:`currency`,currency:`EUR`,maximumFractionDigits:0}).format(e)}function sr({riders:e,clubSettings:t}){let n=e.filter(e=>e.category===`Pro`).length,r=e.filter(e=>e.category===`U25`).length,i=e.filter(e=>e.category===`U21`).length,a=e.reduce((e,t)=>e+t.salaryWeekly,0),o=e.reduce((e,t)=>e+t.value,0),s=t.financialBalance;return(0,A.jsx)(j,{title:`Résumé club`,children:(0,A.jsxs)(`div`,{className:`dashboard-lines`,children:[(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Effectif :`}),` `,e.length,` coureur(s)`]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Répartition :`}),` Pros `,n,` · U25 `,r,` · U21 `,i]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Masse salariale :`}),` `,ar(a),` €`]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Valeur totale :`}),` `,or(o)]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Solde financier :`}),` `,or(s)]})]})})}var cr={headOffice:`Siège social`,trainingCenter:`Centre d'entraînement`,formationCenter:`Centre de formation`,shop:`Boutique`};function lr({settings:e}){return(0,A.jsx)(j,{title:`Installations`,children:(0,A.jsx)(`div`,{className:`dashboard-lines`,children:Object.keys(cr).map(t=>{let n=e.facilities[t];return(0,A.jsxs)(`p`,{children:[(0,A.jsxs)(`strong`,{children:[cr[t],` :`]}),` niv. `,n.level,n.upgradeInProgress?` → travaux vers ${n.targetLevel??`?`}`:` · pas de travaux`]},t)})})})}function ur({race:e,selected:t}){return(0,A.jsx)(j,{title:`Dernière course analysée`,children:e?(0,A.jsxs)(`div`,{className:`dashboard-lines`,children:[(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Nom :`}),` `,e.name]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Type :`}),` `,e.raceType===`etapes`?`Course à étapes`:`Course simple`]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Profil :`}),` `,e.detectedProfile]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Distance :`}),` `,e.distanceKm>0?`${e.distanceKm} km`:`Non détectée`]}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`p`,{className:`field-label`,children:`Top 3 proposés`}),t.length>0?(0,A.jsx)(`ol`,{className:`compact-list`,children:t.slice(0,3).map(e=>(0,A.jsxs)(`li`,{children:[e.riderName,` — `,e.role]},e.riderId))}):(0,A.jsx)(`p`,{className:`muted`,children:`Aucune sélection disponible.`})]})]}):(0,A.jsx)(`p`,{children:`Aucune course analysée pour le moment.`})})}function dr(e){return e===`haute`?3:e===`moyenne`?2:1}function fr({items:e}){let t=e.filter(e=>e.status===`todo`).sort((e,t)=>dr(t.priority)-dr(e.priority)).slice(0,5);return(0,A.jsx)(j,{title:`Tâches urgentes`,children:t.length>0?(0,A.jsx)(`ul`,{className:`clean-list`,children:t.map(e=>(0,A.jsxs)(`li`,{children:[(0,A.jsx)(`strong`,{children:e.title}),e.details?` — ${e.details}`:``]},e.id))}):(0,A.jsx)(`p`,{children:`Aucune tâche urgente.`})})}function pr({plan:e}){return(0,A.jsx)(j,{title:`Entraînement conseillé`,children:e.selectedTypes.length>0?(0,A.jsxs)(`div`,{className:`dashboard-lines`,children:[(0,A.jsx)(`div`,{className:`training-chip-list`,children:e.selectedTypes.map(e=>(0,A.jsx)(`span`,{className:`training-chip`,children:e},e))}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Score global :`}),` `,e.individualAdvices?.reduce((e,t)=>e+(t.urgencyScore||0),0)]}),(0,A.jsx)(`ul`,{className:`clean-list`,children:e.rationale.slice(0,3).map((e,t)=>(0,A.jsx)(`li`,{children:e},`${e}-${t}`))})]}):(0,A.jsx)(`p`,{children:`Aucun plan calculé.`})})}function mr(e,t){return Number((e.flat*t.flat+e.hill*t.hill+e.mountain*t.mountain+e.sprint*t.sprint+e.cobble*t.cobble+e.timeTrial*t.timeTrial+e.breakaway*t.breakaway+e.endurance*t.endurance+e.resistance*t.resistance+e.recovery*t.recovery+e.stageRace*t.stageRace).toFixed(2))}function hr(e,t){return[[`Plaine`,e.flat,t.weights.flat],[`Vallon`,e.hill,t.weights.hill],[`Montagne`,e.mountain,t.weights.mountain],[`Sprint`,e.sprint,t.weights.sprint],[`Pavé`,e.cobble,t.weights.cobble],[`CLM`,e.timeTrial,t.weights.timeTrial],[`Baroudeur`,e.breakaway,t.weights.breakaway],[`Endurance`,e.endurance,t.weights.endurance],[`Résistance`,e.resistance,t.weights.resistance],[`Récupération`,e.recovery,t.weights.recovery],[`CAE`,e.stageRace,t.weights.stageRace]].filter(([,,e])=>Number(e)>0).map(([e,t,n])=>({label:e,contribution:Number(t)*Number(n),stat:Number(t)})).sort((e,t)=>t.contribution-e.contribution).slice(0,3).map(e=>`${e.label} ${e.stat}`)}function gr(e,t,n){return e===0?`Leader`:(n.raceType===`etapes`&&(t.stageRace>=65||t.recovery>=75||t.timeTrial),e<=2?`Électron libre`:`Équipier`)}function _r(e,t){let n=e.map(e=>{let n=mr(e,t.weights),r=hr(e,t);return{riderId:e.id,riderName:e.name,riderForm:e.form,riderCategory:e.category,score:n,role:`Remplaçant`,reasons:r}}).sort((e,t)=>t.score-e.score),r=n.filter(e=>e.riderCategory===`Pro`),i=n.filter(e=>e.riderCategory===`U25`||e.riderCategory===`U21`),a=r.slice(0,7);if(a.length<7){let e=7-a.length;a=a.concat(i.slice(0,e))}else{let e=a[a.length-1]?.score??-1/0,t=i.filter(t=>t.score>e);t.length>0&&(a=a.concat(t).sort((e,t)=>t.score-e.score).slice(0,7))}a=a.map((n,r)=>{let i=e.find(e=>e.id===n.riderId);return{...n,role:gr(r,i,t)}});let o=new Set(a.map(e=>e.riderId)),s=n.filter(e=>!o.has(e.riderId)).slice(0,2).map(e=>({...e,role:`Remplaçant`}));return{race:t,ranking:n,selected:a,substitutes:s}}function vr(e){return[{label:`Plaine`,value:e.flat},{label:`Vallon`,value:e.hill},{label:`Sprint`,value:e.sprint},{label:`Montagne`,value:e.mountain},{label:`Pavé`,value:e.cobble},{label:`CLM`,value:e.timeTrial},{label:`Baroudeur`,value:e.breakaway},{label:`Course à étapes`,value:e.stageRace}].sort((e,t)=>t.value-e.value)[0]}function yr(e){return e.endurance+e.resistance+e.recovery}function br(e){return e<=70?200:e<=80?240:e<=85?280:300}function xr(e){switch(e){case`D1`:case`D2`:return 25;case`D3`:case`D4`:return 15;case`D5`:return 5;case`D6`:return 0;case`D7`:case`D8`:case`D9`:return-5;default:return 0}}function Sr(e,t){let n=br(e)+xr(t.targetDivision);return Math.max(180,n)}function Cr(e,t,n){return e.category===`U21`&&t>20||t>30?`Foncier très prioritaire`:t>10?`Foncier prioritaire`:t>0?`Équilibre possible`:n.salaryTolerance===`prudente`&&e.salaryWeekly>=15e3?`Optimisation économique`:e.category===`U21`&&t<=0?`Équilibre possible`:`Primaire prioritaire`}function wr(e,t){return e.salaryWeekly>=18e3||t>=82?`Fort`:e.salaryWeekly>=9e3||t>=74?`Moyen`:`Faible`}function Tr(e,t){return t===`Montagne`||t===`Course à étapes`?e.stageRace>=e.mountain?`Course à étapes`:`Montagne`:t===`CLM`||t===`Pavé`?`Rouleur`:`Endurance`}function Er(e){switch(e){case`Plaine`:return`Plaine`;case`Vallon`:return`Vallon`;case`Sprint`:return`Sprint`;case`Montagne`:return`Montagne`;case`Pavé`:return`Pavé`;case`CLM`:return`CLM`;case`Baroudeur`:return`Baroudeur`;case`Course à étapes`:return`Course à étapes`;default:return`Endurance`}}function Dr(e,t,n,r){return n===`Foncier très prioritaire`||n===`Foncier prioritaire`?Tr(e,t):n===`Optimisation économique`?t===`Montagne`||t===`Course à étapes`?`Course à étapes`:t===`CLM`?`Rouleur`:`Endurance`:n===`Équilibre possible`&&r===`Fort`?Tr(e,t):Er(t)}function Or(e,t,n,r,i,a){switch(t){case`Foncier très prioritaire`:return`${e.category} avec foncier ${n} trop bas pour soutenir une primaire ${i.label} à ${i.value}. Cible recommandée : ${r}.`;case`Foncier prioritaire`:return`Le foncier ${n} reste en retard sur le seuil conseillé ${r}. Il vaut mieux consolider la base avant de pousser davantage la primaire.`;case`Équilibre possible`:return`Le foncier ${n} est proche de la cible ${r}. Tu peux encore renforcer la base ou commencer à pousser la primaire selon ta stratégie.`;case`Optimisation économique`:return`La primaire monte le salaire trop vite ici. Risque salarial ${a.toLowerCase()} à fort. Mieux vaut optimiser le profil sans gonfler la masse salariale.`;default:return`Le foncier ${n} est suffisant pour la cible ${r}. La primaire ${i.label} peut être priorisée.`}}function kr(e,t){switch(e){case`Foncier très prioritaire`:return 100+t;case`Foncier prioritaire`:return 80+t;case`Optimisation économique`:return 65;case`Primaire prioritaire`:return 55;default:return 50}}function Ar(e,t){let n=vr(e),r=yr(e),i=Sr(n.value,t),a=i-r,o=Cr(e,a,t),s=wr(e,n.value),c=Dr(e,n.label,o,s),l=Or(e,o,r,i,n,s),u=kr(o,a);return{riderId:e.id,riderName:e.name,riderCategory:e.category,riderAge:`${e.ageYears}a ${e.ageWeeks}s`,dominantPrimary:n.label,dominantPrimaryValue:n.value,currentFoncier:r,targetFoncier:i,foncierGap:a,priority:o,idealTraining:c,suggestedTraining:c,salaryRisk:s,urgencyScore:u,reason:l,reassigned:!1}}function jr(e){let t=new Map;return e.forEach(e=>{t.set(e.idealTraining,(t.get(e.idealTraining)??0)+1)}),{selectedTypes:Array.from(t.entries()).sort((e,t)=>t[1]-e[1]).slice(0,3).map(([e])=>e)}}function Mr(e,t){if(t.includes(e.idealTraining))return e.idealTraining;let n=[`Endurance`,`Rouleur`,`Course à étapes`,`Montagne`];if(e.priority===`Foncier très prioritaire`||e.priority===`Foncier prioritaire`||e.priority===`Optimisation économique`){let e=t.find(e=>n.includes(e));if(e)return e}let r={Plaine:[`Plaine`,`Flandrien`,`Endurance`,`Rouleur`],Vallon:[`Vallon`,`Baroudeur`,`Endurance`,`Montagne`],Sprint:[`Sprint`,`Plaine`,`Vallon`,`Endurance`],Montagne:[`Montagne`,`Course à étapes`,`Endurance`,`Rouleur`],Pavé:[`Pavé`,`Flandrien`,`Rouleur`,`Endurance`],CLM:[`CLM`,`Rouleur`,`Endurance`,`Plaine`],Baroudeur:[`Baroudeur`,`Vallon`,`Endurance`,`Montagne`],"Course à étapes":[`Course à étapes`,`Montagne`,`Rouleur`,`Endurance`]}[e.dominantPrimary]??[`Endurance`];for(let e of r)if(t.includes(e))return e;return t[0]}function Nr(e,t){return e.map(e=>{let n=Mr(e,t);return{...e,suggestedTraining:n,reassigned:n!==e.idealTraining}})}function Pr(e){let t=new Map;return e.forEach(e=>{t.set(e.suggestedTraining,(t.get(e.suggestedTraining)??0)+1)}),Array.from(t.entries()).map(([e,t])=>({training:e,count:t})).sort((e,t)=>t.count-e.count)}function Fr(e,t){if(e.length===0)return{selectedTypes:[],rationale:[`Aucun coureur disponible pour calculer un plan.`],individualAdvices:[],coverageCounts:[]};let n=e.map(e=>Ar(e,t)).sort((e,t)=>t.urgencyScore-e.urgencyScore),r=jr(n),i=Nr(n,r.selectedTypes),a=Pr(i),o=i.filter(e=>e.reassigned).length,s=[`Le raisonnement part d'abord de chaque coureur individuellement, puis seulement ensuite de la synthèse hebdo.`,`Le foncier est calculé via endurance + résistance + récupération.`,`La synthèse hebdo est ensuite limitée à 3 entraînements autorisés pour une cible ${t.targetDivision}.`,`${o} coureur(s) ont été rabattus sur un des 3 entraînements retenus.`];return{selectedTypes:r.selectedTypes,rationale:s,individualAdvices:i,coverageCounts:a}}var Ir=`cymanager:race-setup`;function Lr(){try{let e=localStorage.getItem(Ir);if(!e)return{};let t=JSON.parse(e);return!t||typeof t!=`object`?{}:t}catch(e){return console.error(`Erreur de lecture localStorage race setup`,e),{}}}function Rr(e){try{localStorage.setItem(Ir,JSON.stringify(e))}catch(e){console.error(`Erreur d'écriture localStorage race setup`,e)}}function zr(e){return Lr()[e]??{}}function Br(e,t){let n=Lr();n[e]=t,Rr(n)}var Vr=`cymanager:riders`;function Hr(){try{let e=localStorage.getItem(Vr);if(!e)return[];let t=JSON.parse(e);return Array.isArray(t)?t:[]}catch(e){return console.error(`Erreur de lecture localStorage riders`,e),[]}}function Ur(e){try{localStorage.setItem(Vr,JSON.stringify(e))}catch(e){console.error(`Erreur d'écriture localStorage riders`,e)}}var Wr=`cymanager:club-settings`;function Gr(){return new Date().toISOString()}var Kr={facilities:{headOffice:{level:1,upgradeInProgress:!1,targetLevel:null,upgradeStartedAt:Gr(),notes:``},trainingCenter:{level:1,upgradeInProgress:!0,targetLevel:2,upgradeStartedAt:Gr(),notes:`Travaux lancés vers le niveau 2.`},formationCenter:{level:1,upgradeInProgress:!1,targetLevel:null,upgradeStartedAt:Gr(),notes:`Nécessite un centre d'entraînement niveau 4.`},shop:{level:1,upgradeInProgress:!1,targetLevel:null,upgradeStartedAt:Gr(),notes:``}},globalNotes:``,currentDivision:`D9`,targetDivision:`D8`,divisionPro:`D9`,divisionU25:`D9`,divisionU21:`D9`,clubObjective:`mixte`,salaryTolerance:`normale`,financialBalance:1e6};function qr(){try{let e=localStorage.getItem(Wr);if(!e)return Kr;let t=JSON.parse(e);return!t||typeof t!=`object`?Kr:{...Kr,...t,facilities:{...Kr.facilities,...t.facilities??{},headOffice:{...Kr.facilities.headOffice,...t.facilities?.headOffice??{}},trainingCenter:{...Kr.facilities.trainingCenter,...t.facilities?.trainingCenter??{}},formationCenter:{...Kr.facilities.formationCenter,...t.facilities?.formationCenter??{}},shop:{...Kr.facilities.shop,...t.facilities?.shop??{}}},divisionPro:t.divisionPro??t.currentDivision??`D9`,divisionU25:t.divisionU25??t.currentDivision??`D9`,divisionU21:t.divisionU21??t.currentDivision??`D9`}}catch(e){return console.error(`Erreur de lecture localStorage club settings`,e),Kr}}function Jr(e){try{localStorage.setItem(Wr,JSON.stringify(e))}catch(e){console.error(`Erreur d'écriture localStorage club settings`,e)}}var Yr=`cymanager:manual-todos`,Xr=`cymanager:todo-status`;function Zr(){try{let e=localStorage.getItem(Yr);if(!e)return[];let t=JSON.parse(e);return Array.isArray(t)?t:[]}catch(e){return console.error(`Erreur de lecture localStorage manual todos`,e),[]}}function Qr(e){try{localStorage.setItem(Yr,JSON.stringify(e))}catch(e){console.error(`Erreur d'écriture localStorage manual todos`,e)}}function $r(){try{let e=localStorage.getItem(Xr);if(!e)return{};let t=JSON.parse(e);return!t||typeof t!=`object`?{}:t}catch(e){return console.error(`Erreur de lecture localStorage todo statuses`,e),{}}}function ei(e){try{localStorage.setItem(Xr,JSON.stringify(e))}catch(e){console.error(`Erreur d'écriture localStorage todo statuses`,e)}}var ti={headOffice:`Siège social`,trainingCenter:`Centre d'entraînement`,formationCenter:`Centre de formation`,shop:`Boutique`};function M(e,t,n,r,i){return{id:e,title:t,details:n,source:`auto`,status:`todo`,priority:r,category:i,createdAt:new Date().toISOString()}}function ni(e){if(!e)return null;let t=new Date(e).getTime();if(Number.isNaN(t))return null;let n=Date.now()-t;return Math.floor(n/(1e3*60*60*24))}function ri({riders:e,trainingExists:t,race:n,raceSetupCount:r,clubSettings:i}){let a=[];if(e.length===0)a.push(M(`auto-roster-empty`,`Importer l'effectif`,`Aucun coureur n'est disponible dans l'application.`,`haute`,`effectif`));else{let t=e.filter(e=>e.category===`U21`||e.category===`U25`).length;a.push(M(`auto-roster-check`,`Vérifier l'effectif`,`${e.length} coureur(s) chargés, dont ${t} jeune(s). Pense à mettre à jour la forme et les mouvements.`,`moyenne`,`effectif`))}return t?a.push(M(`auto-training-review`,`Valider le plan d'entraînement`,`Vérifie que le trio d'entraînement reste cohérent avec l'objectif de la semaine.`,`moyenne`,`entrainement`)):a.push(M(`auto-training-missing`,`Définir l'entraînement de la semaine`,`Aucun plan d'entraînement n'a encore été calculé ou confirmé.`,`haute`,`entrainement`)),n?(a.push(M(`auto-race-reviewed`,`Contrôler la sélection de course`,`La course "${n.name}" a été analysée. Vérifie la sélection proposée.`,`moyenne`,`courses`)),r<7?a.push(M(`auto-race-setup-missing`,`Finaliser les réglages de course`,`Seulement ${r} réglage(s) de course enregistré(s) pour les 7 coureurs.`,`haute`,`courses`)):a.push(M(`auto-race-setup-done`,`Relire rôles et pourcentages`,`Les 7 coureurs ont un réglage enregistré. Vérifie une dernière fois rôles, pourcentages et échappée mat.`,`moyenne`,`courses`))):a.push(M(`auto-race-missing`,`Analyser la prochaine course`,`Aucune course n'a encore été collée et analysée.`,`haute`,`courses`)),Object.keys(i.facilities).forEach(e=>{let t=i.facilities[e],n=ti[e];if(t.upgradeInProgress){let r=ni(t.upgradeStartedAt),i=r===null?`date inconnue`:`lancé il y a ${r} jour(s)`;a.push(M(`auto-facility-upgrade-${e}`,`Surveiller les travaux : ${n}`,`${n} en travaux vers le niveau ${t.targetLevel??`?`} (${i}).`,`haute`,`installations`))}else a.push(M(`auto-facility-next-step-${e}`,`Planifier ${n}`,`${n} actuellement niveau ${t.level}.`,e===`trainingCenter`||e===`formationCenter`?`moyenne`:`basse`,`installations`));t.notes.trim()&&a.push(M(`auto-facility-notes-${e}`,`Relire les notes : ${n}`,`Des notes sont enregistrées pour ${n}.`,`basse`,`installations`))}),i.globalNotes.trim()&&a.push(M(`auto-settings-global-notes`,`Relire les notes globales du club`,`Des notes globales sont enregistrées dans les paramètres.`,`basse`,`general`)),a}var ii={Valeur:`value`,Salaire:`salaryWeekly`,Nationalité:`nationality`,Age:`age`,Forme:`form`,Blessure:`injury`,Catégorie:`category`,Endurance:`endurance`,Résistance:`resistance`,Récupération:`recovery`,Plaine:`flat`,Vallon:`hill`,Sprint:`sprint`,Pavé:`cobble`,Agilité:`agility`,Baroudeur:`breakaway`,Montagne:`mountain`,Descente:`downhill`,"Contre-la-montre":`timeTrial`,"Course à étapes":`stageRace`,Expérience:`experience`,Total:`total`};function ai(e){return e.normalize(`NFD`).replace(/[\u0300-\u036f]/g,``).toLowerCase().replace(/[^a-z0-9]+/g,`-`).replace(/^-+|-+$/g,``)}function oi(e){return{id:ai(e),name:e,value:0,salaryWeekly:0,nationality:``,ageYears:0,ageWeeks:0,form:0,injury:``,category:`Pro`,endurance:0,resistance:0,recovery:0,flat:0,hill:0,sprint:0,cobble:0,agility:0,breakaway:0,mountain:0,downhill:0,timeTrial:0,stageRace:0,experience:0,total:0,updatedAt:new Date().toISOString()}}function si(e){let t=e.match(/(\d+)\s+ans?\s+(\d+)\s+semaines?/i);return t?{ageYears:Number.parseInt(t[1],10),ageWeeks:Number.parseInt(t[2],10)}:{ageYears:0,ageWeeks:0}}function ci(e){return e.includes(`U21`)?`U21`:e.includes(`U25`)?`U25`:`Pro`}function li(e){return!(!e.trim()||e.includes(`	`)||Object.keys(ii).some(t=>e.startsWith(t)))}function ui(e){return e.trim().split(/\n\s*\n/g).map(e=>e.trim()).filter(Boolean)}function di(e){let t=e.replace(/\r/g,``).split(`
+`).map(e=>e.trim()).filter(Boolean),n=[];for(let e of t){if(li(e)){n.push([`__NAME__`,e]);continue}let t=e.split(`	`).map(e=>e.trim()).filter(Boolean);if(t.length>=2){for(let e=0;e<t.length;e+=2){let r=t[e],i=t[e+1];r&&i&&n.push([r,i])}continue}let r=e.match(/^(Valeur|Salaire|Nationalité|Age|Forme|Blessure|Catégorie|Endurance|Résistance|Récupération|Plaine|Vallon|Sprint|Pavé|Agilité|Baroudeur|Montagne|Descente|Contre-la-montre|Course à étapes|Expérience|Total)\s+(.+)$/);r&&n.push([r[1],r[2].trim()])}return n}function fi(e,t){let n=di(e),r=n.find(([e])=>e===`__NAME__`);if(!r)return null;let i=oi(r[1]);for(let[e,t]of n){if(e===`__NAME__`)continue;let n=ii[e];if(n){if(n===`age`){let e=si(t);i.ageYears=e.ageYears,i.ageWeeks=e.ageWeeks;continue}if(n===`category`){i.category=ci(t);continue}if(n===`nationality`||n===`injury`){i[n]=t;continue}if(n===`value`||n===`salaryWeekly`){i[n]=ir(t);continue}n===`name`||n===`ignore`||(i[n]=ir(t))}}return i.updatedAt=new Date().toISOString(),i.id||=`rider-${t+1}`,i}function pi(e){let t=e.trim();if(!t)return{riders:[],errors:[`Le texte collé est vide.`]};let n=ui(t),r=[],i=[];return n.forEach((e,t)=>{let n=fi(e,t);if(!n){i.push(`Bloc ${t+1} ignoré : nom de coureur introuvable.`);return}r.push(n)}),{riders:r,errors:i}}function mi(e,t){let n=new Map;for(let t of e)n.set(t.id,t);for(let e of t)n.set(e.id,e);return Array.from(n.values()).sort((e,t)=>e.name.localeCompare(t.name,`fr`))}var hi=pi(`
+Biassani Meriem
+Valeur	793 014€
+Salaire	12 117 € par semaine
+Nationalité	France France
+Age	28 ans 5 semaines
+Forme	100
+Blessure	Aucune
+Catégorie	Pro
+Endurance	73	Résistance	83	Récupération	74
+Plaine	72	Vallon	68	Sprint	68
+Pavé	69	Agilité	67	Baroudeur	70
+Montagne	66	Descente	65	Contre-la-montre	61
+Course à étapes	60	Expérience	31	Total	927
+
+Duboe Ziad
+Valeur	1 087 631€
+Salaire	48 880 € par semaine
+Nationalité	France France
+Age	31 ans 1 semaine
+Forme	100
+Blessure	Aucune
+Catégorie	Pro
+Endurance	75	Résistance	79	Récupération	88
+Plaine	79	Vallon	88	Sprint	74
+Pavé	28	Agilité	46	Baroudeur	69
+Montagne	86	Descente	61	Contre-la-montre	81
+Course à étapes	69	Expérience	47	Total	970
+
+Haar Nikolaus
+Valeur	142 041€
+Salaire	2 151 € par semaine
+Nationalité	France France
+Age	19 ans 10 semaines
+Forme	100
+Blessure	Aucune
+Catégorie	U21
+Endurance	54	Résistance	62	Récupération	54
+Plaine	54	Vallon	51	Sprint	50
+Pavé	51	Agilité	37	Baroudeur	46
+Montagne	48	Descente	44	Contre-la-montre	49
+Course à étapes	51	Expérience	3	Total	654
+
+Léon Daniel
+Valeur	385 657€
+Salaire	8 872 € par semaine
+Nationalité	France France
+Age	24 ans 2 semaines
+Forme	100
+Blessure	Aucune
+Catégorie	U25
+Endurance	67	Résistance	67	Récupération	70
+Plaine	67	Vallon	63	Sprint	71
+Pavé	38	Agilité	64	Baroudeur	58
+Montagne	65	Descente	50	Contre-la-montre	63
+Course à étapes	56	Expérience	7	Total	806
+
+Morales Marcos
+Valeur	546 885€
+Salaire	10 284 € par semaine
+Nationalité	France France
+Age	26 ans 3 semaines
+Forme	100
+Blessure	Aucune
+Catégorie	Pro
+Endurance	70	Résistance	70	Récupération	72
+Plaine	68	Vallon	62	Sprint	73
+Pavé	39	Agilité	68	Baroudeur	59
+Montagne	67	Descente	54	Contre-la-montre	63
+Course à étapes	65	Expérience	22	Total	852
+
+Nagy Yann
+Valeur	806 823€
+Salaire	14 701 € par semaine
+Nationalité	France France
+Age	28 ans 7 semaines
+Forme	100
+Blessure	Aucune
+Catégorie	Pro
+Endurance	75	Résistance	72	Récupération	80
+Plaine	65	Vallon	69	Sprint	71
+Pavé	41	Agilité	70	Baroudeur	64
+Montagne	75	Descente	62	Contre-la-montre	75
+Course à étapes	64	Expérience	38	Total	921
+
+Teles Benjamin
+Valeur	384 488€
+Salaire	8 745 € par semaine
+Nationalité	France France
+Age	22 ans 3 semaines
+Forme	100
+Blessure	Aucune
+Catégorie	U25
+Endurance	67	Résistance	73	Récupération	64
+Plaine	69	Vallon	63	Sprint	58
+Pavé	65	Agilité	53	Baroudeur	55
+Montagne	63	Descente	47	Contre-la-montre	54
+Course à étapes	62	Expérience	8	Total	801
+
+Tiget Ziad
+Valeur	537 964€
+Salaire	11 369 € par semaine
+Nationalité	France France
+Age	26 ans 5 semaines
+Forme	100
+Blessure	Aucune
+Catégorie	Pro
+Endurance	72	Résistance	71	Récupération	73
+Plaine	71	Vallon	70	Sprint	73
+Pavé	38	Agilité	66	Baroudeur	59
+Montagne	68	Descente	45	Contre-la-montre	68
+Course à étapes	59	Expérience	21	Total	854
+
+Tufo Morris
+Valeur	682 680€
+Salaire	18 741 € par semaine
+Nationalité	France France
+Age	30 ans 4 semaines
+Forme	100
+Blessure	Aucune
+Catégorie	Pro
+Endurance	77	Résistance	79	Récupération	64
+Plaine	73	Vallon	76	Sprint	80
+Pavé	36	Agilité	72	Baroudeur	65
+Montagne	58	Descente	50	Contre-la-montre	67
+Course à étapes	73	Expérience	55	Total	925
+
+Tuquet Jens
+Valeur	177 355€
+Salaire	4 211 € par semaine
+Nationalité	France France
+Age	20 ans 6 semaines
+Forme	100
+Blessure	Aucune
+Catégorie	U21
+Endurance	59	Résistance	66	Récupération	60
+Plaine	57	Vallon	62	Sprint	58
+Pavé	30	Agilité	43	Baroudeur	49
+Montagne	55	Descente	42	Contre-la-montre	50
+Course à étapes	50	Expérience	7	Total	688
+`).riders;function gi(){try{let e=localStorage.getItem(`cymanager:last-race`);if(!e)return null;let t=JSON.parse(e);return!t||typeof t!=`object`?null:t}catch(e){return console.error(`Erreur de lecture localStorage last race`,e),null}}function _i(e){return e?`${e.name}::${e.raceType}::${e.distanceKm}::${e.detectedProfile}`:``}function vi(){let e=(0,x.useMemo)(()=>{let e=Hr();return e.length>0?e:hi},[]),t=(0,x.useMemo)(()=>qr(),[]),n=(0,x.useMemo)(()=>Fr(e,t),[e,t]),r=(0,x.useMemo)(()=>gi(),[]),i=(0,x.useMemo)(()=>_i(r),[r]),a=(0,x.useMemo)(()=>r?{rawText:``,name:r.name,raceType:r.raceType,distanceKm:r.distanceKm,detectedProfile:r.detectedProfile,weights:{flat:0,hill:0,mountain:0,sprint:0,cobble:0,timeTrial:0,breakaway:0,endurance:0,resistance:0,recovery:0,stageRace:0},summary:[],category:null}:null,[r]),o=(0,x.useMemo)(()=>a?_r(e,a).selected:[],[a,e]),s=(0,x.useMemo)(()=>{let n=Zr(),r=$r(),o=i?Object.keys(zr(i)).length:0;return[...ri({riders:e,trainingExists:e.length>0,race:a,raceSetupCount:o,clubSettings:t}),...n].map(e=>({...e,status:r[e.id]??e.status}))},[e,a,i,t]),c=t.divisionPro||`D9`,l=t.divisionU25||`D9`,u=t.divisionU21||`D9`,d=t.facilities.headOffice.level,f=t.facilities.shop.level,p=t.facilities.trainingCenter.level,m=t.facilities.formationCenter.level;return(0,A.jsxs)(`div`,{className:`page-stack`,children:[(0,A.jsx)(rr,{title:`Accueil`,subtitle:`Vue d'ensemble du club, des priorités et des décisions à prendre.`}),(0,A.jsx)(`div`,{style:{display:`flex`,flexWrap:`wrap`,gap:24,marginBottom:32,justifyContent:`center`},children:(0,A.jsxs)(`div`,{style:{background:`linear-gradient(90deg, #f7f7fa 60%, #e3e6f3 100%)`,borderRadius:16,boxShadow:`0 2px 12px #0001`,padding:`28px 36px`,minWidth:340,maxWidth:480,flex:1,display:`flex`,flexDirection:`column`,gap:10,color:`#222`},children:[(0,A.jsxs)(`div`,{style:{fontSize:22,fontWeight:700,color:`#2d2d4d`,marginBottom:6},children:[`Manager `,(0,A.jsx)(`span`,{style:{color:`#4b5fc0`},children:`Kritoff`})]}),(0,A.jsxs)(`div`,{style:{display:`flex`,flexWrap:`wrap`,gap:18,fontSize:15},children:[(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`b`,{children:`Pays`}),` : `,`France`]}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`b`,{children:`Id équipe`}),` : `,`55893`]})]}),(0,A.jsxs)(`div`,{style:{fontSize:15},children:[(0,A.jsx)(`b`,{children:`Gère son équipe depuis`}),` : `,`15/04/2026 (Saison 97)`]}),(0,A.jsxs)(`div`,{style:{display:`flex`,flexWrap:`wrap`,gap:18,fontSize:15},children:[(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`b`,{children:`Division Pro`}),` : `,c]}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`b`,{children:`U25`}),` : `,l]}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`b`,{children:`U21`}),` : `,u]})]}),(0,A.jsxs)(`div`,{style:{fontSize:15},children:[(0,A.jsx)(`b`,{children:`Installations`}),` : SS `,d,` - Bt `,f,` - CdE `,p,` - CdF `,m]})]})}),(0,A.jsxs)(`div`,{className:`dashboard-grid`,children:[(0,A.jsx)(sr,{riders:e,clubSettings:t}),(0,A.jsx)(pr,{plan:n}),(0,A.jsx)(ur,{race:a,selected:o}),(0,A.jsx)(fr,{items:s}),(0,A.jsx)(lr,{settings:t})]})]})}function yi({title:e,tone:t=`info`,children:n}){return(0,A.jsxs)(`div`,{className:`guide-callout guide-callout-${t}`,children:[(0,A.jsx)(`strong`,{children:e}),n]})}function bi({headers:e,rows:t}){return(0,A.jsx)(`div`,{className:`guide-table-wrap`,children:(0,A.jsxs)(`table`,{className:`guide-table`,children:[(0,A.jsx)(`thead`,{children:(0,A.jsx)(`tr`,{children:e.map(e=>(0,A.jsx)(`th`,{children:e},e))})}),(0,A.jsx)(`tbody`,{children:t.map((t,n)=>(0,A.jsx)(`tr`,{children:t.map((e,t)=>(0,A.jsx)(`td`,{children:e},`${n}-${t}`))},`${e[0]}-${n}`))})]})})}var xi=[{id:`premiers-reperes`,title:`1. Premiers repères`,kicker:`Base de départ`,summary:`Ce que tu reçois à la création, ce que cela implique et les premiers délais à avoir en tête.`,content:(0,A.jsxs)(A.Fragment,{children:[(0,A.jsx)(`p`,{children:`Quand tu crées ton équipe, tu démarres avec une base fonctionnelle, mais très loin d'un club déjà structuré. L'objectif des premières semaines n'est pas de tout optimiser en même temps. Il faut d'abord comprendre ce que tu as, sécuriser la trésorerie et éviter les dépenses qui te bloquent à moyen terme.`}),(0,A.jsx)(bi,{headers:[`Élément`,`Point de départ`,`Lecture utile`],rows:[[`Effectif`,`10 coureurs`,`De quoi courir rapidement, pas forcément de quoi former intelligemment.`],[`Siège social`,`Niveau 1`,`Revenu stable lié à la division et au classement.`],[`Boutique`,`Niveau 1`,`Revenu variable selon les résultats sportifs.`],[`Entraîneur`,`Cantonal`,`Suffisant pour survivre, insuffisant pour former sérieusement.`],[`Matériel`,`Vélos basiques`,`Pas une priorité de dépense au lancement.`],[`Trésorerie`,`1 000 000 €`,`Le capital de départ doit surtout servir à structurer le club.`]]}),(0,A.jsxs)(`div`,{className:`guide-subsection`,children:[(0,A.jsx)(`h4`,{children:`Ce qu'il faut retenir tout de suite`}),(0,A.jsxs)(`ul`,{className:`clean-list`,children:[(0,A.jsx)(`li`,{children:`Une saison dure 10 semaines, soit environ 5 saisons par an IRL.`}),(0,A.jsx)(`li`,{children:`Le sponsor verse encore 500 000 € après 10 semaines, puis 500 000 € après 20 semaines.`}),(0,A.jsx)(`li`,{children:`Le million de départ n'est pas un budget de luxe, c'est un budget de construction.`}),(0,A.jsx)(`li`,{children:`Tu peux compléter ton profil forum et y rattacher tes équipes, mais ce n'est pas le sujet urgent au lancement.`})]})]}),(0,A.jsx)(yi,{title:`Cap financier réel`,tone:`success`,children:(0,A.jsx)(`p`,{children:`En raisonnant proprement, ton démarrage ne repose pas seulement sur 1 000 000 €. Tu as aussi deux paliers sponsorisés qui sécurisent la transition vers les saisons 2 et 3. Cela permet de prioriser les installations plutôt que les achats impulsifs.`})})]})},{id:`lire-division`,title:`2. Lire l'interface et la division`,kicker:`Diagnostic`,summary:`Avant de toucher à l'entraînement ou au marché, il faut situer ton club dans son environnement.`,content:(0,A.jsxs)(A.Fragment,{children:[(0,A.jsx)(`p`,{children:`La pire erreur de départ consiste à juger son équipe dans l'absolu. Sur CyManager, ce qui compte est relatif: ta division, les catégories Pro/U25/U21, la qualité moyenne des concurrents et le type de calendrier que tu peux réellement exploiter.`}),(0,A.jsxs)(`div`,{className:`guide-subsection`,children:[(0,A.jsx)(`h4`,{children:`Le bloc d'infos à ne pas ignorer`}),(0,A.jsxs)(`ul`,{className:`clean-list`,children:[(0,A.jsx)(`li`,{children:`La saison et la semaine en cours te donnent le rythme économique et sportif.`}),(0,A.jsx)(`li`,{children:`Le nom d'équipe et l'ID servent d'identifiant dans tout l'écosystème du jeu.`}),(0,A.jsx)(`li`,{children:`La division affichée doit être lue séparément pour les catégories Pro, U25 et U21.`}),(0,A.jsx)(`li`,{children:`Le classement Pro, la caisse et le niveau des installations donnent immédiatement ton état réel.`})]})]}),(0,A.jsx)(bi,{headers:[`Page à consulter`,`Ce que tu y cherches`,`Décision que cela alimente`],rows:[[`Classement`,`Position de ton équipe et volume de points`,`Savoir si tu joues la survie, la progression ou déjà les primes.`],[`Statistiques division - valeur`,`Niveau moyen des effectifs`,`Mesurer l'écart de puissance brute.`],[`Statistiques division - salaires`,`Poids financier des équipes concurrentes`,`Éviter de te comparer à des clubs à structure bien supérieure.`],[`Top notes`,`Profils vraiment performants dans ta division`,`Identifier les caractéristiques qui décident les résultats locaux.`]]}),(0,A.jsx)(yi,{title:`Erreur classique`,tone:`warning`,children:(0,A.jsx)(`p`,{children:`Entraîner un coureur parce qu'une note paraît belle sur sa fiche sans avoir vérifié le niveau moyen de la division. Une progression utile en division 6 peut être totalement insuffisante en division 4, et inversement tu peux surpayer trop tôt une montée inutile.`})})]})},{id:`comprendre-coureur`,title:`3. Comprendre un coureur`,kicker:`Lecture de fiche`,summary:`Primaires, secondaires, foncier, BAR, CAE, XP: sans cette lecture, tout le reste est bancal.`,content:(0,A.jsxs)(A.Fragment,{children:[(0,A.jsxs)(`div`,{className:`guide-two-cols`,children:[(0,A.jsxs)(`div`,{className:`guide-callout`,children:[(0,A.jsx)(`strong`,{children:`Caractéristiques primaires`}),(0,A.jsxs)(`ul`,{className:`clean-list`,children:[(0,A.jsx)(`li`,{children:`Plaine`}),(0,A.jsx)(`li`,{children:`Vallon`}),(0,A.jsx)(`li`,{children:`Sprint`}),(0,A.jsx)(`li`,{children:`Montagne`}),(0,A.jsx)(`li`,{children:`Baroudeur`}),(0,A.jsx)(`li`,{children:`CLM`}),(0,A.jsx)(`li`,{children:`Course à étapes`})]})]}),(0,A.jsxs)(`div`,{className:`guide-callout`,children:[(0,A.jsx)(`strong`,{children:`Caractéristiques secondaires`}),(0,A.jsxs)(`ul`,{className:`clean-list`,children:[(0,A.jsx)(`li`,{children:`Endurance`}),(0,A.jsx)(`li`,{children:`Résistance`}),(0,A.jsx)(`li`,{children:`Récupération`}),(0,A.jsx)(`li`,{children:`Agilité`}),(0,A.jsx)(`li`,{children:`Descente`})]})]})]}),(0,A.jsx)(`p`,{children:`Le foncier est la somme endurance + résistance + récupération. Il intervient partout. Un coureur avec une primaire très brillante mais un foncier creux coûte vite cher et sous-performe régulièrement. BAR et CAE complètent la lecture: le premier aide en plaine, vallon et pavé, et facilite les échappées; le second pèse sur les courses à étapes. L'XP, elle, progresse principalement en course.`}),(0,A.jsx)(bi,{headers:[`Type de course`,`Noyau principal`,`Complément utile`],rows:[[`Plaine`,`Plaine + Endurance + Sprint`,`BAR et forme élevée améliorent le rendement.`],[`Vallon`,`Vallon + Résistance + Sprint`,`L'endurance pèse davantage au-delà de 200 km.`],[`Montagne`,`Montagne + Descente + Récupération`,`L'endurance compte sur les longues distances.`],[`CLM`,`CLM + Résistance + Récupération`,`Le profil réel peut faire varier l'importance d'autres notes.`],[`Pavé`,`Pavé + Résistance + Sprint`,`Plaine ou vallon peuvent peser selon le profil exact.`]]}),(0,A.jsxs)(`div`,{className:`guide-subsection`,children:[(0,A.jsx)(`h4`,{children:`Repères simples pour un débutant`}),(0,A.jsxs)(`ul`,{className:`clean-list`,children:[(0,A.jsx)(`li`,{children:`Un bon profil de départ a souvent un foncier entre 50 et 70 sur chaque note clé.`}),(0,A.jsx)(`li`,{children:`Des primaires entre 50 et 70, bien réparties, valent mieux qu'une note isolée trop haute.`}),(0,A.jsx)(`li`,{children:`La fiche d'un coureur doit toujours être lue avec son âge, sa forme, sa catégorie et son salaire.`}),(0,A.jsx)(`li`,{children:`Jusqu'à 19 ans et 10 semaines, tu peux encore renommer le coureur et ajuster sa présentation.`})]})]}),(0,A.jsx)(yi,{title:`Réflexe sain`,tone:`success`,children:(0,A.jsx)(`p`,{children:`Ne lis jamais une note seule. Lis toujours un triplet: profil de course, foncier, âge. C'est cette combinaison qui dit si un coureur est utile, formable, revendable ou simplement coûteux.`})})]})},{id:`tirage-initial`,title:`4. Auditer le tirage initial`,kicker:`Tri du roster`,summary:`Le tirage de base n'est pas fait pour être gardé tel quel. Il sert d'entrée de jeu à analyser et à hiérarchiser.`,content:(0,A.jsxs)(A.Fragment,{children:[(0,A.jsx)(`p`,{children:`Avec un effectif de départ, il faut identifier les coureurs qui vont servir à faire des points et des primes rapidement, ceux qui ont une vraie marge de progression et ceux que tu ne pourras pas former correctement avec tes moyens. Le tri se fait d'abord par âge, puis par foncier, puis par cohérence avec ta structure.`}),(0,A.jsxs)(`div`,{className:`guide-subsection`,children:[(0,A.jsx)(`h4`,{children:`Checklist de tri`}),(0,A.jsxs)(`ul`,{className:`clean-list`,children:[(0,A.jsx)(`li`,{children:`Garder les Pros corrects qui peuvent rapporter vite sur C1 et C2.`}),(0,A.jsx)(`li`,{children:`Évaluer les U25 et U21 en fonction de ta capacité réelle à les former.`}),(0,A.jsx)(`li`,{children:`Se méfier des jeunes intéressants sur le papier mais impossibles à développer sans CDE solide et entraîneur adapté.`}),(0,A.jsx)(`li`,{children:`Repérer les salaires déjà gênants par rapport au rendement attendu.`}),(0,A.jsx)(`li`,{children:`Comparer le potentiel de vente à l'intérêt sportif immédiat.`})]})]}),(0,A.jsxs)(`div`,{className:`guide-subsection`,children:[(0,A.jsx)(`h4`,{children:`ODC de base et réglages par défaut`}),(0,A.jsxs)(`ul`,{className:`clean-list`,children:[(0,A.jsx)(`li`,{children:`Pour une équipe débutante, l'électron libre reste souvent le rôle le plus propre par défaut.`}),(0,A.jsx)(`li`,{children:`Le pourcentage n'a de sens que pour les leaders et équipiers, pas pour l'électron libre.`}),(0,A.jsx)(`li`,{children:`Il vaut mieux retirer la logique d'échappée matinale sur des coureurs fragiles en forme.`}),(0,A.jsx)(`li`,{children:`Les ODC par défaut servent surtout de filet de sécurité en cas d'oubli d'inscription ou de tactique.`})]})]}),(0,A.jsx)(yi,{title:`Moment clé`,tone:`warning`,children:(0,A.jsx)(`p`,{children:`Ne vends pas et n'achète pas tout avant d'avoir au moins observé une première confrontation avec ta division. La première course te donne un repère concret sur l'écart réel entre tes coureurs et la concurrence.`})})]})},{id:`entrainement`,title:`5. Entraînement des premières semaines`,kicker:`Progression`,summary:`Le bon entraînement de départ cherche d'abord à rendre un effectif jouable, pas à fabriquer artificiellement une star.`,content:(0,A.jsxs)(A.Fragment,{children:[(0,A.jsx)(`p`,{children:`L'entraînement hebdomadaire est le cœur de la progression. Il a lieu dans la nuit du mercredi au jeudi. Avec un entraîneur cantonal et un centre d'entraînement faible, les gains sont modestes. C'est normal. Les premières semaines servent surtout à construire une base de foncier et à éviter les pertes de forme mal gérées.`}),(0,A.jsx)(bi,{headers:[`Entraînement`,`Primaire`,`Secondaires`],rows:[[`Foncier`,`Endurance`,`Récupération / Plaine`],[`Vallon`,`Vallon`,`Résistance / Sprint`],[`Sprint`,`Sprint`,`Résistance / Agilité`],[`CLM`,`CLM`,`Résistance / Récupération`],[`Plaine`,`Plaine`,`Sprint / Endurance`],[`Pavé`,`Pavé`,`Résistance / Agilité`],[`Montagne`,`Montagne`,`Récupération / Descente`],[`Baroudeur`,`BAR`,`Vallon / Descente`],[`Course à étapes`,`CAE`,`Montagne / Récupération`]]}),(0,A.jsx)(bi,{headers:[`Intensité`,`Effet sur la forme`,`Logique pour un débutant`],rows:[[`Tranquille`,`Forte récupération de forme, gains sportifs plus lents`,`Très utile pour des coureurs usés ou lors d'une semaine à risque.`],[`Normal`,`Compromis le plus propre`,`Réglage standard recommandé au démarrage.`],[`Intensif`,`Pénalise la forme`,`À éviter au lancement avec structure faible.`]]}),(0,A.jsx)(bi,{headers:[`Cible de foncier`,`Profil de coureur`,`Lecture pratique`],rows:[[`200 points`,`Primaires ≤ 70`,`Base correcte pour divisions basses.`],[`240 points`,`Primaires ≤ 80`,`Seuil raisonnable pour divisions 3 à 5.`],[`280 points`,`Primaires ≤ 85`,`Niveau déjà solide pour grimper.`],[`300 points`,`Primaires ≤ 90`,`Profil haut niveau, très coûteux à maintenir.`]]}),(0,A.jsxs)(`div`,{className:`guide-subsection`,children:[(0,A.jsx)(`h4`,{children:`Règles pratiques à ne pas oublier`}),(0,A.jsxs)(`ul`,{className:`clean-list`,children:[(0,A.jsx)(`li`,{children:`Choisis trois entraînements maximum et essaie de couvrir le plus de besoins individuels possibles.`}),(0,A.jsx)(`li`,{children:`Les blessés ne s'entraînent pas, seule leur forme remonte selon le couple entraîneur/CDE.`}),(0,A.jsx)(`li`,{children:`Les coureurs engagés sur un tour ne profitent pas normalement de l'entraînement hebdomadaire.`}),(0,A.jsx)(`li`,{children:`À partir de 32 ans, les caractéristiques baissent progressivement.`}),(0,A.jsx)(`li`,{children:`L'XP ne monte qu'avec les courses, pas avec l'entraînement.`})]})]}),(0,A.jsx)(yi,{title:`Ce qu'il faut viser`,tone:`warning`,children:(0,A.jsx)(`p`,{children:`Au départ, cherche surtout à corriger les trous qui empêchent un coureur de performer ou de progresser. Monter une primaire trop tôt fait grimper le salaire beaucoup plus vite que les secondaires et peut te bloquer financièrement.`})})]})},{id:`investissements`,title:`6. Utiliser le million intelligemment`,kicker:`Priorités budgétaires`,summary:`Le capital initial doit d'abord solidifier les revenus et l'entraînement, pas flatter l'effectif.`,content:(0,A.jsxs)(A.Fragment,{children:[(0,A.jsx)(`p`,{children:`Le document source défend une logique très claire: un débutant doit surtout sécuriser ses installations de rendement et son centre d'entraînement. Acheter trop tôt des coureurs ou un entraîneur trop ambitieux sans structure cohérente produit rarement un bon résultat.`}),(0,A.jsx)(bi,{headers:[`Décision`,`Coût indicatif`,`Moment conseillé`,`Pourquoi`],rows:[[`Boutique niveau 2`,`200 000 €`,`Lundi`,`Augmente un revenu lié aux résultats et reste rentable tôt.`],[`Siège social niveau 2`,`200 000 €`,`Lundi`,`Améliore le revenu sponsor, plus stable que la boutique.`],[`Centre d'entraînement niveau 1`,`150 000 €`,`Dès que possible, idéalement un jeudi`,`C'est la base du développement sportif.`],[`Réserve de caisse`,`Environ 450 000 € restants`,`Immédiat`,`Absorbe salaires, entretien et futur palier d'installation.`]]}),(0,A.jsxs)(`div`,{className:`guide-subsection`,children:[(0,A.jsx)(`h4`,{children:`Ce qu'un débutant doit rarement faire trop tôt`}),(0,A.jsxs)(`ul`,{className:`clean-list`,children:[(0,A.jsx)(`li`,{children:`Construire un centre de formation avant d'avoir au moins un CDE 4 et un entraîneur mondial.`}),(0,A.jsx)(`li`,{children:`Acheter du matériel de haut niveau avant les divisions supérieures.`}),(0,A.jsx)(`li`,{children:`Prendre un entraîneur coûteux alors que le CDE ne suit pas.`}),(0,A.jsx)(`li`,{children:`Consommer toute la trésorerie dans un ou deux transferts spectaculaires.`})]})]}),(0,A.jsx)(yi,{title:`Ordre de marche propre`,tone:`success`,children:(0,A.jsx)(`p`,{children:`Boutique, siège social, centre d'entraînement, puis seulement arbitrages de marché. Cette hiérarchie te laisse une équipe moins glamour au départ, mais beaucoup plus stable après quelques semaines.`})})]})},{id:`achats-transferts`,title:`7. Acheter sur le marché des transferts`,kicker:`Renforts`,summary:`Un bon achat de débutant est raisonnable, rentable et compatible avec la masse salariale du club.`,content:(0,A.jsxs)(A.Fragment,{children:[(0,A.jsx)(`p`,{children:`Le marché n'est pas là pour te faire rêver, il est là pour corriger un effectif. Pour un débutant, la logique la plus propre consiste souvent à viser des vétérans encore utiles, déjà formés, avec un salaire supportable et une vraie cohérence de profil.`}),(0,A.jsxs)(`div`,{className:`guide-subsection`,children:[(0,A.jsx)(`h4`,{children:`Filtres simples pour chercher intelligemment`}),(0,A.jsxs)(`ul`,{className:`clean-list`,children:[(0,A.jsx)(`li`,{children:`Âge: 31 ans minimum, voire 32 ans et plus pour profiter de prix plus bas.`}),(0,A.jsx)(`li`,{children:`Budget: éviter de dépasser 200 000 € par renfort au lancement.`}),(0,A.jsx)(`li`,{children:`Foncier: viser au moins 50 partout, et idéalement 200 points cumulés pour une division basse.`}),(0,A.jsx)(`li`,{children:`Forme: privilégier les coureurs déjà en état de courir.`}),(0,A.jsx)(`li`,{children:`BAR et CAE: ne pas les négliger, même chez un coureur au profil correct.`})]})]}),(0,A.jsx)(bi,{headers:[`Signal d'alerte`,`Pourquoi il faut fuir`],rows:[[`Mono-caractéristique`,`Une note énorme n'efface pas un foncier déplorable ou un sprint absent.`],[`Salaire ingérable`,`Même un excellent coureur peut ruiner une petite division si son salaire dépasse sa capacité à rapporter.`],[`BAR / CAE trop bas`,`Le rendement en course est plus faible que ce que la fiche laisse croire.`],[`Forme basse`,`Tu paies un coureur qui n'est pas immédiatement exploitable.`],[`Foncier troué`,`Une seule note catastrophique casse l'ensemble du profil.`]]}),(0,A.jsxs)(`div`,{className:`guide-subsection`,children:[(0,A.jsx)(`h4`,{children:`Moments souvent favorables pour acheter`}),(0,A.jsxs)(`ul`,{className:`clean-list`,children:[(0,A.jsx)(`li`,{children:`La dernière semaine d'une saison.`}),(0,A.jsx)(`li`,{children:`Juste après un tour, quand certaines équipes dégraissent.`}),(0,A.jsx)(`li`,{children:`Le dimanche avant la mise à jour économique, quand des managers cherchent à alléger la masse salariale.`}),(0,A.jsx)(`li`,{children:`Les amateurs peuvent aussi offrir des solutions plus saines pour les jeunes équipes si les conditions de division le permettent.`})]})]}),(0,A.jsx)(yi,{title:`Discipline d'enchère`,tone:`warning`,children:(0,A.jsx)(`p`,{children:`Ne te laisse pas embarquer par la surenchère. Si le prix visé est dépassé, tu sors. Le banquier empêchera l'enchère de trop, mais il ne réparera ni la perte de temps ni le mauvais processus de décision.`})})]})},{id:`ventes-transferts`,title:`8. Vendre utilement`,kicker:`Sorties d'effectif`,summary:`Une vente propre est réaliste sur le prix, bien timée et pensée en fonction du marché, pas de l'ego.`,content:(0,A.jsxs)(A.Fragment,{children:[(0,A.jsx)(`p`,{children:`Les ventes servent à libérer de la masse salariale, à financer les installations et à sortir de l'effectif des profils que tu ne peux pas rentabiliser. Mettre un coureur en vente trop cher, juste parce que sa fiche te plaît, revient souvent à perdre 3 000 € et du temps.`}),(0,A.jsx)(bi,{headers:[`Règle`,`Conséquence pratique`],rows:[[`Coût de mise en vente`,`3 000 € par vente, pour une durée de 3 jours.`],[`Effectif minimum`,`Avec seulement 5 coureurs, tu ne peux plus mettre en vente sans reconstituer temporairement un effectif suffisant.`],[`Mise à prix`,`De 0 € jusqu'au double de la valeur affichée du coureur.`],[`Objectif`,`Vendre ce qui bloque la progression ou ne rentabilisera jamais son salaire.`]]}),(0,A.jsxs)(`div`,{className:`guide-subsection`,children:[(0,A.jsx)(`h4`,{children:`Fenêtres de vente intéressantes`}),(0,A.jsxs)(`ul`,{className:`clean-list`,children:[(0,A.jsx)(`li`,{children:`Mercredi et jeudi, quand les managers ont les résultats en tête.`}),(0,A.jsx)(`li`,{children:`Samedi et dimanche, en préparation ou juste après une grosse course.`}),(0,A.jsx)(`li`,{children:`Entre 18h et 22h pour maximiser la présence d'acheteurs.`}),(0,A.jsx)(`li`,{children:`Début de saison et phases autour des tours pour profiter des réallocations de budget.`})]})]}),(0,A.jsx)(yi,{title:`Décision froide`,tone:`info`,children:(0,A.jsx)(`p`,{children:`Certains vieux coureurs faibles se vendent mal, même à prix cassé. Dans ces cas, une mise à prix très basse ou un licenciement peut être plus rationnel qu'une succession de ventes ratées qui grignotent la trésorerie.`})})]})},{id:`courses-tactiques`,title:`9. Courses, profils et tactiques`,kicker:`Exploitation sportive`,summary:`Un débutant marque des points en choisissant bien ses courses et en protégeant la forme de ses coureurs.`,content:(0,A.jsxs)(A.Fragment,{children:[(0,A.jsx)(`p`,{children:`Les inscriptions ferment la veille de la course à 22h00. Tu ne dois pas seulement inscrire les sept meilleurs. Il faut faire correspondre le profil de course, la catégorie, la forme et le rôle attribué à chaque coureur. Une semaine bien gérée rapporte plus qu'une accumulation de départs mal calibrés.`}),(0,A.jsx)(bi,{headers:[`Format`,`Public`,`Rythme`,`Ce qu'il faut savoir`],rows:[[`C1`,`Tous`,`Souvent le dimanche`,`Référence pour les primes et les points.`],[`C2`,`Tous`,`Souvent le mercredi`,`Primes et points divisés par deux par rapport à une C1.`],[`C3`,`U25`,`Souvent le samedi`,`Primes et points divisés par quatre.`],[`C4`,`U21`,`Souvent le mardi`,`Pas de primes, mais des points spécifiques pour les 15 premiers.`],[`Grand tour / mini tour`,`Selon calendrier`,`Périodes spécifiques`,`Les participants sacrifient une partie de l'entraînement hebdomadaire.`]]}),(0,A.jsx)(bi,{headers:[`Rôle`,`Utilité`,`Perte de forme typique`],rows:[[`Leader`,`Coureur que l'équipe aide à performer`,`Faible à modérée si l'encadrement est cohérent.`],[`Équipier`,`Sacrifie de l'énergie pour le leader`,`La plus forte du trio, surtout si le curseur est haut.`],[`Électron libre`,`Se débrouille seul`,`La plus simple à gérer, très utile au lancement.`]]}),(0,A.jsxs)(`div`,{className:`guide-subsection`,children:[(0,A.jsx)(`h4`,{children:`Profils de course à reconnaître rapidement`}),(0,A.jsxs)(`ul`,{className:`clean-list`,children:[(0,A.jsx)(`li`,{children:`Plaine: plaine, endurance, sprint.`}),(0,A.jsx)(`li`,{children:`Vallon: vallon, résistance, sprint.`}),(0,A.jsx)(`li`,{children:`Montagne: montagne, descente, récupération.`}),(0,A.jsx)(`li`,{children:`Pavé: pavé, résistance, sprint, avec plaine ou vallon selon le tracé.`}),(0,A.jsx)(`li`,{children:`CLM individuel: seul l'électron libre est réellement cohérent.`}),(0,A.jsx)(`li`,{children:`TTT: la cohérence de l'équipe entière compte, pas seulement un leader isolé.`})]})]}),(0,A.jsx)(yi,{title:`Point tactique important`,tone:`warning`,children:(0,A.jsx)(`p`,{children:`La gestion de l'échappée matinale est décisive. Si tu laisses le réglage libre, tes coureurs peuvent partir devant et subir une grosse perte de forme. Pour un club débutant, cela se paie très vite. La prudence reste souvent meilleure que l'agressivité.`})}),(0,A.jsx)(yi,{title:`Règle d'or pour les jeunes`,tone:`success`,children:(0,A.jsx)(`p`,{children:`Tes U21 et U25 ouvrent des courses supplémentaires, mais leur forme s'épuise vite. Il faut cibler les départs, éviter les tours quand la structure d'entraînement est faible et accepter de faire des impasses pour protéger la progression.`})})]})},{id:`installations`,title:`10. Installations et calendrier d'upgrade`,kicker:`Structure du club`,summary:`Les installations sont le vrai moteur de progression. Elles doivent être montées dans le bon ordre et au bon moment.`,content:(0,A.jsxs)(A.Fragment,{children:[(0,A.jsx)(`p`,{children:`Le document source insiste sur une hiérarchie très nette. Le siège social et la boutique stabilisent les revenus. Le centre d'entraînement prépare le futur sportif. Le centre de formation ne devient logique qu'une fois le club déjà capable de former.`}),(0,A.jsx)(bi,{headers:[`Installation`,`Rôle`,`Moment conseillé`,`Précaution`],rows:[[`Siège social`,`Revenu sponsor stable`,`Lundi pour optimiser les mises à jour`,`Même en construction, tu gardes le revenu du niveau inférieur.`],[`Boutique`,`Revenu lié aux résultats`,`Lundi`,`Aucun revenu de boutique pendant les travaux.`],[`Centre d'entraînement`,`Progression des coureurs`,`Jeudi`,`À prioriser tôt, car il conditionne presque tout le reste.`],[`Centre de formation`,`Tirage de jeunes`,`Jeudi, beaucoup plus tard`,`À éviter tant que tu ne peux pas former sérieusement.`]]}),(0,A.jsxs)(`div`,{className:`guide-subsection`,children:[(0,A.jsx)(`h4`,{children:`Logique de montée recommandée`}),(0,A.jsxs)(`ul`,{className:`clean-list`,children:[(0,A.jsx)(`li`,{children:`SS1 et Boutique1: viser rapidement CDE2.`}),(0,A.jsx)(`li`,{children:`SS2 et Boutique1 ou 2: viser CDE3 avec entraîneur intercontinental si possible.`}),(0,A.jsx)(`li`,{children:`SS3 et Boutique3: viser CDE4 et préparer l'entraîneur mondial.`}),(0,A.jsx)(`li`,{children:`SS4 et Boutique3: envisager CDE5 si la structure suit déjà.`}),(0,A.jsx)(`li`,{children:`SS5 et Boutique4: le CDE6 devient enfin cohérent avec un projet complet.`})]})]}),(0,A.jsxs)(`div`,{className:`guide-subsection`,children:[(0,A.jsx)(`h4`,{children:`Ce que cela implique pour le centre de formation`}),(0,A.jsxs)(`ul`,{className:`clean-list`,children:[(0,A.jsx)(`li`,{children:`Un CDF coûte à la fois en construction et en tirages hebdomadaires.`}),(0,A.jsx)(`li`,{children:`Un jeune de 17 ans reste en général meilleur à potentiel qu'un 20 ans, mais encore faut-il pouvoir le former.`}),(0,A.jsx)(`li`,{children:`Le tirage perdu de la semaine ne se récupère pas.`}),(0,A.jsx)(`li`,{children:`Le guide conseille clairement de ne pas tirer n'importe comment avant un niveau déjà sérieux.`})]})]}),(0,A.jsx)(yi,{title:`Très important`,tone:`warning`,children:(0,A.jsx)(`p`,{children:`Le centre de formation est l'installation la plus fantasmatique pour un débutant, mais aussi l'une des moins rentables si le couple CDE/entraîneur ne suit pas. Construire trop tôt un CDF, c'est souvent immobiliser de l'argent pour des tirages que tu revendras mal.`})})]})},{id:`plan-progression`,title:`11. Plan de progression sur 10 semaines`,kicker:`Feuille de route`,summary:`Une première saison réussie repose sur quelques décisions cohérentes répétées proprement.`,content:(0,A.jsxs)(A.Fragment,{children:[(0,A.jsx)(bi,{headers:[`Période`,`Priorité`,`Décisions concrètes`],rows:[[`Semaine 1`,`Diagnostic`,`Lire la division, trier le roster, vérifier les profils réellement exploitables.`],[`Semaines 1 à 3`,`Stabilisation`,`Lancer les premiers upgrades, entraîner en normal ou tranquille, éviter les dépenses impulsives.`],[`Semaines 3 à 6`,`Optimisation`,`Ajuster le groupe de course, vendre les profils sans avenir, rechercher un ou deux renforts utiles.`],[`Semaines 6 à 10`,`Consolidation`,`Préparer la saison suivante avec une structure plus forte que ton point de départ.`]]}),(0,A.jsxs)(`div`,{className:`guide-subsection`,children:[(0,A.jsx)(`h4`,{children:`Ce qu'il faut absolument éviter`}),(0,A.jsxs)(`ul`,{className:`clean-list`,children:[(0,A.jsx)(`li`,{children:`Monter à plus de 25 coureurs: cela bloque tirages, enchères, inscriptions et entraînement.`}),(0,A.jsx)(`li`,{children:`Surpayer des salaires alors que le club n'a pas encore ses revenus structurels.`}),(0,A.jsx)(`li`,{children:`Monter les primaires trop tôt et découvrir ensuite un foncier irrécupérable.`}),(0,A.jsx)(`li`,{children:`Envoyer les jeunes partout, tout le temps, jusqu'à casser leur forme.`}),(0,A.jsx)(`li`,{children:`Penser qu'un CDF compensera à lui seul un retard d'infrastructure.`})]})]}),(0,A.jsx)(yi,{title:`Philosophie de départ`,tone:`success`,children:(0,A.jsx)(`p`,{children:`Un club débutant solide vaut mieux qu'un club spectaculaire mais mal construit. Si tes revenus montent, que ton CDE progresse et que tu gardes une masse salariale propre, tu prépares déjà les saisons suivantes bien mieux que beaucoup de démarrages trop agressifs.`})})]})}],Si=[{label:`Effectif initial`,value:`10 coureurs`},{label:`Trésorerie`,value:`1 000 000 €`},{label:`Bonus sponsor`,value:`+500 k€ à 10 et 20 semaines`},{label:`Priorité réelle`,value:`Revenus + CDE avant le reste`}];function Ci(e){let t=document.getElementById(e);t&&(t.scrollIntoView({behavior:`smooth`,block:`start`}),window.history.replaceState(null,``,`${window.location.pathname}#${e}`))}function wi(){return(0,A.jsxs)(`div`,{className:`page-stack`,children:[(0,A.jsx)(rr,{title:`Guide du débutant`,subtitle:`Version longue et structurée pour comprendre les bases du jeu, sécuriser les premières saisons et éviter les erreurs coûteuses.`}),(0,A.jsx)(j,{children:(0,A.jsxs)(`div`,{className:`guide-intro`,children:[(0,A.jsxs)(`div`,{className:`guide-intro-copy`,children:[(0,A.jsx)(`p`,{className:`guide-kicker`,children:`Version enrichie`}),(0,A.jsx)(`h3`,{className:`guide-intro-title`,children:`Une feuille de route complète pour démarrer proprement sur CyManager`}),(0,A.jsx)(`p`,{className:`guide-intro-text`,children:`Cette page reprend les enseignements essentiels du guide source et les réorganise en chapitres actionnables: lecture du roster, entraînement, investissements, marché des transferts, tactiques et plan de progression. Le but n'est pas de promettre une recette miracle, mais d'éviter les erreurs structurelles les plus fréquentes.`})]}),(0,A.jsx)(`div`,{className:`guide-highlight-grid`,children:Si.map(e=>(0,A.jsxs)(`div`,{className:`guide-highlight-card`,children:[(0,A.jsx)(`span`,{className:`guide-highlight-label`,children:e.label}),(0,A.jsx)(`strong`,{className:`guide-highlight-value`,children:e.value})]},e.label))})]})}),(0,A.jsxs)(`div`,{className:`guide-layout`,children:[(0,A.jsxs)(`aside`,{className:`guide-toc card`,children:[(0,A.jsx)(`h3`,{className:`card-title`,children:`Sommaire`}),(0,A.jsx)(`nav`,{className:`guide-toc-nav`,children:xi.map(e=>(0,A.jsx)(`button`,{type:`button`,className:`guide-toc-link`,onClick:()=>Ci(e.id),children:e.title},e.id))})]}),(0,A.jsx)(`div`,{className:`guide-content`,children:xi.map(e=>(0,A.jsx)(j,{children:(0,A.jsxs)(`section`,{id:e.id,className:`guide-section-anchor`,children:[(0,A.jsxs)(`header`,{className:`guide-section-header`,children:[(0,A.jsx)(`p`,{className:`guide-kicker`,children:e.kicker}),(0,A.jsx)(`h3`,{className:`guide-section-title`,children:e.title}),(0,A.jsx)(`p`,{className:`guide-section-summary`,children:e.summary})]}),e.content]})},e.id))})]})]})}var Ti=`<!DOCTYPE html>
+<!-- saved from url=(0055)https://www.cymanager.com/ecran_principal.php?page=faq# -->
+<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>body {transition: opacity ease-in 0.2s; } 
+body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } 
+</style>
+	<title>CyManager, jeu de cyclisme en ligne multijoueur</title>
+    
+	<meta name="description" content="Cymanager est un jeu de cyclisme en ligne. Entrez dans la peau du manager d&#39;une équipe cycliste. Formez les meilleurs coureurs, gagnez des courses, et devenez tout simplement le meilleur !">
+    	<meta name="robots" content="index,follow">
+    	
+	<link rel="shortcut icon" type="image/x-icon" href="https://www.cymanager.com/cyman.ico">
+	<link rel="stylesheet" href="./CyManager, jeu de cyclisme en ligne multijoueur_files/theme_image.css" type="text/css">
+	<link rel="stylesheet" href="./CyManager, jeu de cyclisme en ligne multijoueur_files/cym-13.css" type="text/css">
+	<script type="text/javascript" src="./CyManager, jeu de cyclisme en ligne multijoueur_files/cym-4.js.téléchargement"><\/script>
+	<title>CyManager.com</title>
+</head>
+<body>
+		<div id="page"><!-- début du contenu de page -->
+				<div id="bandeau">
+			<div id="bandeau_left"><a href="https://www.cymanager.com/ecran_principal.php?page=accueil"><img src="./CyManager, jeu de cyclisme en ligne multijoueur_files/logo_cym.png"></a></div>
+			<div id="bandeau_right">
+				<div id="bandeau_right_menu">
+					<a href="https://www.cymanager.com/ecran_principal.php?page=messagerie" title="ta messagerie" style="text-decoration:none;">
+						<div class="conteneur-enveloppe"><span id="nb_mess"></span><span id="enveloppe"><img src="./CyManager, jeu de cyclisme en ligne multijoueur_files/enveloppe.png" alt="courrier" style="width:18px;height:13px;"></span></div>
+					</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+					<a href="https://www.cymanager.com/ecran_principal.php?page=faq" title="Les règles du jeu et la FAQ">Règles/FAQ</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+					<a href="https://discord.com/channels/707647580376530955/1205628678235496538" target="_blank">Tchat</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+					<a href="https://forum.cymanager.com/" target="_blank" title="le forum">Forum</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+					<a href="https://www.cymanager.com/ecran_principal.php?page=moncompte" title="pour modifier les paramètres de ton compte">Mon compte</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+					<a href="https://www.cymanager.com/disconnect.php"><span id="logout"><img src="./CyManager, jeu de cyclisme en ligne multijoueur_files/logout.png" style="width:16px;height:16px;"></span></a>
+				</div>
+				<div id="bandeau_right_contenu">
+					<div id="bandeau_right_contenu_gauche">
+						<a href="https://www.cymanager.com/ecran_principal.php?page=calendrier"><strong>Saison</strong> 97 <strong>semaine</strong> 5</a><br>
+						<strong>Equipe : </strong><a href="https://www.cymanager.com/ecran_principal.php?page=fiche_equipe&amp;id_equipe=55893">Kritoff Team</a> <span style="font-size: 80%"></span><br>
+						<strong>Division : </strong> <a href="https://www.cymanager.com/ecran_principal.php?page=classements"><strong>Pro</strong> : 9.D</a>&nbsp;&nbsp;
+							<a href="https://www.cymanager.com/ecran_principal.php?page=classements_jeunes&amp;classement=equipe_U25"><strong>U25</strong> : 5</a>&nbsp;&nbsp;
+							<a href="https://www.cymanager.com/ecran_principal.php?page=classements_jeunes&amp;classement=equipe_U21"><strong>U21</strong> : 6</a>&nbsp;&nbsp;<br>
+
+						<strong>Classement : </strong><a href="https://www.cymanager.com/ecran_principal.php?page=classements">14° avec&nbsp;146&nbsp;points</a><br>
+						<strong>Finances : </strong><a href="https://www.cymanager.com/ecran_principal.php?page=finances">1 012 000€</a><br>
+						<a href="https://www.cymanager.com/ecran_principal.php?page=installations&amp;type=siege_social"><span title="Siège Social"><strong>SS: </strong></span>1</a> - <a href="https://www.cymanager.com/ecran_principal.php?page=installations&amp;type=boutique"><span title="Boutique"><strong>Bt: </strong></span>1</a> - <a href="https://www.cymanager.com/ecran_principal.php?page=installations&amp;type=centre_d_entrainement"><span title="Centre d&#39;Entrainement"><strong>CdE: </strong></span>0</a> - <a href="https://www.cymanager.com/ecran_principal.php?page=installations"><span title="Centre de Formation"><strong>CdF: </strong></span>0</a>
+					</div>
+					<div id="bandeau_right_contenu_droite">
+						 
+					</div>
+				</div>
+			</div>
+		</div>
+		<div style="clear: both;"></div>
+				<div id="corps">
+						<div id="menu">
+				<div class="menu">
+					<ul id="nav">
+						<li class="first"><a href="javascript:void(0)">CyManager</a>
+							<ul>
+								<li class="submenu-first"><a href="https://www.cymanager.com/ecran_principal.php?page=accueil">Accueil</a></li>
+								<li><a href="https://www.cymanager.com/ecran_principal.php?page=editeur_profil">Editeur de profil de course</a></li>
+								<li><a href="https://www.cymanager.com/ecran_principal.php?page=course_libre">Courses libres</a></li>
+								<li><a href="https://www.cymanager.com/ecran_principal.php?page=course_libre_ma_liste">Mes courses libres</a></li>
+								<li class="submenu-last"><a href="https://www.cymanager.com/ecran_principal.php?page=blocnote">Bloc-note</a></li>
+							</ul> 
+						</li>
+						<li><a href="javascript:void(0)">Equipe</a>
+							<ul>
+								<li class="submenu-first"><a href="https://www.cymanager.com/ecran_principal.php?page=effectif">Effectif</a></li>
+								<li><a href="https://www.cymanager.com/ecran_principal.php?page=entrainement">Entrainement</a></li>
+								<li><a href="https://www.cymanager.com/ecran_principal.php?page=finances">Finances</a></li>
+								<li><a href="https://www.cymanager.com/ecran_principal.php?page=installations">Installations</a></li>
+								<li><a href="https://www.cymanager.com/ecran_principal.php?page=entraineur">Entraineur</a></li>
+								<li class="submenu-last"><a href="https://www.cymanager.com/ecran_principal.php?page=materiel">Matériel</a></li>
+							</ul> 
+						</li>
+						<li><a href="javascript:void(0)">Division</a>
+							<ul>
+								<li class="submenu-first"><a href="https://www.cymanager.com/ecran_principal.php?page=calendrier">Calendrier</a></li>
+								<li><a href="https://www.cymanager.com/ecran_principal.php?page=classements">Classements</a></li>
+								<li class="submenu-last"><a href="https://www.cymanager.com/ecran_principal.php?page=stats_division">Statistiques Divisions</a></li>
+							</ul> 
+						</li>
+						<li class="last"><a href="javascript:void(0)">Monde</a>
+							<ul>
+								<li class="submenu-first"><a href="https://www.cymanager.com/ecran_principal.php?page=transferts">Transferts</a></li>
+								<li><a href="https://www.cymanager.com/ecran_principal.php?page=ucc">CREM</a></li> 
+								<li><a href="https://www.cymanager.com/ecran_principal.php?page=palmares">Palmarès D1</a></li>
+								<li><a href="https://www.cymanager.com/ecran_principal.php?page=top10">Top 10</a></li>
+								<li><a href="https://www.cymanager.com/ecran_principal.php?page=cym_ranking">Cym Ranking</a></li>
+								<li><a href="https://www.cymanager.com/ecran_principal.php?page=suivis">Suivis</a></li>
+								<li class="submenu-last"><a href="https://www.cymanager.com/ecran_principal.php?page=recherche">Recherche</a></li>
+							</ul> 
+						</li>
+					</ul>
+				</div>
+			</div>
+						<div id="colonne_centrale">
+				<div id="contenu_box" class="dotted segoe">
+	<div id="titre_contenu">Règles du jeu / FAQ</div>
+	<div>
+		<div onclick="toggle_all_class(&#39;portlet_contenu&#39;)"><p><a href="https://www.cymanager.com/ecran_principal.php?page=faq#">Cliquer ici pour ouvrir ou fermer tous les sujets</a> ou cliquer sur un sujet pour l'ouvrir.</p></div>
+		<div class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_but_du_jeu&#39;)">
+				But du jeu
+			</div>
+			<div id="toggle_but_du_jeu" class="portlet_contenu" style="display: block;">
+				CyManager vous offre l'opportunité d'incarner le rôle de président d'une équipe cycliste.<br>
+				Vous êtes ainsi projeté aux commandes de votre team avec comme capital :<br>
+				La somme de 1 000 000 €<br>
+				Vos 10 premiers coureurs salariés<br>
+				Un entraîneur de niveau cantonal<br>
+				Un Siège Social niveau 1<br>
+				Une Boutique Niveau 1<br>
+				Du matériel de base : des cadres, des roues et des casques<br><br>
+
+				Votre mission, si vous l'acceptez, sera de faire de votre club le fleuron du cyclisme international !<br>
+				Vous sentez-vous prêt à relever le défi ?<br><br>
+
+				Pour arriver à vos fins, vous seul déterminerez votre stratégie parmi les multiples offertes par le jeu. Les règles vous donneront toutes les connaissances nécessaires à des choix judicieux. D'autres informations au contraire ne sont pas divulguées afin que vous puissiez découvrir par vous même certains aspects du jeu.<br>
+				Le <a href="https://forum.cymanager.com/index.php"><span style="color:orange">forum</span></a> est par ailleurs une source d'informations inépuisable grâce aux joueurs inscrits depuis 2006 !<br><br>
+
+				Bonne lecture, Bon jeu et Bonne découverte!!!<br>
+			</div>
+		</div>
+		<div class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_equipe&#39;)">
+				Votre équipe
+			</div>
+			<div id="toggle_equipe" class="portlet_contenu" style="display: block;">
+				<p>Une fois inscrit, vous prenez en main les rènes de votre équipe. Faites la évoluer en améliorant ses installations (voir plus bas le paragraphe dédié au sujet pour plus d'informations).</p>
+				<p>Astuce : d'abord asseoir sa stabilité finanicère en améliorant les 2 installations rapportant des €€€ plutôt que de se jeter à corps perdu dans la formation. En effet, vous mettrez votre équipe en danger si vous ne pouvez pas payer les salaires!</p>
+				<p>Votre équipe est automatiquement inscrite aux 3 championnats: Pro (pour Professionels), U25 (pour les coureurs de moins de 25 ans à l'intersaison) et U21. Si vous ne possédez pas de coureurs pour l'une ou l'autre des deux catégories jeunes, vous serez placé placé en dernière division de la catégorie correspondante.</p>
+				<p>Attention, un maximum de 25 coureurs est autorisé.</p>
+			</div>
+		</div>
+		<div class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_coureurs&#39;)">
+				Les coureurs
+			</div>
+			<div id="toggle_coureurs" class="portlet_contenu" style="display: block;">
+				<p>Les coureurs cyclistes dans CyManager sont caractérisés par leur âge en années et semaines (jusqu'à 10 semaines, correspondant à la durée d'une saison), et par les 15 variables suivantes : la forme, l'endurance, la récupération, la résistance, les capacités en vallon, montagne, plaine, pavé, descente, sprint, contre-la-montre, agilité, baroudeur, course-à-étapes et expérience. Selon le profil de la course, les différentes caractéristiques n'auront pas le même intérêt.</p>
+				
+				<p>L'expérience est la seule caractéristique d'un coureur qui augmente à mesure que celui-ci participe aux courses. La catégorie de la course influe directement sur la prise d'xp. L'expérience est figée quand un coureur atteint 32 ans. En effet, à cet âge, il connait tous les trucs et astuces du métier! De manière générale, les coureurs commencent à décliner une fois qu'ils ont atteint 32 ans.</p>
+
+				<p><strong>Salaire/Valeur</strong><br>
+				Le salaire de vos coureurs évolue suivant différents paramètres. De manière générale plus les caractéristiques de votre coureur seront élevées et plus son salaire augmentera.<br>
+				Certaines caractéristiques impactent le salaire plus que d'autres et de la même façon plus une caractéristique sera élevée et plus le salaire augmentera fortement (Ex : passer de 91 à 93 en sprint augmentera plus le salaire que de passer de 50 à 52).<br>
+				À noter également qu'à notes équivalentes, un coureur plus jeune aura un salaire plus important.<br><br>
+
+				La valeur de vos coureurs, elle, se calcule de manière un peu plus complexe. Certes de manière générale, plus les notes de votre coureur seront élevées et plus il sera à même d'avoir une valeur élevée, mais il existe des paramètres prenant en compte des ratios entre différentes caractéristiques qui définissent le potentiel du coureur.</p>
+			
+				<p><strong>Forme d'un coureur</strong><br>
+				Vous pouvez observer la forme des coureurs des autres équipes sur la fiche coureur. Celle-ci est exprimée en étoiles pour les coureurs des autres équipes. Chaque étoile représente un palier de 20 points de forme.</p>
+
+				<p><strong>Age d'un coureur</strong><br>
+				Chaque coureur vieillit d'une semaine pendant la nuit du dimanche au lundi. Une année compte 10 semaines (l'équivalent de la durée d'une saison).</p>
+				<p><strong>Les catégories d'âge :</strong><br>
+				- U21: Les coureurs de moins de 21 ans au changement de saison<br>
+				- U25: Les coureurs de moins de 25 ans au changement de saison<br>
+				Le passage à la catégorie supérieure se déroule lors de l'intersaison. Les U21 et U25 n'atteignent donc jamais respectivement 22 ans ou 26 ans en cours de saison. Par exemple en semaine 5 de la saison en cours, l’âge maximal est de 21 ans et 5 semaines pour les U21.</p>
+
+				<p><strong>Départ en retraite d'un coureur</strong>
+				Lors du changement de saison, les coureurs de 32 ans sont susceptibles de partir à la retraite. Celle-ci est purement aléatoire avec un risque différent en fonction de l'âge, comme indiqué dans le tableau ci-dessous. A noter que les pourcentages correspondent aux âges <strong>révolus</strong>. Un coureur qui est sur le point de fêter son 33ème anniversaire a donc 1 chance sur 100 de partir à la retraite.				
+				</p><table class="tableau" style="background:white;">
+					<thead>
+						<tr>
+							<th>Age du Coureur</th>
+							<th>Pourcentage de chance que le coureur parte en retraite</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="text-align:center;">32 ans</td>
+							<td style="text-align:center;">1%</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">33 ans</td>
+							<td style="text-align:center;">5%</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">34 ans</td>
+							<td style="text-align:center;">10%</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">35 ans</td>
+							<td style="text-align:center;">25%</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">36 ans</td>
+							<td style="text-align:center;">50%</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">37 ans</td>
+							<td style="text-align:center;">75%</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Au delà de 37ans</td>
+							<td style="text-align:center;">90%</td>
+						</tr>
+					</tbody>
+				</table>
+				<p></p>
+				Il n'existe pas d'élément pouvant définir l'âge de la retraite, d'où le fait qu'un risque réside lors de l'acquisition d'un "vieux" en fin de la saison.<br><br>
+			</div>
+		</div>
+
+		<div class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_courses&#39;)">
+				Les courses
+			</div>
+			<div id="toggle_courses" class="portlet_contenu" style="display: block;">
+				<p>Pour participer à une course il vous faudra d'abord vous y inscrire (à partir de la page <a href="https://www.cymanager.com/ecran_principal.php?page=calendrier"><span style="color:orange">calendrier</span></a>). Les inscriptions ouvrent au début de la saison et s'achèvent la veille à Minuit. Vous pouvez inscrire entre 1 et 7 coureurs à chaque épreuve.</p>
+				<p>Les coureurs doivent posséder 50 de forme au minimum pour pouvoir s'inscrire aux courses Pro et U25. En effet, trop fatigué, il mettrait sa santé en danger.</p>
+				Soyez également vigilant à inscrire au minimum 3 coureurs lorsqu'il s'agit d'un CLM par équipe pour que le temps soit pris en compte (10 minutes de pénalité dans le cas inverse). Dans tous les cas l'écart est limité à 10 minutes au maximum.<p></p>
+
+				<p>Voici les types de courses d'un jour :<br>
+				- <strong>C1</strong> : les courses d'un jour les plus importantes. Ce sont également les épreuves de la Coupe du Monde.<br>
+				- <strong>C2</strong> : les courses d'un jour secondaires<br>
+				- <strong>U25</strong> : les courses réservées aux 25 ans et moins<br>
+				- <strong>U21</strong> : les courses réservées aux 21 ans et moins<br>
+				- <strong>MC</strong> : les Mondiaux Cymanagériens (les coureurs y participant sont sélectionnés automatiquement)</p>
+
+				<p>Il existe deux types de classement :<br>
+					- le Championnat qui regroupe toutes les courses d'une catégorie (Pro, U25 ou U21)<br>
+					- la Coupe du Monde qui regroupe les 7 épreuves de catégorie C1 de la saison
+				</p>
+				<p>Le championnat se décline en Championnat Pro, U25 et U21. Tous les coureurs arrivant au bout de la course marquent des points pour le championnat Pro (et la CDM) alors qu'il n'y a que les 3 premiers coureurs qui marquent des points pour les Championnats U21/U25.</p>
+
+				<p>En cas d'égalité au classement du Championnat ou de la CDM, c'est l'équipe qui marque le plus de points dans l'autre classement qui prend le dessus.</p>
+
+				<p>Les coureurs U21 ne peuvent pas participer aux courses pros (C1, C2, MT et GT). Les U25 reçoivent perdent 30% de forme supplémentaires s'ils participent à une C1 ou au GT. Par exemple, là où un pro perd 1 points de forme en participant à une C1, un coureur U25 en perd 1.3.</p>
+				
+				<p>Les courses à étapes :<br>
+					- <strong>GT</strong> : les courses à étapes de 5 étapes et plus<br>
+					- <strong>MT</strong> : les courses à étapes de 3 ou 4 étapes
+				</p>
+				<p>Le maillot blanc est décerné au meilleur coureur de moins de 28 ans au départ du tour. Nous avons conscience que cela s'éloigne de la réalité, mais ce choix correspond mieux à la réalité de CyManager.</p>
+				<p>Les 3 premiers coureurs de chaque étape gagnent des bonifications: 20 secondes pour le premier, 10 secondes pour le second et 5 secondes pour le troisième.</p>
+				<p>Il existe deux types de contre-la-montre :<br>
+					- les CLM qui sont les contre-la-montre individuels<br>
+					- les CLME qui sont les contre-la-montre par équipe (parfois mentionné par TTT).
+				</p>
+				<table class="tableau" style="background:white;">
+					<thead>
+						<tr>
+							<th>Division</th>
+							<th>Horaire d'affichage des résultats</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="text-align:center;">D1</td>
+							<td style="text-align:center;">18h00</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">D2</td>
+							<td style="text-align:center;">17h00</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">D3</td>
+							<td style="text-align:center;">16h00</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">D4 &amp; D5</td>
+							<td style="text-align:center;">15h00</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">D6 &amp; D7</td>
+							<td style="text-align:center;">14h00</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">D8 &amp; plus</td>
+							<td style="text-align:center;">13h00</td>
+						</tr>
+					</tbody>
+				</table>
+			<p>Distribution des primes des tours : 18h15.</p>
+			<p><strong>Votre assistant à votre rescousse</strong></p>
+			<p>Vous êtes de nature distraite, vous partez en vacances sans connexion internet ou votre agenda était trop rempli pour inscrire vos coureurs à la course du lendemain? Pas de panique, votre assistant vous suppléera dès à présent. Malheureusement il n’a pas votre talent car il inscrira 6 coureurs au hasard pour les courses Pro et 3 coureurs au hasard pour les courses jeunes. Tous les coureurs participeront comme des électrons libres.</p>
+			</div>
+		</div>
+
+		<div class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_saison&#39;)">
+				La saison
+			</div>
+			<div id="toggle_saison" class="portlet_contenu" style="display: block;">
+				<p>Une saison se déroule en 10 semaines. Chaque semaine, plusieurs courses ont lieu: des courses pour les jeunes et pour les professionnels. L'entraînement et la récupération de forme sont calculés dans la nuit de mercredi à jeudi (voir le paragraphe "entraînement" plus bas). La Mise à Jour Economique a lieu la nuit du dimanche au lundi (voir paragraphe "Les Finances"). Tout au long de la saison, vous concourrez dans le <strong>Championnat</strong> mais également en <strong>Coupe du Monde (CDM)</strong>. En fin de saison, des Mondiaux Cymanagériens sont organisés pour les pros et les U23.</p>
+				<p>En résumé, voici une semaine type (quand il n'y a pas de tour):<br>
+				- lundi matin: prise de connaissance de la mise à jour économique. Si vous avez un centre de formation, vous pouvez sortir un jeune de celui-ci!<br>
+				- mardi: course U21<br>
+				- mercredi: course C2<br>
+				- jeudi: prise de connaissance de l'effet de l'entraînement sur vos coureurs / récupération ou fatigue additionnelle en fonction du type d'entrainement<br>
+				- vendredi: course C2<br>
+				- samedi: course U25<br>
+				- dimanche: course C1</p>
+			<p>Il y a toujours quelque chose à faire sur CyM!</p>
+			</div>
+		</div>
+
+		<div id="championnats" class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_championnats&#39;)">
+				Les Championnats professionels et jeunes
+			</div>
+			<div id="toggle_championnats" class="portlet_contenu" style="display: block;">
+				<p>Dans CyManager, les différents niveaux du Championnat sont représentés par des divisions, et chaque division peut être composée d'un ou plusieurs groupes. Au début du jeu, vous démarrez en Division 9 chez les professionnels.</p>
+				<p><strong>Championnat Pro</strong></p>
+				<p style="text-decoration-line: underline;">Montées</p>
+				<p>Si il y a le même nombre de groupes en division supérieurs, les six meilleures équipes montent: 
+					<br>- <strong>les cinq équipes ayant le plus grand nombre de points au championnat</strong>. En cas d'égalité, on regarde qui a le plus de victoires pro, ensuite qui a le plus de points à la CDM.
+					<br>-  <strong>l'équipe qui a remporté le plus de victoires professionelles</strong>, ceci peu importe son classement. En cas d'égalité, on regarde qui a le plus de points au championnat. Cette équipe montera au niveau supérieur peu importe son classement. Si cette équipe est classée dans le top 5, alors l'équipe classée 6ème monte également.</p>
+				<p>Si le nombre de groupes en division supérieure est différent, le nombre d'équipes montantes aux points variera au prorata.</p>
+				<p style="text-decoration-line: underline;">Descentes</p>
+				<p>Les 6 équipes ayant le moins de points au championnat descendent. Il y a une exception: si l'équipe qui a remporté le plus grand nombre de victoires pro fait partie du lot, c'est la septième équipe ayant marqué le moins de points qui la remplace.</p>
+				<p>Les équipes à égalité de points sont départagées par le nombre de victoires professionnelles puis par les points en CDM. Si plusieurs équipes obtiennent le même nombre de victoires profesionnelles, elles sont départagées par leurs points au championnat.</p>
+
+				<p style="text-decoration-line: underline;">Equipes Fantômes (mécanisme et incidence)</p>
+				<p>
+					- Toute équipe restant inactive pendant plus de 5 semaines sera considérée comme équipe Fantôme<br>
+					- Ces équipes pourront être de manière automatique inscrites aux courses afin de compléter la liste des partants au bout de 3 semaines d'inactivité. Toutefois elles ne marqueront aucun point et ne toucheront aucune prime dès la cinquième semaine d'inactivité.<br>
+					- De la même façon les coureurs ne prendront plus part aux entraînements et verront donc leur forme diminuer au fur et à mesure des participations aux courses.<br>
+					- En fin de saison, les équipes passées Fantôme au cours de celle-ci verront leur solde de points ramené à 0. A noter qu'une équipe en faillite est considérée comme Fantôme. Ces équipes disparaissent du paysage cycliste et sont remplacées par des bots.
+				</p>
+				<p id="divisions_jeunes"><strong>Championnats U21 &amp; U25</strong></p>
+				<p>Les divisions U21 et U25 sont indépendantes de l'équipe pro. Chaque début de saison, le rapport de force est évalué en additionnant les notes des 3 meilleurs coureurs (les U21 comptent en U25). Les divisions de 20 équipes sont créées à partir de l'ordre décroissant de ce total.</p>
+				<p>Les points pour le classement interéquipe sont calculés sur base des 3 meilleurs coureurs classés contrairement aux courses pro où ce sont tous les coureurs qui marquent des points.</p>
+				<p>Les équipes qui ne possèdent pas de coureur en début de saison dans une des catégorie aboutissent en dernière division.</p>
+
+			</div>
+		</div>
+
+		<div id="finances" class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_finances&#39;)">
+				Finances
+			</div>
+			<div id="toggle_finances" class="portlet_contenu" style="display: block;">
+				<p><strong>Mise à Jour économique</strong><br>
+					La "Mise à jour économique" a lieu pendant la nuit du dimanche au lundi. Le détail de vos recettes et dépenses se trouve à la page <a href="https://www.cymanager.com/ecran_principal.php?page=finances"><span style="color:orange">Finances</span></a>.<br>
+
+					Vous y trouverez le résultat et le détail (recettes, dépenses) des actions suivantes qui s'y déroulent:<br>
+					- Les revenus du siège social et de la boutique sont versés.<br>
+					- Les frais d'entretien des installations sont calculés et retenus,<br>
+					- Les salaires des coureurs sont payés.</p>
+
+				<p><strong>Faillite</strong><br>
+				Votre Banquier vous autorise un découvert de 200 000€. Dans le cas où votre solde serait inférieur à ce montant (soit moins de -200 000€) après la mise à jour, le processus de faillite est mis en route.<br><br>
+
+					- Le banquier vous envoie un message après la MAJ économique si le solde est inférieur à - 200 000€.<br>
+					- Vous aurez alors 2 semaines pour rétablir la situation (c'est-à-dire 2 MAJ économiques). La vérification du solde est réalisée au début de la mise à jour économique, avant le paiement des salaires et les autres opérations réalisées chaque semaine.<br>
+					- Pour sortir de ce processus de faillite, il faut <strong>repasser en solde positif</strong>.<br>
+					- Comment repasser en positif? Par exemple en mettant en vente des coureurs (3K€ seront retirés comme habituellement) et en diminuant le niveau de certaines installations. Attention, une équipe doit posséder 5 coureurs au minimum!<br>
+					- Si vous n'avez pu obtenir un solde positif votre compte sera bloqué pour faillite. Vous pourrez vous réinsrire au jeu avec un autre nom d'équipe et une adresse e-mail différente.<br>
+					- Si votre situation est sans espoir, il vous est possible de <a href="https://www.cymanager.com/ecran_principal.php?page=faq&amp;section=reinitialiser#reinitialiser">réinitialiaser votre équipe</a>. En cas de faillite, la réinitalisation est obligatoire pour continuer de jouer.</p>
+			</div>
+		</div>
+
+		<div class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_intersaison&#39;)">
+				Intersaison
+			</div>
+			<div id="toggle_intersaison" class="portlet_contenu" style="display: block;">
+				<p>Lors de la mise à jour du changement de saison différentes opérations sont réalisées :<br>
+				- les primes de fin de saison équipe/individuel sont versées<br>
+				- les Fantômes (les équipes dont les managers ont déserté les lieux) et Bots (équipes créées par le jeu) sont supprimés et remplacés par de nouveaux bots<br>
+				- les montés/descentes de divisions sont effectuées<br>
+				- les coureurs agés de 32 ans et plus peuvent partir en retraite, ou pas<br>
+				- le calendrier de la saison est mis en place<br>
+				- les coureurs changent de catégorie si nécessaire<br>
+				- les nouvelles divisions des catégories jeunes sont mises en place<br>
+				- les entraîneurs sont mis à jour en fonction des stages réalisés ou non</p>
+			</div>
+		</div>
+
+		<div id="transferts" class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_transferts&#39;)">
+				Transferts
+			</div>
+			<div id="toggle_transferts" class="portlet_contenu" style="display: block;">
+				<p>Le marché des transferts est le lieu où les coureurs changent d'équipe.</p>
+
+				<p>Pour mettre un coureur en vente, rendez-vous dans la page "Effectif". Sous le coureur, sélectionnez "Mettre en vente ce coureur", puis cliquez sur "Envoyer".
+					Vous devez alors choisir une mise à prix. Cette mise à prix ne peut excéder deux fois la valeur du coureur. Cliquez sur "Mettre aux enchères".
+					Le coureur est alors placé sur la liste des transferts pour une durée de 72 heures, en échange d'une commission de 3 000€.
+				</p>
+				<p>Nous rappelons aussi qu'un même foyer où plusieurs managers cohatitent ne peut s'échanger de coureurs.</p>
+
+				<p>Lorsqu'une enchère est postée moins de trois minutes avant la fin, l'échéance est décalée de trois minutes. A l'échéance, l'acquéreur est débité du montant de l'enchère et il obtient immédiatement la propriété du coureur.</p>
+				<p>Un coureur transféré ne garde ses points individuels que s’il reste dans la même division et le même groupe après le transfert. Un coureur ne sera uniquement repris que dans le classement individuel du groupe dans lequel il termine la saison (et il en va de même pour les primes!). Une équipe garde les points marqués par les coureurs qui l'ont quittée en cours de saison.</p>
+				<p>Un coureur mis en vente ne peut pas être retiré du marché des transferts.</p>
+				<p>Il y a quelques restrcitions pour les nouvelles équipes et les équipes en basse division :<br>
+				- Les coureurs ayant un salaire de 80 000€ ou plus ne veulent pas rouler en Division 9<br>
+				- Les coureurs ayant un salaire de 100 000€ ou plus ne veulent pas rouler en Divisoin 8<br>
+				- Le conseil d'administration refusera l'embaûche de coureurs d'un salaire de 100 000€ ou plus tant que le total des niveaux Boutique + Siège Social n'atteint pas 8. Les travaux de construction doivent être terminés.</p>
+				<p><strong>Les coureurs amateurs</strong></p>
+				<p>Les coureurs amateurs sont des coureurs introduits par le moteur de jeu sur le marché des transferts et sont destinés principalement aux équipes débutantes. Ils apparaissent les jours pairs du mois. Leur achat et utilisation est encadré par quelques règles :<br>
+				- Leur achat est réservé aux équipes de D8 et D9 exclusivement, peu importe l'ancienneté de l'équipe.<br>
+				- Les managers qui ont plus de 10 saison d'ancienneté ne peuvent pas revendre les coureurs issus d'une équipe amatrice, même s'ils l'ont acheté à une équipe pro. C'est l'ancienneté au moment de l'achat qui compte.</p>
+				<p>Les équipes ayant acquis un coureur amateur en D8 ou D9 peuvent bien sûr le conserver en cas de montée en D7.</p>
+				<p>Il n'y a pas d'apparition de coureur amateur lors des 3 derniers jours et des 5 premiers jours de la saison.</p>
+				<p>Un avertissement sur le haut de la page Enchère d'un coureur s'affiche si une des contraintes est d'application.</p>
+			</div>
+		</div>
+
+		<div id="entrainement" class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_entrainement&#39;)">
+				Entraînement / Entraîneur
+			</div>
+			<div id="toggle_entrainement" class="portlet_contenu" style="display: block;">
+				<p>L'entraînement a lieu la nuit du mercredi au jeudi. Attention, un coureur ne s’entraînera pas si il est inscrit à une course se déroulant le jeudi ou bien si il est blessé.</p>
+				<table class="tableau" style="background:white;">
+					<thead>
+						<tr>
+							<th>Type</th>
+							<th>Primaire</th>
+							<th colspan="2">Secondaire</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Endurance</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Endurance</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Récupération</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Plaine</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Vallon</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Vallon</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Résistance</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Sprint</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Sprint</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Sprint</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Résistance</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Agilité</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">CLM</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">CLM</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Résistance</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Récupération</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Plaine</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Plaine</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Sprint</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Endurance</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Pavé</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Pavé</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Résistance</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Agilité</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Montagne</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Montagne</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Récupération</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Descente</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Baroudeur</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Baroudeur</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Vallon</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Descente</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Course à étapes</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">CAE</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Montagne</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Recuperation</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Flandrien</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Plaine</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Pavé</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Agilité</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Rouleur</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Endurance</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">CLM</td>
+							<td style="text-align:center;padding-left:5px;padding-right:5px;">Résistance</td>
+						</tr>
+					</tbody>
+				</table>
+				<p></p>
+				<p>Effet de l'intensité choisie sur ces caractéristiques, sans tenir compte des autres facteurs :<br>
+				</p><table class="tableau" style="background:white;">
+					<thead>
+						<tr>
+							<th>Intensité</th>
+							<th>Primaire *</th>
+							<th>Secondaire</th>
+							<th>Forme</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="text-align:center;">Tranquille</td>
+							<td style="text-align:center;">+</td>
+							<td style="text-align:center;">+/2</td>
+							<td style="text-align:center;">+++</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Normal</td>
+							<td style="text-align:center;">+</td>
+							<td style="text-align:center;">+</td>
+							<td style="text-align:center;">+</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">À fond</td>
+							<td style="text-align:center;">+++</td>
+							<td style="text-align:center;">+</td>
+							<td style="text-align:center;">-</td>
+						</tr>
+					</tbody>
+				</table>
+				<p></p>
+
+				<p>* L'efficacité de l'entraînement de la caractéristique Primaire (uniquement) dépend du niveau atteint de la note. L'évolution ralentit avec l'augmentation de la note. Il viendra un moment où l'entraînement des notes Secondaires deviendra plus efficace la note Primaire! Soyez attentif à cela dans la page "Effets de l'entraînement"!</p>
+				<p>Parmi les autres fateurs, l'âge est important. A 21 ans, l'efficatité de l'entraînement diminuera d'un premier cran. A 28 ans l'efficacité diminuera d'un second cran. A partir de 32 ans, à chaque entraînement, le coureur subira une perte de notes dans certaines caractéristiques déterminées aléatoirement. L'expérience cessera aussi d'augmenter dès 32 ans, mais sans diminuer.</p>
+
+				<p>Un entraînement en intensité "Normal" fera gagner un peu de forme, "Tranquille" en fera gagner beaucoup tandis que "À fond" en fera perdre. L'efficacité du regain de forme dépend d niveau de l'entraîneur et du Centre d'Entraînement.</p>
+							
+				<p>Lorsqu'un coureur atteint 10 de forme, il est gratifié automatiquement d'un entraînement "tranquille", ceci peu importe votre choix. Ceci afin de ne pas crâmer votre coureur!</p>
+				
+				<p><strong>L'entraîneur</strong><br>
+				Le niveau de l’entraîneur influence le gain de points ainsi que le gain de forme pour chaque coureur. Il est possible d'acquérir n'importe quel entraîneur directement sans passer par le niveau précédent en passant par l'embauche directe.<br>
+				Attention il faudra chaque saison lui payer un stage de maintien afin qu'il ne perde pas de niveau à l’inter saison.<br>
+				Il est également possible de faire progresser l’entraîneur en l'envoyant en stage de perfectionnant en fin de saison, le faisant gagner un niveau au début de la saison suivante. Le fait de payer le stage de perfectionnement supprime l'obligation de payer le stage de maintien cette même saison. Un seul stage est possible par saison, tous types confondus.<br>
+				Enfin, la dernière possibilité est l'embauche directe. Dans ce cas, le stage de maintien est inclus dans le prix, et il n'est pas possible de payer un stage de perfectionnement à l'entraîneur nouvellement acquis pendant la saison au cours de laquelle il a été embauché.</p>
+
+				<table class="tableau" style="background:white;">
+					<thead>
+						<tr>
+							<th>Niveau</th>
+							<th>Embauche directe</th>
+							<th>Stage de maintien</th>
+							<th>Stage de perfectionnement</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="text-align:center;">Mondial</td>
+							<td style="text-align:center;">2 000 000</td>
+							<td style="text-align:center;">200 000</td>
+							<td style="text-align:center;">-</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Intercontinental</td>
+							<td style="text-align:center;">1 200 000</td>
+							<td style="text-align:center;">120 000</td>
+							<td style="text-align:center;">1 100 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Continental</td>
+							<td style="text-align:center;">800 000</td>
+							<td style="text-align:center;">80 000</td>
+							<td style="text-align:center;">600 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">National</td>
+							<td style="text-align:center;">500 000</td>
+							<td style="text-align:center;">50 000</td>
+							<td style="text-align:center;">450 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Regional</td>
+							<td style="text-align:center;">200 000</td>
+							<td style="text-align:center;">20 000</td>
+							<td style="text-align:center;">400 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Départemental</td>
+							<td style="text-align:center;">25 000</td>
+							<td style="text-align:center;">2 500</td>
+							<td style="text-align:center;">200 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Cantonal</td>
+							<td style="text-align:center;">-</td>
+							<td style="text-align:center;">-</td>
+							<td style="text-align:center;">25 000</td>
+						</tr>
+					</tbody>
+				</table>
+				<br>
+
+			</div>
+		</div>
+
+		<div class="portlet_boite">
+			<div class="portlet_titre" id="installations" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_installations&#39;)">
+				Les installations
+			</div>
+			<div id="toggle_installations" class="portlet_contenu" style="display: block;">
+
+				<p>Ces quatre bâtiments comportent chacun 6 niveaux d'efficacité, que vous devrez agrandir niveau par niveau. A la création de l'équipe, vous disposez d'un unique bâtiment, le siège social 1.</p>
+
+				<p><strong>Le Siège Social (SS)</strong> constitue le centre administratif et financier de votre équipe. Cela se traduit dans le jeu par une augmentation des revenus des sponsors au fur et à mesure que le niveau de votre siège social augmente. Mais attention ! Le siège social n'est pas la seule variable prise en compte pour le calcul des revenus des sponsors. En effet, si votre équipe stagne dans les tréfonds de la Division 8 et que vous avez un siège social de haut niveau, son efficacité sera faible... A niveau de Siège Social équivalent, le dernier du championnat d'une division rapportera toujours plus que le premier de la division inférieure.<br><strong>Attention!</strong> Votre sponsor vous demande d'aligner au minimum 6 coureurs au départ des épreuves de la Coupe du Monde et de la première étape du Grand Tour. Sinon il déduira un montant proportionnel du nombre des coureurs manquants. Par exemple vous ne toucherez que 50% des revenus du sponsor si vous n'aligner que 3 coureurs.</p>
+
+				<p><strong>La Boutique</strong> vous rapporte une somme hebdomadaire qui dépend de vos résultats (une équipe qui ne marche pas bien vendra peu de produits dérivés). Plus le niveau de la boutique est élevé, plus cette somme augmente. Les revenus de la boutique sont beaucoup plus volatiles que les revenus du siège social. Une limite de 750 000€ et 900 000€ sont appliquées aux boutiques de niveau 5 et 6.</p>
+
+				<p><strong>Le Centre De Formation (CDF)</strong>  vous permet de détecter un jeune coureur par semaine à partir de lundi matin. Ne vous attendez pas à sortir des perles dès le début. Plus le niveau du CDF est élevé, plus la probabilité d'attirer un bon coureur augmente. Cette installation possède un prérequis : il faut posséder le centre d'entraînement au niveau 4 au minimum. Ceci afin d'avoir la possibilité de former au mieux vos jeunes recrues. La détection a un coût : de 1 000€ pour un CDF 1 à 10 000€ pour un CDF 6.</p>
+
+				<p><strong>Le Centre D'Entraînement (CDE)</strong>  Au fur et à mesure de l'augmentation de son niveau, le centre permettra une amélioration du rendement de l'entraînement pour l'ensemble de vos coureurs (récupération de la forme incluse).</p>
+
+				<p>Les installations nécessitent des frais d'entretien, qui seront déduits lors de la mise à jour économique. Ces frais sont indiqués dans la page installation du bâtiment concerné.</p>
+				<table class="tableau" style="background:white;">
+					<thead>
+						<tr>
+							<th>Type d'installation</th>
+							<th>Niveau</th>
+							<th>Coût d'achat</th>
+							<th>Entretien</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="text-align:center;">Siège Social</td>
+							<td style="text-align:center;">1</td>
+							<td style="text-align:center;">-</td>
+							<td style="text-align:center;">1 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Siège Social</td>
+							<td style="text-align:center;">2</td>
+							<td style="text-align:center;">200 000</td>
+							<td style="text-align:center;">10 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Siège Social</td>
+							<td style="text-align:center;">3</td>
+							<td style="text-align:center;">750 000</td>
+							<td style="text-align:center;">17 500</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Siège Social</td>
+							<td style="text-align:center;">4</td>
+							<td style="text-align:center;">1 200 000</td>
+							<td style="text-align:center;">25 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Siège Social</td>
+							<td style="text-align:center;">5</td>
+							<td style="text-align:center;">3 500 000</td>
+							<td style="text-align:center;">40 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Siège Social</td>
+							<td style="text-align:center;">6</td>
+							<td style="text-align:center;">10 000 000</td>
+							<td style="text-align:center;">65 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Boutique</td>
+							<td style="text-align:center;">1</td>
+							<td style="text-align:center;">50 000</td>
+							<td style="text-align:center;">1 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Boutique</td>
+							<td style="text-align:center;">2</td>
+							<td style="text-align:center;">200 000</td>
+							<td style="text-align:center;">10 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Boutique</td>
+							<td style="text-align:center;">3</td>
+							<td style="text-align:center;">800 000</td>
+							<td style="text-align:center;">17 500</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Boutique</td>
+							<td style="text-align:center;">4</td>
+							<td style="text-align:center;">1 350 000</td>
+							<td style="text-align:center;">25 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Boutique</td>
+							<td style="text-align:center;">5</td>
+							<td style="text-align:center;">4 000 000</td>
+							<td style="text-align:center;">40 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Boutique</td>
+							<td style="text-align:center;">6</td>
+							<td style="text-align:center;">10 000 000</td>
+							<td style="text-align:center;">65 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Centre de formation</td>
+							<td style="text-align:center;">1</td>
+							<td style="text-align:center;">150 000</td>
+							<td style="text-align:center;">500</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Centre de formation</td>
+							<td style="text-align:center;">2</td>
+							<td style="text-align:center;">150 000</td>
+							<td style="text-align:center;">5 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Centre de formation</td>
+							<td style="text-align:center;">3</td>
+							<td style="text-align:center;">500 000</td>
+							<td style="text-align:center;">8 750</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Centre de formation</td>
+							<td style="text-align:center;">4</td>
+							<td style="text-align:center;">1 000 000</td>
+							<td style="text-align:center;">12 500</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Centre de formation</td>
+							<td style="text-align:center;">5</td>
+							<td style="text-align:center;">2 500 000</td>
+							<td style="text-align:center;">20 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Centre de formation</td>
+							<td style="text-align:center;">6</td>
+							<td style="text-align:center;">5 000 000</td>
+							<td style="text-align:center;">32 500</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Centre d'entraînement</td>
+							<td style="text-align:center;">1</td>
+							<td style="text-align:center;">100 000</td>
+							<td style="text-align:center;">1 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Centre d'entraînement</td>
+							<td style="text-align:center;">2</td>
+							<td style="text-align:center;">150 000</td>
+							<td style="text-align:center;">10 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Centre d'entraînement</td>
+							<td style="text-align:center;">3</td>
+							<td style="text-align:center;">500 000</td>
+							<td style="text-align:center;">17 500</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Centre d'entraînement</td>
+							<td style="text-align:center;">4</td>
+							<td style="text-align:center;">1 000 000</td>
+							<td style="text-align:center;">25 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Centre d'entraînement</td>
+							<td style="text-align:center;">5</td>
+							<td style="text-align:center;">2 500 000</td>
+							<td style="text-align:center;">40 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Centre d'entraînement</td>
+							<td style="text-align:center;">6</td>
+							<td style="text-align:center;">5 000 000</td>
+							<td style="text-align:center;">65 000</td>
+						</tr>
+					</tbody>
+				</table><br>
+
+				<p><strong>Durée des travaux (en jours)</strong></p>
+
+				<table class="tableau" style="background:white;">
+					<thead>
+						<tr>
+							<th>Installation</th>
+							<th>Niveau 1</th>
+							<th>Niveau 2</th>
+							<th>Niveau 3</th>
+							<th>Niveau 4</th>
+							<th>Niveau 5</th>
+							<th>Niveau 6</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="text-align:center;">Siège Social</td>
+							<td style="text-align:center;">-</td>
+							<td style="text-align:center;">7</td>
+							<td style="text-align:center;">10</td>
+							<td style="text-align:center;">12</td>
+							<td style="text-align:center;">15</td>
+							<td style="text-align:center;">20</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">Boutique</td>
+							<td style="text-align:center;">5</td>
+							<td style="text-align:center;">7</td>
+							<td style="text-align:center;">10</td>
+							<td style="text-align:center;">12</td>
+							<td style="text-align:center;">15</td>
+							<td style="text-align:center;">20</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">CDE</td>
+							<td style="text-align:center;">5</td>
+							<td style="text-align:center;">7</td>
+							<td style="text-align:center;">10</td>
+							<td style="text-align:center;">12</td>
+							<td style="text-align:center;">15</td>
+							<td style="text-align:center;">20</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">CDF</td>
+							<td style="text-align:center;">5</td>
+							<td style="text-align:center;">7</td>
+							<td style="text-align:center;">10</td>
+							<td style="text-align:center;">12</td>
+							<td style="text-align:center;">15</td>
+							<td style="text-align:center;">20</td>
+						</tr>
+					</tbody>
+				</table><br>
+
+				<p><strong>Règles concernant les revenus durant les "travaux" d'agrandissement.</strong></p>
+
+				<p>CDF =&gt; il n'est pas possible de tirer de jeune<br>
+				Boutique =&gt; pas de revenus si "travaux" en cours au moment de la MAJ économique<br>
+				SS =&gt; revenus du niveau actuel (avant fin des "travaux" d'agrandissement de niveau)</p>
+
+				<p>Il est possible de descendre le niveau d'une installation. Cependant, cette revente ne vous fera gagner 20% du montant précédemment investi pour le passage du niveau 6 au 5, 30% pour le passage du niveau 5 au 4 et ainsi de suite. Cela allègera également les frais d'entretien pour vous sortir éventuellement d'une situation financière difficile.</p>
+
+			</div>
+		</div>
+
+			
+		<div class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_points&#39;)">
+				Les points
+			</div>
+			<div id="toggle_points" class="portlet_contenu" style="display: block;">
+				<p><strong>Disctribution des points</strong></p>
+				<table class="tableau" style="background:white;">
+					<thead>
+						<tr>
+							<th style="width:75px;">Position</th>
+							<th style="width:75px;">C1</th>
+							<th style="width:75px;">C2 / étapes</th>
+							<th style="width:75px;">CLME</th>
+						</tr>
+					</thead>
+					<tbody>
+					<tr>
+						<td style="text-align:center;">1</td>
+						<td style="text-align:center;">200</td>
+						<td style="text-align:center;">100</td>
+						<td style="text-align:center;">160</td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">2</td>
+						<td style="text-align:center;">140</td>
+						<td style="text-align:center;">70</td>
+						<td style="text-align:center;">130</td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">3</td>
+						<td style="text-align:center;">100</td>
+						<td style="text-align:center;">50</td>
+						<td style="text-align:center;">105</td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">4</td>
+						<td style="text-align:center;">80</td>
+						<td style="text-align:center;">40</td>
+						<td style="text-align:center;">90</td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">5</td>
+						<td style="text-align:center;">70</td>
+						<td style="text-align:center;">35</td>
+						<td style="text-align:center;">80</td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">6</td>
+						<td style="text-align:center;">68</td>
+						<td style="text-align:center;">34</td>
+						<td style="text-align:center;">70</td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">7</td>
+						<td style="text-align:center;">66</td>
+						<td style="text-align:center;">33</td>
+						<td style="text-align:center;">60</td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">8</td>
+						<td style="text-align:center;">64</td>
+						<td style="text-align:center;">32</td>
+						<td style="text-align:center;">50</td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">9</td>
+						<td style="text-align:center;">62</td>
+						<td style="text-align:center;">31</td>
+						<td style="text-align:center;">40</td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">10</td>
+						<td style="text-align:center;">60</td>
+						<td style="text-align:center;">30</td>
+						<td style="text-align:center;">30</td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">11</td>
+						<td style="text-align:center;">58</td>
+						<td style="text-align:center;">29</td>
+						<td style="text-align:center;">25</td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">12</td>
+						<td style="text-align:center;">56</td>
+						<td style="text-align:center;">28</td>
+						<td style="text-align:center;">20</td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">13</td>
+						<td style="text-align:center;">54</td>
+						<td style="text-align:center;">27</td>
+						<td style="text-align:center;">15</td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">14</td>
+						<td style="text-align:center;">52</td>
+						<td style="text-align:center;">26</td>
+						<td style="text-align:center;">10</td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">15</td>
+						<td style="text-align:center;">50</td>
+						<td style="text-align:center;">25</td>
+						<td style="text-align:center;">5</td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">16</td>
+						<td style="text-align:center;">49</td>
+						<td style="text-align:center;">25</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">17</td>
+						<td style="text-align:center;">48</td>
+						<td style="text-align:center;">24</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">18</td>
+						<td style="text-align:center;">47</td>
+						<td style="text-align:center;">24</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">19</td>
+						<td style="text-align:center;">46</td>
+						<td style="text-align:center;">23</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">20</td>
+						<td style="text-align:center;">45</td>
+						<td style="text-align:center;">23</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">21</td>
+						<td style="text-align:center;">44</td>
+						<td style="text-align:center;">22</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">22</td>
+						<td style="text-align:center;">43</td>
+						<td style="text-align:center;">22</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">23</td>
+						<td style="text-align:center;">42</td>
+						<td style="text-align:center;">21</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">24</td>
+						<td style="text-align:center;">41</td>
+						<td style="text-align:center;">21</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">25</td>
+						<td style="text-align:center;">40</td>
+						<td style="text-align:center;">20</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">26</td>
+						<td style="text-align:center;">39</td>
+						<td style="text-align:center;">20</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">27</td>
+						<td style="text-align:center;">38</td>
+						<td style="text-align:center;">19</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">28</td>
+						<td style="text-align:center;">37</td>
+						<td style="text-align:center;">19</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">29</td>
+						<td style="text-align:center;">36</td>
+						<td style="text-align:center;">18</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">30</td>
+						<td style="text-align:center;">35</td>
+						<td style="text-align:center;">18</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">31</td>
+						<td style="text-align:center;">34</td>
+						<td style="text-align:center;">17</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">32</td>
+						<td style="text-align:center;">33</td>
+						<td style="text-align:center;">17</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">33</td>
+						<td style="text-align:center;">32</td>
+						<td style="text-align:center;">16</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">34</td>
+						<td style="text-align:center;">31</td>
+						<td style="text-align:center;">16</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">35</td>
+						<td style="text-align:center;">30</td>
+						<td style="text-align:center;">15</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">36</td>
+						<td style="text-align:center;">29</td>
+						<td style="text-align:center;">15</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">37</td>
+						<td style="text-align:center;">29</td>
+						<td style="text-align:center;">15</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">38</td>
+						<td style="text-align:center;">28</td>
+						<td style="text-align:center;">14</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">39</td>
+						<td style="text-align:center;">28</td>
+						<td style="text-align:center;">14</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">40</td>
+						<td style="text-align:center;">27</td>
+						<td style="text-align:center;">14</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">41</td>
+						<td style="text-align:center;">27</td>
+						<td style="text-align:center;">14</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">42</td>
+						<td style="text-align:center;">26</td>
+						<td style="text-align:center;">13</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">43</td>
+						<td style="text-align:center;">26</td>
+						<td style="text-align:center;">13</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">44</td>
+						<td style="text-align:center;">25</td>
+						<td style="text-align:center;">13</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">45</td>
+						<td style="text-align:center;">25</td>
+						<td style="text-align:center;">13</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">46</td>
+						<td style="text-align:center;">24</td>
+						<td style="text-align:center;">12</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">47</td>
+						<td style="text-align:center;">24</td>
+						<td style="text-align:center;">12</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">48</td>
+						<td style="text-align:center;">23</td>
+						<td style="text-align:center;">12</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">49</td>
+						<td style="text-align:center;">23</td>
+						<td style="text-align:center;">12</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">50</td>
+						<td style="text-align:center;">22</td>
+						<td style="text-align:center;">11</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">51</td>
+						<td style="text-align:center;">22</td>
+						<td style="text-align:center;">11</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">52</td>
+						<td style="text-align:center;">21</td>
+						<td style="text-align:center;">11</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">53</td>
+						<td style="text-align:center;">21</td>
+						<td style="text-align:center;">11</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">54</td>
+						<td style="text-align:center;">20</td>
+						<td style="text-align:center;">10</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">55</td>
+						<td style="text-align:center;">20</td>
+						<td style="text-align:center;">10</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">56</td>
+						<td style="text-align:center;">19</td>
+						<td style="text-align:center;">10</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">57</td>
+						<td style="text-align:center;">19</td>
+						<td style="text-align:center;">10</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">58</td>
+						<td style="text-align:center;">18</td>
+						<td style="text-align:center;">9</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">59</td>
+						<td style="text-align:center;">18</td>
+						<td style="text-align:center;">9</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">60</td>
+						<td style="text-align:center;">17</td>
+						<td style="text-align:center;">9</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">61</td>
+						<td style="text-align:center;">17</td>
+						<td style="text-align:center;">9</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">62</td>
+						<td style="text-align:center;">16</td>
+						<td style="text-align:center;">8</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">63</td>
+						<td style="text-align:center;">16</td>
+						<td style="text-align:center;">8</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">64</td>
+						<td style="text-align:center;">15</td>
+						<td style="text-align:center;">8</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">65</td>
+						<td style="text-align:center;">15</td>
+						<td style="text-align:center;">8</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">66</td>
+						<td style="text-align:center;">14</td>
+						<td style="text-align:center;">7</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">67</td>
+						<td style="text-align:center;">14</td>
+						<td style="text-align:center;">7</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">68</td>
+						<td style="text-align:center;">13</td>
+						<td style="text-align:center;">7</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">69</td>
+						<td style="text-align:center;">13</td>
+						<td style="text-align:center;">7</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">70</td>
+						<td style="text-align:center;">12</td>
+						<td style="text-align:center;">6</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">71</td>
+						<td style="text-align:center;">12</td>
+						<td style="text-align:center;">6</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">72</td>
+						<td style="text-align:center;">11</td>
+						<td style="text-align:center;">6</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">73</td>
+						<td style="text-align:center;">11</td>
+						<td style="text-align:center;">6</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">74</td>
+						<td style="text-align:center;">10</td>
+						<td style="text-align:center;">5</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">75</td>
+						<td style="text-align:center;">10</td>
+						<td style="text-align:center;">5</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">76</td>
+						<td style="text-align:center;">10</td>
+						<td style="text-align:center;">5</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">77</td>
+						<td style="text-align:center;">9</td>
+						<td style="text-align:center;">5</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">78</td>
+						<td style="text-align:center;">9</td>
+						<td style="text-align:center;">5</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">79</td>
+						<td style="text-align:center;">9</td>
+						<td style="text-align:center;">5</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">80</td>
+						<td style="text-align:center;">8</td>
+						<td style="text-align:center;">4</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">81</td>
+						<td style="text-align:center;">8</td>
+						<td style="text-align:center;">4</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">82</td>
+						<td style="text-align:center;">8</td>
+						<td style="text-align:center;">4</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">83</td>
+						<td style="text-align:center;">7</td>
+						<td style="text-align:center;">4</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">84</td>
+						<td style="text-align:center;">7</td>
+						<td style="text-align:center;">4</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">85</td>
+						<td style="text-align:center;">7</td>
+						<td style="text-align:center;">4</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">86</td>
+						<td style="text-align:center;">6</td>
+						<td style="text-align:center;">3</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">87</td>
+						<td style="text-align:center;">6</td>
+						<td style="text-align:center;">3</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">88</td>
+						<td style="text-align:center;">6</td>
+						<td style="text-align:center;">3</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">89</td>
+						<td style="text-align:center;">5</td>
+						<td style="text-align:center;">3</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">90</td>
+						<td style="text-align:center;">5</td>
+						<td style="text-align:center;">3</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">91</td>
+						<td style="text-align:center;">5</td>
+						<td style="text-align:center;">3</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">92</td>
+						<td style="text-align:center;">4</td>
+						<td style="text-align:center;">2</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">93</td>
+						<td style="text-align:center;">4</td>
+						<td style="text-align:center;">2</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">94</td>
+						<td style="text-align:center;">4</td>
+						<td style="text-align:center;">2</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">95</td>
+						<td style="text-align:center;">3</td>
+						<td style="text-align:center;">2</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">96</td>
+						<td style="text-align:center;">3</td>
+						<td style="text-align:center;">2</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">97</td>
+						<td style="text-align:center;">3</td>
+						<td style="text-align:center;">2</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">98</td>
+						<td style="text-align:center;">2</td>
+						<td style="text-align:center;">1</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">99</td>
+						<td style="text-align:center;">2</td>
+						<td style="text-align:center;">1</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">100</td>
+						<td style="text-align:center;">2</td>
+						<td style="text-align:center;">1</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">101</td>
+						<td style="text-align:center;">2</td>
+						<td style="text-align:center;">1</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">102</td>
+						<td style="text-align:center;">1</td>
+						<td style="text-align:center;">1</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">103</td>
+						<td style="text-align:center;">1</td>
+						<td style="text-align:center;">1</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">104</td>
+						<td style="text-align:center;">1</td>
+						<td style="text-align:center;">1</td>
+						<td style="text-align:center;"></td>
+				</tr>
+				<tr>
+						<td style="text-align:center;">105</td>
+						<td style="text-align:center;">1</td>
+						<td style="text-align:center;">1</td>
+						<td style="text-align:center;"></td>
+				</tr>
+					</tbody>
+				</table>
+				<p>Classement final du GT = 2 x C1, classement finale d'un MT = 1.5 x C1</p>
+				<p>Les points de tous les coureurs sont comptabilisés au classement interéquipe professionel. Exception à la règle : les MC ne rapportent pas de points.</p>
+			</div>
+		</div>
+
+		<div class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_primes&#39;)">
+				Les primes
+			</div>
+			<div id="toggle_primes" class="portlet_contenu" style="display: block;">
+				<p><strong>Primes des courses individuelles</strong></p>
+				<p>Les C2 et les étapes rapportent la moitié des primes présentées ci-dessous. Les U25 le quart et les U21 le 10ème. Les nombres sont arrondis au millier supérieur.</p>
+				<table class="tableau" style="background:white;">
+					<thead>
+						<tr>
+							<th>Position</th>
+							<th>Division 1</th>
+							<th>Division 2</th>
+							<th>Division 3</th>
+							<th>Division 4</th>
+							<th>Division 5</th>
+							<th>Division 6</th>
+							<th>Division 7</th>
+							<th>Division 8</th>
+							<th>Division 9</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+								<td style="text-align:center;">1</td>
+								<td style="text-align:center;">160000</td>
+								<td style="text-align:center;">120000</td>
+								<td style="text-align:center;">99000</td>
+								<td style="text-align:center;">83000</td>
+								<td style="text-align:center;">72000</td>
+								<td style="text-align:center;">64000</td>
+								<td style="text-align:center;">58000</td>
+								<td style="text-align:center;">58000</td>
+								<td style="text-align:center;">58000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">2</td>
+								<td style="text-align:center;">140000</td>
+								<td style="text-align:center;">105000</td>
+								<td style="text-align:center;">87000</td>
+								<td style="text-align:center;">73000</td>
+								<td style="text-align:center;">63000</td>
+								<td style="text-align:center;">56000</td>
+								<td style="text-align:center;">50000</td>
+								<td style="text-align:center;">50000</td>
+								<td style="text-align:center;">50000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">3</td>
+								<td style="text-align:center;">125000</td>
+								<td style="text-align:center;">94000</td>
+								<td style="text-align:center;">78000</td>
+								<td style="text-align:center;">65000</td>
+								<td style="text-align:center;">56000</td>
+								<td style="text-align:center;">50000</td>
+								<td style="text-align:center;">45000</td>
+								<td style="text-align:center;">45000</td>
+								<td style="text-align:center;">45000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">4</td>
+								<td style="text-align:center;">110000</td>
+								<td style="text-align:center;">83000</td>
+								<td style="text-align:center;">68000</td>
+								<td style="text-align:center;">57000</td>
+								<td style="text-align:center;">50000</td>
+								<td style="text-align:center;">44000</td>
+								<td style="text-align:center;">40000</td>
+								<td style="text-align:center;">40000</td>
+								<td style="text-align:center;">40000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">5</td>
+								<td style="text-align:center;">100000</td>
+								<td style="text-align:center;">75000</td>
+								<td style="text-align:center;">62000</td>
+								<td style="text-align:center;">52000</td>
+								<td style="text-align:center;">45000</td>
+								<td style="text-align:center;">40000</td>
+								<td style="text-align:center;">36000</td>
+								<td style="text-align:center;">36000</td>
+								<td style="text-align:center;">36000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">6</td>
+								<td style="text-align:center;">90000</td>
+								<td style="text-align:center;">68000</td>
+								<td style="text-align:center;">56000</td>
+								<td style="text-align:center;">47000</td>
+								<td style="text-align:center;">41000</td>
+								<td style="text-align:center;">36000</td>
+								<td style="text-align:center;">32000</td>
+								<td style="text-align:center;">32000</td>
+								<td style="text-align:center;">32000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">7</td>
+								<td style="text-align:center;">80000</td>
+								<td style="text-align:center;">60000</td>
+								<td style="text-align:center;">50000</td>
+								<td style="text-align:center;">42000</td>
+								<td style="text-align:center;">36000</td>
+								<td style="text-align:center;">32000</td>
+								<td style="text-align:center;">29000</td>
+								<td style="text-align:center;">29000</td>
+								<td style="text-align:center;">29000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">8</td>
+								<td style="text-align:center;">75000</td>
+								<td style="text-align:center;">56000</td>
+								<td style="text-align:center;">47000</td>
+								<td style="text-align:center;">39000</td>
+								<td style="text-align:center;">34000</td>
+								<td style="text-align:center;">30000</td>
+								<td style="text-align:center;">27000</td>
+								<td style="text-align:center;">27000</td>
+								<td style="text-align:center;">27000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">9</td>
+								<td style="text-align:center;">70000</td>
+								<td style="text-align:center;">53000</td>
+								<td style="text-align:center;">43000</td>
+								<td style="text-align:center;">36000</td>
+								<td style="text-align:center;">32000</td>
+								<td style="text-align:center;">28000</td>
+								<td style="text-align:center;">25000</td>
+								<td style="text-align:center;">25000</td>
+								<td style="text-align:center;">25000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">10</td>
+								<td style="text-align:center;">65000</td>
+								<td style="text-align:center;">49000</td>
+								<td style="text-align:center;">40000</td>
+								<td style="text-align:center;">34000</td>
+								<td style="text-align:center;">29000</td>
+								<td style="text-align:center;">26000</td>
+								<td style="text-align:center;">23000</td>
+								<td style="text-align:center;">23000</td>
+								<td style="text-align:center;">23000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">11</td>
+								<td style="text-align:center;">60000</td>
+								<td style="text-align:center;">45000</td>
+								<td style="text-align:center;">37000</td>
+								<td style="text-align:center;">31000</td>
+								<td style="text-align:center;">27000</td>
+								<td style="text-align:center;">24000</td>
+								<td style="text-align:center;">22000</td>
+								<td style="text-align:center;">22000</td>
+								<td style="text-align:center;">22000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">12</td>
+								<td style="text-align:center;">55000</td>
+								<td style="text-align:center;">41000</td>
+								<td style="text-align:center;">34000</td>
+								<td style="text-align:center;">29000</td>
+								<td style="text-align:center;">25000</td>
+								<td style="text-align:center;">22000</td>
+								<td style="text-align:center;">20000</td>
+								<td style="text-align:center;">20000</td>
+								<td style="text-align:center;">20000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">13</td>
+								<td style="text-align:center;">50000</td>
+								<td style="text-align:center;">38000</td>
+								<td style="text-align:center;">31000</td>
+								<td style="text-align:center;">26000</td>
+								<td style="text-align:center;">23000</td>
+								<td style="text-align:center;">20000</td>
+								<td style="text-align:center;">18000</td>
+								<td style="text-align:center;">18000</td>
+								<td style="text-align:center;">18000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">14</td>
+								<td style="text-align:center;">45000</td>
+								<td style="text-align:center;">34000</td>
+								<td style="text-align:center;">28000</td>
+								<td style="text-align:center;">23000</td>
+								<td style="text-align:center;">20000</td>
+								<td style="text-align:center;">18000</td>
+								<td style="text-align:center;">16000</td>
+								<td style="text-align:center;">16000</td>
+								<td style="text-align:center;">16000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">15</td>
+								<td style="text-align:center;">41000</td>
+								<td style="text-align:center;">31000</td>
+								<td style="text-align:center;">25000</td>
+								<td style="text-align:center;">21000</td>
+								<td style="text-align:center;">18000</td>
+								<td style="text-align:center;">16000</td>
+								<td style="text-align:center;">15000</td>
+								<td style="text-align:center;">15000</td>
+								<td style="text-align:center;">15000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">16</td>
+								<td style="text-align:center;">37000</td>
+								<td style="text-align:center;">28000</td>
+								<td style="text-align:center;">23000</td>
+								<td style="text-align:center;">19000</td>
+								<td style="text-align:center;">17000</td>
+								<td style="text-align:center;">15000</td>
+								<td style="text-align:center;">13000</td>
+								<td style="text-align:center;">13000</td>
+								<td style="text-align:center;">13000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">17</td>
+								<td style="text-align:center;">33000</td>
+								<td style="text-align:center;">25000</td>
+								<td style="text-align:center;">20000</td>
+								<td style="text-align:center;">17000</td>
+								<td style="text-align:center;">15000</td>
+								<td style="text-align:center;">13000</td>
+								<td style="text-align:center;">12000</td>
+								<td style="text-align:center;">12000</td>
+								<td style="text-align:center;">12000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">18</td>
+								<td style="text-align:center;">30000</td>
+								<td style="text-align:center;">23000</td>
+								<td style="text-align:center;">19000</td>
+								<td style="text-align:center;">16000</td>
+								<td style="text-align:center;">14000</td>
+								<td style="text-align:center;">12000</td>
+								<td style="text-align:center;">11000</td>
+								<td style="text-align:center;">11000</td>
+								<td style="text-align:center;">11000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">19</td>
+								<td style="text-align:center;">27000</td>
+								<td style="text-align:center;">20000</td>
+								<td style="text-align:center;">17000</td>
+								<td style="text-align:center;">14000</td>
+								<td style="text-align:center;">12000</td>
+								<td style="text-align:center;">11000</td>
+								<td style="text-align:center;">10000</td>
+								<td style="text-align:center;">10000</td>
+								<td style="text-align:center;">10000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">20</td>
+								<td style="text-align:center;">25000</td>
+								<td style="text-align:center;">19000</td>
+								<td style="text-align:center;">16000</td>
+								<td style="text-align:center;">13000</td>
+								<td style="text-align:center;">11000</td>
+								<td style="text-align:center;">10000</td>
+								<td style="text-align:center;">9000</td>
+								<td style="text-align:center;">9000</td>
+								<td style="text-align:center;">9000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">21</td>
+								<td style="text-align:center;">23000</td>
+								<td style="text-align:center;">17000</td>
+								<td style="text-align:center;">14000</td>
+								<td style="text-align:center;">12000</td>
+								<td style="text-align:center;">10000</td>
+								<td style="text-align:center;">9000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">8000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">22</td>
+								<td style="text-align:center;">22000</td>
+								<td style="text-align:center;">17000</td>
+								<td style="text-align:center;">14000</td>
+								<td style="text-align:center;">11000</td>
+								<td style="text-align:center;">10000</td>
+								<td style="text-align:center;">9000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">8000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">23</td>
+								<td style="text-align:center;">21000</td>
+								<td style="text-align:center;">16000</td>
+								<td style="text-align:center;">13000</td>
+								<td style="text-align:center;">11000</td>
+								<td style="text-align:center;">9000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">8000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">24</td>
+								<td style="text-align:center;">20000</td>
+								<td style="text-align:center;">15000</td>
+								<td style="text-align:center;">12000</td>
+								<td style="text-align:center;">10000</td>
+								<td style="text-align:center;">9000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">7000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">25</td>
+								<td style="text-align:center;">19000</td>
+								<td style="text-align:center;">14000</td>
+								<td style="text-align:center;">12000</td>
+								<td style="text-align:center;">10000</td>
+								<td style="text-align:center;">9000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">7000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">26</td>
+								<td style="text-align:center;">18000</td>
+								<td style="text-align:center;">14000</td>
+								<td style="text-align:center;">11000</td>
+								<td style="text-align:center;">9000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">6000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">27</td>
+								<td style="text-align:center;">17000</td>
+								<td style="text-align:center;">13000</td>
+								<td style="text-align:center;">11000</td>
+								<td style="text-align:center;">9000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">6000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">28</td>
+								<td style="text-align:center;">16000</td>
+								<td style="text-align:center;">12000</td>
+								<td style="text-align:center;">10000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">6000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">29</td>
+								<td style="text-align:center;">15000</td>
+								<td style="text-align:center;">11000</td>
+								<td style="text-align:center;">9000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">5000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">30</td>
+								<td style="text-align:center;">14000</td>
+								<td style="text-align:center;">11000</td>
+								<td style="text-align:center;">9000</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">5000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">31</td>
+								<td style="text-align:center;">13000</td>
+								<td style="text-align:center;">10000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">5000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">32</td>
+								<td style="text-align:center;">12000</td>
+								<td style="text-align:center;">9000</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">33</td>
+								<td style="text-align:center;">11000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">34</td>
+								<td style="text-align:center;">10000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">35</td>
+								<td style="text-align:center;">10000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">36</td>
+								<td style="text-align:center;">10000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">37</td>
+								<td style="text-align:center;">10000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">38</td>
+								<td style="text-align:center;">10000</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">39</td>
+								<td style="text-align:center;">9000</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">40</td>
+								<td style="text-align:center;">9000</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">41</td>
+								<td style="text-align:center;">9000</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">42</td>
+								<td style="text-align:center;">9000</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">43</td>
+								<td style="text-align:center;">9000</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">44</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">45</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">46</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">47</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">48</td>
+								<td style="text-align:center;">8000</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">49</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">50</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">51</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">52</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">53</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">54</td>
+								<td style="text-align:center;">7000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">55</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">56</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">57</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">58</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">59</td>
+								<td style="text-align:center;">6000</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">60</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">61</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">62</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">63</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">64</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">65</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">66</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">67</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">68</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">69</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">70</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">71</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">72</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">73</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">74</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">75</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">76</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">77</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">78</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">79</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">80</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">81</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">82</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">83</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">84</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">85</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">86</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">87</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">88</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">89</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">90</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">91</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">92</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">93</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">94</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">95</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">96</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">97</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">98</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">99</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">100</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">101</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">102</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">103</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">104</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+						<tr>
+								<td style="text-align:center;">105</td>
+								<td style="text-align:center;">5000</td>
+								<td style="text-align:center;">4000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">3000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+								<td style="text-align:center;">2000</td>
+						</tr>
+					</tbody>
+				</table>
+				<p><strong>Primes C1 CLM par équipe (TTT)</strong><br>
+				En cas de TTT couru dans le cadre d'une C2 ou d'une étape de tour, il convient de partir sur 50% du barème ci-dessus.</p>
+				<table class="tableau" style="background:white;">
+					<thead>
+						<tr>
+							<th>Position</th>
+							<th>Division 1</th>
+							<th>Division 2</th>
+							<th>Division 3</th>
+							<th>Division 4</th>
+							<th>Division 5</th>
+							<th>Division 6</th>
+							<th>Division 7</th>
+							<th>Division 8</th>
+							<th>Division 9</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="text-align:center;">1</td>
+							<td style="text-align:center;">275000</td>
+							<td style="text-align:center;">200000</td>
+							<td style="text-align:center;">170000</td>
+							<td style="text-align:center;">140000</td>
+							<td style="text-align:center;">125000</td>
+							<td style="text-align:center;">110000</td>
+							<td style="text-align:center;">100000</td>
+							<td style="text-align:center;">100000</td>
+							<td style="text-align:center;">100000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">2</td>
+							<td style="text-align:center;">225000</td>
+							<td style="text-align:center;">164000</td>
+							<td style="text-align:center;">139000</td>
+							<td style="text-align:center;">115000</td>
+							<td style="text-align:center;">102000</td>
+							<td style="text-align:center;">90000</td>
+							<td style="text-align:center;">82000</td>
+							<td style="text-align:center;">82000</td>
+							<td style="text-align:center;">82000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">3</td>
+							<td style="text-align:center;">200000</td>
+							<td style="text-align:center;">146000</td>
+							<td style="text-align:center;">124000</td>
+							<td style="text-align:center;">102000</td>
+							<td style="text-align:center;">91000</td>
+							<td style="text-align:center;">80000</td>
+							<td style="text-align:center;">73000</td>
+							<td style="text-align:center;">73000</td>
+							<td style="text-align:center;">73000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">4</td>
+							<td style="text-align:center;">175000</td>
+							<td style="text-align:center;">127000</td>
+							<td style="text-align:center;">108000</td>
+							<td style="text-align:center;">89000</td>
+							<td style="text-align:center;">79000</td>
+							<td style="text-align:center;">70000</td>
+							<td style="text-align:center;">64000</td>
+							<td style="text-align:center;">64000</td>
+							<td style="text-align:center;">64000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">5</td>
+							<td style="text-align:center;">150000</td>
+							<td style="text-align:center;">109000</td>
+							<td style="text-align:center;">93000</td>
+							<td style="text-align:center;">77000</td>
+							<td style="text-align:center;">68000</td>
+							<td style="text-align:center;">60000</td>
+							<td style="text-align:center;">55000</td>
+							<td style="text-align:center;">55000</td>
+							<td style="text-align:center;">55000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">6</td>
+							<td style="text-align:center;">125000</td>
+							<td style="text-align:center;">91000</td>
+							<td style="text-align:center;">77000</td>
+							<td style="text-align:center;">64000</td>
+							<td style="text-align:center;">57000</td>
+							<td style="text-align:center;">50000</td>
+							<td style="text-align:center;">46000</td>
+							<td style="text-align:center;">46000</td>
+							<td style="text-align:center;">46000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">7</td>
+							<td style="text-align:center;">100000</td>
+							<td style="text-align:center;">73000</td>
+							<td style="text-align:center;">62000</td>
+							<td style="text-align:center;">51000</td>
+							<td style="text-align:center;">45000</td>
+							<td style="text-align:center;">40000</td>
+							<td style="text-align:center;">36000</td>
+							<td style="text-align:center;">36000</td>
+							<td style="text-align:center;">36000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">8</td>
+							<td style="text-align:center;">85000</td>
+							<td style="text-align:center;">62000</td>
+							<td style="text-align:center;">53000</td>
+							<td style="text-align:center;">43000</td>
+							<td style="text-align:center;">39000</td>
+							<td style="text-align:center;">34000</td>
+							<td style="text-align:center;">31000</td>
+							<td style="text-align:center;">31000</td>
+							<td style="text-align:center;">31000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">9</td>
+							<td style="text-align:center;">70000</td>
+							<td style="text-align:center;">51000</td>
+							<td style="text-align:center;">43000</td>
+							<td style="text-align:center;">36000</td>
+							<td style="text-align:center;">32000</td>
+							<td style="text-align:center;">28000</td>
+							<td style="text-align:center;">25000</td>
+							<td style="text-align:center;">25000</td>
+							<td style="text-align:center;">25000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">10</td>
+							<td style="text-align:center;">60000</td>
+							<td style="text-align:center;">44000</td>
+							<td style="text-align:center;">37000</td>
+							<td style="text-align:center;">31000</td>
+							<td style="text-align:center;">27000</td>
+							<td style="text-align:center;">24000</td>
+							<td style="text-align:center;">22000</td>
+							<td style="text-align:center;">22000</td>
+							<td style="text-align:center;">22000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">11</td>
+							<td style="text-align:center;">55000</td>
+							<td style="text-align:center;">40000</td>
+							<td style="text-align:center;">34000</td>
+							<td style="text-align:center;">28000</td>
+							<td style="text-align:center;">25000</td>
+							<td style="text-align:center;">22000</td>
+							<td style="text-align:center;">20000</td>
+							<td style="text-align:center;">20000</td>
+							<td style="text-align:center;">20000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">12</td>
+							<td style="text-align:center;">50000</td>
+							<td style="text-align:center;">36000</td>
+							<td style="text-align:center;">31000</td>
+							<td style="text-align:center;">26000</td>
+							<td style="text-align:center;">23000</td>
+							<td style="text-align:center;">20000</td>
+							<td style="text-align:center;">18000</td>
+							<td style="text-align:center;">18000</td>
+							<td style="text-align:center;">18000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">13</td>
+							<td style="text-align:center;">45000</td>
+							<td style="text-align:center;">33000</td>
+							<td style="text-align:center;">28000</td>
+							<td style="text-align:center;">23000</td>
+							<td style="text-align:center;">20000</td>
+							<td style="text-align:center;">18000</td>
+							<td style="text-align:center;">16000</td>
+							<td style="text-align:center;">16000</td>
+							<td style="text-align:center;">16000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">14</td>
+							<td style="text-align:center;">40000</td>
+							<td style="text-align:center;">29000</td>
+							<td style="text-align:center;">25000</td>
+							<td style="text-align:center;">20000</td>
+							<td style="text-align:center;">18000</td>
+							<td style="text-align:center;">16000</td>
+							<td style="text-align:center;">15000</td>
+							<td style="text-align:center;">15000</td>
+							<td style="text-align:center;">15000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">15</td>
+							<td style="text-align:center;">35000</td>
+							<td style="text-align:center;">25000</td>
+							<td style="text-align:center;">22000</td>
+							<td style="text-align:center;">18000</td>
+							<td style="text-align:center;">16000</td>
+							<td style="text-align:center;">14000</td>
+							<td style="text-align:center;">13000</td>
+							<td style="text-align:center;">13000</td>
+							<td style="text-align:center;">13000</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<p><strong>Primes de fin de saison pour le Championnat par équipes Pro</strong><br>
+				</p><table class="tableau" style="background:white;">
+					<thead>
+						<tr>
+							<th>Position</th>
+							<th>Division 1</th>
+							<th>Division 2</th>
+							<th>Division 3</th>
+							<th>Division 4</th>
+							<th>Division 5</th>
+							<th>Division 6</th>
+							<th>Division 7</th>
+							<th>Division 8</th>
+							<th>Division 9</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="text-align:center;">1</td>
+							<td style="text-align:center;">600000</td>
+							<td style="text-align:center;">475000</td>
+							<td style="text-align:center;">375000</td>
+							<td style="text-align:center;">310000</td>
+							<td style="text-align:center;">270000</td>
+							<td style="text-align:center;">240000</td>
+							<td style="text-align:center;">215000</td>
+							<td style="text-align:center;">215000</td>
+							<td style="text-align:center;">215000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">2</td>
+							<td style="text-align:center;">500000</td>
+							<td style="text-align:center;">396000</td>
+							<td style="text-align:center;">313000</td>
+							<td style="text-align:center;">259000</td>
+							<td style="text-align:center;">225000</td>
+							<td style="text-align:center;">200000</td>
+							<td style="text-align:center;">179000</td>
+							<td style="text-align:center;">179000</td>
+							<td style="text-align:center;">179000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">3</td>
+							<td style="text-align:center;">400000</td>
+							<td style="text-align:center;">317000</td>
+							<td style="text-align:center;">250000</td>
+							<td style="text-align:center;">207000</td>
+							<td style="text-align:center;">180000</td>
+							<td style="text-align:center;">160000</td>
+							<td style="text-align:center;">143000</td>
+							<td style="text-align:center;">143000</td>
+							<td style="text-align:center;">143000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">4</td>
+							<td style="text-align:center;">315000</td>
+							<td style="text-align:center;">249000</td>
+							<td style="text-align:center;">197000</td>
+							<td style="text-align:center;">163000</td>
+							<td style="text-align:center;">142000</td>
+							<td style="text-align:center;">126000</td>
+							<td style="text-align:center;">113000</td>
+							<td style="text-align:center;">113000</td>
+							<td style="text-align:center;">113000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">5</td>
+							<td style="text-align:center;">275000</td>
+							<td style="text-align:center;">218000</td>
+							<td style="text-align:center;">172000</td>
+							<td style="text-align:center;">142000</td>
+							<td style="text-align:center;">124000</td>
+							<td style="text-align:center;">110000</td>
+							<td style="text-align:center;">98000</td>
+							<td style="text-align:center;">98000</td>
+							<td style="text-align:center;">98000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">6</td>
+							<td style="text-align:center;">230000</td>
+							<td style="text-align:center;">182000</td>
+							<td style="text-align:center;">144000</td>
+							<td style="text-align:center;">119000</td>
+							<td style="text-align:center;">104000</td>
+							<td style="text-align:center;">92000</td>
+							<td style="text-align:center;">82000</td>
+							<td style="text-align:center;">82000</td>
+							<td style="text-align:center;">82000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">7</td>
+							<td style="text-align:center;">200000</td>
+							<td style="text-align:center;">158000</td>
+							<td style="text-align:center;">125000</td>
+							<td style="text-align:center;">103000</td>
+							<td style="text-align:center;">90000</td>
+							<td style="text-align:center;">80000</td>
+							<td style="text-align:center;">72000</td>
+							<td style="text-align:center;">72000</td>
+							<td style="text-align:center;">72000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">8</td>
+							<td style="text-align:center;">180000</td>
+							<td style="text-align:center;">143000</td>
+							<td style="text-align:center;">113000</td>
+							<td style="text-align:center;">93000</td>
+							<td style="text-align:center;">81000</td>
+							<td style="text-align:center;">72000</td>
+							<td style="text-align:center;">64000</td>
+							<td style="text-align:center;">64000</td>
+							<td style="text-align:center;">64000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">9</td>
+							<td style="text-align:center;">160000</td>
+							<td style="text-align:center;">127000</td>
+							<td style="text-align:center;">100000</td>
+							<td style="text-align:center;">83000</td>
+							<td style="text-align:center;">72000</td>
+							<td style="text-align:center;">64000</td>
+							<td style="text-align:center;">57000</td>
+							<td style="text-align:center;">57000</td>
+							<td style="text-align:center;">57000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">10</td>
+							<td style="text-align:center;">150000</td>
+							<td style="text-align:center;">119000</td>
+							<td style="text-align:center;">94000</td>
+							<td style="text-align:center;">78000</td>
+							<td style="text-align:center;">68000</td>
+							<td style="text-align:center;">60000</td>
+							<td style="text-align:center;">54000</td>
+							<td style="text-align:center;">54000</td>
+							<td style="text-align:center;">54000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">11</td>
+							<td style="text-align:center;">140000</td>
+							<td style="text-align:center;">111000</td>
+							<td style="text-align:center;">88000</td>
+							<td style="text-align:center;">72000</td>
+							<td style="text-align:center;">63000</td>
+							<td style="text-align:center;">56000</td>
+							<td style="text-align:center;">50000</td>
+							<td style="text-align:center;">50000</td>
+							<td style="text-align:center;">50000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">12</td>
+							<td style="text-align:center;">130000</td>
+							<td style="text-align:center;">103000</td>
+							<td style="text-align:center;">81000</td>
+							<td style="text-align:center;">67000</td>
+							<td style="text-align:center;">59000</td>
+							<td style="text-align:center;">52000</td>
+							<td style="text-align:center;">47000</td>
+							<td style="text-align:center;">47000</td>
+							<td style="text-align:center;">47000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">13</td>
+							<td style="text-align:center;">120000</td>
+							<td style="text-align:center;">95000</td>
+							<td style="text-align:center;">75000</td>
+							<td style="text-align:center;">62000</td>
+							<td style="text-align:center;">54000</td>
+							<td style="text-align:center;">48000</td>
+							<td style="text-align:center;">43000</td>
+							<td style="text-align:center;">43000</td>
+							<td style="text-align:center;">43000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">14</td>
+							<td style="text-align:center;">110000</td>
+							<td style="text-align:center;">87000</td>
+							<td style="text-align:center;">69000</td>
+							<td style="text-align:center;">57000</td>
+							<td style="text-align:center;">50000</td>
+							<td style="text-align:center;">44000</td>
+							<td style="text-align:center;">39000</td>
+							<td style="text-align:center;">39000</td>
+							<td style="text-align:center;">39000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">15</td>
+							<td style="text-align:center;">100000</td>
+							<td style="text-align:center;">79000</td>
+							<td style="text-align:center;">63000</td>
+							<td style="text-align:center;">52000</td>
+							<td style="text-align:center;">45000</td>
+							<td style="text-align:center;">40000</td>
+							<td style="text-align:center;">36000</td>
+							<td style="text-align:center;">36000</td>
+							<td style="text-align:center;">36000</td>
+						</tr>
+					</tbody>
+				</table>
+				<p><strong>Primes de fin de saison pour le Championnat individuel Pro</strong><br>
+				</p><table class="tableau" style="background:white;">
+					<thead>
+						<tr>
+							<th>Position</th>
+							<th>Division 1</th>
+							<th>Division 2</th>
+							<th>Division 3</th>
+							<th>Division 4</th>
+							<th>Division 5</th>
+							<th>Division 6</th>
+							<th>Division 7</th>
+							<th>Division 8</th>
+							<th>Division 9</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="text-align:center;">1</td>
+							<td style="text-align:center;">200000</td>
+							<td style="text-align:center;">150000</td>
+							<td style="text-align:center;">125000</td>
+							<td style="text-align:center;">100000</td>
+							<td style="text-align:center;">90000</td>
+							<td style="text-align:center;">80000</td>
+							<td style="text-align:center;">70000</td>
+							<td style="text-align:center;">70000</td>
+							<td style="text-align:center;">70000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">2</td>
+							<td style="text-align:center;">100000</td>
+							<td style="text-align:center;">75000</td>
+							<td style="text-align:center;">63000</td>
+							<td style="text-align:center;">50000</td>
+							<td style="text-align:center;">45000</td>
+							<td style="text-align:center;">40000</td>
+							<td style="text-align:center;">35000</td>
+							<td style="text-align:center;">35000</td>
+							<td style="text-align:center;">35000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">3</td>
+							<td style="text-align:center;">75000</td>
+							<td style="text-align:center;">56000</td>
+							<td style="text-align:center;">47000</td>
+							<td style="text-align:center;">38000</td>
+							<td style="text-align:center;">34000</td>
+							<td style="text-align:center;">30000</td>
+							<td style="text-align:center;">26000</td>
+							<td style="text-align:center;">26000</td>
+							<td style="text-align:center;">26000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">4</td>
+							<td style="text-align:center;">50000</td>
+							<td style="text-align:center;">38000</td>
+							<td style="text-align:center;">31000</td>
+							<td style="text-align:center;">25000</td>
+							<td style="text-align:center;">23000</td>
+							<td style="text-align:center;">20000</td>
+							<td style="text-align:center;">18000</td>
+							<td style="text-align:center;">18000</td>
+							<td style="text-align:center;">18000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">5</td>
+							<td style="text-align:center;">25000</td>
+							<td style="text-align:center;">19000</td>
+							<td style="text-align:center;">16000</td>
+							<td style="text-align:center;">13000</td>
+							<td style="text-align:center;">12000</td>
+							<td style="text-align:center;">10000</td>
+							<td style="text-align:center;">9000</td>
+							<td style="text-align:center;">9000</td>
+							<td style="text-align:center;">9000</td>
+						</tr>
+					</tbody>
+				</table>
+				<p></p>
+				<p><strong>Primes de fin de saison interéquipes pour les championnats U21 et U25</strong></p>
+				<table class="tableau" style="background:white;">
+					<thead>
+						<tr>
+							<th>Position</th>
+							<th>Division unique</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="text-align:center;">1</td>
+							<td style="text-align:center;">150 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">2</td>
+							<td style="text-align:center;">100 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">3</td>
+							<td style="text-align:center;">90 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">4</td>
+							<td style="text-align:center;">85 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">5</td>
+							<td style="text-align:center;">80 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">6</td>
+							<td style="text-align:center;">78 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">7</td>
+							<td style="text-align:center;">76 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">8</td>
+							<td style="text-align:center;">74 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">9</td>
+							<td style="text-align:center;">72 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">10</td>
+							<td style="text-align:center;">70 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">11</td>
+							<td style="text-align:center;">68 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">12</td>
+							<td style="text-align:center;">66 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">13</td>
+							<td style="text-align:center;">64 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">14</td>
+							<td style="text-align:center;">62 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">15</td>
+							<td style="text-align:center;">60 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">16</td>
+							<td style="text-align:center;">58 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">17</td>
+							<td style="text-align:center;">56 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">18</td>
+							<td style="text-align:center;">54 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">19</td>
+							<td style="text-align:center;">52 000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">20</td>
+							<td style="text-align:center;">50 000</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<p><strong>Primes de fin de saison pour la CDM interéquipe et individuelle.</strong><br>
+				Seul le top 10 est récompensé au niveau individuel!</p>
+				<table class="tableau" style="background:white;">
+					<thead>
+						<tr>
+							<th>Position</th>
+							<th>Division 1</th>
+							<th>Division 2</th>
+							<th>Division 3</th>
+							<th>Division 4</th>
+							<th>Division 5</th>
+							<th>Division 6</th>
+							<th>Division 7</th>
+							<th>Division 8</th>
+							<th>Division 9</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="text-align:center;">1</td>
+							<td style="text-align:center;">400000</td>
+							<td style="text-align:center;">340000</td>
+							<td style="text-align:center;">300000</td>
+							<td style="text-align:center;">260000</td>
+							<td style="text-align:center;">240000</td>
+							<td style="text-align:center;">220000</td>
+							<td style="text-align:center;">200000</td>
+							<td style="text-align:center;">200000</td>
+							<td style="text-align:center;">200000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">2</td>
+							<td style="text-align:center;">370000</td>
+							<td style="text-align:center;">315000</td>
+							<td style="text-align:center;">278000</td>
+							<td style="text-align:center;">241000</td>
+							<td style="text-align:center;">222000</td>
+							<td style="text-align:center;">204000</td>
+							<td style="text-align:center;">185000</td>
+							<td style="text-align:center;">185000</td>
+							<td style="text-align:center;">185000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">3</td>
+							<td style="text-align:center;">340000</td>
+							<td style="text-align:center;">289000</td>
+							<td style="text-align:center;">255000</td>
+							<td style="text-align:center;">221000</td>
+							<td style="text-align:center;">204000</td>
+							<td style="text-align:center;">187000</td>
+							<td style="text-align:center;">170000</td>
+							<td style="text-align:center;">170000</td>
+							<td style="text-align:center;">170000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">4</td>
+							<td style="text-align:center;">310000</td>
+							<td style="text-align:center;">264000</td>
+							<td style="text-align:center;">233000</td>
+							<td style="text-align:center;">202000</td>
+							<td style="text-align:center;">186000</td>
+							<td style="text-align:center;">171000</td>
+							<td style="text-align:center;">155000</td>
+							<td style="text-align:center;">155000</td>
+							<td style="text-align:center;">155000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">5</td>
+							<td style="text-align:center;">290000</td>
+							<td style="text-align:center;">247000</td>
+							<td style="text-align:center;">218000</td>
+							<td style="text-align:center;">189000</td>
+							<td style="text-align:center;">174000</td>
+							<td style="text-align:center;">160000</td>
+							<td style="text-align:center;">145000</td>
+							<td style="text-align:center;">145000</td>
+							<td style="text-align:center;">145000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">6</td>
+							<td style="text-align:center;">270000</td>
+							<td style="text-align:center;">230000</td>
+							<td style="text-align:center;">203000</td>
+							<td style="text-align:center;">176000</td>
+							<td style="text-align:center;">162000</td>
+							<td style="text-align:center;">149000</td>
+							<td style="text-align:center;">135000</td>
+							<td style="text-align:center;">135000</td>
+							<td style="text-align:center;">135000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">7</td>
+							<td style="text-align:center;">250000</td>
+							<td style="text-align:center;">213000</td>
+							<td style="text-align:center;">188000</td>
+							<td style="text-align:center;">163000</td>
+							<td style="text-align:center;">150000</td>
+							<td style="text-align:center;">138000</td>
+							<td style="text-align:center;">125000</td>
+							<td style="text-align:center;">125000</td>
+							<td style="text-align:center;">125000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">8</td>
+							<td style="text-align:center;">230000</td>
+							<td style="text-align:center;">196000</td>
+							<td style="text-align:center;">173000</td>
+							<td style="text-align:center;">150000</td>
+							<td style="text-align:center;">138000</td>
+							<td style="text-align:center;">127000</td>
+							<td style="text-align:center;">115000</td>
+							<td style="text-align:center;">115000</td>
+							<td style="text-align:center;">115000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">9</td>
+							<td style="text-align:center;">210000</td>
+							<td style="text-align:center;">179000</td>
+							<td style="text-align:center;">158000</td>
+							<td style="text-align:center;">137000</td>
+							<td style="text-align:center;">126000</td>
+							<td style="text-align:center;">116000</td>
+							<td style="text-align:center;">105000</td>
+							<td style="text-align:center;">105000</td>
+							<td style="text-align:center;">105000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">10</td>
+							<td style="text-align:center;">200000</td>
+							<td style="text-align:center;">170000</td>
+							<td style="text-align:center;">150000</td>
+							<td style="text-align:center;">130000</td>
+							<td style="text-align:center;">120000</td>
+							<td style="text-align:center;">110000</td>
+							<td style="text-align:center;">100000</td>
+							<td style="text-align:center;">100000</td>
+							<td style="text-align:center;">100000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">11</td>
+							<td style="text-align:center;">190000</td>
+							<td style="text-align:center;">162000</td>
+							<td style="text-align:center;">143000</td>
+							<td style="text-align:center;">124000</td>
+							<td style="text-align:center;">114000</td>
+							<td style="text-align:center;">105000</td>
+							<td style="text-align:center;">95000</td>
+							<td style="text-align:center;">95000</td>
+							<td style="text-align:center;">95000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">12</td>
+							<td style="text-align:center;">180000</td>
+							<td style="text-align:center;">153000</td>
+							<td style="text-align:center;">135000</td>
+							<td style="text-align:center;">117000</td>
+							<td style="text-align:center;">108000</td>
+							<td style="text-align:center;">99000</td>
+							<td style="text-align:center;">90000</td>
+							<td style="text-align:center;">90000</td>
+							<td style="text-align:center;">90000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">13</td>
+							<td style="text-align:center;">170000</td>
+							<td style="text-align:center;">145000</td>
+							<td style="text-align:center;">128000</td>
+							<td style="text-align:center;">111000</td>
+							<td style="text-align:center;">102000</td>
+							<td style="text-align:center;">94000</td>
+							<td style="text-align:center;">85000</td>
+							<td style="text-align:center;">85000</td>
+							<td style="text-align:center;">85000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">14</td>
+							<td style="text-align:center;">160000</td>
+							<td style="text-align:center;">136000</td>
+							<td style="text-align:center;">120000</td>
+							<td style="text-align:center;">104000</td>
+							<td style="text-align:center;">96000</td>
+							<td style="text-align:center;">88000</td>
+							<td style="text-align:center;">80000</td>
+							<td style="text-align:center;">80000</td>
+							<td style="text-align:center;">80000</td>
+						</tr>
+						<tr>
+							<td style="text-align:center;">15</td>
+							<td style="text-align:center;">150000</td>
+							<td style="text-align:center;">128000</td>
+							<td style="text-align:center;">113000</td>
+							<td style="text-align:center;">98000</td>
+							<td style="text-align:center;">90000</td>
+							<td style="text-align:center;">83000</td>
+							<td style="text-align:center;">75000</td>
+							<td style="text-align:center;">75000</td>
+							<td style="text-align:center;">75000</td>
+						</tr>
+					
+				</tbody></table>
+			</div>
+		</div>
+
+		<div class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_odc&#39;)">
+				Ordres de Course (ODC)
+			</div>
+			<div id="toggle_odc" class="portlet_contenu" style="display: block;">
+				<p>Il vous est offert la possibilité de choisir une tactique pour chaque course. Ainsi vous pourrez désigner des Leaders, Equipiers ou Electrons Libres (EL). Pour les équipiers vous aurez également à définir un pourcentage d'implication dans son rôle (de 0 à 100 %).</p>
+				<p>Ces choix auront une incidence sur le résultat de chacun de vos coureurs ainsi que sur leur perte de forme. Enfin à vous d'autoriser ou non un coureur à tenter de prendre l'échappée matinale en cochant la case dans la colonne "Echappée mat.". Le fait de lui accorder ce droit ne signifie pas pour autant qu'il s'échappera à coup sûr, et encore moins que l'échappée matinale soit victorieuse! Ce choix d'envoyer ou non un coureur dans l'échappée matinale n'a pas d'incidence sur les échappées de fin de course entre leaders.</p>
+				
+				<div class="center"><img src="./CyManager, jeu de cyclisme en ligne multijoueur_files/odc.png" alt="ODC"></div>
+
+				<p>De manière générale, un leader aura une aide de la part des équipiers en fonction de leur pourcentage d'implication. Ainsi il bénéficiera d'une perte de forme moins importante. Le pourcentage des leaders n'est à régler qu'en cas de 2 leaders ou plus. Si un seul leader il bénéficiera de 100% du sacrifice des équipiers. Si vous choisissez 2 leaders vous pourrez alors en privilégier un en lui accordant 70% (par exemple) de l'attention des équipiers. Dans le cas présent le second leader bénéficiera lui des 30% restants.</p>
+				<p>L'équipier lui, en fonction de son pourcentage d'implication, aidera son/ses leader(s) et sera donc pénalisé dans son résultat final. Sa perte de forme sera d'autant plus grande que son pourcentage sera élevé.</p>
+				<p>L'électron libre, lui, ne bénéficiera d'aucune aide, ni n'aidera personne. Il fera sa course de manière isolée tel un... électron libre.</p>
+				<p>Attention, un coureur désinscrit même temporairement d'une course verra ses ODC annulés. Il faudra donc les réinsérer.</p>
+				<p><strong>Les ODC par défaut</strong></p>
+				<p>Si certains coureurs reçoivent les mêmes ordres de course pour chacunes d'entre elles, il est possible de les prédéfinir via la page "ODC par défaut" que l'on retrouve via le menu de droite de la page "Effectif".</p>
+			</div>
+		</div>
+
+		<div class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_materiel&#39;)">
+				Matériel
+			</div>
+			<div id="toggle_materiel" class="portlet_contenu" style="display: block;">
+				<p>Pour améliorer les performances de vos coureurs, il vous est possible d'acquérir du matériel de meilleur qualité : des cadres, des roues et des casques. Vous trouverez tous les prix et leurs caractéristiques dans la page <a href="https://www.cymanager.com/ecran_principal.php?page=materiel"><span style="color:orange">Matériel</span></a> du jeu.</p>
+				<p>Attention un matériel acheté ne peut être vendu!</p>
+				<p>Le choix du matériel utilisé en course se déroule au moment de définir les ordres de course.<br>
+				</p>
+			</div>
+		</div>
+
+		<div class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_cl&#39;)">
+				Courses libres
+			</div>
+			<div id="toggle_cl" class="portlet_contenu" style="display: block;">
+				<p>Cymanager offre la possibilité de participer et de créer des courses libres. Ces courses n'apportent aucun point dans le calendrier officiel et sont justes là pour le fun afin de courir contre des managers de toutes les divisions. 
+				Durant ces courses, il n'y a ni chute ni de perte de forme, ni gain d'expérience. Les courses libres sont des courses organisées par les joueurs pour les joueurs.</p>
+				<p>Tout le monde peut participer à une course libre s'il respecte les conditions d'inscription définies par l'organisateur.</p>
+				<p>Comment limiter les équipes qui peuvent s'inscrire à votre course? En utilisant le champ "Equipes acceptées". Pour sélectionner des divisions ou des groupes entiers, il faut utiliser la formule "0_y_z" (sans les guillemets). Dans "0_y_z", y correspond à la division et z au groupe. On utilise ";" pour encoder plusieurs formules, autant de fois que vous le souhaitez. Attention, il ne faut pas d'espace entre les formules et les ";".
+				Par exemple "0_2_A" ne va permettre qu'aux équipes de division 2 du groupe A de s'inscrire. Afin de sélectionner tous les groupes de division 2, il faut utiliser le caractère "*" à la place de B: "0_2_*".
+				Enfin, on peut inviter les équipes en encodant leur ID. L'ID d'une équipe se retrouve sur sa fiche.</p>
+				<p>Par exemple la formule "0_2_B;1_*_C;5123" (à encoder sans les "") va inviter la division 2B, toutes les divisions dont le groupe est B (c'est-à-dire 8B et 9B) et l'équipe dont l'id est 5123.</p>
+				<p>Les managers invités via l'ID de son équipe recevra un MP pour le prévenir de son invitation. Est inclu dans le contenu du message la description que vous donnerez à votre course.
+				</p><p>Chaque mois, chaque manager reçoit 5 nouveaux crédits lui permettant de créer 5 nouvelles courses.</p>
+			</div>
+		</div>
+
+		<div class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_editeur&#39;)">
+				Editeur de profils de course
+			</div>
+			<div id="toggle_editeur" class="portlet_contenu" style="display: block;">
+			<p>Vous pouvez également <a href="https://www.cymanager.com/ecran_principal.php?page=editeur_profil">créer des profils</a> qui seront peut-être utilisés un jour dans le calendrier officiel ou lors de vos courses libres. Rendez-vous dans le <a href="https://www.cymanager.com/ecran_principal.php?page=editeur_profil_tutoriel">tutoriel dédié</a>.<br>
+				Le meileur moyen de faire connaître vos créations est le forum !</p><p>
+			</p></div>
+		</div>
+
+		<div class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_triche&#39;)">
+				CREM - Triche
+			</div>
+			<div id="toggle_triche" class="portlet_contenu" style="display: block;">
+				Le Comité de Régulation pour l'Equité entre les Managers (CREM) veille au grain! Vous trouverez de manière assez détaillée la liste des comportements non autorisés sur CyManager sur la page de l'<a href="https://www.cymanager.com/ecran_principal.php?page=ucc">UCC</a>.
+
+			</div>
+		</div>
+		<div class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_cymranking&#39;)">
+				Cym Ranking
+			</div>
+			<div id="toggle_cymranking" class="portlet_contenu" style="display: block;">
+			<p>Il y a 3 classements intersaisons dans Cym: All Time, All Time Equipes Actives, 10 Dernières Saisons. Voici les différents critères qui sont tenus en compte pour y figurer et pour le calcul des points:</p>
+			<ul>
+				<li>Les équipes marquent de 100 points à 1 point par saison, du champion de D1 au dernier de la dernière division.</li>
+				<li>Les points représentent un % par rapport au classement et au niveau de la division. Exemple: il y a 6 divisions de 10 équipes (= 60 positions possibles). Prenons une équipe qui est 5ème en D3. Nous comptons la position à partir du dernier de la dernier division. Le dernier de la dernière division est donc à 1 alors que le premier de la dernière division en a 15. Pour reprendre l'exemple du 5ème de la D3, nous faisons l'addition suivante: 15 (équivalent à toute la DD) + 15 (D5)+ 15 (D4) + 11 (5ème place en D3) = 56 . On applique ensuite une règle de 3 pour ramener cela sur 100, arrondi inférieur (sauf si moins d'un point: on arrondit à 1): (56 /90) x 100 = 62 points.</li>
+				<li>Il faut avoir terminé 3 saisons pour être repris dans les classements</li>
+				<li>Pas de point marqué pour les saisons pour lesquelles les équipes n'ont pas marqué un seul point dans le championnat.</li>
+			</ul>
+			<p>Les classements seront mis à jour à chaque intersaison.</p>
+			</div>
+		</div>
+
+		<div class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_rp&#39;)">
+				Background, RP, HRP: qu'est-ce donc?
+			</div>
+			<div id="toggle_rp" class="portlet_contenu" style="display: block;">
+			<p>Le "Role Play", ou RP, est tout ce qui a trait au déroulement de "l'intérieur du jeu", le manager d'une équipe par exemple. HRP est son contraire, c'est tout ce qui a trait à la "vraie vie". Par exemple, le "manager d'une équipe" est une notion RP alors que le joueur est une notion HRP. Parler de donner des ordres de courses à ses courses dans un topic du forum qui relate les exploits de son équipe est du RP alors que parler d' "ODC 600" est HRP car représente la somme mathématique des curseurs de l'interface du jeu.</p>
+			<p>Le background du jeu, c'est l'environnement et le décor dans lesquels se déroule la partie RP. Par exemple le Président de l'UCC (ancien coureur fictif), l'UCC et ses comités, les profils des courses ou même les résumés font partie du background du jeu.</p>
+			</div>
+		</div>
+				<div id="chat" class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_chat&#39;)">
+				Tchat
+			</div>
+			<div id="toggle_chat" class="portlet_contenu" style="display: block;">
+			<p>Il y a plusieurs manières de se connecter au tchat Discord de CyManager:<br>
+			- Soit par le lien dans le menu du haut du site: un nouvel onglet s'ouvre directement dans Discord.<br>
+			- Soit via une application sur pc ou sur téléphone mobile: le plus pratique sur téléphone mobile.</p>
+
+			<p>La première étape à réaliser est de s’inscrire sur Discord: <a href="https://discord.com/register" target="_blank">https://discord.com/register</a> On vous propose à la fin de la procédure d’inscription de créer votre propre serveur. C’est gratuit mais rien ne vous y oblige car cela ne servira pas pour rejoindre le tchat CyManager.</p>
+			
+			<p>Une fois que votre compte est activé, voici le lien d’invitation pour vous connecter à notre serveur: <a href="https://discord.gg/mu8rAWfyg3" target="_blank">https://discord.gg/mu8rAWfyg3</a>. Cliquez sur “Vous avez déjà un compte?” comme entouré de rouge sur l’image suivante.<br><img src="./CyManager, jeu de cyclisme en ligne multijoueur_files/discord_invitation.png" width="233" height="270"></p>
+
+			<p><strong>Pour que tout le monde puisse se reconnaître</strong>, il est utile d’ajouter le nom de ses équipes dans son profil. Cette info est facilement visible: il suffit de cliquer sur le pseudo d’une personne participant à la discussion.</p>
+
+			<p>Pour modifier votre profil, voici comment procéder:</p>
+			<p>1/ Cliquer sur la petite roue dentée proche de son pseudo en bas à gauche de l’écran.<br><img src="./CyManager, jeu de cyclisme en ligne multijoueur_files/discord_apropos1.png"></p>
+			<p>2/ Cliquer sur “Profils” dans le haut du menu de gauche</p>
+			<p>3/ Descendez un peu plus bas dans la page qui vient de s’ouvrir jusqu’à “A propos de moi”. Remplissez ce champ.<br><img src="./CyManager, jeu de cyclisme en ligne multijoueur_files/discord_apropos2.png"></p>
+			<p>4/ Enrergistrez les modifications (un large bouton "Enregistrer" apparait en bas de la page au moindre changement de configuration)</p>
+
+			<p><strong>Si vous possédez déjà un compte actif</strong>, il est possible de modifier le pseudo affiché dans Discord pour qu’il corresponde à votre pseudo in-game Cymanager. Pour ce faire, rendez-vous également dans la page “Profils”, cliquez sur “Profils de serveur” et modifiez ensuite le pseudo.<br><img src="./CyManager, jeu de cyclisme en ligne multijoueur_files/discord_apropos3.png" width="405" height="260">
+			
+			</p><p>Pour toute question sur le fonctionnement de Discord, vous pouvez passer par ce topic dans le forum: <a href="https://forum.cymanager.com/viewtopic.php?pid=613260" target="_blank">clic</a>.
+			</p></div>
+		</div>
+				<div id="reinitialiser" class="portlet_boite">
+			<div class="portlet_titre" style="cursor:pointer;" onclick="toggle_div(&#39;toggle_reinitialiser&#39;)">
+				Réinitialiser son équipe
+			</div>
+			<div id="toggle_reinitialiser" class="portlet_contenu" style="display: block;">
+				<p>Il vous est possible de réinitialiser votre équipe pour redémarrer de zéro, comme si votre équipe venait d'apparaître dans le jeu. Elle redémarre donc en D9, et votre équipe est remplacée par un bot.</p>
+				<p>Un délai de cinq semaines est obligatoire entre deux réinitialisations, sauf si votre équipe est déclarée en faillite.</p>
+				<p>Comment procéder? En vous rendant sur la page <a href="https://www.cymanager.com/ecran_principal.php?page=moncompte">"Mon compte"</a> et en cliquant sur "Réinitialiser l'équipe".</p>
+				<p>Il est à noter que le nom et la nationalité de l'équipe restent inchangés.</p><p>
+			</p></div>
+		</div>
+	</div>
+</div> <!-- fin div Onglet -->
+			</div>
+			<div style="clear: both;"></div>
+		</div>
+				<div id="bas_du_corps">
+			<div id="footer">
+				<span>CyManager depuis 2006&nbsp;&nbsp;⬩&nbsp;
+				<a href="https://www.cymanager.com/ecran_principal.php?page=confidentialite">Confidentialité</a>&nbsp;&nbsp;⬩&nbsp;
+				<a href="https://www.cymanager.com/ecran_principal.php?page=apropos" title="Une équipe de bénévoles à votre service!">A propos</a> 
+															</span></div>
+		</div>
+	</div> <!-- id="page" -->
+			<script type="text/javascript">
+		var nbMessage = 0;
+		document.getElementById('nb_mess').innerHTML = nbMessage;
+		if (nbMessage > 0) document.getElementById('nb_mess').className = "cercle_rouge";
+		if (nbMessage == 0) document.getElementById('nb_mess').innerText = "";
+	<\/script>
+	<br>
+
+
+<veepn-lock-screen><template shadowrootmode="open"><style>html{box-sizing:border-box;text-size-adjust:100%;word-break:normal;tab-size:4}*,:before,:after{background-repeat:no-repeat;box-sizing:border-box}:before,:after{text-decoration:inherit;vertical-align:inherit}*{padding:0;margin:0}hr{overflow:visible;height:0;color:inherit;border:0;border-top:1px solid}details,main{display:block}summary{display:list-item}small{font-size:80%}[hidden]{display:none!important}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}a{background-color:transparent}a:active,a:hover{outline-width:0}code,kbd,pre,samp{font-family:monospace}pre{font-size:1em}b,strong{font-weight:bolder}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{border-color:inherit;text-indent:0}iframe{border-style:none}input{border-radius:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]{appearance:textfield;outline-offset:-2px}[type=search]::-webkit-search-decoration{appearance:none}textarea{overflow:auto;resize:vertical}button,input,optgroup,select,textarea{font:inherit;color:inherit}optgroup{font-weight:700}button{overflow:visible}button,select{text-transform:none}button,[type=button],[type=reset],[type=submit],[role=button]{cursor:pointer}button::-moz-focus-inner,[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner{border-style:none;padding:0}button,html [type=button],[type=reset],[type=submit]{appearance:auto}button,input,select,textarea{background-color:transparent;border-style:none}button:-moz-focusring,[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner{outline:1px dotted ButtonText}select{appearance:none}a:focus,button:focus,input:focus,select:focus,textarea:focus{outline-width:0}select::-ms-expand{display:none}select::-ms-value{color:currentcolor}legend{border:0;color:inherit;display:table;white-space:normal;max-width:100%}::-webkit-file-upload-button{appearance:auto;color:inherit;font:inherit}[disabled]{cursor:default}img{border-style:none}progress{vertical-align:baseline}[aria-busy=true]{cursor:progress}[aria-controls]{cursor:pointer}[aria-disabled=true]{cursor:default}ul,ol{list-style-type:none}figure{margin:0}@keyframes slide-in{0%{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}.gradient-blue{background:radial-gradient(106.41% 128.47% at 50.15% 128.47%,#23abff,#3066ff)}.gradient-green{background:radial-gradient(92.26% 118.88% at 50.15% .13%,#00c3c3,#00aab3)}.gradient-purple{background:radial-gradient(165.12% 115.56% at 50.15% .13%,#a15aff,#00a0eb)}.bg-blue{background-color:#f2f5ff}.bg-purple{background-color:#f7f0ff}.bg-green{background-color:#ebffed}.lock-screen{font-family:FigtreeVF,sans-serif;letter-spacing:normal;position:fixed;z-index:2147483638;right:24px;bottom:24px;width:327px;border-radius:24px;overflow:hidden;box-shadow:0 24px 32px #00000014;animation:slide-in .3s ease-in-out forwards}.lock-screen__content{position:relative;padding:24px 24px 64px}.lock-screen__close{position:absolute;top:16px;right:16px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;opacity:.5}.lock-screen__label{height:26px;width:fit-content;border-radius:50px;background-color:#fff3;padding-inline:16px;display:flex;align-items:center;justify-content:center;gap:8px;color:#fff;font-size:12px;line-height:18px;margin:-8px auto 16px}.lock-screen__title{color:#fff;text-align:center;font-size:20px;line-height:28px;font-weight:600;margin-bottom:8px}.lock-screen__description{color:#f5f6f7;text-align:center;font-size:14px;line-height:20px}.lock-screen__description b{font-weight:600}.lock-screen__card{position:relative;z-index:1;margin-top:-44px;background-color:#fff;border-radius:24px;padding:32px 20px 20px}.lock-screen__inner{margin-bottom:24px}.lock-screen__submit{display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:16px;height:40px;width:100%;border-radius:12px;padding-inline:16px;background-color:#f70;color:#fff;margin-bottom:16px}.lock-screen__skip{display:flex;align-items:center;justify-content:center;font-size:14px;line-height:20px;color:#82829c;margin-inline:auto}.price-card{border:1px solid #f2f2fc;background:linear-gradient(254.14deg,#fafbff .04%,#f5f8ff 100.04%);border-radius:24px;padding:24px 28px}.price-card__label{color:#4a5764;text-align:center;font-size:14px;line-height:20px;text-transform:uppercase;margin-bottom:16px}.price-card__price{display:flex;justify-content:center;align-items:flex-start;column-gap:2px;margin-bottom:12px}.price-card__currency{color:#515478;font-size:18px;line-height:28px}.price-card__number{color:#14142a;text-align:center;font-size:64px;line-height:54px}.price-card__wrap{display:flex;flex-direction:column}.price-card__decimal{color:#515478;font-size:18px;line-height:28px;font-weight:600}.price-card__period{color:#515478;font-size:14px;line-height:20px;margin-top:-6px}.price-card__discount{position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:12px}.price-card__discount-divider{position:absolute;z-index:0;top:50%;left:0;width:100%;height:1px;background-color:#dbe2f9;transform:translateY(-50%)}.price-card__discount-icon{position:absolute;z-index:1;top:50%;left:50%;transform:translate(-50%,-50%)}.price-card__discount-text{position:relative;z-index:2;color:#fff;font-size:12px;font-weight:600;line-height:18px}.price-card__features{display:flex;align-items:center;justify-content:center;column-gap:16px}.price-card__feature{color:#222e3a;font-size:14px;line-height:20px;display:flex;align-items:center;gap:6px}.price-card__feature:before{content:"";display:block;width:4px;height:4px;background-color:#20df9e;border-radius:50%;flex-shrink:0}.features-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.features-list__item{display:flex;flex-direction:column;align-items:center;gap:6px}.features-list__icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center}.features-list__text{color:#293a53;text-align:center;font-size:16px;line-height:24px;letter-spacing:-.1px}</style></template><style>@font-face{font-family:FigtreeVF;src:url(chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/fonts/FigtreeVF.woff2) format("woff2 supports variations"),url(chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/fonts/FigtreeVF.woff2) format("woff2-variations");font-weight:100 1000;font-display:swap}</style></veepn-lock-screen></body></html>`,Ei=[{id:`but-du-jeu`,title:`But du jeu`},{id:`votre-equipe`,title:`Votre équipe`},{id:`les-coureurs`,title:`Les coureurs`},{id:`les-courses`,title:`Les courses`},{id:`assistant`,title:`Votre assistant à votre rescousse`},{id:`la-saison`,title:`La saison`},{id:`championnats`,title:`Les Championnats professionels et jeunes`},{id:`championnat-pro`,title:`Championnat Pro`},{id:`equipes-fantomes`,title:`Equipes Fantômes (mécanisme et incidence)`},{id:`championnats-jeunes`,title:`Championnats U21 & U25`},{id:`finances`,title:`Finances`},{id:`intersaison`,title:`Intersaison`},{id:`transferts`,title:`Transferts`},{id:`coureurs-amateurs`,title:`Les coureurs amateurs`},{id:`entrainement`,title:`Entraînement / Entraîneur`},{id:`installations`,title:`Les installations`},{id:`les-points`,title:`Les points`},{id:`les-primes`,title:`Les primes`},{id:`odc`,title:`Ordres de Course (ODC)`},{id:`odc-defaut`,title:`Les ODC par défaut`},{id:`materiel`,title:`Matériel`},{id:`courses-libres`,title:`Courses libres`},{id:`editeur-profils`,title:`Editeur de profils de course`},{id:`crem`,title:`CREM - Triche`},{id:`cym-ranking`,title:`Cym Ranking`},{id:`background`,title:`Background, RP, HRP: qu'est-ce donc?`},{id:`tchat`,title:`Tchat`},{id:`reinitialiser`,title:`Réinitialiser son équipe`}];function Di(e){return e.replace(/\u00a0/g,` `).replace(/\s+/g,` `).trim()}function Oi(e){return Array.from(e.childNodes).filter(e=>Di(e.textContent??``)!==``)}function ki(e,t){return e.findIndex(e=>Di(e.textContent??``).startsWith(t))}function Ai(e){let t=new DOMParser().parseFromString(`<div id="faq-root">${e}</div>`,`text/html`),n=t.getElementById(`faq-root`);return n?(n.querySelectorAll(`img`).forEach(e=>e.remove()),n.querySelectorAll(`a`).forEach(e=>{let t=e.getAttribute(`href`);!t||t.startsWith(`#`)||(e.setAttribute(`target`,`_blank`),e.setAttribute(`rel`,`noreferrer`))}),n.querySelectorAll(`table`).forEach(e=>{e.classList.add(`guide-table`,`faq-table`),e.removeAttribute(`style`);let n=t.createElement(`div`);n.className=`guide-table-wrap`,e.replaceWith(n),n.appendChild(e)}),n.innerHTML.trim()):e.trim()}function ji(e,t){let n=e.createElement(`div`);return t.forEach(e=>{n.appendChild(e.cloneNode(!0))}),Ai(n.innerHTML)}function Mi(e){let t=new DOMParser().parseFromString(e,`text/html`),n=new Map;t.querySelectorAll(`.portlet_boite`).forEach(e=>{let t=Di(e.querySelector(`.portlet_titre`)?.textContent??``),r=e.querySelector(`.portlet_contenu`);t&&r&&n.set(t,r)});let r=t.createElement(`div`),i=e=>Ai(n.get(e)?.innerHTML??``),a=Oi(n.get(`Les courses`)??r),o=ki(a,`Votre assistant à votre rescousse`),s=Oi(n.get(`Les Championnats professionels et jeunes`)??r),c=ki(s,`Championnat Pro`),l=ki(s,`Equipes Fantômes`),u=ki(s,`Championnats U21`),d=Oi(n.get(`Transferts`)??r),f=ki(d,`Les coureurs amateurs`),p=Oi(n.get(`Ordres de Course (ODC)`)??r),m=ki(p,`Les ODC par défaut`),h={"but-du-jeu":i(`But du jeu`),"votre-equipe":i(`Votre équipe`),"les-coureurs":i(`Les coureurs`),"les-courses":ji(t,o===-1?a:a.slice(0,o)),assistant:o===-1?``:ji(t,a.slice(o+1)),"la-saison":i(`La saison`),championnats:c===-1?i(`Les Championnats professionels et jeunes`):ji(t,s.slice(0,c)),"championnat-pro":c===-1?``:ji(t,s.slice(c+1,l===-1?s.length:l)),"equipes-fantomes":l===-1?``:ji(t,s.slice(l+1,u===-1?s.length:u)),"championnats-jeunes":u===-1?``:ji(t,s.slice(u+1)),finances:i(`Finances`),intersaison:i(`Intersaison`),transferts:f===-1?i(`Transferts`):ji(t,d.slice(0,f)),"coureurs-amateurs":f===-1?``:ji(t,d.slice(f+1)),entrainement:i(`Entraînement / Entraîneur`),installations:i(`Les installations`),"les-points":i(`Les points`),"les-primes":i(`Les primes`),odc:m===-1?i(`Ordres de Course (ODC)`):ji(t,p.slice(0,m)),"odc-defaut":m===-1?``:ji(t,p.slice(m+1)),materiel:i(`Matériel`),"courses-libres":i(`Courses libres`),"editeur-profils":i(`Editeur de profils de course`),crem:i(`CREM - Triche`),"cym-ranking":i(`Cym Ranking`),background:i(`Background, RP, HRP: qu'est-ce donc?`),tchat:i(`Tchat`),reinitialiser:i(`Réinitialiser son équipe`)};return Ei.map(e=>({...e,html:h[e.id]??``})).filter(e=>e.html.length>0)}function Ni(e){let t=document.getElementById(e);t&&(t.scrollIntoView({behavior:`smooth`,block:`start`}),window.history.replaceState(null,``,`${window.location.pathname}#${e}`))}var Pi=[{label:`Source`,value:`FAQ HTML officielle`},{label:`Organisation`,value:`Rubriques fidèles + sommaire latéral`},{label:`Objectif`,value:`Reprendre la mise en forme native du site`}];function Fi(){let e=(0,x.useMemo)(()=>Mi(Ti),[]);return(0,A.jsxs)(`div`,{className:`page-stack`,children:[(0,A.jsx)(rr,{title:`FAQ`,subtitle:`Reprise intégrale de la FAQ HTML avec navigation latérale et présentation cohérente avec le site.`}),(0,A.jsx)(j,{children:(0,A.jsxs)(`div`,{className:`guide-intro`,children:[(0,A.jsxs)(`div`,{className:`guide-intro-copy`,children:[(0,A.jsx)(`p`,{className:`guide-kicker`,children:`FAQ officielle`}),(0,A.jsx)(`h3`,{className:`guide-intro-title`,children:`Version calée sur la FAQ du site`}),(0,A.jsx)(`p`,{className:`guide-intro-text`,children:`Le contenu ci-dessous reprend la structure HTML de référence pour conserver les paragraphes, listes et tableaux au plus proche de la source.`})]}),(0,A.jsx)(`div`,{className:`faq-highlight-grid`,children:Pi.map(e=>(0,A.jsxs)(`div`,{className:`guide-highlight-card`,children:[(0,A.jsx)(`span`,{className:`guide-highlight-label`,children:e.label}),(0,A.jsx)(`strong`,{className:`guide-highlight-value`,children:e.value})]},e.label))})]})}),(0,A.jsxs)(`div`,{className:`guide-layout`,children:[(0,A.jsxs)(`aside`,{className:`guide-toc card`,children:[(0,A.jsx)(`h3`,{className:`card-title`,children:`Sommaire FAQ`}),(0,A.jsx)(`nav`,{className:`guide-toc-nav`,children:e.map(e=>(0,A.jsx)(`button`,{type:`button`,className:`guide-toc-link`,onClick:()=>Ni(e.id),children:e.title},e.id))})]}),(0,A.jsx)(`div`,{className:`guide-content`,children:e.map(e=>(0,A.jsx)(j,{children:(0,A.jsxs)(`section`,{id:e.id,className:`guide-section-anchor`,children:[(0,A.jsxs)(`header`,{className:`guide-section-header`,children:[(0,A.jsx)(`p`,{className:`guide-kicker`,children:`FAQ`}),(0,A.jsx)(`h3`,{className:`guide-section-title`,children:e.title})]}),(0,A.jsx)(`div`,{className:`faq-content`,children:(0,A.jsx)(`div`,{className:`faq-html-content`,dangerouslySetInnerHTML:{__html:e.html}})})]})},e.id))})]})]})}function Ii({rider:e,profile:t}){return(0,A.jsx)(j,{title:e.name,children:(0,A.jsxs)(`div`,{className:`profile-card-lines`,children:[(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Profil principal :`}),` `,t?t.primaryProfile:`Non calculé`]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Profil secondaire :`}),` `,t?t.secondaryProfile:`Non calculé`]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Forces :`}),` `,t?t.strengths.join(` · `):`—`]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Faiblesses :`}),` `,t?t.weaknesses.join(` · `):`—`]})]})})}function Li({riders:e,onDelete:t}){let[n,r]=(0,x.useState)(null);if(e.length===0)return(0,A.jsx)(`p`,{children:`Aucun coureur enregistré pour le moment.`});function i(e){return e<30?`stat-red`:e<50?`stat-orange`:e<70?`stat-green`:`stat-blue`}function a(e){return e<600?`stat-red`:e<700?`stat-orange`:e<800?`stat-green`:`stat-blue`}let o=[{key:`name`,label:`Nom`,isNumeric:!1},{key:`category`,label:`Cat.`,isNumeric:!1},{key:`age`,label:`Âge`,isNumeric:!0},{key:`form`,label:`Forme`,isNumeric:!0},{key:`total`,label:`Total`,isNumeric:!0},{key:`mountain`,label:`Mont.`,isNumeric:!0},{key:`hill`,label:`Vallon`,isNumeric:!0},{key:`flat`,label:`Plaine`,isNumeric:!0},{key:`sprint`,label:`Sprint`,isNumeric:!0},{key:`timeTrial`,label:`CLM`,isNumeric:!0},{key:`cobble`,label:`Pavé`,isNumeric:!0},{key:`stageRace`,label:`CAE`,isNumeric:!0},{key:`salaryWeekly`,label:`Salaire`,isNumeric:!0},{key:`value`,label:`Valeur`,isNumeric:!0}],s=[...e];n&&s.sort((e,t)=>{let r,i;return n.key===`age`?(r=e.ageYears*100+e.ageWeeks,i=t.ageYears*100+t.ageWeeks):(r=e[n.key],i=t[n.key]),r===void 0||i===void 0?0:typeof r==`number`&&typeof i==`number`?n.direction===`asc`?r-i:i-r:n.direction===`asc`?String(r).localeCompare(String(i)):String(i).localeCompare(String(r))});function c(e){r(t=>t?.key===e?{key:e,direction:t.direction===`asc`?`desc`:`asc`}:{key:e,direction:`asc`})}return(0,A.jsx)(`div`,{className:`table-wrap`,children:(0,A.jsxs)(`table`,{className:`data-table`,children:[(0,A.jsx)(`thead`,{children:(0,A.jsxs)(`tr`,{children:[o.map(e=>(0,A.jsxs)(`th`,{style:{color:`#181c24`,cursor:`pointer`,userSelect:`none`},onClick:()=>c(e.key),title:`Cliquer pour trier`,children:[e.label,n?.key===e.key?n.direction===`asc`?` ▲`:` ▼`:``]},e.key)),(0,A.jsx)(`th`,{})]})}),(0,A.jsx)(`tbody`,{children:s.map(e=>(0,A.jsxs)(`tr`,{children:[(0,A.jsx)(`td`,{children:e.name}),(0,A.jsx)(`td`,{children:e.category}),(0,A.jsxs)(`td`,{children:[e.ageYears,`a `,e.ageWeeks,`s`]}),(0,A.jsx)(`td`,{children:e.form}),(0,A.jsx)(`td`,{className:a(e.total),children:e.total}),(0,A.jsx)(`td`,{className:i(e.mountain),children:e.mountain}),(0,A.jsx)(`td`,{className:i(e.hill),children:e.hill}),(0,A.jsx)(`td`,{className:i(e.flat),children:e.flat}),(0,A.jsx)(`td`,{className:i(e.sprint),children:e.sprint}),(0,A.jsx)(`td`,{className:i(e.timeTrial),children:e.timeTrial}),(0,A.jsx)(`td`,{className:i(e.cobble),children:e.cobble}),(0,A.jsx)(`td`,{className:i(e.stageRace),children:e.stageRace}),(0,A.jsxs)(`td`,{children:[ar(e.salaryWeekly),` €`]}),(0,A.jsx)(`td`,{children:or(e.value)}),(0,A.jsx)(`td`,{children:(0,A.jsx)(`button`,{type:`button`,className:`button button-danger button-small`,onClick:()=>t(e.id),children:`Supprimer`})})]},e.id))})]})})}function Ri({onImport:e}){let[t,n]=(0,x.useState)(``);function r(r){r.preventDefault(),t.trim()&&(e(t),n(``))}return(0,A.jsxs)(`form`,{className:`roster-import-form`,onSubmit:r,children:[(0,A.jsx)(`label`,{htmlFor:`roster-import`,className:`field-label`,children:`Colle ici un ou plusieurs coureurs`}),(0,A.jsx)(`textarea`,{id:`roster-import`,className:`textarea`,rows:14,value:t,onChange:e=>n(e.target.value),placeholder:`Colle le texte brut CyManager ici...`}),(0,A.jsxs)(`div`,{className:`inline-actions`,children:[(0,A.jsx)(`button`,{type:`submit`,className:`button button-primary`,children:`Importer / mettre à jour`}),(0,A.jsx)(`button`,{type:`button`,className:`button button-secondary`,onClick:()=>n(``),children:`Vider`})]})]})}function zi({riders:e}){let t=e.filter(e=>e.category===`Pro`).length,n=e.filter(e=>e.category===`U25`).length,r=e.filter(e=>e.category===`U21`).length,i=e.reduce((e,t)=>e+t.salaryWeekly,0),a=e.reduce((e,t)=>e+t.value,0),o=e.length>0?Math.round(e.reduce((e,t)=>e+t.form,0)/e.length):0;return(0,A.jsxs)(`div`,{className:`stat-grid`,children:[(0,A.jsxs)(j,{title:`Effectif total`,children:[(0,A.jsx)(`p`,{className:`stat-value`,children:e.length}),(0,A.jsxs)(`p`,{className:`muted`,children:[`Pros : `,t,` · U25 : `,n,` · U21 : `,r]})]}),(0,A.jsx)(j,{title:`Forme moyenne`,children:(0,A.jsx)(`p`,{className:`stat-value`,children:o})}),(0,A.jsx)(j,{title:`Masse salariale`,children:(0,A.jsxs)(`p`,{className:`stat-value`,children:[ar(i),` €`]})}),(0,A.jsx)(j,{title:`Valeur totale`,children:(0,A.jsx)(`p`,{className:`stat-value`,children:or(a)})})]})}function N(e){return{Grimpeur:e.mountain*3+e.hill*2+e.resistance*1.5+e.endurance*1.2+e.stageRace*1+e.recovery*.8,Puncheur:e.hill*3+e.sprint*1.5+e.agility*1.2+e.flat*1+e.resistance*1+e.breakaway*.8,Rouleur:e.timeTrial*3+e.flat*2+e.endurance*1.4+e.resistance*1.2+e.stageRace*.8,Sprinteur:e.sprint*3+e.flat*1.7+e.agility*1.2+e.endurance*.7,Flandrien:e.cobble*3+e.flat*1.5+e.hill*1.4+e.resistance*1.2+e.breakaway*1+e.agility*.7,"Coureur de classement":e.stageRace*3+e.recovery*2+e.mountain*1.8+e.timeTrial*1.5+e.endurance*1.2+e.resistance*1.2,Baroudeur:e.breakaway*3+e.hill*1.5+e.flat*1.2+e.endurance*1.1+e.agility*1,Polyvalent:e.total+e.endurance+e.resistance+e.recovery+e.experience*.5,"Équipier en formation":(100-e.ageYears)*.5+e.total+e.endurance+e.resistance}}function P(e){let t=Object.entries(e).sort((e,t)=>t[1]-e[1]);return{primaryProfile:t[0][0],secondaryProfile:t[1][0]}}function Bi(e){return[{label:`Montagne`,value:e.mountain},{label:`Vallon`,value:e.hill},{label:`Plaine`,value:e.flat},{label:`Sprint`,value:e.sprint},{label:`Pavé`,value:e.cobble},{label:`CLM`,value:e.timeTrial},{label:`CAE`,value:e.stageRace},{label:`Récupération`,value:e.recovery},{label:`Endurance`,value:e.endurance},{label:`Résistance`,value:e.resistance},{label:`Baroudeur`,value:e.breakaway}].sort((e,t)=>t.value-e.value).slice(0,3).map(e=>`${e.label} ${e.value}`)}function Vi(e){return[{label:`Montagne`,value:e.mountain},{label:`Vallon`,value:e.hill},{label:`Plaine`,value:e.flat},{label:`Sprint`,value:e.sprint},{label:`Pavé`,value:e.cobble},{label:`CLM`,value:e.timeTrial},{label:`CAE`,value:e.stageRace},{label:`Récupération`,value:e.recovery},{label:`Endurance`,value:e.endurance},{label:`Résistance`,value:e.resistance},{label:`Baroudeur`,value:e.breakaway}].sort((e,t)=>e.value-t.value).slice(0,3).map(e=>`${e.label} ${e.value}`)}function Hi(e){let{primaryProfile:t,secondaryProfile:n}=P(N(e));return{riderId:e.id,primaryProfile:t,secondaryProfile:n,strengths:Bi(e),weaknesses:Vi(e)}}function Ui(e){return e.map(Hi)}function Wi(){let e=Hr();return e.length>0?e:hi}function Gi(){let[e,t]=(0,x.useState)(Wi),[n,r]=(0,x.useState)([]),[i,a]=(0,x.useState)(``);(0,x.useEffect)(()=>{e.length>0&&Ur(e)},[e]);function o(e){let n=pi(e);if(n.riders.length===0){r(n.errors.length>0?n.errors:[`Aucun coureur importé.`]);return}t(e=>mi(e,n.riders)),r([`${n.riders.length} coureur(s) importé(s) ou mis à jour.`,...n.errors])}function s(e){t(t=>t.filter(t=>t.id!==e)),r([`Coureur supprimé de l'effectif local.`])}function c(){t(hi),r([`Effectif réinitialisé avec les données de départ.`])}let l=(0,x.useMemo)(()=>{let t=i.trim().toLowerCase();return t?e.filter(e=>e.name.toLowerCase().includes(t)||e.category.toLowerCase().includes(t)):e},[e,i]),u=(0,x.useMemo)(()=>Ui(l),[l]),d=(0,x.useMemo)(()=>new Map(u.map(e=>[e.riderId,e])),[u]),f=l.slice(0,4);return(0,A.jsxs)(`div`,{className:`page-stack`,children:[(0,A.jsx)(rr,{title:`Effectif`,subtitle:`Import brut, profils automatiques et affichage détaillé des coureurs.`}),(0,A.jsx)(zi,{riders:e}),(0,A.jsxs)(`div`,{className:`two-columns`,children:[(0,A.jsx)(j,{title:`Import brut`,children:(0,A.jsx)(Ri,{onImport:o})}),(0,A.jsx)(j,{title:`Actions`,children:(0,A.jsxs)(`div`,{className:`page-stack`,children:[(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{htmlFor:`roster-filter`,className:`field-label`,children:`Filtrer l'effectif`}),(0,A.jsx)(`input`,{id:`roster-filter`,className:`input`,type:`text`,value:i,onChange:e=>a(e.target.value),placeholder:`Nom ou catégorie...`})]}),(0,A.jsx)(`div`,{className:`inline-actions`,children:(0,A.jsx)(`button`,{type:`button`,className:`button button-secondary`,onClick:c,children:`Réinitialiser les données de départ`})}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`p`,{className:`field-label`,children:`Messages`}),(0,A.jsx)(`div`,{className:`message-box`,children:n.length>0?(0,A.jsx)(`ul`,{className:`clean-list`,children:n.map((e,t)=>(0,A.jsx)(`li`,{children:e},`${e}-${t}`))}):(0,A.jsx)(`p`,{className:`muted`,children:`Aucun message pour le moment.`})})]})]})})]}),(0,A.jsx)(j,{title:`Profils automatiques`,children:(0,A.jsx)(`div`,{className:`profile-card-grid`,children:f.length>0?f.map(e=>(0,A.jsx)(Ii,{rider:e,profile:d.get(e.id)},e.id)):(0,A.jsx)(`p`,{children:`Aucun coureur à afficher.`})})}),(0,A.jsx)(j,{title:`Liste des coureurs (${l.length})`,children:(0,A.jsx)(Li,{riders:l,onDelete:s})})]})}var Ki=[{key:`riderName`,label:`Nom`},{key:`riderCategory`,label:`Cat.`},{key:`riderAge`,label:`Âge`,isNumeric:!0},{key:`dominantPrimary`,label:`Primaire`},{key:`currentFoncier`,label:`Foncier`,isNumeric:!0},{key:`targetFoncier`,label:`Cible`,isNumeric:!0},{key:`foncierGap`,label:`Écart`,isNumeric:!0},{key:`priority`,label:`Priorité`},{key:`suggestedTraining`,label:`Entraînement retenu`},{key:`salaryRisk`,label:`Risque salaire`},{key:`reason`,label:`Motif`}];function qi(e,t){return t===`dominantPrimary`?e.dominantPrimary:t===`dominantPrimaryValue`?e.dominantPrimaryValue:t===`riderName`?e.riderName:t===`riderCategory`?e.riderCategory:t===`riderAge`?Number(e.riderAge):t===`currentFoncier`?e.currentFoncier:t===`targetFoncier`?e.targetFoncier:t===`foncierGap`?e.foncierGap:t===`priority`?e.priority:t===`suggestedTraining`?e.suggestedTraining:t===`salaryRisk`?e.salaryRisk:t===`reason`?e.reason:``}function Ji({advices:e}){let[t,n]=(0,x.useState)(`riderName`),[r,i]=(0,x.useState)(`asc`);if(e.length===0)return(0,A.jsx)(`p`,{children:`Aucun conseil individuel disponible.`});function a(e){t===e?i(e=>e===`asc`?`desc`:`asc`):(n(e),i(`asc`))}let o=[...e].sort((e,n)=>{let i=qi(e,t),a=qi(n,t);return typeof i==`number`&&typeof a==`number`?r===`asc`?i-a:a-i:r===`asc`?String(i).localeCompare(String(a),`fr`,{sensitivity:`base`}):String(a).localeCompare(String(i),`fr`,{sensitivity:`base`})});function s(e){return t===e?r===`asc`?` ▲`:` ▼`:null}return(0,A.jsx)(`div`,{className:`table-wrap`,children:(0,A.jsxs)(`table`,{className:`data-table`,children:[(0,A.jsx)(`thead`,{children:(0,A.jsx)(`tr`,{children:Ki.map(e=>(0,A.jsxs)(`th`,{style:{color:`#181c24`,cursor:`pointer`,userSelect:`none`},onClick:()=>a(e.key),title:`Trier par `+e.label,children:[e.label,s(e.key)]},e.key))})}),(0,A.jsx)(`tbody`,{children:o.map(e=>(0,A.jsxs)(`tr`,{children:[(0,A.jsx)(`td`,{children:e.riderName}),(0,A.jsx)(`td`,{children:e.riderCategory}),(0,A.jsx)(`td`,{children:e.riderAge}),(0,A.jsxs)(`td`,{children:[e.dominantPrimary,` `,e.dominantPrimaryValue]}),(0,A.jsx)(`td`,{children:e.currentFoncier}),(0,A.jsx)(`td`,{children:e.targetFoncier}),(0,A.jsx)(`td`,{children:e.foncierGap}),(0,A.jsx)(`td`,{children:e.priority}),(0,A.jsxs)(`td`,{children:[e.suggestedTraining,e.reassigned?(0,A.jsxs)(`div`,{className:`muted`,children:[`idéal : `,e.idealTraining]}):null]}),(0,A.jsx)(`td`,{children:e.salaryRisk}),(0,A.jsx)(`td`,{children:e.reason})]},e.riderId))})]})})}function Yi({plan:e}){return(0,A.jsx)(j,{title:`Synthèse hebdo`,children:e.selectedTypes.length>0?(0,A.jsxs)(A.Fragment,{children:[(0,A.jsx)(`div`,{className:`training-chip-list`,children:e.selectedTypes.map(e=>(0,A.jsx)(`span`,{className:`training-chip`,children:e},e))}),(0,A.jsxs)(`div`,{className:`training-rationale`,children:[(0,A.jsx)(`p`,{className:`field-label`,children:`Pourquoi ces 3 entraînements`}),(0,A.jsx)(`ul`,{className:`clean-list`,children:e.rationale.map((e,t)=>(0,A.jsx)(`li`,{children:e},`${e}-${t}`))})]}),(0,A.jsxs)(`div`,{className:`training-rationale`,children:[(0,A.jsx)(`p`,{className:`field-label`,children:`Couverture individuelle`}),(0,A.jsx)(`ul`,{className:`clean-list`,children:e.coverageCounts.slice(0,6).map(e=>(0,A.jsxs)(`li`,{children:[e.training,` : `,e.count,` coureur(s)`]},e.training))})]})]}):(0,A.jsx)(`p`,{children:`Aucun plan calculé.`})})}function Xi(){let e=(0,x.useMemo)(()=>{let e=Hr();return e.length>0?e:hi},[]),t=(0,x.useMemo)(()=>qr(),[]),n=(0,x.useMemo)(()=>Fr(e,t),[e,t]);return(0,A.jsxs)(`div`,{className:`page-stack`,children:[(0,A.jsx)(rr,{title:`Entraînement`,subtitle:`Diagnostic individuel par coureur d'abord, synthèse hebdo ensuite.`}),(0,A.jsxs)(`div`,{className:`two-columns`,children:[(0,A.jsx)(Yi,{plan:n}),(0,A.jsx)(j,{title:`Contexte de calcul`,children:(0,A.jsxs)(`div`,{className:`training-summary-box`,children:[(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Division actuelle :`}),` `,t.currentDivision]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Division visée :`}),` `,t.targetDivision]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Objectif club :`}),` `,t.clubObjective]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Tolérance salariale :`}),` `,t.salaryTolerance]}),(0,A.jsx)(`p`,{className:`muted`,children:`La logique privilégie d'abord le besoin individuel de chaque coureur, notamment le foncier, avant de déduire les 3 entraînements communs.`})]})})]}),(0,A.jsx)(j,{title:`Conseil individuel par coureur`,children:(0,A.jsx)(Ji,{advices:n.individualAdvices})})]})}function Zi({onApplyDefault:e}){return(0,A.jsx)(`div`,{className:`inline-actions`,children:(0,A.jsx)(`button`,{type:`button`,className:`button button-secondary`,onClick:e,children:`Réappliquer les réglages automatiques`})})}function Qi({onAnalyze:e}){let[t,n]=(0,x.useState)(``);function r(n){n.preventDefault(),t.trim()&&e(t)}return(0,A.jsxs)(`form`,{className:`roster-import-form`,onSubmit:r,children:[(0,A.jsx)(`label`,{htmlFor:`race-import`,className:`field-label`,children:`Colle ici le profil de la course`}),(0,A.jsx)(`textarea`,{id:`race-import`,className:`textarea`,rows:12,value:t,onChange:e=>n(e.target.value),placeholder:`Nom de course, type, distance, éléments de profil...`}),(0,A.jsxs)(`div`,{className:`inline-actions`,children:[(0,A.jsx)(`button`,{type:`submit`,className:`button button-primary`,children:`Analyser la course`}),(0,A.jsx)(`button`,{type:`button`,className:`button button-secondary`,onClick:()=>n(``),children:`Vider`})]})]})}var $i=[{key:`riderName`,label:`Nom`},{key:`riderCategory`,label:`Cat.`},{key:`riderForm`,label:`Forme`,isNumeric:!0},{key:`score`,label:`Score`,isNumeric:!0},{key:`role`,label:`Rôle`},{key:`effortPercent`,label:`%`,isNumeric:!0},{key:`morningBreakaway`,label:`Échappée mat.`},{key:`reasons`,label:`Points forts`}];function ea(e,t,n){return n===`riderName`?e.riderName:n===`riderCategory`?e.riderCategory:n===`riderForm`?e.riderForm:n===`score`?e.score:n===`role`?t?.role??e.role:n===`effortPercent`?t?.effortPercent??50:n===`morningBreakaway`?+!!t?.morningBreakaway:n===`reasons`?e.reasons.join(`, `):``}var ta=[`Leader`,`Équipier`,`Électron libre`];function na({riders:e,setupByRider:t,onRoleChange:n,onPercentChange:r,onBreakawayChange:i,readOnly:a=!1}){let[o,s]=(0,x.useState)(`score`),[c,l]=(0,x.useState)(`desc`);if(e.length===0)return(0,A.jsx)(`p`,{children:`Aucun coureur sélectionné.`});function u(e){o===e?l(e=>e===`asc`?`desc`:`asc`):(s(e),l(`asc`))}let d=[...e].sort((e,n)=>{let r=t[e.riderId],i=t[n.riderId],a=ea(e,r,o),s=ea(n,i,o);return typeof a==`number`&&typeof s==`number`?c===`asc`?a-s:s-a:c===`asc`?String(a).localeCompare(String(s),`fr`,{sensitivity:`base`}):String(s).localeCompare(String(a),`fr`,{sensitivity:`base`})});function f(e){return o===e?c===`asc`?` ▲`:` ▼`:null}return(0,A.jsx)(`div`,{className:`table-wrap`,children:(0,A.jsxs)(`table`,{className:`data-table race-setup-table`,children:[(0,A.jsx)(`thead`,{children:(0,A.jsxs)(`tr`,{children:[(0,A.jsx)(`th`,{children:`#`}),$i.map(e=>(0,A.jsxs)(`th`,{style:{color:`#181c24`,cursor:`pointer`,userSelect:`none`},onClick:()=>u(e.key),title:`Trier par `+e.label,children:[e.label,f(e.key)]},e.key))]})}),(0,A.jsx)(`tbody`,{children:d.map((e,o)=>{let s=t[e.riderId];return(0,A.jsxs)(`tr`,{children:[(0,A.jsx)(`td`,{children:o+1}),(0,A.jsx)(`td`,{children:(0,A.jsxs)(`div`,{className:`race-rider-name-cell`,children:[(0,A.jsx)(`span`,{className:`race-role-dot ${(s?.role??e.role)===`Leader`?`role-Leader`:(s?.role??e.role)===`Électron libre`?`role-ElectronLibre`:`role-Equipier`}`}),(0,A.jsx)(`span`,{children:e.riderName})]})}),(0,A.jsx)(`td`,{children:e.riderCategory}),(0,A.jsx)(`td`,{children:(0,A.jsx)(`span`,{className:`form-badge`,children:e.riderForm})}),(0,A.jsx)(`td`,{children:e.score}),(0,A.jsx)(`td`,{children:a?(0,A.jsx)(`span`,{children:s?.role??`Équipier`}):(0,A.jsx)(`select`,{className:`input input-compact`,value:s?.role??`Équipier`,onChange:t=>n(e.riderId,t.target.value),children:ta.map(e=>(0,A.jsx)(`option`,{value:e,children:e},e))})}),(0,A.jsx)(`td`,{children:(0,A.jsx)(`div`,{className:`effort-cell effort-cell-tight`,children:a?(s?.role??e.role)===`Électron libre`?null:(0,A.jsxs)(`span`,{className:`effort-value`,children:[s?.effortPercent??50,`%`]}):(0,A.jsxs)(A.Fragment,{children:[(0,A.jsx)(`input`,{type:`range`,min:0,max:100,step:5,value:s?.effortPercent??50,onChange:t=>r(e.riderId,Number.parseInt(t.target.value,10)),disabled:(s?.role??e.role)===`Électron libre`}),(s?.role??e.role)!==`Électron libre`&&(0,A.jsxs)(`span`,{className:`effort-value`,children:[s?.effortPercent??50,`%`]})]})})}),(0,A.jsx)(`td`,{children:a?(0,A.jsx)(`input`,{type:`checkbox`,checked:s?.morningBreakaway??!1,disabled:!0,readOnly:!0}):(0,A.jsx)(`input`,{type:`checkbox`,checked:s?.morningBreakaway??!1,onChange:t=>i(e.riderId,t.target.checked)})}),(0,A.jsx)(`td`,{children:e.reasons.join(` · `)})]},e.riderId)})})]})})}function ra({race:e}){return e?(0,A.jsx)(j,{title:e.name,children:(0,A.jsxs)(`div`,{className:`page-stack`,children:[(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Type :`}),` `,e.raceType===`etapes`?`Course à étapes`:`Course simple`]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Profil détecté :`}),` `,e.detectedProfile]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Distance :`}),` `,e.distanceKm>0?`${e.distanceKm} km`:`Non détectée`]}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`p`,{className:`field-label`,children:`Résumé`}),(0,A.jsx)(`ul`,{className:`clean-list`,children:e.summary.map((e,t)=>(0,A.jsx)(`li`,{children:e},`${e}-${t}`))})]})]})}):(0,A.jsx)(j,{title:`Analyse de course`,children:(0,A.jsx)(`p`,{children:`Aucune course analysée pour le moment.`})})}function ia({title:e,riders:t}){return(0,A.jsxs)(`div`,{className:`page-stack`,children:[(0,A.jsx)(`p`,{className:`field-label`,children:e}),t.length===0?(0,A.jsx)(`p`,{className:`muted`,children:`Aucun coureur.`}):(0,A.jsx)(`div`,{className:`table-wrap`,children:(0,A.jsxs)(`table`,{className:`data-table`,children:[(0,A.jsx)(`thead`,{children:(0,A.jsxs)(`tr`,{children:[(0,A.jsx)(`th`,{children:`Nom`}),(0,A.jsx)(`th`,{children:`Cat.`}),(0,A.jsx)(`th`,{children:`Forme`}),(0,A.jsx)(`th`,{children:`Score`}),(0,A.jsx)(`th`,{children:`Rôle`}),(0,A.jsx)(`th`,{children:`Raisons`})]})}),(0,A.jsx)(`tbody`,{children:t.map(t=>(0,A.jsxs)(`tr`,{children:[(0,A.jsx)(`td`,{children:t.riderName}),(0,A.jsx)(`td`,{children:t.riderCategory}),(0,A.jsx)(`td`,{children:t.riderForm}),(0,A.jsx)(`td`,{children:t.score}),(0,A.jsx)(`td`,{children:t.role}),(0,A.jsx)(`td`,{children:t.reasons.join(` · `)})]},`${e}-${t.riderId}`))})]})})]})}function aa(e){let t=e.split(/\r?\n/).map(e=>e.trim()).filter(Boolean),n={};for(let e of t){let t=e.match(/^([\wÀ-ÿ\s()]+)\s*\|\s*(.+)$/);t&&(n[t[1].toLowerCase().replace(/\s+/g,``)]=t[2].trim())}let r=n.nom||``,i=null;/\bU21\b/i.test(r)?i=`U21`:/\bU25\b/i.test(r)?i=`U25`:/\bPro\b/i.test(r)&&(i=`Pro`);let a=n.date||``,o=parseFloat((n[`distance(km)`]||``).replace(/[^\d.]/g,``))||0,s=parseInt((n[`dénivelétotal(m)`]||``).replace(/[^\d]/g,``))||0,c=parseInt((n.nombredecols||``).replace(/[^\d]/g,``))||0,l=parseInt((n.nombredecôtes||``).replace(/[^\d]/g,``))||0,u=(n.secteursplats||``).toLowerCase().includes(`oui`),d=(n.secteursvallonnés||``).toLowerCase().includes(`oui`),f=(n.secteursmontagneux||``).toLowerCase().includes(`oui`),p=n.arrivée||``,m=n.terrain||``,h=n.difficulté||``,g=`Mixte`;return u&&!f&&!d&&c===0&&l===0?g=`Plaine`:f||c>0||s>1800?g=`Montagne`:(d||l>0||s>900&&s<=1800)&&(g=`Vallon`),(m.toLowerCase().includes(`clm`)||p.toLowerCase().includes(`clm`))&&(g=`CLM`),(m.toLowerCase().includes(`pavé`)||p.toLowerCase().includes(`pavé`))&&(g=`Pavé`),{name:r,date:a,distanceKm:o,elevation:s,cols:c,cotes:l,secteursPlats:u,secteursVallonnes:d,secteursMontagneux:f,arrivee:p,terrain:m,difficulte:h,profil:g,category:i}}function oa(e,t){let n=Math.max(...t.map(e=>e.score)),r=Math.min(...t.map(e=>e.score)),i=n-r||1,a=(e.score-r)/i,o=e.riderForm,s=Math.max(0,Math.min(1,(o-60)/30)),c=60+10*a+10*s;return Math.round(Math.max(60,Math.min(80,c)))}function sa(e,t,n){switch(e){case`Leader`:return 100;case`Électron libre`:return 85;case`Équipier`:return oa(t,n);default:return 50}}function ca(e,t){return t.role===`Électron libre`?e.detectedProfile===`Vallon`||e.detectedProfile===`Mixte`:!1}function la(e,t,n){return{riderId:t.riderId,role:t.role===`Remplaçant`?`Équipier`:t.role,effortPercent:sa(t.role,t,n),morningBreakaway:ca(e,t)}}function ua(e,t){return t.reduce((n,r)=>(n[r.riderId]=la(e,r,t),n),{})}var da=`cymanager:calendar-race-profiles`;function F(){try{let e=localStorage.getItem(da);if(!e)return{};let t=JSON.parse(e);return!t||typeof t!=`object`?{}:t}catch(e){return console.error(`Erreur de lecture localStorage calendar race profiles`,e),{}}}function fa(e){try{localStorage.setItem(da,JSON.stringify(e))}catch(e){console.error(`Erreur d'écriture localStorage calendar race profiles`,e)}}function pa(e,t){let n=F();n[e]=t,fa(n)}function ma(e){return F()[e]??null}function ha(e){return{rawText:``,name:e.name,raceType:`simple`,distanceKm:e.distanceKm,detectedProfile:e.profil,weights:{flat:e.secteursPlats?40:0,hill:e.secteursVallonnes?40:0,mountain:e.secteursMontagneux?40:0,sprint:e.arrivee.toLowerCase().includes(`sprint`)?30:0,cobble:e.terrain.toLowerCase().includes(`pavé`)?30:0,timeTrial:e.terrain.toLowerCase().includes(`clm`)?30:0,breakaway:0,endurance:e.difficulte.toLowerCase().includes(`long`)?20:0,resistance:e.difficulte.toLowerCase().includes(`difficile`)?20:0,recovery:0,stageRace:0},summary:[`Profil détecté : ${e.profil}`,`Distance : ${e.distanceKm} km`,`Dénivelé : ${e.elevation} m`,`Cols : ${e.cols} | Côtes : ${e.cotes}`,`Plats : ${e.secteursPlats} | Vallonné : ${e.secteursVallonnes} | Montagneux : ${e.secteursMontagneux}`,`Arrivée : ${e.arrivee}`,`Terrain : ${e.terrain}`,`Difficulté : ${e.difficulte}`],category:e.category}}function ga(){try{let e=localStorage.getItem(`cymanager:race-setup`);if(!e)return{};let t=JSON.parse(e);return!t||typeof t!=`object`?{}:t}catch{return{}}}function _a(e){return e?`${e.name}::${e.raceType}::${e.distanceKm}::${e.detectedProfile}`:``}function va(){let e=Hr();return e.length>0?e:hi}function ya(e){if(e.category)return e.category;let t=[e.name,e.rawText,...e.summary??[]].filter(Boolean).join(` `).toLowerCase();return t.includes(`u21`)?`U21`:t.includes(`u25`)?`U25`:t.includes(`pro`)?`Pro`:null}function ba(e,t){let n=new Set;return e.map((e,t)=>ya(e)===`Pro`?t:-1).filter(e=>e!==-1).forEach(r=>{let i=e[r];_r(t,i).selected.forEach(e=>{(e.riderCategory===`U25`||e.riderCategory===`U21`)&&n.add(e.riderId)})}),n}function xa(e,t,n=new Set){let r=ya(e);return r===`U25`?t.filter(e=>e.category===`U25`&&e.ageYears>=22&&e.ageYears<=25&&!n.has(e.id)):r===`U21`?t.filter(e=>e.category===`U21`&&e.ageYears<=21&&!n.has(e.id)):t}function Sa(e,t){let n=new Set(t.map(e=>e.riderId));return Object.fromEntries(Object.entries(e).filter(([e])=>n.has(e)))}function Ca(e,t){let n={},r=ba(e,t);return e.forEach(e=>{let i=_r(xa(e,t,r),e),a=_a(e),o=Sa(zr(a),i.selected);n[a]=Object.keys(o).length>0?o:ua(i.race,i.selected)}),n}function wa(){let[e]=(0,x.useState)(va),[t,n]=(0,x.useState)([]),[r,i]=(0,x.useState)([]),[a,o]=(0,x.useState)({}),[s,c]=(0,x.useState)(``);function l(t){if(!t.trim()){i([`Le texte de course est vide.`]);return}let r=t.split(/(?:\r?\n){2,}/).map(e=>e.trim()).filter(Boolean),a=[],s=[];r.forEach((e,t)=>{try{let n=ha(aa(e));n.rawText=e,a.push(n),s.push(`--- Course ${t+1} ---`,...n.summary,`Catégorie détectée : ${ya(n)??`Aucune`}`,`Profil détecté : ${n.detectedProfile}`,`Type : course simple.`)}catch(e){s.push(`Erreur lors de l'analyse du tableau ${t+1} : ${e.message}`)}}),n(a),o(Ca(a,e)),i([`Nombre de courses détectées : ${a.length}`,...s,a.length===0?`Aucune course valide détectée.`:`Analyse terminée.`])}function u(e,n,r){let i=t[e],a=_a(i);o(e=>{let t=e[a]||{},i=t[n]??{riderId:n,role:`Équipier`,effortPercent:50,morningBreakaway:!1};return{...e,[a]:{...t,[n]:{...i,role:r}}}})}function d(e,n,r){let i=t[e],a=_a(i);o(e=>{let t=e[a]||{},i=t[n]??{riderId:n,role:`Équipier`,effortPercent:50,morningBreakaway:!1};return{...e,[a]:{...t,[n]:{...i,effortPercent:r}}}})}function f(e,n,r){let i=t[e],a=_a(i);o(e=>{let t=e[a]||{},i=t[n]??{riderId:n,role:`Équipier`,effortPercent:50,morningBreakaway:!1};return{...e,[a]:{...t,[n]:{...i,morningBreakaway:r}}}})}function p(n){let r=t[n],a=_r(xa(r,e,ba(t,e)),r),s=_a(r),c=ua(a.race,a.selected);o(e=>({...e,[s]:c})),Br(s,c),i(e=>[`Réglages automatiques réappliqués pour l'étape ${n+1}.`,...e])}function m(){if(!t.length)return;let e=t.map(e=>{let t=_a(e),n=``;if(e.rawText){let t=e.rawText.match(/Date\s*\|\s*([\d/-]+)/i);t&&(n=t[1])}if(!n&&e.summary){let t=e.summary.find(e=>e.toLowerCase().includes(`date`));if(t){let e=t.match(/([\d]{2}\/\d{2}\/\d{4})/);e&&(n=e[1])}}return{id:`calendar-${Date.now()}-${Math.floor(Math.random()*1e4)}`,title:`${e.name} (${n?n+` · `:``}${e.distanceKm?e.distanceKm+` km`:``})`,details:`Date: ${n}\nProfil: ${e.detectedProfile}\nType: ${e.raceType}\nRésumé: ${e.summary?.join(` | `)}`,source:`manual`,status:`todo`,priority:`moyenne`,category:`courses`,createdAt:new Date().toISOString(),raceKey:t}});try{let e=ga();t.forEach(t=>{let n=_a(t),r=a[n];r&&Object.keys(r).length>0&&(e[n]=r,pa(n,t))}),localStorage.setItem(`cymanager:race-setup`,JSON.stringify(e))}catch(e){console.error(`Erreur de sauvegarde des réglages de course`,e)}let n=Zr();Qr([...e,...n]),i(e=>[`✅ ${t.length>1?`Étapes ajoutées au calendrier et à la to-do !`:`Course ajoutée au calendrier et à la to-do !`}`,...e])}return(0,A.jsxs)(`div`,{className:`page-stack`,children:[(0,A.jsx)(rr,{title:`Courses`,subtitle:`Analyse d'une course ou d'un mini-tour, sélection des 7 et réglages d'inscription plus proches de l'écran de jeu.`}),(0,A.jsxs)(`div`,{className:`two-columns`,children:[(0,A.jsxs)(j,{title:`Import course ou mini-tour`,children:[(0,A.jsx)(Qi,{onAnalyze:l}),r.length>0&&(0,A.jsx)(`div`,{style:{margin:`1em 0`,color:`#2b2`},children:r.map((e,t)=>(0,A.jsx)(`div`,{children:e},t))}),(0,A.jsxs)(`div`,{style:{display:`flex`,gap:8,marginTop:8},children:[(0,A.jsx)(`button`,{className:`button`,onClick:()=>{n([]),c(``)},type:`button`,children:`Vider`}),(0,A.jsx)(`button`,{className:`button button-primary`,onClick:m,type:`button`,disabled:!t.length,children:`Ajouter au calendrier`})]})]}),(0,A.jsx)(j,{title:`Messages`,children:(0,A.jsx)(`div`,{className:`message-box`,children:r.length>0?(0,A.jsx)(`ul`,{className:`clean-list`,children:r.map((e,t)=>(0,A.jsx)(`li`,{children:e},`${e}-${t}`))}):(0,A.jsx)(`p`,{className:`muted`,children:`Aucun message pour le moment.`})})})]}),s&&(0,A.jsx)(j,{title:`Résumé général du mini-tour`,children:(0,A.jsx)(`div`,{style:{whiteSpace:`pre-line`,fontSize:15},children:s})}),t.map((n,r)=>{let i=_r(xa(n,e,ba(t,e)),n),o=_a(n),s=a[o]||{};return(0,A.jsx)(`div`,{style:{marginBottom:32},children:(0,A.jsxs)(j,{title:`Étape ${r+1} : ${n.name}`,children:[(0,A.jsx)(ra,{race:n}),(0,A.jsxs)(`div`,{style:{margin:`12px 0 0 0`},children:[(0,A.jsx)(Zi,{onApplyDefault:()=>p(r)}),(0,A.jsx)(na,{riders:i.selected,setupByRider:s,onRoleChange:(e,t)=>u(r,e,t),onPercentChange:(e,t)=>d(r,e,t),onBreakawayChange:(e,t)=>f(r,e,t)})]}),(0,A.jsx)(j,{title:`Remplaçants`,style:{marginTop:18},children:(0,A.jsx)(ia,{title:`Remplaçants conseillés`,riders:i.substitutes})}),(0,A.jsx)(j,{title:`Classement complet`,style:{marginTop:18},children:(0,A.jsx)(ia,{title:`Tous les coureurs classés`,riders:i.ranking})})]})},o)})]})}function Ta({status:e,category:t,onStatusChange:n,onCategoryChange:r}){return(0,A.jsxs)(`div`,{className:`todo-filters`,children:[(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`todo-status-filter`,children:`Statut`}),(0,A.jsxs)(`select`,{id:`todo-status-filter`,className:`input`,value:e,onChange:e=>n(e.target.value),children:[(0,A.jsx)(`option`,{value:`all`,children:`Tous`}),(0,A.jsx)(`option`,{value:`todo`,children:`À faire`}),(0,A.jsx)(`option`,{value:`done`,children:`Fait`})]})]}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`todo-category-filter`,children:`Catégorie`}),(0,A.jsxs)(`select`,{id:`todo-category-filter`,className:`input`,value:t,onChange:e=>r(e.target.value),children:[(0,A.jsx)(`option`,{value:`all`,children:`Toutes`}),(0,A.jsx)(`option`,{value:`effectif`,children:`Effectif`}),(0,A.jsx)(`option`,{value:`entrainement`,children:`Entraînement`}),(0,A.jsx)(`option`,{value:`courses`,children:`Courses`}),(0,A.jsx)(`option`,{value:`installations`,children:`Installations`}),(0,A.jsx)(`option`,{value:`general`,children:`Général`})]})]})]})}function Ea({item:e,onToggle:t,onDelete:n}){return(0,A.jsxs)(`div`,{className:`todo-item todo-${e.status}`,children:[(0,A.jsxs)(`div`,{className:`todo-main`,children:[(0,A.jsxs)(`label`,{className:`todo-checkbox-line`,children:[(0,A.jsx)(`input`,{type:`checkbox`,checked:e.status===`done`,onChange:()=>t(e.id)}),(0,A.jsx)(`span`,{className:`todo-title`,children:e.title})]}),e.details?(0,A.jsx)(`p`,{className:`todo-details`,children:e.details}):null,(0,A.jsxs)(`div`,{className:`todo-meta`,children:[(0,A.jsx)(`span`,{className:`todo-badge priority-${e.priority}`,children:e.priority}),(0,A.jsx)(`span`,{className:`todo-badge`,children:e.category}),(0,A.jsx)(`span`,{className:`todo-badge`,children:e.source})]})]}),e.source===`manual`&&n?(0,A.jsx)(`button`,{type:`button`,className:`button button-danger button-small`,onClick:()=>n(e.id),children:`Supprimer`}):null]})}function Da({items:e,onToggle:t,onDeleteManual:n}){return e.length===0?(0,A.jsx)(`p`,{className:`muted`,children:`Aucune tâche à afficher.`}):(0,A.jsx)(`div`,{className:`todo-list`,children:e.map(e=>(0,A.jsx)(Ea,{item:e,onToggle:t,onDelete:n},e.id))})}function Oa(){try{let e=localStorage.getItem(`cymanager:last-race`);if(!e)return null;let t=JSON.parse(e);return!t||typeof t!=`object`?null:t}catch(e){return console.error(`Erreur de lecture localStorage last race`,e),null}}function ka(e){return e?`${e.name}::${e.raceType}::${e.distanceKm}::${e.detectedProfile}`:``}function Aa(){let[e]=(0,x.useState)(()=>{let e=Hr();return e.length>0?e:hi}),[t,n]=(0,x.useState)(()=>Zr()),[r,i]=(0,x.useState)(()=>$r()),[a]=(0,x.useState)(()=>qr()),[o]=(0,x.useState)(()=>Oa()),[s,c]=(0,x.useState)(`todo`),[l,u]=(0,x.useState)(`all`),[d,f]=(0,x.useState)({title:``,details:``,priority:`moyenne`,category:`general`});(0,x.useEffect)(()=>{Qr(t)},[t]),(0,x.useEffect)(()=>{ei(r)},[r]);let p=(0,x.useMemo)(()=>ka(o),[o]),m=(0,x.useMemo)(()=>p?Object.keys(zr(p)).length:0,[p]),h=(0,x.useMemo)(()=>ri({riders:e,trainingExists:e.length>0,race:o?{rawText:``,name:o.name,raceType:o.raceType,distanceKm:o.distanceKm,detectedProfile:o.detectedProfile,weights:{flat:0,hill:0,mountain:0,sprint:0,cobble:0,timeTrial:0,breakaway:0,endurance:0,resistance:0,recovery:0,stageRace:0},summary:[],category:null}:null,raceSetupCount:m,clubSettings:a}),[e,o,m,a]),g=(0,x.useMemo)(()=>[...h,...t].map(e=>({...e,status:r[e.id]??e.status})),[h,t,r]),_=(0,x.useMemo)(()=>g.filter(e=>{let t=s===`all`||e.status===s,n=l===`all`||e.category===l;return t&&n}),[g,s,l]);function v(e){i(t=>({...t,[e]:t[e]===`done`?`todo`:`done`}))}function y(e){n(t=>t.filter(t=>t.id!==e)),i(t=>{let n={...t};return delete n[e],n})}function b(e){e.preventDefault();let t=d.title.trim();if(!t)return;let r={id:`manual-${crypto.randomUUID()}`,title:t,details:d.details.trim(),source:`manual`,status:`todo`,priority:d.priority,category:d.category,createdAt:new Date().toISOString()};n(e=>[r,...e]),f({title:``,details:``,priority:`moyenne`,category:`general`})}let ee=g.length,S=g.filter(e=>e.status===`done`).length,C=ee-S;return(0,A.jsxs)(`div`,{className:`page-stack`,children:[(0,A.jsx)(rr,{title:`To-do`,subtitle:`Suivi des tâches automatiques et manuelles du club.`}),(0,A.jsxs)(`div`,{className:`stat-grid`,children:[(0,A.jsx)(j,{title:`Total tâches`,children:(0,A.jsx)(`p`,{className:`stat-value`,children:ee})}),(0,A.jsx)(j,{title:`À faire`,children:(0,A.jsx)(`p`,{className:`stat-value`,children:C})}),(0,A.jsx)(j,{title:`Faites`,children:(0,A.jsx)(`p`,{className:`stat-value`,children:S})}),(0,A.jsx)(j,{title:`Effectif chargé`,children:(0,A.jsx)(`p`,{className:`stat-value`,children:e.length})})]}),(0,A.jsxs)(`div`,{className:`two-columns`,children:[(0,A.jsx)(j,{title:`Ajouter une tâche manuelle`,children:(0,A.jsxs)(`form`,{className:`page-stack`,onSubmit:b,children:[(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`todo-title`,children:`Titre`}),(0,A.jsx)(`input`,{id:`todo-title`,className:`input`,type:`text`,value:d.title,onChange:e=>f(t=>({...t,title:e.target.value})),placeholder:`Ex: Vérifier le marché des transferts`})]}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`todo-details`,children:`Détails`}),(0,A.jsx)(`textarea`,{id:`todo-details`,className:`textarea`,rows:5,value:d.details,onChange:e=>f(t=>({...t,details:e.target.value})),placeholder:`Optionnel`})]}),(0,A.jsxs)(`div`,{className:`todo-filters`,children:[(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`todo-priority`,children:`Priorité`}),(0,A.jsxs)(`select`,{id:`todo-priority`,className:`input`,value:d.priority,onChange:e=>f(t=>({...t,priority:e.target.value})),children:[(0,A.jsx)(`option`,{value:`haute`,children:`Haute`}),(0,A.jsx)(`option`,{value:`moyenne`,children:`Moyenne`}),(0,A.jsx)(`option`,{value:`basse`,children:`Basse`})]})]}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`todo-category`,children:`Catégorie`}),(0,A.jsxs)(`select`,{id:`todo-category`,className:`input`,value:d.category,onChange:e=>f(t=>({...t,category:e.target.value})),children:[(0,A.jsx)(`option`,{value:`general`,children:`Général`}),(0,A.jsx)(`option`,{value:`effectif`,children:`Effectif`}),(0,A.jsx)(`option`,{value:`entrainement`,children:`Entraînement`}),(0,A.jsx)(`option`,{value:`courses`,children:`Courses`}),(0,A.jsx)(`option`,{value:`installations`,children:`Installations`})]})]})]}),(0,A.jsx)(`div`,{className:`inline-actions`,children:(0,A.jsx)(`button`,{type:`submit`,className:`button button-primary`,children:`Ajouter la tâche`})})]})}),(0,A.jsx)(j,{title:`Filtres`,children:(0,A.jsx)(Ta,{status:s,category:l,onStatusChange:c,onCategoryChange:u})})]}),(0,A.jsx)(j,{title:`Liste des tâches`,children:(0,A.jsx)(Da,{items:_,onToggle:v,onDeleteManual:y})})]})}var ja={headOffice:`Siège social`,trainingCenter:`Centre d'entraînement`,formationCenter:`Centre de formation`,shop:`Boutique`},Ma=[`D1`,`D2`,`D3`,`D4`,`D5`,`D6`,`D7`,`D8`,`D9`],Na=[`formation`,`performance`,`mixte`],Pa=[`prudente`,`normale`,`agressive`];function Fa({settings:e,onChange:t}){function n(n,r,i){t({...e,facilities:{...e.facilities,[n]:{...e.facilities[n],[r]:i}}})}function r(n,r){t({...e,[n]:r})}return(0,A.jsxs)(`form`,{className:`page-stack`,onSubmit:e=>e.preventDefault(),children:[(0,A.jsxs)(`div`,{style:{marginBottom:18},children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`financial-balance`,children:`Solde financier actuel (€)`}),(0,A.jsx)(`input`,{id:`financial-balance`,className:`input`,type:`number`,min:0,step:1e3,value:e.financialBalance,onChange:e=>r(`financialBalance`,Number(e.target.value)),style:{maxWidth:200}})]}),(0,A.jsxs)(`div`,{className:`settings-grid`,style:{gridTemplateColumns:`1fr 1fr`,gap:24},children:[(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`division-pro-actuelle`,children:`Division actuelle équipe Pro`}),(0,A.jsx)(`select`,{id:`division-pro-actuelle`,className:`input`,value:e.divisionPro,onChange:e=>r(`divisionPro`,e.target.value),children:Ma.map(e=>(0,A.jsx)(`option`,{value:e,children:e},e))})]}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`division-pro-visee`,children:`Division visée équipe Pro`}),(0,A.jsx)(`select`,{id:`division-pro-visee`,className:`input`,value:e.targetDivision,onChange:e=>r(`targetDivision`,e.target.value),children:Ma.map(e=>(0,A.jsx)(`option`,{value:e,children:e},e))})]}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`division-u25-actuelle`,children:`Division actuelle équipe U25`}),(0,A.jsx)(`select`,{id:`division-u25-actuelle`,className:`input`,value:e.divisionU25,onChange:e=>r(`divisionU25`,e.target.value),children:Ma.map(e=>(0,A.jsx)(`option`,{value:e,children:e},e))})]}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`division-u25-visee`,children:`Division visée équipe U25`}),(0,A.jsx)(`select`,{id:`division-u25-visee`,className:`input`,value:e.targetDivision,onChange:e=>r(`targetDivision`,e.target.value),children:Ma.map(e=>(0,A.jsx)(`option`,{value:e,children:e},e))})]}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`division-u21-actuelle`,children:`Division actuelle équipe U21`}),(0,A.jsx)(`select`,{id:`division-u21-actuelle`,className:`input`,value:e.divisionU21,onChange:e=>r(`divisionU21`,e.target.value),children:Ma.map(e=>(0,A.jsx)(`option`,{value:e,children:e},e))})]}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`division-u21-visee`,children:`Division visée équipe U21`}),(0,A.jsx)(`select`,{id:`division-u21-visee`,className:`input`,value:e.targetDivision,onChange:e=>r(`targetDivision`,e.target.value),children:Ma.map(e=>(0,A.jsx)(`option`,{value:e,children:e},e))})]})]}),(0,A.jsxs)(`div`,{className:`settings-grid`,children:[(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`club-objective`,children:`Objectif club`}),(0,A.jsx)(`select`,{id:`club-objective`,className:`input`,value:e.clubObjective,onChange:e=>r(`clubObjective`,e.target.value),children:Na.map(e=>(0,A.jsx)(`option`,{value:e,children:e},e))})]}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`salary-tolerance`,children:`Tolérance salariale`}),(0,A.jsx)(`select`,{id:`salary-tolerance`,className:`input`,value:e.salaryTolerance,onChange:e=>r(`salaryTolerance`,e.target.value),children:Pa.map(e=>(0,A.jsx)(`option`,{value:e,children:e},e))})]})]}),Object.keys(ja).map(t=>{let r=e.facilities[t];return(0,A.jsxs)(`div`,{className:`settings-facility-block`,children:[(0,A.jsx)(`h3`,{className:`card-title`,children:ja[t]}),(0,A.jsxs)(`div`,{className:`settings-grid`,children:[(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`${t}-level`,children:`Niveau actuel`}),(0,A.jsx)(`input`,{id:`${t}-level`,className:`input`,type:`number`,min:1,max:20,value:r.level,onChange:e=>n(t,`level`,Number.parseInt(e.target.value||`1`,10))})]}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`${t}-target`,children:`Niveau visé`}),(0,A.jsx)(`input`,{id:`${t}-target`,className:`input`,type:`number`,min:1,max:20,value:r.targetLevel??``,onChange:e=>n(t,`targetLevel`,e.target.value.trim()===``?null:Number.parseInt(e.target.value,10))})]})]}),(0,A.jsxs)(`label`,{className:`checkbox-line`,children:[(0,A.jsx)(`input`,{type:`checkbox`,checked:r.upgradeInProgress,onChange:e=>n(t,`upgradeInProgress`,e.target.checked)}),(0,A.jsx)(`span`,{children:`Travaux en cours`})]}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`${t}-started-at`,children:`Date de lancement`}),(0,A.jsx)(`input`,{id:`${t}-started-at`,className:`input`,type:`datetime-local`,value:r.upgradeStartedAt,onChange:e=>n(t,`upgradeStartedAt`,e.target.value)})]}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`${t}-notes`,children:`Notes`}),(0,A.jsx)(`textarea`,{id:`${t}-notes`,className:`textarea`,rows:4,value:r.notes,onChange:e=>n(t,`notes`,e.target.value),placeholder:`Notes sur cette installation...`})]})]},t)}),(0,A.jsxs)(`div`,{children:[(0,A.jsx)(`label`,{className:`field-label`,htmlFor:`global-notes`,children:`Notes globales du club`}),(0,A.jsx)(`textarea`,{id:`global-notes`,className:`textarea`,rows:5,value:e.globalNotes,onChange:e=>r(`globalNotes`,e.target.value),placeholder:`Notes générales, priorités, blocages...`})]})]})}var Ia={headOffice:`Siège social`,trainingCenter:`Centre d'entraînement`,formationCenter:`Centre de formation`,shop:`Boutique`};function La(e){if(!e)return`Non renseignée`;let t=new Date(e);return Number.isNaN(t.getTime())?e:new Intl.DateTimeFormat(`fr-FR`,{dateStyle:`medium`,timeStyle:`short`}).format(t)}function Ra(e){if(!e)return null;let t=new Date(e);return Number.isNaN(t.getTime())?null:Math.floor((Date.now()-t.getTime())/(1e3*60*60*24))}function za({settings:e}){return(0,A.jsx)(j,{title:`Résumé installations`,children:(0,A.jsxs)(`div`,{className:`facility-summary`,children:[Object.keys(Ia).map(t=>{let n=e.facilities[t],r=Ra(n.upgradeStartedAt);return(0,A.jsxs)(`div`,{className:`facility-card`,children:[(0,A.jsx)(`h3`,{className:`card-title`,children:Ia[t]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Niveau :`}),` `,n.level]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Travaux en cours :`}),` `,n.upgradeInProgress?`Oui`:`Non`]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Niveau cible :`}),` `,n.targetLevel??`Non défini`]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Lancement :`}),` `,La(n.upgradeStartedAt)]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Ancienneté :`}),` `,r===null?`Inconnue`:`${r} jour(s)`]}),(0,A.jsxs)(`p`,{children:[(0,A.jsx)(`strong`,{children:`Notes :`}),` `,n.notes.trim()?n.notes:`Aucune note`]})]},t)}),(0,A.jsxs)(`div`,{className:`facility-card`,children:[(0,A.jsx)(`h3`,{className:`card-title`,children:`Notes globales`}),(0,A.jsx)(`p`,{children:e.globalNotes.trim()||`Aucune note globale`})]})]})})}function Ba(e){if(!e)return``;let t=new Date(e);if(Number.isNaN(t.getTime()))return e;let n=e=>String(e).padStart(2,`0`);return`${t.getFullYear()}-${n(t.getMonth()+1)}-${n(t.getDate())}T${n(t.getHours())}:${n(t.getMinutes())}`}function Va(e){let t=structuredClone(e);return Object.keys(t.facilities).forEach(e=>{t.facilities[e].upgradeStartedAt=Ba(t.facilities[e].upgradeStartedAt)}),t}function Ha(){return Va(qr())}function Ua(){let[e,t]=(0,x.useState)(Ha),[n,r]=(0,x.useState)(`Paramètres chargés.`);function i(e){t(e)}function a(){Jr(e),r(`Paramètres sauvegardés.`)}function o(){let e=Va(Kr);t(e),Jr(e),r(`Paramètres réinitialisés avec les valeurs par défaut.`)}return(0,A.jsxs)(`div`,{className:`page-stack`,children:[(0,A.jsx)(rr,{title:`Paramètres`,subtitle:`Réglages du club, installations et notes utiles pour la gestion.`}),(0,A.jsxs)(`div`,{className:`two-columns`,children:[(0,A.jsx)(j,{title:`Réglages du club`,children:(0,A.jsxs)(`div`,{className:`page-stack`,children:[(0,A.jsx)(Fa,{settings:e,onChange:i}),(0,A.jsxs)(`div`,{className:`inline-actions`,children:[(0,A.jsx)(`button`,{type:`button`,className:`button button-primary`,onClick:a,children:`Sauvegarder`}),(0,A.jsx)(`button`,{type:`button`,className:`button button-secondary`,onClick:o,children:`Réinitialiser`})]}),(0,A.jsx)(`div`,{className:`message-box`,children:(0,A.jsx)(`p`,{className:`muted`,children:n})})]})}),(0,A.jsx)(za,{settings:e})]})]})}function Wa(e){let t=[];return Object.values(e).forEach(e=>{let n=(typeof e==`string`?e:e.result).trim().split(/\r?\n/);if(n.length<2)return;let r=n[0].split(`	`),i=r.findIndex(e=>e.toLowerCase().includes(`nom`)),a=r.findIndex(e=>e.toLowerCase().includes(`equipe`)),o=r.findIndex(e=>e.toLowerCase().includes(`point`));i===-1||a===-1||o===-1||n.slice(1).forEach(e=>{let n=e.split(`	`),r=n[i]?.trim(),s=n[a]?.trim(),c=parseInt(n[o]?.replace(/[^\d]/g,``)||`0`,10);r&&s&&!isNaN(c)&&t.push({name:r,team:s,points:c})})}),t}function Ga(){try{let e=localStorage.getItem(`cymanager:results`);if(!e)return{};let t=JSON.parse(e);return!t||typeof t!=`object`?{}:t}catch{return{}}}function Ka(e){return/u25/i.test(e)?`u25`:/u21/i.test(e)?`u21`:`pro`}function qa(e){try{localStorage.setItem(`cymanager:results`,JSON.stringify(e))}catch(e){console.error(`Erreur d'ecriture localStorage resultats`,e)}}function Ja(e){let t=new Map;return e.forEach(({team:e,points:n})=>{e&&t.set(e,(t.get(e)||0)+n)}),Array.from(t.entries()).map(([e,t])=>({team:e,points:t})).sort((e,t)=>t.points-e.points)}function Ya(e){return e===1?`1er`:e===2?`2nd`:e===3?`3eme`:`${e}eme`}function Xa(e){return e===`u25`?`U25`:e===`u21`?`U21`:`Pro`}function Za(e,t){return t===`u25`?e.u25:t===`u21`?e.u21:e.pro}function Qa(e){return[{value:`pro`,label:`Pro (Division ${e.pro||`-`})`},{value:`u25`,label:`U25 (Division ${e.u25||`-`})`},{value:`u21`,label:`U21 (Division ${e.u21||`-`})`}]}function $a(){let e=Ga(),t=qr(),n={pro:t.divisionPro,u25:t.divisionU25,u21:t.divisionU21},r=Zr().filter(e=>e.id.startsWith(`calendar-`)),i={};r.forEach(e=>{i[e.id]=e.title});let a=!1;Object.keys(e).forEach(t=>{r.some(e=>e.id===t)||(delete e[t],a=!0)}),Object.entries(e).forEach(([t,n])=>{typeof n==`string`&&(e[t]={result:n,category:Ka(i[t]||``)},a=!0)}),a&&qa(e);let o=new Map,s=new Map,c=new Map;Object.entries(e).forEach(([e,t])=>{let n=`pro`,r=t;typeof t==`object`&&t&&`result`in t&&`category`in t&&(r=t.result,n=t.category);let i=Wa({[e]:r}),a=n===`u25`?s:n===`u21`?c:o;i.forEach(({name:e,team:t,points:n})=>{if(!a.has(e)){a.set(e,{name:e,team:t,points:n});return}let r=a.get(e);a.set(e,{...r,points:r.points+n})})});let l=Array.from(o.values()).sort((e,t)=>t.points-e.points),u=Array.from(s.values()).sort((e,t)=>t.points-e.points),d=Array.from(c.values()).sort((e,t)=>t.points-e.points);return{divisions:n,pro:l,u25:u,u21:d,proTeams:Ja(l),u25Teams:Ja(u),u21Teams:Ja(d)}}function eo(){let[e,t]=(0,x.useState)(`individuel`),[n,r]=(0,x.useState)(`pro`),[i,a]=(0,x.useState)(`pro`),{divisions:o,pro:s,u25:c,u21:l,proTeams:u,u25Teams:d,u21Teams:f}=(0,x.useMemo)(()=>$a(),[]),p=(0,x.useMemo)(()=>Qa(o),[o]),m={pro:s,u25:c,u21:l},h={pro:u,u25:d,u21:f},g=m[n],_=h[i],v=`Equipe ${Xa(n)} (Division ${Za(o,n)||`-`})`,y=`Classement par equipe ${Xa(i)} (Division ${Za(o,i)||`-`})`;return(0,A.jsxs)(`div`,{className:`page-content`,style:{maxWidth:1200,margin:`0 auto`},children:[(0,A.jsx)(rr,{title:`Classement`,subtitle:`Consultez les classements des equipes Pro, U25 et U21.`}),(0,A.jsxs)(`div`,{style:{display:`flex`,gap:16,marginBottom:24},children:[(0,A.jsx)(`button`,{className:e===`individuel`?`tab-btn tab-btn-active`:`tab-btn`,onClick:()=>t(`individuel`),type:`button`,children:`Classement individuel`}),(0,A.jsx)(`button`,{className:e===`equipes`?`tab-btn tab-btn-active`:`tab-btn`,onClick:()=>t(`equipes`),type:`button`,children:`Classement par equipe`})]}),e===`individuel`&&(0,A.jsxs)(`div`,{className:`page-stack`,children:[(0,A.jsxs)(`div`,{className:`select-row ranking-filter-row`,children:[(0,A.jsx)(`label`,{htmlFor:`individual-ranking-category`,className:`select-label`,children:`Type d'equipe :`}),(0,A.jsx)(`select`,{id:`individual-ranking-category`,className:`input select-input`,value:n,onChange:e=>r(e.target.value),children:p.map(e=>(0,A.jsx)(`option`,{value:e.value,children:e.label},e.value))})]}),(0,A.jsx)(j,{title:v,children:g.length===0?(0,A.jsx)(`div`,{children:`Aucun classement disponible.`}):(0,A.jsx)(`div`,{className:`table-container`,children:(0,A.jsxs)(`table`,{className:`data-table styled-table`,children:[(0,A.jsx)(`thead`,{children:(0,A.jsxs)(`tr`,{children:[(0,A.jsx)(`th`,{style:{color:`#181c24`},children:`Cl.`}),(0,A.jsx)(`th`,{style:{color:`#181c24`},children:`Nom`}),(0,A.jsx)(`th`,{style:{color:`#181c24`},children:`Equipe`}),(0,A.jsx)(`th`,{style:{color:`#181c24`},children:`Points`})]})}),(0,A.jsx)(`tbody`,{children:g.map((e,t)=>(0,A.jsxs)(`tr`,{className:e.team===`Kritoff Team`?`highlight-row`:void 0,children:[(0,A.jsx)(`td`,{children:Ya(t+1)}),(0,A.jsx)(`td`,{children:e.name}),(0,A.jsx)(`td`,{children:e.team}),(0,A.jsx)(`td`,{children:e.points})]},`${e.name}-${t}`))})]})})})]}),e===`equipes`&&(0,A.jsxs)(`div`,{className:`page-stack`,children:[(0,A.jsxs)(`div`,{className:`select-row ranking-filter-row`,children:[(0,A.jsx)(`label`,{htmlFor:`team-ranking-category`,className:`select-label`,children:`Type d'equipe :`}),(0,A.jsx)(`select`,{id:`team-ranking-category`,className:`input select-input`,value:i,onChange:e=>a(e.target.value),children:p.map(e=>(0,A.jsx)(`option`,{value:e.value,children:e.label},e.value))})]}),(0,A.jsx)(j,{title:y,children:_.length===0?(0,A.jsx)(`div`,{children:`Aucun classement disponible.`}):(0,A.jsx)(`div`,{className:`table-container`,children:(0,A.jsxs)(`table`,{className:`data-table styled-table`,children:[(0,A.jsx)(`thead`,{children:(0,A.jsxs)(`tr`,{children:[(0,A.jsx)(`th`,{style:{color:`#181c24`},children:`Cl.`}),(0,A.jsx)(`th`,{style:{color:`#181c24`},children:`�quipe`}),(0,A.jsx)(`th`,{style:{color:`#181c24`},children:`Points`})]})}),(0,A.jsx)(`tbody`,{children:_.map((e,t)=>(0,A.jsxs)(`tr`,{className:e.team===`Kritoff Team`?`highlight-row`:void 0,children:[(0,A.jsx)(`td`,{children:Ya(t+1)}),(0,A.jsx)(`td`,{children:e.team}),(0,A.jsx)(`td`,{children:e.points})]},`${e.team}-${t}`))})]})})})]})]})}var to=({open:e,title:t,message:n,onConfirm:r,onCancel:i})=>e?(0,A.jsx)(`div`,{style:{position:`fixed`,left:0,top:0,width:`100vw`,height:`100vh`,background:`rgba(0,0,0,0.25)`,zIndex:2e3,display:`flex`,alignItems:`center`,justifyContent:`center`},children:(0,A.jsxs)(`div`,{style:{background:`#fff`,borderRadius:12,boxShadow:`0 2px 16px #0002`,padding:32,minWidth:340,maxWidth:`90vw`,color:`#181c24`},children:[t&&(0,A.jsx)(`h3`,{style:{color:`#181c24`},children:t}),(0,A.jsx)(`div`,{style:{marginBottom:24,color:`#181c24`},children:n}),(0,A.jsxs)(`div`,{style:{display:`flex`,gap:12,justifyContent:`flex-end`},children:[(0,A.jsx)(`button`,{className:`button`,onClick:i,type:`button`,children:`Annuler`}),(0,A.jsx)(`button`,{className:`button button-danger`,onClick:r,type:`button`,children:`Supprimer`})]})]})}):null;function no(e,t){return[[`Plaine`,e.flat,t.weights.flat],[`Vallon`,e.hill,t.weights.hill],[`Montagne`,e.mountain,t.weights.mountain],[`Sprint`,e.sprint,t.weights.sprint],[`Pavé`,e.cobble,t.weights.cobble],[`CLM`,e.timeTrial,t.weights.timeTrial],[`Baroudeur`,e.breakaway,t.weights.breakaway],[`Endurance`,e.endurance,t.weights.endurance],[`Résistance`,e.resistance,t.weights.resistance],[`Récupération`,e.recovery,t.weights.recovery],[`CAE`,e.stageRace,t.weights.stageRace]].filter(([,,e])=>Number(e)>0).map(([e,t,n])=>({label:e,contribution:Number(t)*Number(n),stat:Number(t)})).sort((e,t)=>t.contribution-e.contribution).slice(0,2).map(e=>`${e.label} ${e.stat}`)}function ro(){try{let e=localStorage.getItem(`cymanager:results`);if(!e)return{};let t=JSON.parse(e);return!t||typeof t!=`object`?{}:t}catch{return{}}}function io(){try{let e=localStorage.getItem(`cymanager:riders`);if(!e)return[];let t=JSON.parse(e);return Array.isArray(t)?t:[]}catch{return[]}}function ao(){try{let e=localStorage.getItem(`cymanager:race-setup`);if(!e)return{};let t=JSON.parse(e);return!t||typeof t!=`object`?{}:t}catch{return{}}}var oo=()=>{let[e,t]=(0,x.useState)(()=>Zr().filter(e=>e.id.startsWith(`calendar-`))),[n,r]=(0,x.useState)($r);function i(e){r(t=>{let n={...t,[e]:t[e]===`done`?`todo`:`done`};return ei(n),n})}let[a,o]=(0,x.useState)(null);function s(e){t(t=>{let n=t.filter(t=>t.id!==e);return Qr(Zr().filter(t=>t.id!==e)),r(t=>{let n={...t};return delete n[e],ei(n),n}),n}),o(null)}let[c,l]=(0,x.useState)(null),[u,d]=(0,x.useState)(``);function f(e){l(e),d(``)}function p(){l(null),d(``)}function m(){if(c){let t=ro();t[c]={result:u,category:y(e.find(e=>e.id===c)?.title||``)},localStorage.setItem(`cymanager:results`,JSON.stringify(t))}l(null),d(``)}let[h,g]=(0,x.useState)(null);function _(e){let t=n[e.id]===`done`,r=`#bdbdbd`;e.category===`courses`&&(r=`#bfa600`),e.priority===`haute`&&(r=`#b83a3a`),e.priority===`basse`&&(r=`#4caf50`);let c=null;try{let t=e.raceKey,n=ao(),r=io();if(t){let e=n[t];if(e){let n=ma(t),i=Object.values(e).map(e=>{let t=r.find(t=>t.id===e.riderId);return{riderId:e.riderId,riderName:t?.name||e.riderId,riderForm:t?.form??0,riderCategory:t?.category??``,score:n&&t?t.flat*n.weights.flat+t.hill*n.weights.hill+t.mountain*n.weights.mountain+t.sprint*n.weights.sprint+t.cobble*n.weights.cobble+t.timeTrial*n.weights.timeTrial+t.breakaway*n.weights.breakaway+t.endurance*n.weights.endurance+t.resistance*n.weights.resistance+t.recovery*n.weights.recovery+t.stageRace*n.weights.stageRace:t?.total??0,role:e.role,reasons:t&&n?no(t,n):[]}});c=(0,A.jsx)(`div`,{style:{marginTop:10,background:`#23242a`,borderRadius:10,padding:16,boxShadow:`0 2px 12px #0006`,border:`1px solid #333`},children:(0,A.jsxs)(`div`,{style:{overflowX:`auto`},children:[(0,A.jsx)(`style`,{children:`
+                  .race-setup-table thead th { color: #111 !important; background: #f7f7fa !important; }
+                `}),(0,A.jsx)(na,{riders:i,setupByRider:e,onRoleChange:()=>{},onPercentChange:()=>{},onBreakawayChange:()=>{},readOnly:!0})]})})}}}catch(e){console.error(`Erreur de chargement de la tactique de course`,e)}return(0,A.jsxs)(`div`,{className:`card`,style:{marginBottom:12,padding:16,background:t?`#e6e6e6`:`#fff`,opacity:t?.6:1,display:`flex`,alignItems:`center`,gap:16,borderLeft:`6px solid ${r}`,boxShadow:`0 1px 4px 0 #0001`,flexDirection:`column`},children:[(0,A.jsxs)(`div`,{style:{display:`flex`,width:`100%`,alignItems:`center`,gap:16},children:[(0,A.jsx)(`input`,{type:`checkbox`,checked:t,onChange:()=>i(e.id),style:{marginRight:12,width:18,height:18},title:t?`Marquer comme à faire`:`Marquer comme fait`}),(0,A.jsxs)(`div`,{style:{flex:1},children:[(0,A.jsx)(`div`,{style:{fontWeight:600,fontSize:16,color:`#181c24`},children:e.title}),(0,A.jsx)(`div`,{style:{fontSize:13,color:`#444`,margin:`2px 0 6px 0`},children:e.details?.split(`
+`).join(` | `)}),(0,A.jsx)(`span`,{style:{color:`#aaa`,fontSize:12},children:new Date(e.createdAt).toLocaleDateString()})]}),(0,A.jsx)(`button`,{type:`button`,className:`button button-secondary button-small`,style:{marginLeft:8,minWidth:80},onClick:()=>f(e.id),children:`Résultat`}),(0,A.jsx)(`button`,{type:`button`,className:`button button-danger button-small`,style:{marginLeft:8,minWidth:80},onClick:()=>o(e.id),children:`Supprimer`}),(0,A.jsx)(to,{open:!!a,title:`Confirmer la suppression`,message:`Voulez-vous vraiment supprimer cette course du calendrier ? Cette action est irréversible.`,onConfirm:()=>a&&s(a),onCancel:()=>o(null)}),(0,A.jsx)(`button`,{type:`button`,className:`button button-primary button-small`,style:{marginLeft:8,minWidth:80},onClick:()=>g(h===e.id?null:e.id),children:`Tactique`})]}),h===e.id&&c]},e.id)}function v(){return c?(0,A.jsx)(`div`,{style:{position:`fixed`,left:0,top:0,width:`100vw`,height:`100vh`,background:`rgba(0,0,0,0.25)`,zIndex:1e3,display:`flex`,alignItems:`center`,justifyContent:`center`},children:(0,A.jsxs)(`div`,{style:{background:`#fff`,borderRadius:12,boxShadow:`0 2px 16px #0002`,padding:32,minWidth:400,maxWidth:`90vw`},children:[(0,A.jsxs)(`h3`,{children:[`Résultat pour : `,e.find(e=>e.id===c)?.title]}),(0,A.jsx)(`textarea`,{value:u,onChange:e=>d(e.target.value),rows:12,className:`input`,style:{width:`100%`,marginBottom:16,fontFamily:`inherit`},placeholder:`Colle ici le résultat de la course (tableau)`}),(0,A.jsxs)(`div`,{style:{display:`flex`,gap:12,justifyContent:`flex-end`},children:[(0,A.jsx)(`button`,{className:`button`,onClick:p,type:`button`,children:`Annuler`}),(0,A.jsx)(`button`,{className:`button button-primary`,onClick:m,type:`button`,children:`Enregistrer`})]})]})}):null}function y(e){return/u25/i.test(e)?`u25`:/u21/i.test(e)?`u21`:`pro`}return(0,A.jsxs)(`div`,{className:`page-content`,style:{maxWidth:1200,margin:`0 auto`},children:[(0,A.jsx)(rr,{title:`Calendrier`,subtitle:`Importe et visualise les étapes à venir ou passées. Ajoute-les à la todo pour planifier facilement.`}),(0,A.jsxs)(j,{title:`Courses à venir et passées`,style:{marginTop:32},children:[e.length===0&&(0,A.jsx)(`div`,{className:`muted`,children:`Aucune étape ajoutée pour l'instant.`}),(0,A.jsx)(`div`,{className:`page-stack`,children:e.map(_)}),v()]})]})},so=`cymanager:results`;function co(e){return e?lo(e).trim().length>0:!1}function lo(e){return typeof e==`string`?e:e&&typeof e==`object`&&`result`in e?e.result:``}function uo(){try{let e=localStorage.getItem(so);if(!e)return{};let t=JSON.parse(e);return!t||typeof t!=`object`?{}:t}catch{return{}}}function fo(){return Zr().filter(e=>e.id.startsWith(`calendar-`))}function po(){let[e]=(0,x.useState)(fo),[t]=(0,x.useState)(uo),[n,r]=(0,x.useState)(()=>fo()[0]?.id??``),[i,a]=(0,x.useState)(!1),o=(0,x.useRef)(null),s=co(t[n]),c=e.find(e=>e.id===n);(0,x.useEffect)(()=>{function e(e){o.current?.contains(e.target)||a(!1)}function t(e){e.key===`Escape`&&a(!1)}return document.addEventListener(`mousedown`,e),document.addEventListener(`keydown`,t),()=>{document.removeEventListener(`mousedown`,e),document.removeEventListener(`keydown`,t)}},[]);function l(e){let t=lo(e).trim().split(/\r?\n/);return t.length<2?(0,A.jsx)(`div`,{className:`muted`,children:`Aucun résultat collé.`}):(0,A.jsx)(`div`,{className:`table-container`,children:(0,A.jsxs)(`table`,{className:`data-table styled-table`,children:[(0,A.jsx)(`thead`,{children:(0,A.jsx)(`tr`,{children:t[0].split(`	`).map((e,t)=>(0,A.jsx)(`th`,{children:e},t))})}),(0,A.jsx)(`tbody`,{children:t.slice(1).map((e,t)=>{let n=e.split(`	`);return(0,A.jsx)(`tr`,{className:n.includes(`Kritoff Team`)?`highlight-row`:void 0,children:n.map((e,t)=>(0,A.jsx)(`td`,{children:e},t))},t)})})]})})}return(0,A.jsxs)(`div`,{className:`page-content`,style:{maxWidth:1200,margin:`0 auto`},children:[(0,A.jsx)(rr,{title:`Résultats des courses`,subtitle:`Consulte tous les résultats enregistrés pour chaque course du calendrier.`}),(0,A.jsxs)(`div`,{className:`page-stack`,children:[e.length===0&&(0,A.jsx)(`div`,{className:`muted`,children:`Aucune course enregistrée.`}),e.length>0&&(0,A.jsxs)(`div`,{className:`select-row`,children:[(0,A.jsx)(`label`,{htmlFor:`result-course-trigger`,className:`select-label`,children:`Choisir une course :`}),(0,A.jsxs)(`div`,{ref:o,className:`result-select-wrap`,children:[(0,A.jsxs)(`button`,{id:`result-course-trigger`,type:`button`,className:s?`input select-input result-select-input result-select-input-done custom-select-trigger`:`input select-input result-select-input result-select-input-upcoming custom-select-trigger`,"aria-haspopup":`listbox`,"aria-expanded":i,onClick:()=>a(e=>!e),children:[(0,A.jsxs)(`span`,{className:`custom-select-trigger-label`,children:[s?`[Resultat] `:`[A venir] `,c?.title??`Choisir une course`]}),(0,A.jsx)(`span`,{className:i?`custom-select-chevron custom-select-chevron-open`:`custom-select-chevron`,"aria-hidden":`true`,children:`▾`})]}),i&&(0,A.jsx)(`div`,{className:`custom-select-menu`,role:`listbox`,"aria-label":`Choisir une course`,children:e.map(e=>{let i=co(t[e.id]),o=e.id===n,s=i?`custom-select-option custom-select-option-done`:`custom-select-option custom-select-option-upcoming`;return(0,A.jsx)(`button`,{type:`button`,role:`option`,"aria-selected":o,className:o?`${s} custom-select-option-selected`:s,onClick:()=>{r(e.id),a(!1)},children:(0,A.jsxs)(`span`,{className:i?`custom-select-option-text custom-select-option-text-bold`:`custom-select-option-text`,children:[i?`[Resultat] `:`[A venir] `,e.title]})},e.id)})})]})]}),n&&(0,A.jsxs)(j,{title:c?.title||`Course`,children:[(0,A.jsx)(`div`,{className:s?`result-status-badge result-status-badge-done`:`result-status-badge result-status-badge-upcoming`,children:s?`Résultat enregistré`:`Course à venir`}),(0,A.jsx)(`div`,{className:`course-details`,children:c?.details?.split(`
+`).join(` | `)}),t[n]?l(t[n]):(0,A.jsx)(`div`,{className:`muted`,children:`Aucun résultat enregistré pour cette course.`})]},n)]})]})}function mo(){return(0,A.jsx)(nr,{children:(0,A.jsxs)(zt,{children:[(0,A.jsx)(Lt,{path:`/`,element:(0,A.jsx)(vi,{})}),(0,A.jsx)(Lt,{path:`/guide`,element:(0,A.jsx)(wi,{})}),(0,A.jsx)(Lt,{path:`/faq`,element:(0,A.jsx)(Fi,{})}),(0,A.jsx)(Lt,{path:`/effectif`,element:(0,A.jsx)(Gi,{})}),(0,A.jsx)(Lt,{path:`/entrainement`,element:(0,A.jsx)(Xi,{})}),(0,A.jsx)(Lt,{path:`/courses`,element:(0,A.jsx)(wa,{})}),(0,A.jsx)(Lt,{path:`/todo`,element:(0,A.jsx)(Aa,{})}),(0,A.jsx)(Lt,{path:`/parametres`,element:(0,A.jsx)(Ua,{})}),(0,A.jsx)(Lt,{path:`/calendrier`,element:(0,A.jsx)(oo,{})}),(0,A.jsx)(Lt,{path:`/resultats`,element:(0,A.jsx)(po,{})}),(0,A.jsx)(Lt,{path:`/classement`,element:(0,A.jsx)(eo,{})}),(0,A.jsx)(Lt,{path:`*`,element:(0,A.jsx)(It,{to:`/`,replace:!0})})]})})}Xn.createRoot(document.getElementById(`root`)).render((0,A.jsx)(x.StrictMode,{children:(0,A.jsx)(Dn,{children:(0,A.jsx)(mo,{})})}));
