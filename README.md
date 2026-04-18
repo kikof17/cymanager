@@ -1,5 +1,10 @@
 # React + TypeScript + Vite
 
+## Deployment
+
+Le site est publie automatiquement via GitHub Actions a chaque push sur la branche master.
+Il n'y a pas de commande de deploiement manuelle a lancer localement.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
