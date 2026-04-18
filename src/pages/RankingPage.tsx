@@ -9,6 +9,7 @@ import type { TodoItem } from "../types/todo";
 
 type TeamPoints = { team: string; points: number };
 type Divisions = { pro: string; u25: string; u21: string };
+type RankingCategory = "pro" | "u25" | "u21";
 type RankingData = {
   divisions: Divisions;
   pro: RiderPoints[];
@@ -19,7 +20,7 @@ type RankingData = {
   u21Teams: TeamPoints[];
 };
 
-function detectCourseCategory(title: string): "u25" | "u21" | "pro" {
+function detectCourseCategory(title: string): RankingCategory {
   if (/u25/i.test(title)) return "u25";
   if (/u21/i.test(title)) return "u21";
   return "pro";
@@ -29,7 +30,7 @@ function persistResults(results: Record<string, StoredResult>) {
   try {
     localStorage.setItem("cymanager:results", JSON.stringify(results));
   } catch (error) {
-    console.error("Erreur d'écriture localStorage résultats", error);
+    console.error("Erreur d'ecriture localStorage resultats", error);
   }
 }
 
@@ -45,6 +46,33 @@ function aggregateTeams(arr: RiderPoints[]): TeamPoints[] {
     .sort((a, b) => b.points - a.points);
 }
 
+function formatRank(rank: number): string {
+  if (rank === 1) return "1er";
+  if (rank === 2) return "2nd";
+  if (rank === 3) return "3eme";
+  return `${rank}eme`;
+}
+
+function getCategoryLabel(category: RankingCategory): string {
+  return category === "u25" ? "U25" : category === "u21" ? "U21" : "Pro";
+}
+
+function getDivisionLabel(divisions: Divisions, category: RankingCategory): string {
+  return category === "u25"
+    ? divisions.u25
+    : category === "u21"
+      ? divisions.u21
+      : divisions.pro;
+}
+
+function buildCategoryOptions(divisions: Divisions) {
+  return [
+    { value: "pro" as const, label: `Pro (Division ${divisions.pro || "-"})` },
+    { value: "u25" as const, label: `U25 (Division ${divisions.u25 || "-"})` },
+    { value: "u21" as const, label: `U21 (Division ${divisions.u21 || "-"})` },
+  ];
+}
+
 function buildRankingData(): RankingData {
   const results = getAllResultsFromStorage();
   const settings = loadClubSettings();
@@ -55,6 +83,7 @@ function buildRankingData(): RankingData {
   };
   const todos: TodoItem[] = loadManualTodos().filter((todo) => todo.id.startsWith("calendar-"));
   const courseTitles: Record<string, string> = {};
+
   todos.forEach((todo) => {
     courseTitles[todo.id] = todo.title;
   });
@@ -86,11 +115,11 @@ function buildRankingData(): RankingData {
   const u21Map = new Map<string, RiderPoints>();
 
   Object.entries(results).forEach(([courseId, stored]) => {
-    let category: "pro" | "u25" | "u21" = "pro";
+    let category: RankingCategory = "pro";
     let result = stored as string;
     if (typeof stored === "object" && stored && "result" in stored && "category" in stored) {
       result = stored.result;
-      category = stored.category;
+      category = stored.category as RankingCategory;
     }
 
     const points = extractPointsFromResults({ [courseId]: result });
@@ -122,121 +151,86 @@ function buildRankingData(): RankingData {
   };
 }
 
-function RankingPage() {
-  const [tab, setTab] = useState<'individuel' | 'equipes'>('individuel');
+export default function RankingPage() {
+  const [tab, setTab] = useState<"individuel" | "equipes">("individuel");
+  const [individualCategory, setIndividualCategory] = useState<RankingCategory>("pro");
+  const [teamCategory, setTeamCategory] = useState<RankingCategory>("pro");
   const { divisions, pro, u25, u21, proTeams, u25Teams, u21Teams } = useMemo(() => buildRankingData(), []);
+  const categoryOptions = useMemo(() => buildCategoryOptions(divisions), [divisions]);
+  const ridersByCategory: Record<RankingCategory, RiderPoints[]> = { pro, u25, u21 };
+  const teamsByCategory: Record<RankingCategory, TeamPoints[]> = {
+    pro: proTeams,
+    u25: u25Teams,
+    u21: u21Teams,
+  };
+  const selectedRiders = ridersByCategory[individualCategory];
+  const selectedTeams = teamsByCategory[teamCategory];
+  const individualTitle = `Equipe ${getCategoryLabel(individualCategory)} (Division ${getDivisionLabel(divisions, individualCategory) || "-"})`;
+  const teamTitle = `Classement par equipe ${getCategoryLabel(teamCategory)} (Division ${getDivisionLabel(divisions, teamCategory) || "-"})`;
 
   return (
     <div className="page-content" style={{ maxWidth: 1200, margin: "0 auto" }}>
       <PageTitle
         title="Classement"
-        subtitle="Consultez les classements des équipes Pro, U25 et U21."
+        subtitle="Consultez les classements des equipes Pro, U25 et U21."
       />
-      <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
+
+      <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
         <button
-          className={tab === 'individuel' ? 'tab-btn tab-btn-active' : 'tab-btn'}
-          onClick={() => setTab('individuel')}
+          className={tab === "individuel" ? "tab-btn tab-btn-active" : "tab-btn"}
+          onClick={() => setTab("individuel")}
           type="button"
-        >Classement individuel</button>
+        >
+          Classement individuel
+        </button>
         <button
-          className={tab === 'equipes' ? 'tab-btn tab-btn-active' : 'tab-btn'}
-          onClick={() => setTab('equipes')}
+          className={tab === "equipes" ? "tab-btn tab-btn-active" : "tab-btn"}
+          onClick={() => setTab("equipes")}
           type="button"
-        >Classement par équipe</button>
+        >
+          Classement par equipe
+        </button>
       </div>
-      {tab === 'individuel' && (
+
+      {tab === "individuel" && (
         <div className="page-stack">
-          <Card title={`Équipe Pro (Division ${divisions.pro || '-'})`}>
-            {pro.length === 0 ? (
+          <div className="select-row ranking-filter-row">
+            <label htmlFor="individual-ranking-category" className="select-label">Type d'equipe :</label>
+            <select
+              id="individual-ranking-category"
+              className="input select-input"
+              value={individualCategory}
+              onChange={(event) => setIndividualCategory(event.target.value as RankingCategory)}
+            >
+              {categoryOptions.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <Card title={individualTitle}>
+            {selectedRiders.length === 0 ? (
               <div>Aucun classement disponible.</div>
             ) : (
               <div className="table-container">
                 <table className="data-table styled-table">
                   <thead>
                     <tr>
-                      <th style={{color: '#181c24'}}>Cl.</th>
-                      <th style={{color: '#181c24'}}>Nom</th>
-                      <th style={{color: '#181c24'}}>Équipe</th>
-                      <th style={{color: '#181c24'}}>Points</th>
+                      <th style={{ color: "#181c24" }}>Cl.</th>
+                      <th style={{ color: "#181c24" }}>Nom</th>
+                      <th style={{ color: "#181c24" }}>Equipe</th>
+                      <th style={{ color: "#181c24" }}>Points</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {pro.map((r, i) => {
-                      const isTeamRider = r.team === "Kritoff Team";
-                      const rank = i + 1;
-                      const suffix = rank === 1 ? 'er' : 'ème';
+                    {selectedRiders.map((rider, index) => {
+                      const isTeamRider = rider.team === "Kritoff Team";
                       return (
-                        <tr key={i} className={isTeamRider ? "highlight-row" : undefined}>
-                          <td>{rank}{suffix}</td>
-                          <td>{r.name}</td>
-                          <td>{r.team}</td>
-                          <td>{r.points}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </Card>
-          <Card title={`Équipe U25 (Division ${divisions.u25 || '-'})`}>
-            {u25.length === 0 ? (
-              <div>Aucun classement disponible.</div>
-            ) : (
-              <div className="table-container">
-                <table className="data-table styled-table">
-                  <thead>
-                    <tr>
-                      <th>Cl.</th>
-                      <th>Nom</th>
-                      <th>Équipe</th>
-                      <th>Points</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {u25.map((r, i) => {
-                      const isTeamRider = r.team === "Kritoff Team";
-                      const rank = i + 1;
-                      const suffix = rank === 1 ? 'er' : 'ème';
-                      return (
-                        <tr key={i} className={isTeamRider ? "highlight-row" : undefined}>
-                          <td>{rank}{suffix}</td>
-                          <td>{r.name}</td>
-                          <td>{r.team}</td>
-                          <td>{r.points}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </Card>
-          <Card title={`Équipe U21 (Division ${divisions.u21 || '-'})`}>
-            {u21.length === 0 ? (
-              <div>Aucun classement disponible.</div>
-            ) : (
-              <div className="table-container">
-                <table className="data-table styled-table">
-                  <thead>
-                    <tr>
-                      <th>Cl.</th>
-                      <th>Nom</th>
-                      <th>Équipe</th>
-                      <th>Points</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {u21.map((r, i) => {
-                      const isTeamRider = r.team === "Kritoff Team";
-                      const rank = i + 1;
-                      const suffix = rank === 1 ? 'er' : 'ème';
-                      return (
-                        <tr key={i} className={isTeamRider ? "highlight-row" : undefined}>
-                          <td>{rank}{suffix}</td>
-                          <td>{r.name}</td>
-                          <td>{r.team}</td>
-                          <td>{r.points}</td>
+                        <tr key={`${rider.name}-${index}`} className={isTeamRider ? "highlight-row" : undefined}>
+                          <td>{formatRank(index + 1)}</td>
+                          <td>{rider.name}</td>
+                          <td>{rider.team}</td>
+                          <td>{rider.points}</td>
                         </tr>
                       );
                     })}
@@ -247,73 +241,42 @@ function RankingPage() {
           </Card>
         </div>
       )}
-      {tab === 'equipes' && (
+
+      {tab === "equipes" && (
         <div className="page-stack">
-          <Card title={`Classement par équipe Pro (Division ${divisions.pro || '-'})`}>
-            {proTeams.length === 0 ? (
+          <div className="select-row ranking-filter-row">
+            <label htmlFor="team-ranking-category" className="select-label">Type d'equipe :</label>
+            <select
+              id="team-ranking-category"
+              className="input select-input"
+              value={teamCategory}
+              onChange={(event) => setTeamCategory(event.target.value as RankingCategory)}
+            >
+              {categoryOptions.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <Card title={teamTitle}>
+            {selectedTeams.length === 0 ? (
               <div>Aucun classement disponible.</div>
             ) : (
               <div className="table-container">
                 <table className="data-table styled-table">
                   <thead>
                     <tr>
-                      <th style={{color: '#181c24'}}>Équipe</th>
-                      <th style={{color: '#181c24'}}>Points</th>
+                      <th style={{ color: "#181c24" }}>Cl.</th>
+                      <th style={{ color: "#181c24" }}>�quipe</th>
+                      <th style={{ color: "#181c24" }}>Points</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {proTeams.map((t, i) => (
-                      <tr key={i} className={t.team === "Kritoff Team" ? "highlight-row" : undefined}>
-                        <td>{t.team}</td>
-                        <td>{t.points}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </Card>
-          <Card title={`Classement par équipe U25 (Division ${divisions.u25 || '-'})`}>
-            {u25Teams.length === 0 ? (
-              <div>Aucun classement disponible.</div>
-            ) : (
-              <div className="table-container">
-                <table className="data-table styled-table">
-                  <thead>
-                    <tr>
-                      <th>Équipe</th>
-                      <th>Points</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {u25Teams.map((t, i) => (
-                      <tr key={i} className={t.team === "Kritoff Team" ? "highlight-row" : undefined}>
-                        <td>{t.team}</td>
-                        <td>{t.points}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </Card>
-          <Card title={`Classement par équipe U21 (Division ${divisions.u21 || '-'})`}>
-            {u21Teams.length === 0 ? (
-              <div>Aucun classement disponible.</div>
-            ) : (
-              <div className="table-container">
-                <table className="data-table styled-table">
-                  <thead>
-                    <tr>
-                      <th>Équipe</th>
-                      <th>Points</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {u21Teams.map((t, i) => (
-                      <tr key={i} className={t.team === "Kritoff Team" ? "highlight-row" : undefined}>
-                        <td>{t.team}</td>
-                        <td>{t.points}</td>
+                    {selectedTeams.map((team, index) => (
+                      <tr key={`${team.team}-${index}`} className={team.team === "Kritoff Team" ? "highlight-row" : undefined}>
+                        <td>{formatRank(index + 1)}</td>
+                        <td>{team.team}</td>
+                        <td>{team.points}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -326,5 +289,3 @@ function RankingPage() {
     </div>
   );
 }
-
-export default RankingPage;

@@ -1,4 +1,4 @@
-const APP_VERSION_LABEL = "CyManager Toolkit v1.0.1";
+const APP_VERSION_LABEL = "CyManager Toolkit v1.0.2";
 
 export default function Header() {
   return (
