@@ -1,6 +1,21 @@
 import type { ClubSettings } from "../../types/settings";
+import { syncFinanceWithSettings } from "./financeStorage";
 
 const CLUB_SETTINGS_KEY = "cymanager:club-settings";
+
+const LEGACY_TRAINING_CENTER_DEFAULT = {
+  level: 1,
+  upgradeInProgress: true,
+  targetLevel: 2,
+  notes: "Travaux lancés vers le niveau 2.",
+};
+
+const LEGACY_FORMATION_CENTER_DEFAULT = {
+  level: 1,
+  upgradeInProgress: false,
+  targetLevel: null,
+  notes: "Nécessite un centre d'entraînement niveau 4.",
+};
 
 function nowIsoLocal(): string {
   return new Date().toISOString();
@@ -16,14 +31,14 @@ export const defaultClubSettings: ClubSettings = {
       notes: "",
     },
     trainingCenter: {
-      level: 1,
+      level: 0,
       upgradeInProgress: true,
-      targetLevel: 2,
+      targetLevel: 1,
       upgradeStartedAt: nowIsoLocal(),
-      notes: "Travaux lancés vers le niveau 2.",
+      notes: "Travaux lancés vers le niveau 1.",
     },
     formationCenter: {
-      level: 1,
+      level: 0,
       upgradeInProgress: false,
       targetLevel: null,
       upgradeStartedAt: nowIsoLocal(),
@@ -48,6 +63,59 @@ export const defaultClubSettings: ClubSettings = {
   financialBalance: 1000000, // Valeur par défaut : 1 000 000 €
 };
 
+function isLegacyTrainingCenterSeed(
+  facility: ClubSettings["facilities"]["trainingCenter"] | undefined
+): boolean {
+  return Boolean(
+    facility &&
+      facility.level === LEGACY_TRAINING_CENTER_DEFAULT.level &&
+      facility.upgradeInProgress ===
+        LEGACY_TRAINING_CENTER_DEFAULT.upgradeInProgress &&
+      facility.targetLevel === LEGACY_TRAINING_CENTER_DEFAULT.targetLevel &&
+      (facility.notes ?? "") === LEGACY_TRAINING_CENTER_DEFAULT.notes
+  );
+}
+
+function isLegacyFormationCenterSeed(
+  facility: ClubSettings["facilities"]["formationCenter"] | undefined
+): boolean {
+  return Boolean(
+    facility &&
+      facility.level === LEGACY_FORMATION_CENTER_DEFAULT.level &&
+      facility.upgradeInProgress ===
+        LEGACY_FORMATION_CENTER_DEFAULT.upgradeInProgress &&
+      facility.targetLevel === LEGACY_FORMATION_CENTER_DEFAULT.targetLevel &&
+      (facility.notes ?? "") === LEGACY_FORMATION_CENTER_DEFAULT.notes
+  );
+}
+
+function migrateLegacyFacilities(settings: ClubSettings): ClubSettings {
+  const nextSettings = {
+    ...settings,
+    facilities: {
+      ...settings.facilities,
+    },
+  };
+
+  if (isLegacyTrainingCenterSeed(nextSettings.facilities.trainingCenter)) {
+    nextSettings.facilities.trainingCenter = {
+      ...nextSettings.facilities.trainingCenter,
+      level: 0,
+      targetLevel: 1,
+      notes: "Travaux lancés vers le niveau 1.",
+    };
+  }
+
+  if (isLegacyFormationCenterSeed(nextSettings.facilities.formationCenter)) {
+    nextSettings.facilities.formationCenter = {
+      ...nextSettings.facilities.formationCenter,
+      level: 0,
+    };
+  }
+
+  return nextSettings;
+}
+
 export function loadClubSettings(): ClubSettings {
   try {
     const raw = localStorage.getItem(CLUB_SETTINGS_KEY);
@@ -62,7 +130,7 @@ export function loadClubSettings(): ClubSettings {
       return defaultClubSettings;
     }
 
-    return {
+    return migrateLegacyFacilities({
       ...defaultClubSettings,
       ...parsed,
       facilities: {
@@ -88,7 +156,8 @@ export function loadClubSettings(): ClubSettings {
       divisionPro: parsed.divisionPro ?? parsed.currentDivision ?? "D9",
       divisionU25: parsed.divisionU25 ?? parsed.currentDivision ?? "D9",
       divisionU21: parsed.divisionU21 ?? parsed.currentDivision ?? "D9",
-    };
+      financialBalance: defaultClubSettings.financialBalance,
+    });
   } catch (error) {
     console.error("Erreur de lecture localStorage club settings", error);
     return defaultClubSettings;
@@ -97,7 +166,16 @@ export function loadClubSettings(): ClubSettings {
 
 export function saveClubSettings(settings: ClubSettings): void {
   try {
-    localStorage.setItem(CLUB_SETTINGS_KEY, JSON.stringify(settings));
+    const normalizedSettings: ClubSettings = {
+      ...settings,
+      financialBalance: defaultClubSettings.financialBalance,
+    };
+
+    localStorage.setItem(CLUB_SETTINGS_KEY, JSON.stringify(normalizedSettings));
+    syncFinanceWithSettings(
+      normalizedSettings,
+      normalizedSettings.financialBalance
+    );
   } catch (error) {
     console.error("Erreur d'écriture localStorage club settings", error);
   }

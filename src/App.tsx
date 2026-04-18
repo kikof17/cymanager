@@ -9,6 +9,7 @@ import RacesPage from "./pages/RacesPage";
 import TodoPage from "./pages/TodoPage";
 import SettingsPage from "./pages/SettingsPage";
 import RankingPage from "./pages/RankingPage";
+import FinancePage from "./pages/FinancePage";
 
 import CalendarPage from "./pages/CalendarPage";
 import ResultPage from "./pages/ResultPage";
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/calendrier" element={<CalendarPage />} />
         <Route path="/resultats" element={<ResultPage />} />
         <Route path="/classement" element={<RankingPage />} />
+        <Route path="/finance" element={<FinancePage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AppLayout>

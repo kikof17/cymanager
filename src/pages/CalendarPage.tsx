@@ -6,6 +6,8 @@ import ConfirmDialog from '../components/common/ConfirmDialog';
 import { getRiderStrengths } from '../lib/scoring/strengths';
 import { loadCalendarRaceProfile } from '../lib/storage/calendarRaceProfile';
 import type { StoredResult } from '../lib/scoring/extractPoints';
+import { syncFinanceWithSettings } from '../lib/storage/financeStorage';
+import { loadClubSettings } from '../lib/storage/settingsStorage';
 
 import { saveManualTodos, loadManualTodos, loadTodoStatuses, saveTodoStatuses } from '../lib/storage/todoStorage';
 import type { RaceRiderScore, RiderRaceSetup } from '../types/race';
@@ -120,6 +122,9 @@ const CalendarPage: React.FC = () => {
       const category = detectCourseCategory(course?.title || "");
       map[resultModalId] = { result: resultInput, category };
       localStorage.setItem('cymanager:results', JSON.stringify(map));
+      const settings = loadClubSettings();
+      syncFinanceWithSettings(settings, settings.financialBalance);
+      window.dispatchEvent(new Event('cymanager:finance-updated'));
     }
     setResultModalId(null);
     setResultInput('');

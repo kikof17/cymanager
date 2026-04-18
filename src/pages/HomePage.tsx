@@ -7,6 +7,7 @@ import TodoOverviewCard from "../components/home/TodoOverviewCard";
 import TrainingOverviewCard from "../components/home/TrainingOverviewCard";
 import { buildRaceAnalysis } from "../lib/scoring/raceScores";
 import { buildTrainingPlan } from "../lib/scoring/trainingScores";
+import { getFinanceSnapshot } from "../lib/storage/financeStorage";
 import { loadRaceSetup } from "../lib/storage/raceStorage";
 import { loadRidersFromStorage } from "../lib/storage/localStorage";
 import { loadClubSettings } from "../lib/storage/settingsStorage";
@@ -63,6 +64,10 @@ export default function HomePage() {
   const trainingPlan = useMemo(() => {
     return buildTrainingPlan(riders, clubSettings);
   }, [riders, clubSettings]);
+
+  const financeSnapshot = useMemo(() => {
+    return getFinanceSnapshot(clubSettings, riders);
+  }, [clubSettings, riders]);
 
   const raceSnapshot = useMemo(() => loadLastRaceSnapshot(), []);
   const raceKey = useMemo(() => buildRaceKey(raceSnapshot), [raceSnapshot]);
@@ -186,7 +191,10 @@ export default function HomePage() {
       </div>
 
       <div className="dashboard-grid">
-        <ClubOverviewCard riders={riders} clubSettings={clubSettings} />
+        <ClubOverviewCard
+          riders={riders}
+          financialBalance={financeSnapshot.currentBalance}
+        />
         <TrainingOverviewCard plan={trainingPlan} />
         <RaceOverviewCard race={race} selected={raceSelected} />
         <TodoOverviewCard items={todoItems} />

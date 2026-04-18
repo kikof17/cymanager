@@ -55,20 +55,12 @@ export default function ClubSettingsForm({
 
   return (
     <form className="page-stack" onSubmit={(event) => event.preventDefault()}>
-      {/* Solde financier */}
-      <div style={{ marginBottom: 18 }}>
-        <label className="field-label" htmlFor="financial-balance">Solde financier actuel (€)</label>
-        <input
-          id="financial-balance"
-          className="input"
-          type="number"
-          min={0}
-          step={1000}
-          value={settings.financialBalance}
-          onChange={e => updateRoot("financialBalance", Number(e.target.value))}
-          style={{ maxWidth: 200 }}
-        />
+      <div className="message-box">
+        <p className="muted">
+          Le solde financier n'est plus saisi ici. Il est calculé depuis la page Finance, et tout lancement de travaux sauvegardé dans cette page y crée automatiquement une dépense.
+        </p>
       </div>
+
       {/* Bloc divisions */}
       <div className="settings-grid" style={{gridTemplateColumns: '1fr 1fr', gap: 24}}>
         {/* Ligne Pro */}
@@ -213,14 +205,14 @@ export default function ClubSettingsForm({
                   id={`${facilityKey}-level`}
                   className="input"
                   type="number"
-                  min={1}
+                  min={0}
                   max={20}
                   value={facility.level}
                   onChange={(event) =>
                     updateFacility(
                       facilityKey,
                       "level",
-                      Number.parseInt(event.target.value || "1", 10)
+                      Number.parseInt(event.target.value || "0", 10)
                     )
                   }
                 />
@@ -234,7 +226,7 @@ export default function ClubSettingsForm({
                   id={`${facilityKey}-target`}
                   className="input"
                   type="number"
-                  min={1}
+                  min={0}
                   max={20}
                   value={facility.targetLevel ?? ""}
                   onChange={(event) =>

@@ -10,6 +10,7 @@ const links = [
   { to: "/calendrier", label: "Calendrier" },
   { to: "/resultats", label: "Résultats" },
   { to: "/classement", label: "Classement" },
+  { to: "/finance", label: "Finance" },
   { to: "/todo", label: "To-do" },
   { to: "/parametres", label: "Paramètres" },
 ];
