@@ -2,8 +2,13 @@ import { useMemo, useState } from "react";
 import PageTitle from "../components/common/PageTitle";
 import Card from "../components/common/Card";
 import { extractPointsFromResults, getAllResultsFromStorage } from "../lib/scoring/extractPoints";
+import {
+  BASELINE_EFFECTIVE_DATE,
+  BASELINE_INDIVIDUAL_RANKINGS,
+} from "../lib/ranking/seasonBaseline";
 import { loadClubSettings } from "../lib/storage/settingsStorage";
 import type { RiderPoints, StoredResult } from "../lib/scoring/extractPoints";
+import type { BaselineRankingRow } from "../lib/ranking/seasonBaseline";
 import { loadManualTodos } from "../lib/storage/todoStorage";
 import type { TodoItem } from "../types/todo";
 
@@ -18,7 +23,84 @@ type RankingData = {
   proTeams: TeamPoints[];
   u25Teams: TeamPoints[];
   u21Teams: TeamPoints[];
+  mergedIndividuals: Record<RankingCategory, BaselineRankingRow[]>;
 };
+
+function parseDateFromCourseTitle(title: string): Date | null {
+  const match = title.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+
+  if (!match) {
+    return null;
+  }
+
+  const [, day, month, year] = match;
+  const date = new Date(`${year}-${month}-${day}T12:00:00`);
+
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function isCourseAfterBaseline(todo: TodoItem | undefined): boolean {
+  if (!todo) {
+    return false;
+  }
+
+  const courseDate = parseDateFromCourseTitle(todo.title);
+
+  if (!courseDate) {
+    return false;
+  }
+
+  const baselineDate = new Date(`${BASELINE_EFFECTIVE_DATE}T23:59:59`);
+  return courseDate.getTime() > baselineDate.getTime();
+}
+
+function mergeBaselineWithDeltas(
+  baselineRows: BaselineRankingRow[],
+  deltas: RiderPoints[]
+): BaselineRankingRow[] {
+  const rows = new Map<string, BaselineRankingRow>();
+
+  baselineRows.forEach((row) => {
+    rows.set(row.name, { ...row });
+  });
+
+  deltas.forEach((delta) => {
+    const existing = rows.get(delta.name);
+
+    if (existing) {
+      rows.set(delta.name, {
+        ...existing,
+        team: delta.team || existing.team,
+        points: existing.points + delta.points,
+      });
+      return;
+    }
+
+    rows.set(delta.name, {
+      rank: Number.MAX_SAFE_INTEGER,
+      name: delta.name,
+      team: delta.team,
+      points: delta.points,
+    });
+  });
+
+  return Array.from(rows.values())
+    .sort((left, right) => {
+      if (right.points !== left.points) {
+        return right.points - left.points;
+      }
+
+      if (left.rank !== right.rank) {
+        return left.rank - right.rank;
+      }
+
+      return left.name.localeCompare(right.name, "fr");
+    })
+    .map((row, index) => ({
+      ...row,
+      rank: index + 1,
+    }));
+}
 
 function detectCourseCategory(title: string): RankingCategory {
   if (/u25/i.test(title)) return "u25";
@@ -34,7 +116,7 @@ function persistResults(results: Record<string, StoredResult>) {
   }
 }
 
-function aggregateTeams(arr: RiderPoints[]): TeamPoints[] {
+function aggregateTeams(arr: Array<{ team: string; points: number }>): TeamPoints[] {
   const map = new Map<string, number>();
   arr.forEach(({ team, points }) => {
     if (!team) return;
@@ -113,6 +195,9 @@ function buildRankingData(): RankingData {
   const proMap = new Map<string, RiderPoints>();
   const u25Map = new Map<string, RiderPoints>();
   const u21Map = new Map<string, RiderPoints>();
+  const proDeltaMap = new Map<string, RiderPoints>();
+  const u25DeltaMap = new Map<string, RiderPoints>();
+  const u21DeltaMap = new Map<string, RiderPoints>();
 
   Object.entries(results).forEach(([courseId, stored]) => {
     let category: RankingCategory = "pro";
@@ -124,15 +209,31 @@ function buildRankingData(): RankingData {
 
     const points = extractPointsFromResults({ [courseId]: result });
     const targetMap = category === "u25" ? u25Map : category === "u21" ? u21Map : proMap;
+    const deltaTargetMap = category === "u25" ? u25DeltaMap : category === "u21" ? u21DeltaMap : proDeltaMap;
+    const includeInBaselineIncrement = isCourseAfterBaseline(todos.find((todo) => todo.id === courseId));
 
     points.forEach(({ name, team, points: riderPoints }) => {
       if (!targetMap.has(name)) {
         targetMap.set(name, { name, team, points: riderPoints });
+      } else {
+        const previous = targetMap.get(name)!;
+        targetMap.set(name, { ...previous, points: previous.points + riderPoints });
+      }
+
+      if (!includeInBaselineIncrement) {
         return;
       }
 
-      const previous = targetMap.get(name)!;
-      targetMap.set(name, { ...previous, points: previous.points + riderPoints });
+      if (!deltaTargetMap.has(name)) {
+        deltaTargetMap.set(name, { name, team, points: riderPoints });
+        return;
+      }
+
+      const previousDelta = deltaTargetMap.get(name)!;
+      deltaTargetMap.set(name, {
+        ...previousDelta,
+        points: previousDelta.points + riderPoints,
+      });
     });
   });
 
@@ -145,9 +246,23 @@ function buildRankingData(): RankingData {
     pro,
     u25,
     u21,
-    proTeams: aggregateTeams(pro),
-    u25Teams: aggregateTeams(u25),
-    u21Teams: aggregateTeams(u21),
+    proTeams: [],
+    u25Teams: [],
+    u21Teams: [],
+    mergedIndividuals: {
+      pro: mergeBaselineWithDeltas(
+        BASELINE_INDIVIDUAL_RANKINGS.pro,
+        Array.from(proDeltaMap.values())
+      ),
+      u25: mergeBaselineWithDeltas(
+        BASELINE_INDIVIDUAL_RANKINGS.u25,
+        Array.from(u25DeltaMap.values())
+      ),
+      u21: mergeBaselineWithDeltas(
+        BASELINE_INDIVIDUAL_RANKINGS.u21,
+        Array.from(u21DeltaMap.values())
+      ),
+    },
   };
 }
 
@@ -155,13 +270,20 @@ export default function RankingPage() {
   const [tab, setTab] = useState<"individuel" | "equipes">("individuel");
   const [individualCategory, setIndividualCategory] = useState<RankingCategory>("pro");
   const [teamCategory, setTeamCategory] = useState<RankingCategory>("pro");
-  const { divisions, pro, u25, u21, proTeams, u25Teams, u21Teams } = useMemo(() => buildRankingData(), []);
+  const {
+    divisions,
+    pro,
+    u25,
+    u21,
+    mergedIndividuals,
+  } = useMemo(() => buildRankingData(), []);
   const categoryOptions = useMemo(() => buildCategoryOptions(divisions), [divisions]);
   const ridersByCategory: Record<RankingCategory, RiderPoints[]> = { pro, u25, u21 };
+  const mergedRows = mergedIndividuals[individualCategory];
   const teamsByCategory: Record<RankingCategory, TeamPoints[]> = {
-    pro: proTeams,
-    u25: u25Teams,
-    u21: u21Teams,
+    pro: aggregateTeams(mergedIndividuals.pro),
+    u25: aggregateTeams(mergedIndividuals.u25),
+    u21: aggregateTeams(mergedIndividuals.u21),
   };
   const selectedRiders = ridersByCategory[individualCategory];
   const selectedTeams = teamsByCategory[teamCategory];
@@ -208,8 +330,48 @@ export default function RankingPage() {
             </select>
           </div>
 
+          <Card title={`Base ${getCategoryLabel(individualCategory)} intégrée`}>
+            <div className="message-box">
+              <p className="muted">
+                Classement de départ intégré au {BASELINE_EFFECTIVE_DATE}. A partir de la prochaine course enregistrée après cette date, les points seront ajoutés automatiquement à cette base.
+              </p>
+            </div>
+          </Card>
+
           <Card title={individualTitle}>
-            {selectedRiders.length === 0 ? (
+            {mergedRows.length > 0 ? (
+              <div className="table-container">
+                <table className="data-table styled-table">
+                  <thead>
+                    <tr>
+                      <th style={{ color: "#181c24" }}>Cl.</th>
+                      <th style={{ color: "#181c24" }}>Nom</th>
+                      <th style={{ color: "#181c24" }}>Equipe</th>
+                      <th style={{ color: "#181c24" }}>Victoires</th>
+                      <th style={{ color: "#181c24" }}>Age</th>
+                      <th style={{ color: "#181c24" }}>Cat.</th>
+                      <th style={{ color: "#181c24" }}>Points</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {mergedRows.map((rider) => {
+                      const isTeamRider = rider.team === "Kritoff Team";
+                      return (
+                        <tr key={`${rider.rank}-${rider.name}`} className={isTeamRider ? "highlight-row" : undefined}>
+                          <td>{formatRank(rider.rank)}</td>
+                          <td>{rider.name}</td>
+                          <td>{rider.team}</td>
+                          <td>{rider.wins ?? "-"}</td>
+                          <td>{rider.age ?? "-"}</td>
+                          <td>{rider.categoryLabel || "-"}</td>
+                          <td>{rider.points}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : selectedRiders.length === 0 ? (
               <div>Aucun classement disponible.</div>
             ) : (
               <div className="table-container">
@@ -244,6 +406,12 @@ export default function RankingPage() {
 
       {tab === "equipes" && (
         <div className="page-stack">
+          <div className="message-box">
+            <p className="muted">
+              Le classement par equipe reste pour l'instant base sur les resultats locaux sauvegardes. L'import global des equipes sera raccorde ensuite.
+            </p>
+          </div>
+
           <div className="select-row ranking-filter-row">
             <label htmlFor="team-ranking-category" className="select-label">Type d'equipe :</label>
             <select
