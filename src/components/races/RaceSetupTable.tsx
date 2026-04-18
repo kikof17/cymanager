@@ -153,7 +153,9 @@ export default function RaceSetupTable({
                 <td>
                   <div className="effort-cell effort-cell-tight">
                     {readOnly ? (
-                      <span className="effort-value">{setup?.effortPercent ?? 50}%</span>
+                      (setup?.role ?? rider.role) === "Électron libre"
+                        ? null
+                        : <span className="effort-value">{setup?.effortPercent ?? 50}%</span>
                     ) : (
                       <>
                         <input
@@ -168,8 +170,11 @@ export default function RaceSetupTable({
                               Number.parseInt(event.target.value, 10)
                             )
                           }
+                          disabled={(setup?.role ?? rider.role) === "Électron libre"}
                         />
-                        <span className="effort-value">{setup?.effortPercent ?? 50}%</span>
+                        {(setup?.role ?? rider.role) !== "Électron libre" && (
+                          <span className="effort-value">{setup?.effortPercent ?? 50}%</span>
+                        )}
                       </>
                     )}
                   </div>
