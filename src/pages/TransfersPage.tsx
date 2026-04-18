@@ -87,6 +87,19 @@ type DecisionBudgetGuidance = {
   horizonWeeks: number;
 };
 
+type PersistedTransfersPageState = {
+  rawText: string;
+  messages: string[];
+  candidateRiders: Rider[];
+  selectedCandidateId: string;
+  shortlistedCandidateIds: string[];
+  transferAmount: string;
+  transferDate: string;
+  sortConfig: TransferSortConfig;
+};
+
+const TRANSFERS_PAGE_STATE_KEY = "cymanager:transfers-page-state";
+
 function roundPlanningAmount(value: number): number {
   if (value <= 0) {
     return 0;
@@ -166,16 +179,82 @@ function getDefaultTransferDate(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+function getDefaultTransfersPageState(): PersistedTransfersPageState {
+  return {
+    rawText: "",
+    messages: [],
+    candidateRiders: [],
+    selectedCandidateId: "",
+    shortlistedCandidateIds: [],
+    transferAmount: "",
+    transferDate: getDefaultTransferDate(),
+    sortConfig: null,
+  };
+}
+
+function loadTransfersPageState(): PersistedTransfersPageState {
+  const fallback = getDefaultTransfersPageState();
+
+  try {
+    const raw = localStorage.getItem(TRANSFERS_PAGE_STATE_KEY);
+
+    if (!raw) {
+      return fallback;
+    }
+
+    const parsed = JSON.parse(raw) as Partial<PersistedTransfersPageState>;
+
+    return {
+      rawText: typeof parsed.rawText === "string" ? parsed.rawText : fallback.rawText,
+      messages: Array.isArray(parsed.messages)
+        ? parsed.messages.filter((message): message is string => typeof message === "string")
+        : fallback.messages,
+      candidateRiders: Array.isArray(parsed.candidateRiders) ? parsed.candidateRiders : fallback.candidateRiders,
+      selectedCandidateId:
+        typeof parsed.selectedCandidateId === "string"
+          ? parsed.selectedCandidateId
+          : fallback.selectedCandidateId,
+      shortlistedCandidateIds: Array.isArray(parsed.shortlistedCandidateIds)
+        ? parsed.shortlistedCandidateIds.filter((candidateId): candidateId is string => typeof candidateId === "string")
+        : fallback.shortlistedCandidateIds,
+      transferAmount:
+        typeof parsed.transferAmount === "string"
+          ? parsed.transferAmount
+          : fallback.transferAmount,
+      transferDate:
+        typeof parsed.transferDate === "string" && parsed.transferDate.length > 0
+          ? parsed.transferDate
+          : fallback.transferDate,
+      sortConfig:
+        parsed.sortConfig && typeof parsed.sortConfig === "object"
+          ? (parsed.sortConfig as TransferSortConfig)
+          : fallback.sortConfig,
+    };
+  } catch (error) {
+    console.error("Erreur de lecture localStorage transferts", error);
+    return fallback;
+  }
+}
+
+function saveTransfersPageState(state: PersistedTransfersPageState): void {
+  try {
+    localStorage.setItem(TRANSFERS_PAGE_STATE_KEY, JSON.stringify(state));
+  } catch (error) {
+    console.error("Erreur d'écriture localStorage transferts", error);
+  }
+}
+
 export default function TransfersPage() {
+  const persistedState = useMemo(() => loadTransfersPageState(), []);
   const [currentRiders, setCurrentRiders] = useState<Rider[]>(getInitialRiders);
-  const [rawText, setRawText] = useState("");
-  const [messages, setMessages] = useState<string[]>([]);
-  const [candidateRiders, setCandidateRiders] = useState<Rider[]>([]);
-  const [selectedCandidateId, setSelectedCandidateId] = useState("");
-  const [shortlistedCandidateIds, setShortlistedCandidateIds] = useState<string[]>([]);
-  const [transferAmount, setTransferAmount] = useState("");
-  const [transferDate, setTransferDate] = useState(getDefaultTransferDate);
-  const [sortConfig, setSortConfig] = useState<TransferSortConfig>(null);
+  const [rawText, setRawText] = useState(persistedState.rawText);
+  const [messages, setMessages] = useState<string[]>(persistedState.messages);
+  const [candidateRiders, setCandidateRiders] = useState<Rider[]>(persistedState.candidateRiders);
+  const [selectedCandidateId, setSelectedCandidateId] = useState(persistedState.selectedCandidateId);
+  const [shortlistedCandidateIds, setShortlistedCandidateIds] = useState<string[]>(persistedState.shortlistedCandidateIds);
+  const [transferAmount, setTransferAmount] = useState(persistedState.transferAmount);
+  const [transferDate, setTransferDate] = useState(persistedState.transferDate);
+  const [sortConfig, setSortConfig] = useState<TransferSortConfig>(persistedState.sortConfig);
 
   const settings = useMemo(() => loadClubSettings(), []);
   const teamStrategy = useMemo(() => loadTeamStrategy(), []);
@@ -193,6 +272,28 @@ export default function TransfersPage() {
       saveRidersToStorage(currentRiders);
     }
   }, [currentRiders]);
+
+  useEffect(() => {
+    saveTransfersPageState({
+      rawText,
+      messages,
+      candidateRiders,
+      selectedCandidateId,
+      shortlistedCandidateIds,
+      transferAmount,
+      transferDate,
+      sortConfig,
+    });
+  }, [
+    candidateRiders,
+    messages,
+    rawText,
+    selectedCandidateId,
+    shortlistedCandidateIds,
+    sortConfig,
+    transferAmount,
+    transferDate,
+  ]);
 
   const parsedTransferAmount = useMemo(
     () => parseFrenchInteger(transferAmount),
