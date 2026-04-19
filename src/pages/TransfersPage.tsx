@@ -4,7 +4,6 @@ import ConfirmDialog from "../components/common/ConfirmDialog";
 import PageTitle from "../components/common/PageTitle";
 import { mergeRidersByName } from "../lib/parser/rosterParser";
 import {
-  isTransferAuctionExpired,
   parseTransferMarketData,
 } from "../lib/parser/transferMarketParser";
 import { getStrategyAxisLabel } from "../lib/roster/rosterAnalysis";
@@ -471,37 +470,6 @@ export default function TransfersPage() {
     transferDate,
   ]);
 
-  useEffect(() => {
-    function purgeExpiredCandidates() {
-      const expiredIds = candidates
-        .filter((candidate) => isTransferAuctionExpired(candidate.auction))
-        .map((candidate) => candidate.id);
-
-      if (expiredIds.length === 0) {
-        return;
-      }
-
-      setCandidates((current) =>
-        current.filter((candidate) => !expiredIds.includes(candidate.id))
-      );
-      setShortlistedCandidateIds((current) =>
-        current.filter((candidateId) => !expiredIds.includes(candidateId))
-      );
-      setSelectedCandidateId((current) =>
-        expiredIds.includes(current) ? "" : current
-      );
-      setMessages((current) => [
-        `${expiredIds.length} coureur(s) retiré(s) automatiquement de la sélection car l'échéance est dépassée.`,
-        ...current,
-      ]);
-    }
-
-    purgeExpiredCandidates();
-    const intervalId = window.setInterval(purgeExpiredCandidates, 60_000);
-
-    return () => window.clearInterval(intervalId);
-  }, [candidates]);
-
   const parsedTransferAmount = useMemo(
     () => parseFrenchInteger(transferAmount),
     [transferAmount]
@@ -626,22 +594,19 @@ export default function TransfersPage() {
       return;
     }
 
-    const activeCandidates = result.candidates.filter(
-      (candidate) => !isTransferAuctionExpired(candidate.auction)
-    );
     const currentShortlist = new Set(shortlistedCandidateIds);
-    const nextShortlist = activeCandidates
+    const nextShortlist = result.candidates
       .filter((candidate) => currentShortlist.has(candidate.id))
       .map((candidate) => candidate.id);
-    const nextSelectedId = activeCandidates.some((candidate) => candidate.id === selectedCandidateId)
+    const nextSelectedId = result.candidates.some((candidate) => candidate.id === selectedCandidateId)
       ? selectedCandidateId
-      : activeCandidates[0]?.id ?? "";
+      : result.candidates[0]?.id ?? "";
 
-    setCandidates(activeCandidates);
+    setCandidates(result.candidates);
     setSelectedCandidateId(nextSelectedId);
     setShortlistedCandidateIds(nextShortlist);
     setMessages([
-      `${activeCandidates.length} coureur(s) analysable(s) détecté(s).`,
+      `${result.candidates.length} coureur(s) analysable(s) détecté(s). Les coureurs restent en place jusqu'à suppression manuelle.`,
       ...result.errors,
     ]);
   }
@@ -794,7 +759,7 @@ export default function TransfersPage() {
       <div className="page-stack">
         <PageTitle
           title="Transferts"
-          subtitle="Import CSV du marché, analyse enrichie des candidats et sélection persistante jusqu'à l'échéance des enchères."
+          subtitle="Import CSV du marché, analyse enrichie des candidats et sélection persistante jusqu'à suppression manuelle."
         />
 
       <div className="two-columns transfer-layout">
@@ -1211,6 +1176,38 @@ export default function TransfersPage() {
           </Card>
 
           <Card title="Validation de l'achat">
+            <div className="field-grid transfer-form-grid">
+              <div>
+                <label htmlFor="transfer-validation-amount" className="field-label">
+                  Ajuster l'enchère retenue
+                </label>
+                <input
+                  id="transfer-validation-amount"
+                  className="input"
+                  type="text"
+                  value={transferAmount}
+                  onChange={(event) => setTransferAmount(event.target.value)}
+                  placeholder="Laisse vide pour reprendre l'enchère actuelle"
+                />
+              </div>
+
+              <div>
+                <label className="field-label">Enchère de référence</label>
+                <div className="inline-actions">
+                  <button
+                    type="button"
+                    className="button button-secondary"
+                    onClick={() => setTransferAmount("")}
+                  >
+                    Reprendre l'enchère actuelle
+                  </button>
+                </div>
+                <p className="muted">
+                  Marché actuel : {formatCurrency(selectedAnalysis.candidate.auction.currentBid)}
+                </p>
+              </div>
+            </div>
+
             <div className="dashboard-lines transfer-validation-lines">
               <p><strong>Montant retenu :</strong> {formatCurrency(getEffectiveTransferAmount(selectedAnalysis, parsedTransferAmount))}</p>
               <p><strong>Source du montant :</strong> {parsedTransferAmount > 0 ? "Saisie manuelle" : "Enchère actuelle"}</p>
