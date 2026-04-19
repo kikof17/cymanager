@@ -26,6 +26,7 @@ export const defaultClubSettings: ClubSettings = {
     headOffice: {
       level: 1,
       upgradeInProgress: false,
+      plannedUpgrade: false,
       targetLevel: null,
       upgradeStartedAt: nowIsoLocal(),
       notes: "",
@@ -33,6 +34,7 @@ export const defaultClubSettings: ClubSettings = {
     trainingCenter: {
       level: 0,
       upgradeInProgress: true,
+      plannedUpgrade: false,
       targetLevel: 1,
       upgradeStartedAt: nowIsoLocal(),
       notes: "Travaux lancés vers le niveau 1.",
@@ -40,6 +42,7 @@ export const defaultClubSettings: ClubSettings = {
     formationCenter: {
       level: 0,
       upgradeInProgress: false,
+      plannedUpgrade: false,
       targetLevel: null,
       upgradeStartedAt: nowIsoLocal(),
       notes: "Nécessite un centre d'entraînement niveau 4.",
@@ -47,6 +50,7 @@ export const defaultClubSettings: ClubSettings = {
     shop: {
       level: 1,
       upgradeInProgress: false,
+      plannedUpgrade: false,
       targetLevel: null,
       upgradeStartedAt: nowIsoLocal(),
       notes: "",

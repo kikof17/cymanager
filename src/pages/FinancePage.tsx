@@ -7,6 +7,7 @@ import {
 } from "../lib/finance/faqFinance";
 import {
   addManualFinanceEntry,
+  BEGINNER_GUIDE_SAFETY_RESERVE_TARGET,
   deleteManualFinanceEntry,
   getFinanceSnapshot,
 } from "../lib/storage/financeStorage";
@@ -595,8 +596,17 @@ export default function FinancePage() {
               <strong>Solde après une semaine de charges fixes :</strong>{" "}
               {formatCurrency(snapshot.projectedBalanceAfterWeeklyCosts)}
             </p>
-            <p className="muted">
-              Les achats de coureurs seront raccordés plus tard à cette page via la future mécanique de transferts.
+            <p>
+              <strong>Travaux planifiés à provisionner :</strong>{" "}
+              {formatCurrency(snapshot.plannedFacilityUpgradeCost)}
+            </p>
+            <p>
+              <strong>Projection trésorerie à 3 semaines :</strong>{" "}
+              {formatCurrency(snapshot.projectedBalanceAfterThreeWeeks)}
+            </p>
+            <p>
+              <strong>Réserve de sécurité visée :</strong>{" "}
+              {formatCurrency(BEGINNER_GUIDE_SAFETY_RESERVE_TARGET)}
             </p>
           </div>
         </Card>

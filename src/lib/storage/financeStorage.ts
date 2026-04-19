@@ -18,6 +18,7 @@ import type { ClubSettings, FacilityKey } from "../../types/settings";
 const FINANCE_STORAGE_KEY = "cymanager:finance";
 const DEFAULT_STARTING_BALANCE = 1000000;
 const TEAM_NAME = "Kritoff Team";
+export const BEGINNER_GUIDE_SAFETY_RESERVE_TARGET = 450000;
 
 type ManualFinanceEntryInput = {
   label: string;
@@ -547,8 +548,27 @@ export function getFinanceSnapshot(settings: ClubSettings, riders: Rider[]) {
       ),
     0
   );
+  const plannedFacilityUpgradeCost = (
+    Object.keys(settings.facilities) as FacilityKey[]
+  ).reduce((sum, facilityKey) => {
+    const facility = settings.facilities[facilityKey];
+
+    if (
+      !facility.plannedUpgrade ||
+      facility.upgradeInProgress ||
+      facility.targetLevel === null ||
+      facility.targetLevel <= facility.level
+    ) {
+      return sum;
+    }
+
+    const upgradeCost = getFacilityUpgradeCost(facilityKey, facility.targetLevel);
+    return sum + (upgradeCost ?? 0);
+  }, 0);
   const weeklyFixedCosts = weeklySalaryExpense + weeklyFacilityMaintenance;
   const projectedBalanceAfterWeeklyCosts = currentBalance - weeklyFixedCosts;
+  const projectedBalanceAfterThreeWeeks =
+    currentBalance - weeklyFixedCosts * 3 - plannedFacilityUpgradeCost;
   const automaticEntries = state.entries.filter((entry) => entry.source === "sync");
   const facilityEntries = automaticEntries.filter(
     (entry) => entry.category === "facility-upgrade"
@@ -562,8 +582,10 @@ export function getFinanceSnapshot(settings: ClubSettings, riders: Rider[]) {
     automaticWeeklySalaryExpense,
     weeklySalaryExpense,
     weeklyFacilityMaintenance,
+    plannedFacilityUpgradeCost,
     weeklyFixedCosts,
     projectedBalanceAfterWeeklyCosts,
+    projectedBalanceAfterThreeWeeks,
     automaticEntries,
     facilityEntries,
     prizeTables: PRIZE_REFERENCE_TABLES,

@@ -7,7 +7,11 @@ import {
   analyzeTransferCandidates,
   type TransferAnalysis,
 } from "../lib/transfers/transferAnalysis";
-import { addManualFinanceEntry, getFinanceSnapshot } from "../lib/storage/financeStorage";
+import {
+  addManualFinanceEntry,
+  BEGINNER_GUIDE_SAFETY_RESERVE_TARGET,
+  getFinanceSnapshot,
+} from "../lib/storage/financeStorage";
 import { loadRidersFromStorage, saveRidersToStorage } from "../lib/storage/localStorage";
 import { loadClubSettings } from "../lib/storage/settingsStorage";
 import { loadTeamStrategy } from "../lib/storage/teamStrategyStorage";
@@ -87,6 +91,13 @@ type DecisionBudgetGuidance = {
   horizonWeeks: number;
 };
 
+type DecisionSalarySummary = {
+  currentWeeklySalaryExpense: number;
+  projectedWeeklySalaryExpense: number;
+  projectedSalaryDelta: number;
+  projectedSalaryHeadroom: number;
+};
+
 type PersistedTransfersPageState = {
   rawText: string;
   messages: string[];
@@ -132,7 +143,7 @@ function getDecisionBudgetGuidance(
   settings: ClubSettings
 ): DecisionBudgetGuidance {
   const planning = FINANCIAL_PLANNING_BY_TOLERANCE[settings.salaryTolerance];
-  const reserveTarget = financeSnapshot.weeklyFixedCosts * planning.reserveWeeks;
+  const reserveTarget = BEGINNER_GUIDE_SAFETY_RESERVE_TARGET;
   const recentWeeklyNet = getRecentWeeklyNet(financeSnapshot.state.entries);
   const projectedBaseBalance = financeSnapshot.projectedBalanceAfterWeeklyCosts;
   const projectedBalanceHorizon =
@@ -372,6 +383,20 @@ export default function TransfersPage() {
     [analyses, shortlistedCandidateIds]
   );
 
+  const decisionSalarySummary = useMemo<DecisionSalarySummary>(() => {
+    const projectedSalaryDelta = selectedAnalysis?.rider.salaryWeekly ?? 0;
+    const projectedWeeklySalaryExpense =
+      financeSnapshot.weeklySalaryExpense + projectedSalaryDelta;
+
+    return {
+      currentWeeklySalaryExpense: financeSnapshot.weeklySalaryExpense,
+      projectedWeeklySalaryExpense,
+      projectedSalaryDelta,
+      projectedSalaryHeadroom:
+        decisionBudgetGuidance.salaryCap - projectedWeeklySalaryExpense,
+    };
+  }, [decisionBudgetGuidance.salaryCap, financeSnapshot.weeklySalaryExpense, selectedAnalysis]);
+
   function handleAnalyze() {
     const result = parseRosterText(rawText);
 
@@ -552,12 +577,15 @@ export default function TransfersPage() {
         <Card title="Cadre de décision">
           <div className="dashboard-lines">
             <p><strong>Solde actuel :</strong> {formatCurrency(financeSnapshot.currentBalance)}</p>
-            <p><strong>Masse salariale hebdo :</strong> {formatCurrency(financeSnapshot.weeklySalaryExpense)}</p>
+            <p><strong>Masse salariale hebdo actuelle :</strong> {formatCurrency(decisionSalarySummary.currentWeeklySalaryExpense)}</p>
+            <p><strong>Après recrutement sélectionné :</strong> {formatCurrency(decisionSalarySummary.projectedWeeklySalaryExpense)}</p>
+            <p><strong>Impact salaire candidat :</strong> {formatCurrency(decisionSalarySummary.projectedSalaryDelta)}</p>
             <p><strong>Plafond masse salariale conseillé :</strong> {formatCurrency(decisionBudgetGuidance.salaryCap)}</p>
-            <p><strong>{decisionBudgetGuidance.salaryHeadroom >= 0 ? "Marge salariale estimée" : "Dépassement salarial estimé"} :</strong> {formatCurrency(Math.abs(decisionBudgetGuidance.salaryHeadroom))}</p>
+            <p><strong>{decisionSalarySummary.projectedSalaryHeadroom >= 0 ? "Marge salariale après recrutement" : "Dépassement salarial après recrutement"} :</strong> {formatCurrency(Math.abs(decisionSalarySummary.projectedSalaryHeadroom))}</p>
             <p><strong>Charge fixe hebdo :</strong> {formatCurrency(financeSnapshot.weeklyFixedCosts)}</p>
+            <p><strong>Travaux planifiés à provisionner :</strong> {formatCurrency(financeSnapshot.plannedFacilityUpgradeCost)}</p>
+            <p><strong>Projection trésorerie à 3 sem. :</strong> {formatCurrency(financeSnapshot.projectedBalanceAfterThreeWeeks)}</p>
             <p><strong>Budget transferts conseillé :</strong> {formatCurrency(decisionBudgetGuidance.transferBudget)}</p>
-            <p><strong>Projection trésorerie {decisionBudgetGuidance.horizonWeeks} sem. :</strong> {formatCurrency(decisionBudgetGuidance.projectedBalanceHorizon)}</p>
             <p><strong>Tendance nette récente :</strong> {formatCurrency(decisionBudgetGuidance.recentWeeklyNet)} / semaine</p>
             <p><strong>Réserve de sécurité visée :</strong> {formatCurrency(decisionBudgetGuidance.reserveTarget)}</p>
             <p><strong>Objectif club :</strong> {settings.clubObjective}</p>

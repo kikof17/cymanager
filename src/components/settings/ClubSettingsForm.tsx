@@ -283,6 +283,21 @@ export default function ClubSettingsForm({
               <span>Travaux en cours</span>
             </label>
 
+            <label className="checkbox-line">
+              <input
+                type="checkbox"
+                checked={facility.plannedUpgrade}
+                onChange={(event) =>
+                  updateFacility(
+                    facilityKey,
+                    "plannedUpgrade",
+                    event.target.checked
+                  )
+                }
+              />
+              <span>Travaux planifiés</span>
+            </label>
+
             <div>
               <label
                 className="field-label"

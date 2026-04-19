@@ -7,6 +7,7 @@ export type FacilityKey =
 export type FacilitySettings = {
   level: number;
   upgradeInProgress: boolean;
+  plannedUpgrade: boolean;
   targetLevel: number | null;
   upgradeStartedAt: string;
   notes: string;

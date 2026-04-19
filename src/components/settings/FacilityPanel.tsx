@@ -63,6 +63,10 @@ export default function FacilityPanel({ settings }: FacilityPanelProps) {
                 {facility.upgradeInProgress ? "Oui" : "Non"}
               </p>
               <p>
+                <strong>Travaux planifiés :</strong>{" "}
+                {facility.plannedUpgrade ? "Oui" : "Non"}
+              </p>
+              <p>
                 <strong>Niveau cible :</strong>{" "}
                 {facility.targetLevel ?? "Non défini"}
               </p>
