@@ -905,6 +905,51 @@ a {
   user-select: none;
 }
 
+.page-stack-narrow {
+  max-width: 1200px;
+}
+
+.ranking-tabs-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.race-import-success-list {
+  margin: 12px 0 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(76, 169, 113, 0.12);
+  border: 1px solid rgba(76, 169, 113, 0.2);
+  color: #cdeed8;
+}
+
+.race-import-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.race-general-summary {
+  white-space: pre-line;
+  font-size: 0.96rem;
+  line-height: 1.7;
+  color: var(--text-soft);
+}
+
+.race-stage-block {
+  margin-bottom: 32px;
+}
+
+.race-stage-setup {
+  margin-top: 12px;
+}
+
+.race-stage-subcard {
+  margin-top: 18px;
+}
+
 /* Correction contraste label sur fond clair */
 .roster-import-form .field-label {
   color: #22304a;
@@ -1926,6 +1971,11 @@ select:focus {
 
   .calendar-course-actions .button {
     flex: 1 1 140px;
+  }
+
+  .ranking-tabs-row,
+  .race-import-actions {
+    flex-direction: column;
   }
 }
 

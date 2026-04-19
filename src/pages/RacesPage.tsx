@@ -391,13 +391,13 @@ export default function RacesPage() {
         <Card title="Import course ou mini-tour">
           <RaceImportBox onAnalyze={handleAnalyze} />
           {messages.length > 0 && (
-            <div style={{ margin: "1em 0", color: "#2b2" }}>
+            <div className="race-import-success-list">
               {messages.map((msg, i) => (
                 <div key={i}>{msg}</div>
               ))}
             </div>
           )}
-          <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          <div className="race-import-actions">
             <button className="button" onClick={() => { setRaces([]); setGeneralSummary(""); }} type="button">Vider</button>
             <button className="button button-primary" onClick={handleAddToCalendar} type="button" disabled={!races.length}>Ajouter au calendrier</button>
           </div>
@@ -421,7 +421,7 @@ export default function RacesPage() {
       {/* Résumé général du mini-tour */}
       {generalSummary && (
         <Card title="Résumé général du mini-tour">
-          <div style={{ whiteSpace: 'pre-line', fontSize: 15 }}>{generalSummary}</div>
+          <div className="race-general-summary">{generalSummary}</div>
         </Card>
       )}
 
@@ -433,10 +433,10 @@ export default function RacesPage() {
         const raceKey = buildRaceKey(race);
         const setupByRider = setupByRiderList[raceKey] || {};
         return (
-          <div key={raceKey} style={{ marginBottom: 32 }}>
+          <div key={raceKey} className="race-stage-block">
             <Card title={`Étape ${idx + 1} : ${race.name}`}>
               <RaceSummary race={race} />
-              <div style={{ margin: '12px 0 0 0' }}>
+              <div className="race-stage-setup">
                 <OdcPresetSelector onApplyDefault={() => handleApplyDefaultPresets(idx)} />
                 <RaceSetupTable
                   riders={analysis.selected}
@@ -446,13 +446,13 @@ export default function RacesPage() {
                   onBreakawayChange={(riderId, val) => handleBreakawayChange(idx, riderId, val)}
                 />
               </div>
-              <Card title="Remplaçants" style={{ marginTop: 18 }}>
+              <Card title="Remplaçants" className="race-stage-subcard">
                 <TeamSelectionTable
                   title="Remplaçants conseillés"
                   riders={analysis.substitutes}
                 />
               </Card>
-              <Card title="Classement complet" style={{ marginTop: 18 }}>
+              <Card title="Classement complet" className="race-stage-subcard">
                 <TeamSelectionTable
                   title="Tous les coureurs classés"
                   riders={analysis.ranking}

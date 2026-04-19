@@ -93,7 +93,7 @@ export default function RiderTable({ riders, onDelete }: RiderTableProps) {
             {columns.map((col) => (
               <th
                 key={col.key}
-                style={{ color: "#181c24", cursor: "pointer", userSelect: "none" }}
+                className="table-sortable-head"
                 onClick={() => handleSort(col.key)}
                 title="Cliquer pour trier"
               >

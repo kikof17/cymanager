@@ -91,7 +91,7 @@ export default function IndividualTrainingTable({ advices }: IndividualTrainingT
             {columns.map((col) => (
               <th
                 key={col.key}
-                style={{ color: '#181c24', cursor: 'pointer', userSelect: 'none' }}
+                className="table-sortable-head"
                 onClick={() => handleSort(col.key)}
                 title={"Trier par " + col.label}
               >

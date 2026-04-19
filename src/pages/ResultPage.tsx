@@ -204,7 +204,7 @@ export default function ResultPage() {
   }
 
   return (
-    <div className="page-content" style={{ maxWidth: 1200, margin: '0 auto' }}>
+    <div className="page-stack page-stack-narrow">
       <PageTitle title="Résultats des courses" subtitle="Consulte tous les résultats enregistrés pour chaque course du calendrier." />
       <div className="page-stack">
         {courses.length === 0 && <div className="muted">Aucune course enregistrée.</div>}

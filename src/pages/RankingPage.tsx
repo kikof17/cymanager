@@ -291,13 +291,13 @@ export default function RankingPage() {
   const teamTitle = `Classement par equipe ${getCategoryLabel(teamCategory)} (Division ${getDivisionLabel(divisions, teamCategory) || "-"})`;
 
   return (
-    <div className="page-content" style={{ maxWidth: 1200, margin: "0 auto" }}>
+    <div className="page-stack page-stack-narrow">
       <PageTitle
         title="Classement"
         subtitle="Consultez les classements des equipes Pro, U25 et U21."
       />
 
-      <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
+      <div className="ranking-tabs-row">
         <button
           className={tab === "individuel" ? "tab-btn tab-btn-active" : "tab-btn"}
           onClick={() => setTab("individuel")}
@@ -344,13 +344,13 @@ export default function RankingPage() {
                 <table className="data-table styled-table">
                   <thead>
                     <tr>
-                      <th style={{ color: "#181c24" }}>Cl.</th>
-                      <th style={{ color: "#181c24" }}>Nom</th>
-                      <th style={{ color: "#181c24" }}>Equipe</th>
-                      <th style={{ color: "#181c24" }}>Victoires</th>
-                      <th style={{ color: "#181c24" }}>Age</th>
-                      <th style={{ color: "#181c24" }}>Cat.</th>
-                      <th style={{ color: "#181c24" }}>Points</th>
+                      <th>Cl.</th>
+                      <th>Nom</th>
+                      <th>Equipe</th>
+                      <th>Victoires</th>
+                      <th>Age</th>
+                      <th>Cat.</th>
+                      <th>Points</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -378,10 +378,10 @@ export default function RankingPage() {
                 <table className="data-table styled-table">
                   <thead>
                     <tr>
-                      <th style={{ color: "#181c24" }}>Cl.</th>
-                      <th style={{ color: "#181c24" }}>Nom</th>
-                      <th style={{ color: "#181c24" }}>Equipe</th>
-                      <th style={{ color: "#181c24" }}>Points</th>
+                      <th>Cl.</th>
+                      <th>Nom</th>
+                      <th>Equipe</th>
+                      <th>Points</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -434,9 +434,9 @@ export default function RankingPage() {
                 <table className="data-table styled-table">
                   <thead>
                     <tr>
-                      <th style={{ color: "#181c24" }}>Cl.</th>
-                      <th style={{ color: "#181c24" }}>�quipe</th>
-                      <th style={{ color: "#181c24" }}>Points</th>
+                      <th>Cl.</th>
+                      <th>Equipe</th>
+                      <th>Points</th>
                     </tr>
                   </thead>
                   <tbody>
