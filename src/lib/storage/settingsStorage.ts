@@ -58,6 +58,9 @@ export const defaultClubSettings: ClubSettings = {
   divisionPro: "D9",
   divisionU25: "D9",
   divisionU21: "D9",
+  targetDivisionPro: "D8",
+  targetDivisionU25: "D8",
+  targetDivisionU21: "D8",
   clubObjective: "mixte",
   salaryTolerance: "normale",
   manualWeeklySalaryExpense: null,
@@ -157,6 +160,12 @@ export function loadClubSettings(): ClubSettings {
       divisionPro: parsed.divisionPro ?? parsed.currentDivision ?? "D9",
       divisionU25: parsed.divisionU25 ?? parsed.currentDivision ?? "D9",
       divisionU21: parsed.divisionU21 ?? parsed.currentDivision ?? "D9",
+      targetDivisionPro:
+        parsed.targetDivisionPro ?? parsed.targetDivision ?? "D8",
+      targetDivisionU25:
+        parsed.targetDivisionU25 ?? parsed.targetDivision ?? "D8",
+      targetDivisionU21:
+        parsed.targetDivisionU21 ?? parsed.targetDivision ?? "D8",
       manualWeeklySalaryExpense:
         typeof parsed.manualWeeklySalaryExpense === "number" && parsed.manualWeeklySalaryExpense >= 0
           ? parsed.manualWeeklySalaryExpense

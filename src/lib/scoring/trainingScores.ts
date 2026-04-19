@@ -8,6 +8,21 @@ import type {
 } from "../../types/training";
 import type { ClubSettings, DivisionLevel } from "../../types/settings";
 
+function getTargetDivisionForCategory(
+  settings: ClubSettings,
+  category: Rider["category"]
+): DivisionLevel {
+  if (category === "U25") {
+    return settings.targetDivisionU25;
+  }
+
+  if (category === "U21") {
+    return settings.targetDivisionU21;
+  }
+
+  return settings.targetDivisionPro;
+}
+
 type PrimaryDescriptor = {
   label: string;
   value: number;
@@ -61,11 +76,12 @@ function divisionAdjustment(targetDivision: DivisionLevel): number {
 }
 
 function adjustedTargetFoncier(
+  rider: Rider,
   primaryValue: number,
   settings: ClubSettings
 ): number {
   const base = getBaseTargetFoncier(primaryValue);
-  const adjusted = base + divisionAdjustment(settings.targetDivision);
+  const adjusted = base + divisionAdjustment(getTargetDivisionForCategory(settings, rider.category));
   return Math.max(180, adjusted);
 }
 
@@ -229,7 +245,7 @@ function buildIndividualAdvice(
 ): IndividualTrainingAdvice {
   const dominantPrimary = getDominantPrimary(rider);
   const currentFoncier = getCurrentFoncier(rider);
-  const targetFoncier = adjustedTargetFoncier(dominantPrimary.value, settings);
+  const targetFoncier = adjustedTargetFoncier(rider, dominantPrimary.value, settings);
   const foncierGap = targetFoncier - currentFoncier;
   const priority = getPriority(rider, foncierGap, settings);
   const salaryRisk = getSalaryRisk(rider, dominantPrimary.value);
@@ -392,7 +408,7 @@ export function buildTrainingPlan(
   const rationale = [
     "Le raisonnement part d'abord de chaque coureur individuellement, puis seulement ensuite de la synthèse hebdo.",
     "Le foncier est calculé via endurance + résistance + récupération.",
-    `La synthèse hebdo est ensuite limitée à 3 entraînements autorisés pour une cible ${settings.targetDivision}.`,
+    `Les cibles utilisées sont Pro ${settings.targetDivisionPro}, U25 ${settings.targetDivisionU25} et U21 ${settings.targetDivisionU21}.`,
     `${reassignedCount} coureur(s) ont été rabattus sur un des 3 entraînements retenus.`,
   ];
 

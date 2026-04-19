@@ -85,8 +85,8 @@ export default function ClubSettingsForm({
           <select
             id="division-pro-visee"
             className="input"
-            value={settings.targetDivision}
-            onChange={e => updateRoot("targetDivision", e.target.value as DivisionLevel)}
+            value={settings.targetDivisionPro}
+            onChange={e => updateRoot("targetDivisionPro", e.target.value as DivisionLevel)}
           >
             {DIVISIONS.map((division) => (
               <option key={division} value={division}>{division}</option>
@@ -112,8 +112,8 @@ export default function ClubSettingsForm({
           <select
             id="division-u25-visee"
             className="input"
-            value={settings.targetDivision}
-            onChange={e => updateRoot("targetDivision", e.target.value as DivisionLevel)}
+            value={settings.targetDivisionU25}
+            onChange={e => updateRoot("targetDivisionU25", e.target.value as DivisionLevel)}
           >
             {DIVISIONS.map((division) => (
               <option key={division} value={division}>{division}</option>
@@ -139,8 +139,8 @@ export default function ClubSettingsForm({
           <select
             id="division-u21-visee"
             className="input"
-            value={settings.targetDivision}
-            onChange={e => updateRoot("targetDivision", e.target.value as DivisionLevel)}
+            value={settings.targetDivisionU21}
+            onChange={e => updateRoot("targetDivisionU21", e.target.value as DivisionLevel)}
           >
             {DIVISIONS.map((division) => (
               <option key={division} value={division}>{division}</option>

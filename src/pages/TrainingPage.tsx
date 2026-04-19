@@ -32,10 +32,10 @@ export default function TrainingPage() {
         <Card title="Contexte de calcul">
           <div className="training-summary-box">
             <p>
-              <strong>Division actuelle :</strong> {settings.currentDivision}
+              <strong>Division actuelle Pro / U25 / U21 :</strong> {settings.divisionPro} / {settings.divisionU25} / {settings.divisionU21}
             </p>
             <p>
-              <strong>Division visée :</strong> {settings.targetDivision}
+              <strong>Division visée Pro / U25 / U21 :</strong> {settings.targetDivisionPro} / {settings.targetDivisionU25} / {settings.targetDivisionU21}
             </p>
             <p>
               <strong>Objectif club :</strong> {settings.clubObjective}
