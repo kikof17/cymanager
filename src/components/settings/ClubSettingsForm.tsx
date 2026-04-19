@@ -65,7 +65,7 @@ export default function ClubSettingsForm({
       </div>
 
       {/* Bloc divisions */}
-      <div className="settings-grid" style={{gridTemplateColumns: '1fr 1fr', gap: 24}}>
+      <div className="settings-grid settings-grid-balanced">
         {/* Ligne Pro */}
         <div>
           <label className="field-label" htmlFor="division-pro-actuelle">Division actuelle équipe Pro</label>

@@ -2,12 +2,13 @@ import type { PropsWithChildren } from "react";
 
 type CardProps = PropsWithChildren<{
   title?: string;
-  style?: React.CSSProperties; // Ajout de la propriété style
+  style?: React.CSSProperties;
+  className?: string;
 }>;
 
-export default function Card({ title, children, style }: CardProps) {
+export default function Card({ title, children, style, className }: CardProps) {
   return (
-    <section className="card" style={style}> {/* Application des styles */}
+    <section className={className ? `card ${className}` : "card"} style={style}>
       {title ? <h3 className="card-title">{title}</h3> : null}
       {children}
     </section>

@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import PageTitle from "../components/common/PageTitle";
+import Card from "../components/common/Card";
 import ClubOverviewCard from "../components/home/ClubOverviewCard";
 import FacilitiesOverviewCard from "../components/home/FacilitiesOverviewCard";
 import RaceOverviewCard from "../components/home/RaceOverviewCard";
@@ -150,45 +151,50 @@ export default function HomePage() {
         subtitle="Vue d'ensemble du club, des priorités et des décisions à prendre."
       />
 
-      {/* Présentation équipe/manager */}
-      <div style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: 24,
-        marginBottom: 32,
-        justifyContent: 'center',
-      }}>
-        <div style={{
-          background: 'linear-gradient(90deg, #f7f7fa 60%, #e3e6f3 100%)',
-          borderRadius: 16,
-          boxShadow: '0 2px 12px #0001',
-          padding: '28px 36px',
-          minWidth: 340,
-          maxWidth: 480,
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 10,
-          color: '#222',
-        }}>
-          <div style={{ fontSize: 22, fontWeight: 700, color: '#2d2d4d', marginBottom: 6 }}>Manager <span style={{ color: '#4b5fc0' }}>Kritoff</span></div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 18, fontSize: 15 }}>
-            <div><b>Pays</b> : {country}</div>
-            <div><b>Id équipe</b> : {teamId}</div>
+      <Card title="Club et manager" className="home-club-panel">
+        <div className="home-club-panel-header">
+          <div>
+            <p className="eyebrow">Manager</p>
+            <p className="home-club-panel-name">Kritoff</p>
+            <p className="home-club-panel-subtitle">
+              Repères rapides pour piloter le club sans perdre les priorités de vue.
+            </p>
           </div>
-          <div style={{ fontSize: 15 }}>
-            <b>Gère son équipe depuis</b> : {startDate}
+
+          <div className="home-club-panel-chip">Saison 97</div>
+        </div>
+
+        <div className="home-club-panel-grid">
+          <div className="home-club-panel-stat">
+            <span className="home-club-panel-label">Pays</span>
+            <strong>{country}</strong>
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 18, fontSize: 15 }}>
-            <div><b>Division Pro</b> : {divisionPro}</div>
-            <div><b>U25</b> : {divisionU25}</div>
-            <div><b>U21</b> : {divisionU21}</div>
+          <div className="home-club-panel-stat">
+            <span className="home-club-panel-label">ID équipe</span>
+            <strong>{teamId}</strong>
           </div>
-          <div style={{ fontSize: 15 }}>
-            <b>Installations</b> : SS {ss} - Bt {bt} - CdE {cde} - CdF {cdf}
+          <div className="home-club-panel-stat">
+            <span className="home-club-panel-label">Depuis</span>
+            <strong>{startDate}</strong>
+          </div>
+          <div className="home-club-panel-stat">
+            <span className="home-club-panel-label">Installations</span>
+            <strong>SS {ss} · Bt {bt} · CdE {cde} · CdF {cdf}</strong>
+          </div>
+          <div className="home-club-panel-stat">
+            <span className="home-club-panel-label">Division Pro</span>
+            <strong>{divisionPro}</strong>
+          </div>
+          <div className="home-club-panel-stat">
+            <span className="home-club-panel-label">Division U25</span>
+            <strong>{divisionU25}</strong>
+          </div>
+          <div className="home-club-panel-stat">
+            <span className="home-club-panel-label">Division U21</span>
+            <strong>{divisionU21}</strong>
           </div>
         </div>
-      </div>
+      </Card>
 
       <div className="dashboard-grid">
         <ClubOverviewCard
