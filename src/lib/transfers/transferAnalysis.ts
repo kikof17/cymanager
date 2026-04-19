@@ -3,6 +3,7 @@ import { getStrategyAxisLabel, getStrategyFitScore } from "../roster/rosterAnaly
 import type { Rider } from "../../types/rider";
 import type { ClubSettings, DivisionLevel } from "../../types/settings";
 import type { TeamBuildingStrategy } from "../../types/teamStrategy";
+import type { TransferMarketCandidate } from "../../types/transfer";
 
 type RiderStatKey =
   | "endurance"
@@ -25,6 +26,7 @@ export type TransferRecommendation =
   | "À éviter";
 
 export type TransferAnalysis = {
+  candidate: TransferMarketCandidate;
   rider: Rider;
   score: number;
   recommendation: TransferRecommendation;
@@ -32,6 +34,7 @@ export type TransferAnalysis = {
   blockingReasons: string[];
   summary: string;
   profileLabel: string;
+  auctionFit: string;
   budgetFit: string;
   wageFit: string;
   divisionFit: string;
@@ -200,6 +203,78 @@ function getBudgetScore(
   return { score: 2, text: "Impact budget très lourd.", concerns };
 }
 
+function getAuctionScore(
+  candidate: TransferMarketCandidate,
+  transferAmount: number,
+  currentBalance: number
+): { score: number; text: string; concerns: string[] } {
+  const concerns: string[] = [];
+  const effectiveBid = transferAmount > 0 ? transferAmount : candidate.auction.currentBid;
+  const bidToValueRatio = candidate.rider.value > 0 ? effectiveBid / candidate.rider.value : 0;
+  const bidToBalanceRatio = currentBalance > 0 ? effectiveBid / currentBalance : 1;
+  const deadlineTime = new Date(candidate.auction.deadlineAt).getTime();
+  const hoursRemaining = Number.isNaN(deadlineTime)
+    ? Number.POSITIVE_INFINITY
+    : (deadlineTime - Date.now()) / (1000 * 60 * 60);
+
+  if (effectiveBid <= 0) {
+    return {
+      score: 10,
+      text: "Aucune enchère active détectée : lecture neutre du marché.",
+      concerns,
+    };
+  }
+
+  if (effectiveBid > currentBalance) {
+    concerns.push("L'enchère actuelle dépasse déjà la trésorerie disponible.");
+    return {
+      score: 0,
+      text: "L'enchère n'est pas finançable immédiatement.",
+      concerns,
+    };
+  }
+
+  if (bidToValueRatio <= 0.22 && bidToBalanceRatio <= 0.1) {
+    if (hoursRemaining <= 6) {
+      concerns.push("Fenêtre courte : l'enchère est attractive mais peut monter vite.");
+    }
+
+    return {
+      score: 18,
+      text: "Enchère actuelle très attractive par rapport à la valeur du coureur.",
+      concerns,
+    };
+  }
+
+  if (bidToValueRatio <= 0.45 && bidToBalanceRatio <= 0.2) {
+    if (hoursRemaining <= 6) {
+      concerns.push("La fin d'enchère approche, il faut décider vite.");
+    }
+
+    return {
+      score: 13,
+      text: "Niveau d'enchère encore jouable dans le contexte actuel.",
+      concerns,
+    };
+  }
+
+  if (bidToValueRatio <= 0.7 && bidToBalanceRatio <= 0.3) {
+    concerns.push("L'enchère est déjà bien montée par rapport à la valeur du coureur.");
+    return {
+      score: 7,
+      text: "Enchère surveillée : intérêt sportif possible, mais marge de manœuvre réduite.",
+      concerns,
+    };
+  }
+
+  concerns.push("Le marché surpaye déjà ce coureur au vu de sa valeur actuelle.");
+  return {
+    score: 2,
+    text: "Enchère surchauffée pour le contexte actuel.",
+    concerns,
+  };
+}
+
 function getWageScore(
   rider: Rider,
   riders: Rider[],
@@ -326,7 +401,7 @@ function roundBid(value: number): number {
 }
 
 function getMaxBidRecommendation(
-  rider: Rider,
+  candidate: TransferMarketCandidate,
   settings: ClubSettings,
   currentBalance: number,
   score: number,
@@ -334,6 +409,7 @@ function getMaxBidRecommendation(
   transferAmount: number
 ): { amount: number; text: string; concerns: string[] } {
   const concerns: string[] = [];
+  const rider = candidate.rider;
   const toleranceThreshold =
     averageSalary > 0
       ? averageSalary * TOLERANCE_MULTIPLIER[settings.salaryTolerance]
@@ -376,9 +452,14 @@ function getMaxBidRecommendation(
   const valueCap = rider.value * Math.max(0.55, valueMultiplier);
   const liquidityCap = currentBalance * Math.max(0.06, liquidityRatio + objectiveBonus);
   const amount = roundBid(Math.min(currentBalance, valueCap, liquidityCap));
+  const effectiveBid = transferAmount > 0 ? transferAmount : candidate.auction.currentBid;
 
-  if (transferAmount > 0 && transferAmount > amount) {
+  if (effectiveBid > amount) {
     concerns.push("Le montant saisi dépasse l'enchère max conseillée.");
+  }
+
+  if (candidate.auction.currentBid > amount) {
+    concerns.push("L'enchère actuelle du marché dépasse déjà le plafond conseillé.");
   }
 
   if (amount <= 0) {
@@ -443,16 +524,18 @@ function getTransferBlockingReasons(
 }
 
 export function analyzeTransferCandidate(
-  rider: Rider,
+  candidate: TransferMarketCandidate,
   currentRiders: Rider[],
   settings: ClubSettings,
   strategy: TeamBuildingStrategy,
   currentBalance: number,
   transferAmount = 0
 ): TransferAnalysis {
+  const rider = candidate.rider;
   const profile = buildRiderProfileSummary(rider);
   const division = getDivisionScore(rider, settings);
   const budget = getBudgetScore(transferAmount, currentBalance);
+  const auction = getAuctionScore(candidate, transferAmount, currentBalance);
   const wage = getWageScore(rider, currentRiders, settings);
   const squad = getSquadScore(rider, currentRiders);
   const objective = getObjectiveScore(rider, settings);
@@ -469,6 +552,7 @@ export function analyzeTransferCandidate(
       100,
       division.score +
         budget.score +
+        auction.score +
         wage.score +
         squad.score +
         objective.score +
@@ -480,9 +564,9 @@ export function analyzeTransferCandidate(
     )
   );
   const recommendation = canRecruit ? getRecommendation(score) : "À éviter";
-  const concerns = [...budget.concerns, ...wage.concerns];
+  const concerns = [...budget.concerns, ...auction.concerns, ...wage.concerns];
   const maxBid = getMaxBidRecommendation(
-    rider,
+    candidate,
     settings,
     currentBalance,
     score,
@@ -506,15 +590,17 @@ export function analyzeTransferCandidate(
   concerns.push(...maxBid.concerns);
 
   return {
+    candidate,
     rider,
     score: canRecruit ? score : Math.min(score, 15),
     recommendation,
     canRecruit,
     blockingReasons,
     summary: canRecruit
-      ? `${recommendation} : ${division.text} ${squad.text}`
+      ? `${recommendation} : ${division.text} ${squad.text} ${auction.text}`
       : `Transfert impossible : ${blockingReasons[0]}`,
     profileLabel: `${profile.primaryProfile} / ${profile.secondaryProfile}`,
+    auctionFit: auction.text,
     budgetFit: budget.text,
     wageFit: wage.text,
     divisionFit: division.text,
@@ -526,8 +612,8 @@ export function analyzeTransferCandidate(
       strategyFitScore >= squadStrategyAverage * 1.1
         ? `Très bon fit avec la stratégie ${getStrategyAxisLabel(strategy.primaryAxis).toLowerCase()} > ${getStrategyAxisLabel(strategy.secondaryAxis).toLowerCase()} > ${getStrategyAxisLabel(strategy.tertiaryAxis).toLowerCase()}.`
         : strategyFitScore >= squadStrategyAverage * 0.95
-          ? `Fit correct avec la stratégie d'équipe, sans être un profil structurant.`
-          : `Fit limité avec la stratégie actuelle. Le coureur ne renforce pas assez les axes prioritaires.` ,
+          ? "Fit correct avec la stratégie d'équipe, sans être un profil structurant."
+          : "Fit limité avec la stratégie actuelle. Le coureur ne renforce pas assez les axes prioritaires.",
     strengths: profile.strengths,
     concerns,
     needMatches: squad.weakMatches,
@@ -537,7 +623,10 @@ export function analyzeTransferCandidate(
       { label: "Salaire hebdo", value: `${rider.salaryWeekly}` },
       { label: "Salaire cat. moyen", value: `${Math.round(wage.averageSalary)}` },
       { label: "Valeur", value: `${rider.value}` },
+      { label: "Enchère actuelle", value: `${candidate.auction.currentBid}` },
       { label: "Enchère max", value: `${maxBid.amount}` },
+      { label: "Acheteur actuel", value: candidate.auction.highestBidder || "Aucun" },
+      { label: "Échéance", value: candidate.auction.deadlineLabel },
       { label: "Âge", value: `${rider.ageYears} ans ${rider.ageWeeks} sem.` },
       { label: "Division ciblée", value: getDivisionForCategory(settings, rider.category) },
       { label: "Fit stratégie", value: `${Math.round(strategyFitScore)}` },
@@ -548,17 +637,17 @@ export function analyzeTransferCandidate(
 }
 
 export function analyzeTransferCandidates(
-  riders: Rider[],
+  candidates: TransferMarketCandidate[],
   currentRiders: Rider[],
   settings: ClubSettings,
   strategy: TeamBuildingStrategy,
   currentBalance: number,
   transferAmount = 0
 ): TransferAnalysis[] {
-  return riders
-    .map((rider) =>
+  return candidates
+    .map((candidate) =>
       analyzeTransferCandidate(
-        rider,
+        candidate,
         currentRiders,
         settings,
         strategy,

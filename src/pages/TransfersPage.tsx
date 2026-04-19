@@ -1,7 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Card from "../components/common/Card";
+import ConfirmDialog from "../components/common/ConfirmDialog";
 import PageTitle from "../components/common/PageTitle";
-import { mergeRidersByName, parseRosterText } from "../lib/parser/rosterParser";
+import { mergeRidersByName } from "../lib/parser/rosterParser";
+import {
+  isTransferAuctionExpired,
+  parseTransferMarketData,
+} from "../lib/parser/transferMarketParser";
 import { getStrategyAxisLabel } from "../lib/roster/rosterAnalysis";
 import {
   analyzeTransferCandidates,
@@ -19,15 +24,20 @@ import { formatCurrency, formatInteger, parseFrenchInteger } from "../lib/utils/
 import { initialRiders } from "../store/initialState";
 import type { Rider } from "../types/rider";
 import type { ClubSettings } from "../types/settings";
+import type { TransferMarketCandidate } from "../types/transfer";
 
 type TransferSortKey =
   | "name"
   | "category"
+  | "age"
+  | "form"
   | "score"
   | "recommendation"
   | "total"
   | "salaryWeekly"
   | "value"
+  | "currentBid"
+  | "deadlineAt"
   | "profileLabel";
 
 type TransferSortConfig = {
@@ -35,12 +45,133 @@ type TransferSortConfig = {
   direction: "asc" | "desc";
 } | null;
 
-const RECOMMENDATION_RANK: Record<TransferAnalysis["recommendation"], number> = {
-  "Priorité haute": 4,
-  "Option solide": 3,
-  "Opportunité conditionnelle": 2,
-  "À éviter": 1,
+type DecisionBudgetGuidance = {
+  salaryCap: number;
+  salaryHeadroom: number;
+  transferBudget: number;
+  projectedBalanceHorizon: number;
+  recentWeeklyNet: number;
+  reserveTarget: number;
+  horizonWeeks: number;
 };
+
+type DecisionSalarySummary = {
+  currentWeeklySalaryExpense: number;
+  projectedWeeklySalaryExpense: number;
+  projectedSalaryDelta: number;
+  projectedSalaryHeadroom: number;
+};
+
+type PersistedTransfersPageState = {
+  marketRidersCsv: string;
+  marketAuctionsCsv: string;
+  messages: string[];
+  candidates: TransferMarketCandidate[];
+  selectedCandidateId: string;
+  shortlistedCandidateIds: string[];
+  transferAmount: string;
+  transferDate: string;
+  sortConfig: TransferSortConfig;
+};
+
+function isPersistedTransferMarketCandidate(value: unknown): value is TransferMarketCandidate {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Partial<TransferMarketCandidate>;
+  const rider = candidate.rider as Partial<Rider> | undefined;
+  const auction = candidate.auction as Partial<TransferMarketCandidate["auction"]> | undefined;
+
+  return Boolean(
+    typeof candidate.id === "string" &&
+      rider &&
+      typeof rider.id === "string" &&
+      typeof rider.name === "string" &&
+      typeof rider.total === "number" &&
+      typeof rider.salaryWeekly === "number" &&
+      auction &&
+      typeof auction.deadlineAt === "string" &&
+      typeof auction.currentBid === "number"
+  );
+}
+
+function getPriorityGrade(score: number, canRecruit: boolean): string {
+  if (!canRecruit) {
+    return "F";
+  }
+
+  if (score >= 95) {
+    return "A+";
+  }
+
+  if (score >= 90) {
+    return "A";
+  }
+
+  if (score >= 85) {
+    return "A-";
+  }
+
+  if (score >= 80) {
+    return "B+";
+  }
+
+  if (score >= 75) {
+    return "B";
+  }
+
+  if (score >= 70) {
+    return "B-";
+  }
+
+  if (score >= 65) {
+    return "C+";
+  }
+
+  if (score >= 60) {
+    return "C";
+  }
+
+  if (score >= 55) {
+    return "C-";
+  }
+
+  if (score >= 50) {
+    return "D+";
+  }
+
+  if (score >= 45) {
+    return "D";
+  }
+
+  if (score >= 40) {
+    return "D-";
+  }
+
+  return "F";
+}
+
+function getPriorityGradeRank(score: number, canRecruit: boolean): number {
+  const grade = getPriorityGrade(score, canRecruit);
+  const rankByGrade: Record<string, number> = {
+    "A+": 13,
+    A: 12,
+    "A-": 11,
+    "B+": 10,
+    B: 9,
+    "B-": 8,
+    "C+": 7,
+    C: 6,
+    "C-": 5,
+    "D+": 4,
+    D: 3,
+    "D-": 2,
+    F: 1,
+  };
+
+  return rankByGrade[grade] ?? 0;
+}
 
 const FINANCIAL_PLANNING_BY_TOLERANCE: Record<
   ClubSettings["salaryTolerance"],
@@ -79,34 +210,6 @@ const OBJECTIVE_TRANSFER_MULTIPLIER: Record<ClubSettings["clubObjective"], numbe
   formation: 0.85,
   mixte: 1,
   performance: 1.15,
-};
-
-type DecisionBudgetGuidance = {
-  salaryCap: number;
-  salaryHeadroom: number;
-  transferBudget: number;
-  projectedBalanceHorizon: number;
-  recentWeeklyNet: number;
-  reserveTarget: number;
-  horizonWeeks: number;
-};
-
-type DecisionSalarySummary = {
-  currentWeeklySalaryExpense: number;
-  projectedWeeklySalaryExpense: number;
-  projectedSalaryDelta: number;
-  projectedSalaryHeadroom: number;
-};
-
-type PersistedTransfersPageState = {
-  rawText: string;
-  messages: string[];
-  candidateRiders: Rider[];
-  selectedCandidateId: string;
-  shortlistedCandidateIds: string[];
-  transferAmount: string;
-  transferDate: string;
-  sortConfig: TransferSortConfig;
 };
 
 const TRANSFERS_PAGE_STATE_KEY = "cymanager:transfers-page-state";
@@ -192,9 +295,10 @@ function getDefaultTransferDate(): string {
 
 function getDefaultTransfersPageState(): PersistedTransfersPageState {
   return {
-    rawText: "",
+    marketRidersCsv: "",
+    marketAuctionsCsv: "",
     messages: [],
-    candidateRiders: [],
+    candidates: [],
     selectedCandidateId: "",
     shortlistedCandidateIds: [],
     transferAmount: "",
@@ -213,14 +317,28 @@ function loadTransfersPageState(): PersistedTransfersPageState {
       return fallback;
     }
 
-    const parsed = JSON.parse(raw) as Partial<PersistedTransfersPageState>;
+    const parsed = JSON.parse(raw) as Partial<PersistedTransfersPageState> & {
+      rawText?: string;
+      candidateRiders?: TransferMarketCandidate[];
+    };
 
     return {
-      rawText: typeof parsed.rawText === "string" ? parsed.rawText : fallback.rawText,
+      marketRidersCsv:
+        typeof parsed.marketRidersCsv === "string"
+          ? parsed.marketRidersCsv
+          : typeof parsed.rawText === "string"
+            ? parsed.rawText
+            : fallback.marketRidersCsv,
+      marketAuctionsCsv:
+        typeof parsed.marketAuctionsCsv === "string"
+          ? parsed.marketAuctionsCsv
+          : fallback.marketAuctionsCsv,
       messages: Array.isArray(parsed.messages)
         ? parsed.messages.filter((message): message is string => typeof message === "string")
         : fallback.messages,
-      candidateRiders: Array.isArray(parsed.candidateRiders) ? parsed.candidateRiders : fallback.candidateRiders,
+      candidates: Array.isArray(parsed.candidates)
+        ? parsed.candidates.filter(isPersistedTransferMarketCandidate)
+        : fallback.candidates,
       selectedCandidateId:
         typeof parsed.selectedCandidateId === "string"
           ? parsed.selectedCandidateId
@@ -255,17 +373,44 @@ function saveTransfersPageState(state: PersistedTransfersPageState): void {
   }
 }
 
+function formatAuctionDeadline(deadlineAt: string): string {
+  const date = new Date(deadlineAt);
+
+  if (Number.isNaN(date.getTime())) {
+    return "-";
+  }
+
+  return date.toLocaleString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function getEffectiveTransferAmount(
+  analysis: TransferAnalysis,
+  parsedTransferAmount: number
+): number {
+  return parsedTransferAmount > 0
+    ? parsedTransferAmount
+    : analysis.candidate.auction.currentBid;
+}
+
 export default function TransfersPage() {
   const persistedState = useMemo(() => loadTransfersPageState(), []);
+  const comparisonTableContainerRef = useRef<HTMLDivElement | null>(null);
   const [currentRiders, setCurrentRiders] = useState<Rider[]>(getInitialRiders);
-  const [rawText, setRawText] = useState(persistedState.rawText);
+  const [marketRidersCsv, setMarketRidersCsv] = useState(persistedState.marketRidersCsv);
+  const [marketAuctionsCsv, setMarketAuctionsCsv] = useState(persistedState.marketAuctionsCsv);
   const [messages, setMessages] = useState<string[]>(persistedState.messages);
-  const [candidateRiders, setCandidateRiders] = useState<Rider[]>(persistedState.candidateRiders);
+  const [candidates, setCandidates] = useState<TransferMarketCandidate[]>(persistedState.candidates);
   const [selectedCandidateId, setSelectedCandidateId] = useState(persistedState.selectedCandidateId);
   const [shortlistedCandidateIds, setShortlistedCandidateIds] = useState<string[]>(persistedState.shortlistedCandidateIds);
   const [transferAmount, setTransferAmount] = useState(persistedState.transferAmount);
   const [transferDate, setTransferDate] = useState(persistedState.transferDate);
   const [sortConfig, setSortConfig] = useState<TransferSortConfig>(persistedState.sortConfig);
+  const [pendingRemovalCandidateId, setPendingRemovalCandidateId] = useState<string>("");
 
   const settings = useMemo(() => loadClubSettings(), []);
   const teamStrategy = useMemo(() => loadTeamStrategy(), []);
@@ -286,9 +431,10 @@ export default function TransfersPage() {
 
   useEffect(() => {
     saveTransfersPageState({
-      rawText,
+      marketRidersCsv,
+      marketAuctionsCsv,
       messages,
-      candidateRiders,
+      candidates,
       selectedCandidateId,
       shortlistedCandidateIds,
       transferAmount,
@@ -296,15 +442,47 @@ export default function TransfersPage() {
       sortConfig,
     });
   }, [
-    candidateRiders,
+    candidates,
+    marketAuctionsCsv,
+    marketRidersCsv,
     messages,
-    rawText,
     selectedCandidateId,
     shortlistedCandidateIds,
     sortConfig,
     transferAmount,
     transferDate,
   ]);
+
+  useEffect(() => {
+    function purgeExpiredCandidates() {
+      const expiredIds = candidates
+        .filter((candidate) => isTransferAuctionExpired(candidate.auction))
+        .map((candidate) => candidate.id);
+
+      if (expiredIds.length === 0) {
+        return;
+      }
+
+      setCandidates((current) =>
+        current.filter((candidate) => !expiredIds.includes(candidate.id))
+      );
+      setShortlistedCandidateIds((current) =>
+        current.filter((candidateId) => !expiredIds.includes(candidateId))
+      );
+      setSelectedCandidateId((current) =>
+        expiredIds.includes(current) ? "" : current
+      );
+      setMessages((current) => [
+        `${expiredIds.length} coureur(s) retiré(s) automatiquement de la sélection car l'échéance est dépassée.`,
+        ...current,
+      ]);
+    }
+
+    purgeExpiredCandidates();
+    const intervalId = window.setInterval(purgeExpiredCandidates, 60_000);
+
+    return () => window.clearInterval(intervalId);
+  }, [candidates]);
 
   const parsedTransferAmount = useMemo(
     () => parseFrenchInteger(transferAmount),
@@ -314,14 +492,14 @@ export default function TransfersPage() {
   const analyses = useMemo(
     () =>
       analyzeTransferCandidates(
-        candidateRiders,
+        candidates,
         currentRiders,
         settings,
         teamStrategy,
         financeSnapshot.currentBalance,
         parsedTransferAmount
       ),
-    [candidateRiders, currentRiders, financeSnapshot.currentBalance, parsedTransferAmount, settings, teamStrategy]
+    [candidates, currentRiders, financeSnapshot.currentBalance, parsedTransferAmount, settings, teamStrategy]
   );
 
   const sortedAnalyses = useMemo(() => {
@@ -341,12 +519,20 @@ export default function TransfersPage() {
         case "category":
           comparison = left.rider.category.localeCompare(right.rider.category, "fr", { sensitivity: "base" });
           break;
+        case "age":
+          comparison =
+            left.rider.ageYears * 100 + left.rider.ageWeeks - (right.rider.ageYears * 100 + right.rider.ageWeeks);
+          break;
+        case "form":
+          comparison = left.rider.form - right.rider.form;
+          break;
         case "score":
           comparison = left.score - right.score;
           break;
         case "recommendation":
           comparison =
-            RECOMMENDATION_RANK[left.recommendation] - RECOMMENDATION_RANK[right.recommendation];
+            getPriorityGradeRank(left.score, left.canRecruit) -
+            getPriorityGradeRank(right.score, right.canRecruit);
           break;
         case "total":
           comparison = left.rider.total - right.rider.total;
@@ -356,6 +542,12 @@ export default function TransfersPage() {
           break;
         case "value":
           comparison = left.rider.value - right.rider.value;
+          break;
+        case "currentBid":
+          comparison = left.candidate.auction.currentBid - right.candidate.auction.currentBid;
+          break;
+        case "deadlineAt":
+          comparison = left.candidate.auction.deadlineAt.localeCompare(right.candidate.auction.deadlineAt);
           break;
         case "profileLabel":
           comparison = left.profileLabel.localeCompare(right.profileLabel, "fr", { sensitivity: "base" });
@@ -398,46 +590,91 @@ export default function TransfersPage() {
   }, [decisionBudgetGuidance.salaryCap, financeSnapshot.weeklySalaryExpense, selectedAnalysis]);
 
   function handleAnalyze() {
-    const result = parseRosterText(rawText);
+    const result = parseTransferMarketData(marketRidersCsv, marketAuctionsCsv);
 
-    if (result.riders.length === 0) {
-      setCandidateRiders([]);
+    if (result.candidates.length === 0) {
+      setCandidates([]);
       setSelectedCandidateId("");
       setShortlistedCandidateIds([]);
-      setMessages(result.errors.length > 0 ? result.errors : ["Aucun coureur exploitable trouvé dans le collage."]);
+      setMessages(result.errors.length > 0 ? result.errors : ["Aucun coureur exploitable trouvé dans les CSV collés."]);
       return;
     }
 
-    setCandidateRiders(result.riders);
-    setSelectedCandidateId(result.riders[0].id);
-    setShortlistedCandidateIds([]);
+    const activeCandidates = result.candidates.filter(
+      (candidate) => !isTransferAuctionExpired(candidate.auction)
+    );
+    const currentShortlist = new Set(shortlistedCandidateIds);
+    const nextShortlist = activeCandidates
+      .filter((candidate) => currentShortlist.has(candidate.id))
+      .map((candidate) => candidate.id);
+    const nextSelectedId = activeCandidates.some((candidate) => candidate.id === selectedCandidateId)
+      ? selectedCandidateId
+      : activeCandidates[0]?.id ?? "";
+
+    setCandidates(activeCandidates);
+    setSelectedCandidateId(nextSelectedId);
+    setShortlistedCandidateIds(nextShortlist);
     setMessages([
-      `${result.riders.length} coureur(s) analysable(s) détecté(s).`,
+      `${activeCandidates.length} coureur(s) analysable(s) détecté(s).`,
       ...result.errors,
     ]);
   }
 
   function handleClearAnalysis() {
-    setRawText("");
-    setTransferAmount("");
-    setTransferDate(getDefaultTransferDate());
-    setCandidateRiders([]);
-    setSelectedCandidateId("");
-    setShortlistedCandidateIds([]);
-    setSortConfig(null);
-    setMessages(["Analyse vidée."]);
+    setMarketRidersCsv("");
+    setMarketAuctionsCsv("");
+    setMessages(["Les zones de collage CSV ont été vidées. L'analyse en cours est conservée."]);
   }
 
-  function handleToggleShortlist(candidateId: string) {
+  function handleAddToShortlist(candidateId: string) {
     setShortlistedCandidateIds((current) =>
-      current.includes(candidateId)
-        ? current.filter((id) => id !== candidateId)
-        : [...current, candidateId]
+      current.includes(candidateId) ? current : [...current, candidateId]
     );
   }
 
-  function handleClearShortlist() {
-    setShortlistedCandidateIds([]);
+  function handleRequestCandidateRemoval(candidateId: string) {
+    setPendingRemovalCandidateId(candidateId);
+  }
+
+  function handleConfirmCandidateRemoval() {
+    if (!pendingRemovalCandidateId) {
+      return;
+    }
+
+    const removedCandidate = candidates.find(
+      (candidate) =>
+        candidate.id === pendingRemovalCandidateId ||
+        candidate.rider.id === pendingRemovalCandidateId
+    );
+
+    setCandidates((current) =>
+      current.filter(
+        (candidate) =>
+          candidate.id !== pendingRemovalCandidateId &&
+          candidate.rider.id !== pendingRemovalCandidateId
+      )
+    );
+    setShortlistedCandidateIds((current) =>
+      current.filter((candidateId) => candidateId !== pendingRemovalCandidateId)
+    );
+    setSelectedCandidateId((current) =>
+      current === pendingRemovalCandidateId ? "" : current
+    );
+    setMessages((current) => [
+      `${removedCandidate?.rider.name ?? "Le coureur"} a été retiré manuellement du comparatif.`,
+      ...current,
+    ]);
+    setPendingRemovalCandidateId("");
+  }
+
+  function handleCancelCandidateRemoval() {
+    setPendingRemovalCandidateId("");
+  }
+
+  function handleRemoveFromShortlist(candidateId: string) {
+    setShortlistedCandidateIds((current) =>
+      current.filter((id) => id !== candidateId)
+    );
   }
 
   function handleSort(key: TransferSortKey) {
@@ -469,6 +706,16 @@ export default function TransfersPage() {
     return sortConfig.direction === "asc" ? "ascending" : "descending";
   }
 
+  function jumpComparisonTableToEdge(direction: "start" | "end") {
+    const container = comparisonTableContainerRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    container.scrollLeft = direction === "start" ? 0 : container.scrollWidth - container.clientWidth;
+  }
+
   function handleRecruit(analysis: TransferAnalysis) {
     if (!analysis.canRecruit) {
       setMessages(
@@ -479,12 +726,14 @@ export default function TransfersPage() {
       return;
     }
 
-    if (parsedTransferAmount <= 0) {
-      setMessages(["Saisis un montant de transfert strictement positif avant validation."]);
+    const effectiveTransferAmount = getEffectiveTransferAmount(analysis, parsedTransferAmount);
+
+    if (effectiveTransferAmount <= 0) {
+      setMessages(["Aucune enchère exploitable détectée pour ce coureur."]);
       return;
     }
 
-    if (parsedTransferAmount > financeSnapshot.currentBalance) {
+    if (effectiveTransferAmount > financeSnapshot.currentBalance) {
       setMessages(["Le montant du transfert dépasse le solde disponible."]);
       return;
     }
@@ -494,10 +743,10 @@ export default function TransfersPage() {
     addManualFinanceEntry(
       {
         label: `Transfert entrant - ${analysis.rider.name}`,
-        amount: -parsedTransferAmount,
+        amount: -effectiveTransferAmount,
         occurredAt: transferDate,
         category: "transfer",
-        note: `Recruté depuis ${analysis.rider.currentTeam || "marché des transferts"} - ${analysis.rider.category} - ${analysis.rider.total} total.`,
+        note: `Recruté depuis ${analysis.candidate.auction.seller || analysis.rider.currentTeam || "marché des transferts"} - ${analysis.rider.category} - ${analysis.rider.total} total.`,
       },
       settings.financialBalance
     );
@@ -505,39 +754,58 @@ export default function TransfersPage() {
     window.dispatchEvent(new Event("cymanager:finance-updated"));
 
     setMessages([
-      `${analysis.rider.name} a été intégré à l'effectif local et l'achat a été inscrit en finance.`,
+      `${analysis.rider.name} a été intégré à l'effectif local et l'achat a été inscrit en finance pour ${formatCurrency(effectiveTransferAmount)}.`,
     ]);
   }
 
   const bestOption = analyses[0] ?? null;
+  const pendingRemovalAnalysis = analyses.find(
+    (analysis) => analysis.rider.id === pendingRemovalCandidateId || analysis.candidate.id === pendingRemovalCandidateId
+  );
 
   return (
-    <div className="page-stack">
-      <PageTitle
-        title="Transferts"
-        subtitle="Analyse de recrues potentielles selon ton effectif, ta division, ton objectif et ton budget."
-      />
+    <>
+      <div className="page-stack">
+        <PageTitle
+          title="Transferts"
+          subtitle="Import CSV du marché, analyse enrichie des candidats et sélection persistante jusqu'à l'échéance des enchères."
+        />
 
       <div className="two-columns transfer-layout">
-        <Card title="Collage brut du marché">
-          <div className="page-stack roster-import-form transfer-import-form">
-            <div>
-              <label htmlFor="transfer-raw" className="field-label">
-                Fiche coureur ou plusieurs fiches à la suite
-              </label>
-              <textarea
-                id="transfer-raw"
-                className="textarea"
-                value={rawText}
-                onChange={(event) => setRawText(event.target.value)}
-                placeholder="Colle une ou plusieurs fiches de transfert ici..."
-              />
+        <Card title="Import marché CSV">
+          <div className="page-stack transfer-import-form">
+            <div className="transfer-import-grid">
+              <div>
+                <label htmlFor="transfer-market-riders" className="field-label">
+                  Liste complète des coureurs du marché
+                </label>
+                <textarea
+                  id="transfer-market-riders"
+                  className="textarea transfer-import-textarea"
+                  value={marketRidersCsv}
+                  onChange={(event) => setMarketRidersCsv(event.target.value)}
+                  placeholder="Colle ici le CSV complet des coureurs du marché..."
+                />
+              </div>
+
+              <div>
+                <label htmlFor="transfer-market-auctions" className="field-label">
+                  Liste des enchères en cours
+                </label>
+                <textarea
+                  id="transfer-market-auctions"
+                  className="textarea transfer-import-textarea"
+                  value={marketAuctionsCsv}
+                  onChange={(event) => setMarketAuctionsCsv(event.target.value)}
+                  placeholder="Colle ici le CSV des enchères..."
+                />
+              </div>
             </div>
 
             <div className="field-grid transfer-form-grid">
               <div>
                 <label htmlFor="transfer-amount" className="field-label">
-                  Montant de transfert
+                  Montant simulé optionnel
                 </label>
                 <input
                   id="transfer-amount"
@@ -545,13 +813,13 @@ export default function TransfersPage() {
                   type="text"
                   value={transferAmount}
                   onChange={(event) => setTransferAmount(event.target.value)}
-                  placeholder="Ex. 450000"
+                  placeholder="Laisse vide pour utiliser l'enchère actuelle"
                 />
               </div>
 
               <div>
                 <label htmlFor="transfer-date" className="field-label">
-                  Date du transfert
+                  Date d'écriture du transfert
                 </label>
                 <input
                   id="transfer-date"
@@ -565,7 +833,7 @@ export default function TransfersPage() {
 
             <div className="inline-actions">
               <button type="button" className="button button-primary" onClick={handleAnalyze}>
-                Analyser
+                Analyser le marché
               </button>
               <button type="button" className="button button-secondary" onClick={handleClearAnalysis}>
                 Vider
@@ -609,135 +877,187 @@ export default function TransfersPage() {
         </Card>
       </div>
 
-      <Card title="Comparatif des candidats">
-        {analyses.length === 0 ? (
-          <p className="muted">Aucun candidat analysé pour le moment.</p>
+        <Card title="Comparatif des candidats">
+          {analyses.length === 0 ? (
+            <p className="muted">Aucun candidat analysé pour le moment.</p>
+          ) : (
+            <div className="transfer-table-section">
+              <div className="transfer-table-jump-controls" aria-label="Navigation horizontale du comparatif des candidats">
+                <button type="button" className="button button-secondary button-small" onClick={() => jumpComparisonTableToEdge("start")}>{"<<"}</button>
+                <button type="button" className="button button-secondary button-small" onClick={() => jumpComparisonTableToEdge("end")}>{">>"}</button>
+              </div>
+
+              <div ref={comparisonTableContainerRef} className="table-container transfer-table-container">
+                <table className="data-table styled-table transfer-table">
+                  <thead>
+                    <tr>
+                      <th className="transfer-col-actions">Actions</th>
+                      <th className="transfer-col-choice">Choix</th>
+                      <th className="transfer-col-rider" aria-sort={getAriaSort("name")}>
+                        <button type="button" className="table-sort-button" onClick={() => handleSort("name")}>Coureur{getSortIndicator("name")}</button>
+                      </th>
+                      <th className="transfer-col-category" aria-sort={getAriaSort("category")}>
+                        <button type="button" className="table-sort-button" onClick={() => handleSort("category")}>Cat.{getSortIndicator("category")}</button>
+                      </th>
+                      <th className="transfer-col-age" aria-sort={getAriaSort("age")}>
+                        <button type="button" className="table-sort-button" onClick={() => handleSort("age")}>Âge{getSortIndicator("age")}</button>
+                      </th>
+                      <th className="transfer-col-form" aria-sort={getAriaSort("form")}>
+                        <button type="button" className="table-sort-button" onClick={() => handleSort("form")}>Forme{getSortIndicator("form")}</button>
+                      </th>
+                      <th className="transfer-col-score" aria-sort={getAriaSort("score")}>
+                        <button type="button" className="table-sort-button" onClick={() => handleSort("score")}>Score{getSortIndicator("score")}</button>
+                      </th>
+                      <th className="transfer-col-priority" aria-sort={getAriaSort("recommendation")}>
+                        <button type="button" className="table-sort-button" onClick={() => handleSort("recommendation")}>Priorité{getSortIndicator("recommendation")}</button>
+                      </th>
+                      <th className="transfer-col-total" aria-sort={getAriaSort("total")}>
+                        <button type="button" className="table-sort-button" onClick={() => handleSort("total")}>Total{getSortIndicator("total")}</button>
+                      </th>
+                      <th className="transfer-col-salary" aria-sort={getAriaSort("salaryWeekly")}>
+                        <button type="button" className="table-sort-button" onClick={() => handleSort("salaryWeekly")}>Salaire{getSortIndicator("salaryWeekly")}</button>
+                      </th>
+                      <th className="transfer-col-value" aria-sort={getAriaSort("value")}>
+                        <button type="button" className="table-sort-button" onClick={() => handleSort("value")}>Valeur{getSortIndicator("value")}</button>
+                      </th>
+                      <th className="transfer-col-bid" aria-sort={getAriaSort("currentBid")}>
+                        <button type="button" className="table-sort-button" onClick={() => handleSort("currentBid")}>Enchère{getSortIndicator("currentBid")}</button>
+                      </th>
+                      <th className="transfer-col-deadline" aria-sort={getAriaSort("deadlineAt")}>
+                        <button type="button" className="table-sort-button" onClick={() => handleSort("deadlineAt")}>Échéance{getSortIndicator("deadlineAt")}</button>
+                      </th>
+                      <th className="transfer-col-buyer">Acheteur</th>
+                      <th className="transfer-col-profile" aria-sort={getAriaSort("profileLabel")}>
+                        <button type="button" className="table-sort-button" onClick={() => handleSort("profileLabel")}>Profil{getSortIndicator("profileLabel")}</button>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sortedAnalyses.map((analysis, index) => {
+                      const isSelected = selectedAnalysis?.rider.id === analysis.rider.id;
+                      const isBest = bestOption?.rider.id === analysis.rider.id;
+                      const isShortlisted = shortlistedCandidateIds.includes(analysis.rider.id);
+                      const rowClassName = [
+                        isSelected ? "highlight-row" : "",
+                        isShortlisted ? "transfer-row-shortlisted" : "",
+                        !analysis.canRecruit ? "transfer-row-blocked" : "",
+                      ]
+                        .filter(Boolean)
+                        .join(" ");
+
+                      return (
+                        <tr key={analysis.rider.id} className={rowClassName || undefined}>
+                          <td className="transfer-col-actions">
+                            <div className="transfer-action-buttons">
+                              {!isShortlisted ? (
+                                <button
+                                  type="button"
+                                  className="button button-small transfer-add-button"
+                                  onClick={() => handleAddToShortlist(analysis.rider.id)}
+                                  aria-label={`Ajouter ${analysis.rider.name} à la sélection`}
+                                >
+                                  +
+                                </button>
+                              ) : null}
+                              <button
+                                type="button"
+                                className="button button-danger button-small transfer-remove-button"
+                                onClick={() => handleRequestCandidateRemoval(analysis.rider.id)}
+                                aria-label={`Supprimer ${analysis.rider.name} du comparatif`}
+                              >
+                                ×
+                              </button>
+                            </div>
+                          </td>
+                          <td className="transfer-col-choice">
+                            <button
+                              type="button"
+                              className="button button-secondary button-small"
+                              onClick={() => setSelectedCandidateId(analysis.rider.id)}
+                            >
+                              {isSelected ? "Sélectionné" : "Voir"}
+                            </button>
+                          </td>
+                          <td className="transfer-col-rider transfer-candidate-cell">
+                            <div className="transfer-candidate-name-line">
+                              {isBest ? <span className="transfer-best-thumb" title={`Meilleur choix #${index + 1}`} aria-label={`Meilleur choix #${index + 1}`}>👍</span> : null}
+                              <span>{analysis.rider.name}</span>
+                            </div>
+                          </td>
+                          <td className="transfer-col-category">{analysis.rider.category}</td>
+                          <td className="transfer-col-age">{analysis.rider.ageYears}a {analysis.rider.ageWeeks}s</td>
+                          <td className="transfer-col-form">{analysis.rider.form}</td>
+                          <td className="transfer-col-score">{analysis.score}/100</td>
+                          <td className="transfer-col-priority"><span className="transfer-priority-grade">{getPriorityGrade(analysis.score, analysis.canRecruit)}</span></td>
+                          <td className="transfer-col-total">{formatInteger(analysis.rider.total)}</td>
+                          <td className="transfer-col-salary">{formatCurrency(analysis.rider.salaryWeekly)}</td>
+                          <td className="transfer-col-value">{formatCurrency(analysis.rider.value)}</td>
+                          <td className="transfer-col-bid">{formatCurrency(analysis.candidate.auction.currentBid)}</td>
+                          <td className="transfer-col-deadline">{formatAuctionDeadline(analysis.candidate.auction.deadlineAt)}</td>
+                          <td className="transfer-col-buyer">{analysis.candidate.auction.highestBidder || "-"}</td>
+                          <td className="transfer-col-profile">{analysis.profileLabel}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="transfer-table-jump-controls transfer-table-jump-controls-bottom" aria-hidden="true">
+                <button type="button" className="button button-secondary button-small" onClick={() => jumpComparisonTableToEdge("start")}>{"<<"}</button>
+                <button type="button" className="button button-secondary button-small" onClick={() => jumpComparisonTableToEdge("end")}>{">>"}</button>
+              </div>
+            </div>
+          )}
+        </Card>
+
+      <Card title="Sélection">
+        {shortlistedAnalyses.length === 0 ? (
+          <p className="muted">Aucun coureur retenu pour le moment.</p>
         ) : (
           <div className="table-container">
             <table className="data-table styled-table transfer-table">
               <thead>
                 <tr>
-                  <th>Choix</th>
-                  <th aria-sort={getAriaSort("name")}>
-                    <button
-                      type="button"
-                      className="table-sort-button"
-                      onClick={() => handleSort("name")}
-                    >
-                      Coureur{getSortIndicator("name")}
-                    </button>
-                  </th>
-                  <th aria-sort={getAriaSort("category")}>
-                    <button
-                      type="button"
-                      className="table-sort-button"
-                      onClick={() => handleSort("category")}
-                    >
-                      Cat.{getSortIndicator("category")}
-                    </button>
-                  </th>
-                  <th aria-sort={getAriaSort("score")}>
-                    <button
-                      type="button"
-                      className="table-sort-button"
-                      onClick={() => handleSort("score")}
-                    >
-                      Score{getSortIndicator("score")}
-                    </button>
-                  </th>
-                  <th aria-sort={getAriaSort("recommendation")}>
-                    <button
-                      type="button"
-                      className="table-sort-button"
-                      onClick={() => handleSort("recommendation")}
-                    >
-                      Avis{getSortIndicator("recommendation")}
-                    </button>
-                  </th>
-                  <th aria-sort={getAriaSort("total")}>
-                    <button
-                      type="button"
-                      className="table-sort-button"
-                      onClick={() => handleSort("total")}
-                    >
-                      Total{getSortIndicator("total")}
-                    </button>
-                  </th>
-                  <th aria-sort={getAriaSort("salaryWeekly")}>
-                    <button
-                      type="button"
-                      className="table-sort-button"
-                      onClick={() => handleSort("salaryWeekly")}
-                    >
-                      Salaire{getSortIndicator("salaryWeekly")}
-                    </button>
-                  </th>
-                  <th aria-sort={getAriaSort("value")}>
-                    <button
-                      type="button"
-                      className="table-sort-button"
-                      onClick={() => handleSort("value")}
-                    >
-                      Valeur{getSortIndicator("value")}
-                    </button>
-                  </th>
-                  <th aria-sort={getAriaSort("profileLabel")}>
-                    <button
-                      type="button"
-                      className="table-sort-button"
-                      onClick={() => handleSort("profileLabel")}
-                    >
-                      Profil{getSortIndicator("profileLabel")}
-                    </button>
-                  </th>
-                  <th>Sélection</th>
+                  <th>Coureur</th>
+                  <th>Cat.</th>
+                  <th>Score</th>
+                  <th>Enchère</th>
+                  <th>Échéance</th>
+                  <th>Acheteur</th>
+                  <th>Action</th>
+                  <th>Suppression</th>
                 </tr>
               </thead>
               <tbody>
-                {sortedAnalyses.map((analysis, index) => {
-                  const isSelected = selectedAnalysis?.rider.id === analysis.rider.id;
-                  const isBest = bestOption?.rider.id === analysis.rider.id;
-                  const isShortlisted = shortlistedCandidateIds.includes(analysis.rider.id);
-                  const rowClassName = [
-                    isSelected ? "highlight-row" : "",
-                    !analysis.canRecruit ? "transfer-row-blocked" : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ");
+                {shortlistedAnalyses.map((analysis) => {
+                  const isCurrent = selectedAnalysis?.rider.id === analysis.rider.id;
 
                   return (
-                    <tr key={analysis.rider.id} className={rowClassName || undefined}>
+                    <tr key={analysis.rider.id}>
+                      <td>{analysis.rider.name}</td>
+                      <td>{analysis.rider.category}</td>
+                      <td>{analysis.score}/100</td>
+                      <td>{formatCurrency(analysis.candidate.auction.currentBid)}</td>
+                      <td>{formatAuctionDeadline(analysis.candidate.auction.deadlineAt)}</td>
+                      <td>{analysis.candidate.auction.highestBidder || "-"}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className={isCurrent ? "button button-primary button-small" : "button button-secondary button-small"}
+                          onClick={() => setSelectedCandidateId(analysis.rider.id)}
+                        >
+                          {isCurrent ? "En cours" : "Analyser"}
+                        </button>
+                      </td>
                       <td>
                         <button
                           type="button"
                           className="button button-secondary button-small"
-                          onClick={() => setSelectedCandidateId(analysis.rider.id)}
+                          onClick={() => handleRemoveFromShortlist(analysis.rider.id)}
                         >
-                          {isSelected ? "Sélectionné" : "Voir"}
+                          Supprimer
                         </button>
-                      </td>
-                      <td>
-                        {analysis.rider.name}
-                        {isBest ? <div className="transfer-best-badge">Meilleur choix #{index + 1}</div> : null}
-                        {!analysis.canRecruit ? <div className="transfer-blocked-badge">Interdit division</div> : null}
-                      </td>
-                      <td>{analysis.rider.category}</td>
-                      <td>{analysis.score}/100</td>
-                      <td>{analysis.recommendation}</td>
-                      <td>{formatInteger(analysis.rider.total)}</td>
-                      <td>{formatCurrency(analysis.rider.salaryWeekly)}</td>
-                      <td>{formatCurrency(analysis.rider.value)}</td>
-                      <td>{analysis.profileLabel}</td>
-                      <td>
-                        <label className="checkbox-line transfer-checkbox-line">
-                          <input
-                            type="checkbox"
-                            checked={isShortlisted}
-                            onChange={() => handleToggleShortlist(analysis.rider.id)}
-                            aria-label={`Ajouter ${analysis.rider.name} à la sélection`}
-                          />
-                          <span>{isShortlisted ? "Retenu" : "Retenir"}</span>
-                        </label>
                       </td>
                     </tr>
                   );
@@ -748,72 +1068,8 @@ export default function TransfersPage() {
         )}
       </Card>
 
-      <Card title="Sélection">
-        {shortlistedAnalyses.length === 0 ? (
-          <p className="muted">Aucun coureur retenu pour le moment.</p>
-        ) : (
-          <div className="page-stack">
-            <div className="inline-actions transfer-actions">
-              <button type="button" className="button button-secondary" onClick={handleClearShortlist}>
-                Vider la sélection
-              </button>
-            </div>
-
-            <div className="stats-kpi-grid transfer-selection-grid">
-              {shortlistedAnalyses.map((analysis) => {
-                const isCurrent = selectedAnalysis?.rider.id === analysis.rider.id;
-
-                return (
-                  <div
-                    key={analysis.rider.id}
-                    className={`card transfer-selection-card${!analysis.canRecruit ? " transfer-selection-card-blocked" : ""}`}
-                  >
-                    <div className="page-stack">
-                      <div>
-                        <strong>{analysis.rider.name}</strong>
-                        <div className="muted">
-                          {analysis.rider.category} · {analysis.score}/100 · {analysis.recommendation}
-                        </div>
-                      </div>
-
-                      <div className="dashboard-lines transfer-selection-lines">
-                        <p><strong>Total :</strong> {formatInteger(analysis.rider.total)}</p>
-                        <p><strong>Salaire :</strong> {formatCurrency(analysis.rider.salaryWeekly)}</p>
-                        <p><strong>Valeur :</strong> {formatCurrency(analysis.rider.value)}</p>
-                        <p><strong>Enchère max :</strong> {formatCurrency(analysis.maxBid)}</p>
-                      </div>
-
-                      {!analysis.canRecruit ? (
-                        <p className="transfer-selection-warning">Coureur interdit pour ta division ou ta structure actuelle.</p>
-                      ) : null}
-
-                      <div className="inline-actions transfer-selection-actions">
-                        <button
-                          type="button"
-                          className={isCurrent ? "button button-primary button-small" : "button button-secondary button-small"}
-                          onClick={() => setSelectedCandidateId(analysis.rider.id)}
-                        >
-                          {isCurrent ? "En cours" : "Analyser"}
-                        </button>
-                        <button
-                          type="button"
-                          className="button button-secondary button-small"
-                          onClick={() => handleToggleShortlist(analysis.rider.id)}
-                        >
-                          Retirer
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </Card>
-
-      {selectedAnalysis ? (
-        <>
+        {selectedAnalysis ? (
+          <>
           <div className="two-columns transfer-layout">
             <Card title={`Analyse détaillée - ${selectedAnalysis.rider.name}`}>
               <div className="page-stack">
@@ -842,6 +1098,7 @@ export default function TransfersPage() {
                 <div className="dashboard-lines">
                   <p><strong>Profil :</strong> {selectedAnalysis.profileLabel}</p>
                   <p><strong>Division :</strong> {selectedAnalysis.divisionFit}</p>
+                  <p><strong>Marché :</strong> {selectedAnalysis.auctionFit}</p>
                   <p><strong>Effectif :</strong> {selectedAnalysis.squadFit}</p>
                   <p><strong>Budget :</strong> {selectedAnalysis.budgetFit}</p>
                   <p><strong>Enchère max :</strong> {selectedAnalysis.maxBidFit}</p>
@@ -855,12 +1112,16 @@ export default function TransfersPage() {
             <Card title="Fiche synthèse">
               <div className="dashboard-lines">
                 <p><strong>Equipe actuelle :</strong> {selectedAnalysis.rider.currentTeam || "-"}</p>
+                <p><strong>Vendeur :</strong> {selectedAnalysis.candidate.auction.seller || "-"}</p>
+                <p><strong>Acheteur actuel :</strong> {selectedAnalysis.candidate.auction.highestBidder || "-"}</p>
+                <p><strong>Échéance :</strong> {formatAuctionDeadline(selectedAnalysis.candidate.auction.deadlineAt)}</p>
                 <p><strong>Nationalité :</strong> {selectedAnalysis.rider.nationality || "-"}</p>
                 <p><strong>Catégorie :</strong> {selectedAnalysis.rider.category}</p>
                 <p><strong>Age :</strong> {selectedAnalysis.rider.ageYears} ans {selectedAnalysis.rider.ageWeeks} sem.</p>
                 <p><strong>Forme :</strong> {selectedAnalysis.rider.form}</p>
                 <p><strong>Total :</strong> {formatInteger(selectedAnalysis.rider.total)}</p>
                 <p><strong>Valeur :</strong> {formatCurrency(selectedAnalysis.rider.value)}</p>
+                <p><strong>Enchère actuelle :</strong> {formatCurrency(selectedAnalysis.candidate.auction.currentBid)}</p>
                 <p><strong>Enchère max conseillée :</strong> {formatCurrency(selectedAnalysis.maxBid)}</p>
                 <p><strong>Salaire hebdo :</strong> {formatCurrency(selectedAnalysis.rider.salaryWeekly)}</p>
                 <p><strong>Blessure :</strong> {selectedAnalysis.rider.injury}</p>
@@ -920,6 +1181,10 @@ export default function TransfersPage() {
           </Card>
 
           <Card title="Validation de l'achat">
+            <div className="dashboard-lines transfer-validation-lines">
+              <p><strong>Montant retenu :</strong> {formatCurrency(getEffectiveTransferAmount(selectedAnalysis, parsedTransferAmount))}</p>
+              <p><strong>Source du montant :</strong> {parsedTransferAmount > 0 ? "Saisie manuelle" : "Enchère actuelle"}</p>
+            </div>
             <div className="inline-actions transfer-actions">
               <button
                 type="button"
@@ -938,8 +1203,19 @@ export default function TransfersPage() {
                 : "Le bouton reste désactivé tant qu'une règle bloquante de division ou de structure interdit l'embauche."}
             </p>
           </Card>
-        </>
-      ) : null}
-    </div>
+          </>
+        ) : null}
+      </div>
+
+      <ConfirmDialog
+        open={Boolean(pendingRemovalCandidateId && pendingRemovalAnalysis)}
+        title="Confirmer la suppression"
+        message={pendingRemovalAnalysis
+          ? `Supprimer ${pendingRemovalAnalysis.rider.name} du comparatif et de la sélection éventuelle ?`
+          : "Supprimer ce coureur du comparatif et de la sélection éventuelle ?"}
+        onConfirm={handleConfirmCandidateRemoval}
+        onCancel={handleCancelCandidateRemoval}
+      />
+    </>
   );
 }

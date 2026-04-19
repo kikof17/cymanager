@@ -367,16 +367,142 @@ select, select option {
   gap: 16px;
 }
 
+.transfer-import-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.transfer-import-textarea {
+  min-height: 280px;
+}
+
 .transfer-form-grid {
   align-items: end;
+}
+
+.transfer-table-section {
+  display: grid;
+  gap: 10px;
+}
+
+.transfer-table-jump-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.transfer-table-jump-controls-bottom {
+  margin-top: -2px;
+}
+
+.transfer-table-container {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.transfer-table-container::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 .transfer-table td {
   vertical-align: top;
 }
 
+.transfer-table th.transfer-col-actions,
+.transfer-table td.transfer-col-actions,
+.transfer-table th.transfer-col-choice,
+.transfer-table td.transfer-col-choice,
+.transfer-table th.transfer-col-category,
+.transfer-table td.transfer-col-category,
+.transfer-table th.transfer-col-age,
+.transfer-table td.transfer-col-age,
+.transfer-table th.transfer-col-form,
+.transfer-table td.transfer-col-form,
+.transfer-table th.transfer-col-score,
+.transfer-table td.transfer-col-score,
+.transfer-table th.transfer-col-priority,
+.transfer-table td.transfer-col-priority {
+  white-space: nowrap;
+}
+
+.transfer-table th.transfer-col-actions,
+.transfer-table td.transfer-col-actions,
+.transfer-table th.transfer-col-choice,
+.transfer-table td.transfer-col-choice,
+.transfer-table th.transfer-col-score,
+.transfer-table td.transfer-col-score,
+.transfer-table th.transfer-col-priority,
+.transfer-table td.transfer-col-priority {
+  text-align: center;
+}
+
+.transfer-table th.transfer-col-actions,
+.transfer-table td.transfer-col-actions {
+  width: 118px;
+  min-width: 118px;
+}
+
+.transfer-table th.transfer-col-choice,
+.transfer-table td.transfer-col-choice {
+  width: 110px;
+  min-width: 110px;
+}
+
+.transfer-table th.transfer-col-rider,
+.transfer-table td.transfer-col-rider {
+  min-width: 220px;
+}
+
+.transfer-table th.transfer-col-category,
+.transfer-table td.transfer-col-category,
+.transfer-table th.transfer-col-age,
+.transfer-table td.transfer-col-age,
+.transfer-table th.transfer-col-form,
+.transfer-table td.transfer-col-form,
+.transfer-table th.transfer-col-score,
+.transfer-table td.transfer-col-score,
+.transfer-table th.transfer-col-priority,
+.transfer-table td.transfer-col-priority,
+.transfer-table th.transfer-col-total,
+.transfer-table td.transfer-col-total {
+  width: 88px;
+}
+
+.transfer-table th.transfer-col-salary,
+.transfer-table td.transfer-col-salary,
+.transfer-table th.transfer-col-value,
+.transfer-table td.transfer-col-value,
+.transfer-table th.transfer-col-bid,
+.transfer-table td.transfer-col-bid,
+.transfer-table th.transfer-col-deadline,
+.transfer-table td.transfer-col-deadline,
+.transfer-table th.transfer-col-buyer,
+.transfer-table td.transfer-col-buyer,
+.transfer-table th.transfer-col-profile,
+.transfer-table td.transfer-col-profile {
+  min-width: 120px;
+}
+
 .transfer-row-blocked td {
   background: #fde8e7;
+}
+
+.transfer-row-shortlisted td {
+  background: #233229;
+}
+
+.transfer-row-shortlisted.highlight-row td {
+  background: #30463e !important;
+}
+
+.transfer-row-shortlisted.transfer-row-blocked td {
+  background: #5b3a35;
+}
+
+.transfer-row-shortlisted.transfer-row-blocked.highlight-row td {
+  background: #714641 !important;
 }
 
 .transfer-row-blocked.highlight-row td {
@@ -384,26 +510,62 @@ select, select option {
   color: #5a1813;
 }
 
-.transfer-best-badge {
-  margin-top: 6px;
+.transfer-action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.transfer-candidate-cell {
+  transition: background 0.18s ease;
+}
+
+.transfer-candidate-name-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.transfer-best-thumb {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.transfer-priority-grade {
   display: inline-flex;
-  padding: 4px 10px;
+  align-items: center;
+  justify-content: center;
+  min-width: 46px;
+  padding: 4px 8px;
   border-radius: 999px;
-  background: #f0e1c8;
-  color: #8b5a21;
-  font-size: 0.8rem;
+  background: #eef3ff;
+  color: #294a78;
   font-weight: 700;
 }
 
-.transfer-blocked-badge {
-  margin-top: 6px;
-  display: inline-flex;
+.transfer-remove-button {
+  min-width: 34px;
   padding: 4px 10px;
-  border-radius: 999px;
-  background: #d94b3d;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.transfer-add-button {
+  min-width: 34px;
+  padding: 4px 10px;
+  font-size: 1rem;
+  line-height: 1;
+  background: #2f6fda;
   color: #fff;
-  font-size: 0.8rem;
-  font-weight: 700;
+  border: 1px solid #4485f0;
+}
+
+.transfer-add-button:hover,
+.transfer-add-button:focus {
+  background: #4784ea;
+  color: #fff;
 }
 
 .transfer-checkbox-line {
@@ -442,6 +604,10 @@ select, select option {
 
 .transfer-actions {
   margin-bottom: 8px;
+}
+
+.transfer-validation-lines {
+  margin-bottom: 12px;
 }
 
 .transfer-selection-grid {
@@ -1976,6 +2142,10 @@ select:focus {
   .ranking-tabs-row,
   .race-import-actions {
     flex-direction: column;
+  }
+
+  .transfer-import-grid {
+    grid-template-columns: 1fr;
   }
 }
 
