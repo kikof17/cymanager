@@ -528,10 +528,14 @@ export function getFinanceSnapshot(settings: ClubSettings, riders: Rider[]) {
       .filter((entry) => entry.amount < 0)
       .reduce((sum, entry) => sum + entry.amount, 0)
   );
-  const weeklySalaryExpense = riders.reduce(
+  const automaticWeeklySalaryExpense = riders.reduce(
     (sum, rider) => sum + rider.salaryWeekly,
     0
   );
+  const weeklySalaryExpense =
+    settings.manualWeeklySalaryExpense !== null && settings.manualWeeklySalaryExpense >= 0
+      ? settings.manualWeeklySalaryExpense
+      : automaticWeeklySalaryExpense;
   const weeklyFacilityMaintenance = (
     Object.keys(settings.facilities) as FacilityKey[]
   ).reduce(
@@ -555,6 +559,7 @@ export function getFinanceSnapshot(settings: ClubSettings, riders: Rider[]) {
     currentBalance,
     totalIncome,
     totalExpenses,
+    automaticWeeklySalaryExpense,
     weeklySalaryExpense,
     weeklyFacilityMaintenance,
     weeklyFixedCosts,

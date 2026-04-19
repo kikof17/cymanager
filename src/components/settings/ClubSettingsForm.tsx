@@ -59,6 +59,9 @@ export default function ClubSettingsForm({
         <p className="muted">
           Le solde financier n'est plus saisi ici. Il est calculé depuis la page Finance, et tout lancement de travaux sauvegardé dans cette page y crée automatiquement une dépense.
         </p>
+        <p className="muted">
+          Si la masse salariale officielle du jeu diffère à cause des arrondis, tu peux la saisir manuellement ci-dessous. Cette valeur servira ensuite de référence dans les calculs financiers et transferts.
+        </p>
       </div>
 
       {/* Bloc divisions */}
@@ -186,6 +189,29 @@ export default function ClubSettingsForm({
               </option>
             ))}
           </select>
+        </div>
+
+        <div>
+          <label className="field-label" htmlFor="manual-weekly-salary-expense">
+            Masse salariale hebdo de référence
+          </label>
+          <input
+            id="manual-weekly-salary-expense"
+            className="input"
+            type="number"
+            min={0}
+            step={1}
+            value={settings.manualWeeklySalaryExpense ?? ""}
+            onChange={(event) =>
+              updateRoot(
+                "manualWeeklySalaryExpense",
+                event.target.value.trim() === ""
+                  ? null
+                  : Number.parseInt(event.target.value, 10)
+              )
+            }
+            placeholder="Laisser vide pour utiliser le calcul automatique"
+          />
         </div>
       </div>
 

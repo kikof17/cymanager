@@ -194,6 +194,7 @@ export default function HomePage() {
         <ClubOverviewCard
           riders={riders}
           financialBalance={financeSnapshot.currentBalance}
+          weeklySalaryExpense={financeSnapshot.weeklySalaryExpense}
         />
         <TrainingOverviewCard plan={trainingPlan} />
         <RaceOverviewCard race={race} selected={raceSelected} />

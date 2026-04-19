@@ -351,7 +351,6 @@ export default function StatisticsPage() {
     const totalValue = riders.reduce((sum, rider) => sum + rider.value, 0);
     const totalPrizeMoney = Array.from(prizeByRider.values()).reduce((sum, value) => sum + value, 0);
     const ageAverage = riders.reduce((sum, rider) => sum + rider.ageYears + rider.ageWeeks / 52, 0) / riders.length;
-    const totalSalary = riders.reduce((sum, rider) => sum + rider.salaryWeekly, 0);
     const bestPerformer = riderPerformance[0] ?? null;
     const pointsByCategory = {
       pro: teamResultRows.filter((row) => row.category === "pro").reduce((sum, row) => sum + row.points, 0),
@@ -369,7 +368,6 @@ export default function StatisticsPage() {
       totalValue,
       totalPrizeMoney,
       ageAverage,
-      totalSalary,
       bestPerformer,
       pointsByCategory,
     };
@@ -527,7 +525,7 @@ export default function StatisticsPage() {
                 <p><strong>Division U21 :</strong> {settings.divisionU21}</p>
                 <p><strong>Courses enregistrées :</strong> {formatInteger(overview.uniqueCourses)}</p>
                 <p><strong>Age moyen :</strong> {formatDecimal(overview.ageAverage)} ans</p>
-                <p><strong>Masse salariale :</strong> {formatCurrency(overview.totalSalary)}</p>
+                <p><strong>Masse salariale :</strong> {formatCurrency(financeSnapshot.weeklySalaryExpense)}</p>
               </div>
             </Card>
 

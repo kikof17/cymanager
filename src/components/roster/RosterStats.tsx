@@ -4,14 +4,14 @@ import { formatCurrency, formatInteger } from "../../lib/utils/numbers";
 
 type RosterStatsProps = {
   riders: Rider[];
+  weeklySalaryExpense: number;
 };
 
-export default function RosterStats({ riders }: RosterStatsProps) {
+export default function RosterStats({ riders, weeklySalaryExpense }: RosterStatsProps) {
   const pros = riders.filter((rider) => rider.category === "Pro").length;
   const u25 = riders.filter((rider) => rider.category === "U25").length;
   const u21 = riders.filter((rider) => rider.category === "U21").length;
 
-  const totalSalary = riders.reduce((sum, rider) => sum + rider.salaryWeekly, 0);
   const totalValue = riders.reduce((sum, rider) => sum + rider.value, 0);
 
   const averageForm =
@@ -31,7 +31,7 @@ export default function RosterStats({ riders }: RosterStatsProps) {
       </Card>
 
       <Card title="Masse salariale">
-        <p className="stat-value">{formatInteger(totalSalary)} €</p>
+        <p className="stat-value">{formatInteger(weeklySalaryExpense)} €</p>
       </Card>
 
       <Card title="Valeur totale">

@@ -100,7 +100,7 @@ export default function RosterPage() {
         subtitle="Import brut, profils automatiques et affichage détaillé des coureurs."
       />
 
-      <RosterStats riders={riders} />
+      <RosterStats riders={riders} weeklySalaryExpense={financeSnapshot.weeklySalaryExpense} />
 
       <Card title={`Liste des coureurs (${filteredRiders.length})`}>
         <RiderTable riders={filteredRiders} onDelete={handleDelete} />

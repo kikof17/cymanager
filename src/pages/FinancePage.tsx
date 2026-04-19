@@ -176,6 +176,32 @@ export default function FinancePage() {
       ),
     [historyWeekFilter, sortedEntries]
   );
+  const weeklyResultStats = useMemo(() => {
+    const income = filteredEntries
+      .filter((entry) => entry.amount > 0)
+      .reduce((sum, entry) => sum + entry.amount, 0);
+    const expenses = Math.abs(
+      filteredEntries
+        .filter((entry) => entry.amount < 0)
+        .reduce((sum, entry) => sum + entry.amount, 0)
+    );
+    const netResult = income - expenses;
+    const racePrizes = filteredEntries
+      .filter((entry) => entry.category === "race-prize" && entry.amount > 0)
+      .reduce((sum, entry) => sum + entry.amount, 0);
+    const transferBalance = filteredEntries
+      .filter((entry) => entry.category === "transfer")
+      .reduce((sum, entry) => sum + entry.amount, 0);
+
+    return {
+      income,
+      expenses,
+      netResult,
+      racePrizes,
+      transferBalance,
+      entriesCount: filteredEntries.length,
+    };
+  }, [filteredEntries]);
 
   const defaultPrizeTable = snapshot.prizeTables[0];
   const [selectedPrizeTableId, setSelectedPrizeTableId] = useState(
@@ -738,6 +764,54 @@ export default function FinancePage() {
             )}
           </div>
         )}
+      </Card>
+
+      <Card
+        title={`Résultat de la semaine - ${
+          historyWeekFilter === "current" ? "Semaine en cours" : "Semaine passée"
+        }`}
+      >
+        <div className="page-stack">
+          <div className="finance-week-stats-grid">
+            <div className="card finance-week-stat-card">
+              <span className="stats-kpi-label">Résultat net</span>
+              <strong
+                className={
+                  weeklyResultStats.netResult >= 0
+                    ? "finance-summary-value finance-positive"
+                    : "finance-summary-value finance-negative"
+                }
+              >
+                {formatCurrency(weeklyResultStats.netResult)}
+              </strong>
+            </div>
+            <div className="card finance-week-stat-card">
+              <span className="stats-kpi-label">Revenus</span>
+              <strong className="finance-summary-value finance-positive">
+                {formatCurrency(weeklyResultStats.income)}
+              </strong>
+            </div>
+            <div className="card finance-week-stat-card">
+              <span className="stats-kpi-label">Dépenses</span>
+              <strong className="finance-summary-value finance-negative">
+                {formatCurrency(weeklyResultStats.expenses)}
+              </strong>
+            </div>
+            <div className="card finance-week-stat-card">
+              <span className="stats-kpi-label">Primes de course</span>
+              <strong className="finance-summary-value">
+                {formatCurrency(weeklyResultStats.racePrizes)}
+              </strong>
+              <span className="muted">
+                Transferts : {formatCurrency(weeklyResultStats.transferBalance)}
+              </span>
+            </div>
+          </div>
+
+          <p className="muted finance-week-stats-note">
+            {weeklyResultStats.entriesCount} écriture(s) prises en compte sur la période sélectionnée.
+          </p>
+        </div>
       </Card>
     </div>
   );

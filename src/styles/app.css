@@ -1252,6 +1252,23 @@ a {
   font-size: 0.96rem;
 }
 
+.finance-week-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.finance-week-stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+
+.finance-week-stats-note {
+  margin: 0;
+}
+
 .dashboard-lines {
   display: flex;
   flex-direction: column;
@@ -1279,10 +1296,18 @@ a {
   .finance-summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .finance-week-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 720px) {
   .finance-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .finance-week-stats-grid {
     grid-template-columns: 1fr;
   }
 

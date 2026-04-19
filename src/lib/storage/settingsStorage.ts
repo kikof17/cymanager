@@ -60,6 +60,7 @@ export const defaultClubSettings: ClubSettings = {
   divisionU21: "D9",
   clubObjective: "mixte",
   salaryTolerance: "normale",
+  manualWeeklySalaryExpense: null,
   financialBalance: 1000000, // Valeur par défaut : 1 000 000 €
 };
 
@@ -156,6 +157,10 @@ export function loadClubSettings(): ClubSettings {
       divisionPro: parsed.divisionPro ?? parsed.currentDivision ?? "D9",
       divisionU25: parsed.divisionU25 ?? parsed.currentDivision ?? "D9",
       divisionU21: parsed.divisionU21 ?? parsed.currentDivision ?? "D9",
+      manualWeeklySalaryExpense:
+        typeof parsed.manualWeeklySalaryExpense === "number" && parsed.manualWeeklySalaryExpense >= 0
+          ? parsed.manualWeeklySalaryExpense
+          : defaultClubSettings.manualWeeklySalaryExpense,
       financialBalance: defaultClubSettings.financialBalance,
     });
   } catch (error) {

@@ -39,5 +39,6 @@ export type ClubSettings = {
   divisionU21: DivisionLevel;
   clubObjective: ClubObjective;
   salaryTolerance: SalaryTolerance;
+  manualWeeklySalaryExpense: number | null;
   financialBalance: number;
 };
