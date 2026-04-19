@@ -1354,7 +1354,13 @@ body {
 }
 
 .sidebar {
-  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 100svh;
+  padding: 22px 16px 18px;
   background:
     linear-gradient(180deg, rgba(20, 29, 43, 0.98) 0%, rgba(14, 21, 34, 0.98) 100%);
   border-right: 1px solid var(--border);
@@ -1362,7 +1368,7 @@ body {
 }
 
 .sidebar-brand {
-  margin-bottom: 32px;
+  margin-bottom: 22px;
 }
 
 .sidebar-logo {
@@ -1371,12 +1377,18 @@ body {
 }
 
 .sidebar-nav {
-  gap: 10px;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
 }
 
 .nav-link {
+  padding: 10px 12px;
   border: 1px solid transparent;
   border-radius: 14px;
+  font-size: 0.96rem;
 }
 
 .nav-link:hover {
@@ -1390,6 +1402,27 @@ body {
   color: var(--text);
   border-color: rgba(137, 180, 255, 0.22);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-clock {
+  margin-top: auto;
+  padding: 14px 12px 2px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-clock-time {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+
+.sidebar-clock-date {
+  margin: 4px 0 0;
+  color: var(--text-soft);
+  font-size: 0.82rem;
+  text-transform: capitalize;
+  line-height: 1.35;
 }
 
 .app-main {
@@ -1923,6 +1956,12 @@ select:focus {
 
   .home-club-panel-header {
     flex-direction: column;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+    min-height: 0;
   }
 }
 
