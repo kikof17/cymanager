@@ -56,6 +56,34 @@ function loadStoredRaceSetups(): StoredRaceSetupMap {
   }
 }
 
+function getCalendarPriorityTone(todo: TodoItem): string {
+  if (todo.priority === 'haute') {
+    return 'calendar-course-item-danger';
+  }
+
+  if (todo.priority === 'basse') {
+    return 'calendar-course-item-success';
+  }
+
+  if (todo.category === 'courses') {
+    return 'calendar-course-item-warning';
+  }
+
+  return 'calendar-course-item-neutral';
+}
+
+function formatCalendarDate(value: string): string {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat('fr-FR', {
+    dateStyle: 'medium',
+  }).format(date);
+}
+
 
 const CalendarPage: React.FC = () => {
   // Hooks inutilisés supprimés (input, parsedList, success)
@@ -135,11 +163,7 @@ const CalendarPage: React.FC = () => {
   const [openTacticId, setOpenTacticId] = useState<string|null>(null);
   function renderCalendarTodo(todo: TodoItem) {
     const isDone = statuses[todo.id] === 'done';
-    // Couleur bordure selon priorité/catégorie (comme todo)
-    let borderColor = '#bdbdbd';
-    if (todo.category === 'courses') borderColor = '#bfa600';
-    if (todo.priority === 'haute') borderColor = '#b83a3a';
-    if (todo.priority === 'basse') borderColor = '#4caf50';
+    const courseToneClass = getCalendarPriorityTone(todo);
 
     // Récupérer l'ODC/réglages si dispo (clé = titre de la course)
     let odcContent: React.ReactNode = null;
@@ -177,20 +201,8 @@ const CalendarPage: React.FC = () => {
             };
           });
           odcContent = (
-            <div
-              style={{
-                marginTop: 10,
-                background: '#23242a',
-                borderRadius: 10,
-                padding: 16,
-                boxShadow: '0 2px 12px #0006',
-                border: '1px solid #333',
-              }}
-            >
-              <div style={{ overflowX: 'auto' }}>
-                <style>{`
-                  .race-setup-table thead th { color: #111 !important; background: #f7f7fa !important; }
-                `}</style>
+            <div className="calendar-tactic-panel">
+              <div className="calendar-tactic-table-wrap">
                 <RaceSetupTable
                   riders={ridersForTable}
                   setupByRider={setup}
@@ -211,37 +223,29 @@ const CalendarPage: React.FC = () => {
     return (
       <div
         key={todo.id}
-        className="card"
-        style={{
-          marginBottom: 12,
-          padding: 16,
-          background: isDone ? '#e6e6e6' : '#fff',
-          opacity: isDone ? 0.6 : 1,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 16,
-          borderLeft: `6px solid ${borderColor}`,
-          boxShadow: '0 1px 4px 0 #0001',
-          flexDirection: 'column',
-        }}
+        className={[
+          'calendar-course-item',
+          courseToneClass,
+          isDone ? 'calendar-course-item-done' : '',
+        ].filter(Boolean).join(' ')}
       >
-        <div style={{ display: 'flex', width: '100%', alignItems: 'center', gap: 16 }}>
+        <div className="calendar-course-row">
           <input
             type="checkbox"
             checked={isDone}
             onChange={() => handleToggleStatus(todo.id)}
-            style={{ marginRight: 12, width: 18, height: 18 }}
+            className="calendar-course-checkbox"
             title={isDone ? 'Marquer comme à faire' : 'Marquer comme fait'}
           />
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 600, fontSize: 16, color: '#181c24' }}>{todo.title}</div>
-            <div style={{ fontSize: 13, color: '#444', margin: '2px 0 6px 0' }}>{todo.details?.split('\n').join(' | ')}</div>
-            <span style={{ color: '#aaa', fontSize: 12 }}>{new Date(todo.createdAt).toLocaleDateString()}</span>
+          <div className="calendar-course-copy">
+            <div className="calendar-course-title">{todo.title}</div>
+            <div className="calendar-course-details">{todo.details?.split('\n').join(' | ')}</div>
+            <span className="calendar-course-date">{formatCalendarDate(todo.createdAt)}</span>
           </div>
+          <div className="calendar-course-actions">
           <button
             type="button"
             className="button button-secondary button-small"
-            style={{ marginLeft: 8, minWidth: 80 }}
             onClick={() => handleOpenResultModal(todo.id)}
           >
             Résultat
@@ -249,27 +253,18 @@ const CalendarPage: React.FC = () => {
           <button
             type="button"
             className="button button-danger button-small"
-            style={{ marginLeft: 8, minWidth: 80 }}
             onClick={() => setConfirmDeleteId(todo.id)}
           >
             Supprimer
           </button>
-                {/* Dialog de confirmation suppression */}
-                <ConfirmDialog
-                  open={!!confirmDeleteId}
-                  title="Confirmer la suppression"
-                  message="Voulez-vous vraiment supprimer cette course du calendrier ? Cette action est irréversible."
-                  onConfirm={() => confirmDeleteId && handleDeleteCalendarTodo(confirmDeleteId)}
-                  onCancel={() => setConfirmDeleteId(null)}
-                />
           <button
             type="button"
             className="button button-primary button-small"
-            style={{ marginLeft: 8, minWidth: 80 }}
             onClick={() => setOpenTacticId(openTacticId === todo.id ? null : todo.id)}
           >
             Tactique
           </button>
+          </div>
         </div>
         {/* Affichage ODC déroulant */}
         {openTacticId === todo.id && odcContent}
@@ -282,21 +277,17 @@ const CalendarPage: React.FC = () => {
     if (!resultModalId) return null;
     const course = calendarTodos.find(t => t.id === resultModalId);
     return (
-      <div style={{
-        position: 'fixed', left: 0, top: 0, width: '100vw', height: '100vh',
-        background: 'rgba(0,0,0,0.25)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center'
-      }}>
-        <div style={{ background: '#fff', borderRadius: 12, boxShadow: '0 2px 16px #0002', padding: 32, minWidth: 400, maxWidth: '90vw' }}>
-          <h3>Résultat pour : {course?.title}</h3>
+      <div className="calendar-result-overlay">
+        <div className="calendar-result-dialog">
+          <h3 className="calendar-result-title">Résultat pour : {course?.title}</h3>
           <textarea
             value={resultInput}
             onChange={e => setResultInput(e.target.value)}
             rows={12}
-            className="input"
-            style={{ width: '100%', marginBottom: 16, fontFamily: 'inherit' }}
+            className="textarea calendar-result-input"
             placeholder={"Colle ici le résultat de la course (tableau)"}
           />
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+          <div className="calendar-result-actions">
             <button className="button" onClick={handleCloseResultModal} type="button">Annuler</button>
             <button className="button button-primary" onClick={handleSaveResult} type="button">Enregistrer</button>
           </div>
@@ -312,19 +303,24 @@ const CalendarPage: React.FC = () => {
   }
 
   return (
-    <div className="page-content" style={{ maxWidth: 1200, margin: '0 auto' }}>
+    <div className="page-stack">
       <PageTitle
         title="Calendrier"
         subtitle="Importe et visualise les étapes à venir ou passées. Ajoute-les à la todo pour planifier facilement."
       />
 
-
-
-      <Card title="Courses à venir et passées" style={{ marginTop: 32 }}>
+      <Card title="Courses à venir et passées" className="calendar-card">
         {calendarTodos.length === 0 && <div className="muted">Aucune étape ajoutée pour l'instant.</div>}
-        <div className="page-stack">
+        <div className="page-stack calendar-course-list">
           {calendarTodos.map(renderCalendarTodo)}
         </div>
+        <ConfirmDialog
+          open={!!confirmDeleteId}
+          title="Confirmer la suppression"
+          message="Voulez-vous vraiment supprimer cette course du calendrier ? Cette action est irréversible."
+          onConfirm={() => confirmDeleteId && handleDeleteCalendarTodo(confirmDeleteId)}
+          onCancel={() => setConfirmDeleteId(null)}
+        />
         {renderResultModal()}
       </Card>
     </div>

@@ -900,6 +900,11 @@ a {
   color: var(--primary);
 }
 
+.table-sortable-head {
+  cursor: pointer;
+  user-select: none;
+}
+
 /* Correction contraste label sur fond clair */
 .roster-import-form .field-label {
   color: #22304a;
@@ -1731,6 +1736,164 @@ select:focus {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
+}
+
+.calendar-card {
+  gap: 20px;
+}
+
+.calendar-course-list {
+  gap: 16px;
+}
+
+.calendar-course-item {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(180deg, rgba(16, 24, 37, 0.92) 0%, rgba(13, 20, 31, 0.96) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  border-left-width: 5px;
+}
+
+.calendar-course-item-done {
+  opacity: 0.68;
+}
+
+.calendar-course-item-neutral {
+  border-left-color: rgba(167, 182, 206, 0.4);
+}
+
+.calendar-course-item-warning {
+  border-left-color: #c79236;
+}
+
+.calendar-course-item-danger {
+  border-left-color: #d46a6a;
+}
+
+.calendar-course-item-success {
+  border-left-color: #4ca971;
+}
+
+.calendar-course-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.calendar-course-checkbox {
+  width: 18px;
+  height: 18px;
+  margin-top: 4px;
+  accent-color: var(--primary-strong);
+}
+
+.calendar-course-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.calendar-course-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.calendar-course-details {
+  margin-top: 4px;
+  color: var(--text-soft);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.calendar-course-date {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.calendar-course-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.calendar-course-actions .button {
+  min-width: 104px;
+  margin: 0;
+}
+
+.calendar-tactic-panel {
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(9, 15, 24, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.calendar-tactic-table-wrap {
+  overflow-x: auto;
+}
+
+.calendar-tactic-panel .race-setup-table thead th {
+  color: var(--text-soft) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.calendar-result-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(4, 9, 16, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.calendar-result-dialog {
+  width: min(860px, 100%);
+  padding: 30px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(22, 32, 47, 0.98) 0%, rgba(15, 22, 34, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow);
+}
+
+.calendar-result-title {
+  margin: 0 0 16px;
+  color: var(--text);
+}
+
+.calendar-result-input {
+  min-height: 290px;
+  margin-bottom: 18px;
+}
+
+.calendar-result-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .calendar-course-row {
+    flex-direction: column;
+  }
+
+  .calendar-course-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .calendar-course-actions .button {
+    flex: 1 1 140px;
+  }
 }
 
 .footer {
