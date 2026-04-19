@@ -4,6 +4,7 @@ import PageTitle from "../components/common/PageTitle";
 import TodoFilters from "../components/todo/TodoFilters";
 import TodoList from "../components/todo/TodoList";
 import { buildTodoList } from "../lib/todo/buildTodoList";
+import { loadLastRaceSnapshot, type RaceSnapshot } from "../lib/storage/lastRaceStorage";
 import { loadRaceSetup } from "../lib/storage/raceStorage";
 import { loadRidersFromStorage } from "../lib/storage/localStorage";
 import { loadClubSettings } from "../lib/storage/settingsStorage";
@@ -14,7 +15,6 @@ import {
   saveTodoStatuses,
 } from "../lib/storage/todoStorage";
 import { initialRiders } from "../store/initialState";
-import type { ParsedRace } from "../types/race";
 import type { Rider } from "../types/rider";
 import type { ClubSettings } from "../types/settings";
 import type {
@@ -23,34 +23,6 @@ import type {
   TodoItem,
   TodoStatus,
 } from "../types/todo";
-
-type RaceSnapshot = {
-  name: string;
-  raceType: "simple" | "etapes";
-  distanceKm: number;
-  detectedProfile: ParsedRace["detectedProfile"];
-};
-
-function loadLastRaceSnapshot(): RaceSnapshot | null {
-  try {
-    const raw = localStorage.getItem("cymanager:last-race");
-
-    if (!raw) {
-      return null;
-    }
-
-    const parsed = JSON.parse(raw);
-
-    if (!parsed || typeof parsed !== "object") {
-      return null;
-    }
-
-    return parsed as RaceSnapshot;
-  } catch (error) {
-    console.error("Erreur de lecture localStorage last race", error);
-    return null;
-  }
-}
 
 function buildRaceKey(race: RaceSnapshot | null): string {
   if (!race) {

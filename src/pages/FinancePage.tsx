@@ -104,6 +104,20 @@ function isEntryInSelectedWeek(
   return entryDate >= previousWeekStart && entryDate < currentWeekStart;
 }
 
+function getReconciliationLineClass(
+  severity: "info" | "warning" | "critical"
+): string {
+  if (severity === "critical") {
+    return "finance-reconciliation-line finance-reconciliation-line-critical";
+  }
+
+  if (severity === "warning") {
+    return "finance-reconciliation-line finance-reconciliation-line-warning";
+  }
+
+  return "finance-reconciliation-line finance-reconciliation-line-info";
+}
+
 export default function FinancePage() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [message, setMessage] = useState(
@@ -611,6 +625,57 @@ export default function FinancePage() {
           </div>
         </Card>
 
+        <Card title="Audit de réconciliation">
+          <div className="page-stack">
+            <div className="finance-reconciliation-stats">
+              <div className="finance-prize-preview">
+                <span className="muted">Source salariale active</span>
+                <strong>
+                  {snapshot.reconciliation.activeSalarySource === "parametree"
+                    ? "Valeur paramétrée"
+                    : "Effectif détecté"}
+                </strong>
+                <span className="muted">
+                  Écart paramètre / effectif : {formatCurrency(snapshot.reconciliation.salaryReferenceGap)}
+                </span>
+              </div>
+
+              <div className="finance-prize-preview">
+                <span className="muted">Écritures synchronisées</span>
+                <strong>{snapshot.reconciliation.syncEntryCount}</strong>
+                <span className="muted">
+                  {snapshot.reconciliation.racePrizeEntryCount} prime(s) course, {snapshot.reconciliation.facilityEntryCount} travaux
+                </span>
+              </div>
+
+              <div className="finance-prize-preview">
+                <span className="muted">Corrections auto appliquées</span>
+                <strong>{snapshot.reconciliation.correctionsApplied}</strong>
+                <span className="muted">
+                  Nettoyage et réalignement des écritures automatiques
+                </span>
+              </div>
+            </div>
+
+            {snapshot.reconciliation.issues.length === 0 ? (
+              <p className="muted">Aucune incohérence notable détectée.</p>
+            ) : (
+              <div className="dashboard-lines">
+                {snapshot.reconciliation.issues.map((issue) => (
+                  <p key={issue.code} className={getReconciliationLineClass(issue.severity)}>
+                    <strong>{issue.label}</strong>
+                    {typeof issue.amount === "number" ? (
+                      <span> {formatCurrency(issue.amount)}</span>
+                    ) : null}
+                  </p>
+                ))}
+              </div>
+            )}
+          </div>
+        </Card>
+      </div>
+
+      <div className="two-columns finance-layout">
         <Card title="Travaux détectés depuis Paramètres">
           {snapshot.facilityEntries.length === 0 ? (
             <p className="muted">Aucun coût automatique détecté pour le moment.</p>
@@ -624,6 +689,27 @@ export default function FinancePage() {
                     {entry.note ? <p className="muted">{entry.note}</p> : null}
                   </div>
                   <strong className="finance-negative">
+                    {formatCurrency(entry.amount)}
+                  </strong>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+
+        <Card title="Primes courses synchronisées">
+          {snapshot.racePrizeEntries.length === 0 ? (
+            <p className="muted">Aucune prime automatique détectée pour le moment.</p>
+          ) : (
+            <div className="finance-entry-list">
+              {snapshot.racePrizeEntries.slice(0, 6).map((entry) => (
+                <div key={entry.id} className="finance-entry-item">
+                  <div>
+                    <strong>{entry.label}</strong>
+                    <p className="muted">{formatDateLabel(entry.occurredAt)}</p>
+                    {entry.note ? <p className="muted">{entry.note}</p> : null}
+                  </div>
+                  <strong className="finance-positive">
                     {formatCurrency(entry.amount)}
                   </strong>
                 </div>

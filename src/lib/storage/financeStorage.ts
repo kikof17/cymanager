@@ -44,6 +44,50 @@ type CoursePrizeBreakdown = {
   amount: number;
 };
 
+type FinanceSyncMetrics = {
+  removedDuplicateSyncEntries: number;
+  removedSourceLessSyncEntries: number;
+  removedObsoleteFacilityEntries: number;
+  addedFacilityEntries: number;
+  removedObsoleteRacePrizeEntries: number;
+  addedRacePrizeEntries: number;
+  updatedRacePrizeEntries: number;
+};
+
+export type FinanceReconciliationSeverity = "info" | "warning" | "critical";
+
+export type FinanceReconciliationIssue = {
+  code: string;
+  severity: FinanceReconciliationSeverity;
+  label: string;
+  amount?: number;
+};
+
+export type FinanceReconciliationSummary = {
+  syncEntryCount: number;
+  manualEntryCount: number;
+  racePrizeEntryCount: number;
+  facilityEntryCount: number;
+  activeSalarySource: "parametree" | "effectif";
+  salaryReferenceGap: number;
+  reserveGap: number;
+  projectedReserveGap: number;
+  correctionsApplied: number;
+  issues: FinanceReconciliationIssue[];
+};
+
+function createEmptyFinanceSyncMetrics(): FinanceSyncMetrics {
+  return {
+    removedDuplicateSyncEntries: 0,
+    removedSourceLessSyncEntries: 0,
+    removedObsoleteFacilityEntries: 0,
+    addedFacilityEntries: 0,
+    removedObsoleteRacePrizeEntries: 0,
+    addedRacePrizeEntries: 0,
+    updatedRacePrizeEntries: 0,
+  };
+}
+
 function normalizeComparable(value: string): string {
   return value
     .normalize("NFD")
@@ -105,19 +149,33 @@ function normalizeEntry(value: unknown): FinanceEntry | null {
 
   const candidate = value as Partial<FinanceEntry>;
 
-  if (!candidate.id || !candidate.label || typeof candidate.amount !== "number") {
+  if (
+    typeof candidate.id !== "string" ||
+    typeof candidate.label !== "string" ||
+    typeof candidate.amount !== "number" ||
+    !Number.isFinite(candidate.amount)
+  ) {
     return null;
   }
 
+  const category: FinanceEntryCategory =
+    candidate.category === "facility-upgrade" ||
+    candidate.category === "race-prize" ||
+    candidate.category === "season-prize" ||
+    candidate.category === "transfer"
+      ? candidate.category
+      : "other";
+  const source = candidate.source === "sync" ? "sync" : "manual";
+
   return {
     id: candidate.id,
-    label: candidate.label,
+    label: candidate.label.trim(),
     amount: candidate.amount,
     occurredAt: toIsoDate(candidate.occurredAt ?? ""),
-    category: candidate.category ?? "other",
-    source: candidate.source ?? "manual",
-    note: candidate.note,
-    sourceKey: candidate.sourceKey,
+    category,
+    source,
+    note: typeof candidate.note === "string" ? candidate.note : undefined,
+    sourceKey: typeof candidate.sourceKey === "string" ? candidate.sourceKey : undefined,
   };
 }
 
@@ -273,12 +331,13 @@ function buildCoursePrizeEntries(settings: ClubSettings): CoursePrizeBreakdown[]
 function syncRacePrizeEntries(
   entries: FinanceEntry[],
   settings: ClubSettings
-): { entries: FinanceEntry[]; changed: boolean } {
+): { entries: FinanceEntry[]; changed: boolean; metrics: FinanceSyncMetrics } {
   const prizeEntries = buildCoursePrizeEntries(settings);
   const validSourceKeys = new Set(
     prizeEntries.map((entry) => buildRacePrizeSourceKey(entry))
   );
   let changed = false;
+  const metrics = createEmptyFinanceSyncMetrics();
 
   const nextEntries = entries.filter((entry) => {
     const shouldKeep = !(
@@ -290,6 +349,7 @@ function syncRacePrizeEntries(
 
     if (!shouldKeep) {
       changed = true;
+      metrics.removedObsoleteRacePrizeEntries += 1;
     }
 
     return shouldKeep;
@@ -325,6 +385,7 @@ function syncRacePrizeEntries(
       ) {
         nextEntries[existingIndex] = nextEntry;
         changed = true;
+        metrics.updatedRacePrizeEntries += 1;
       }
 
       return;
@@ -332,9 +393,74 @@ function syncRacePrizeEntries(
 
     nextEntries.push(nextEntry);
     changed = true;
+    metrics.addedRacePrizeEntries += 1;
   });
 
-  return { entries: nextEntries, changed };
+  return { entries: nextEntries, changed, metrics };
+}
+
+function dedupeSyncEntries(
+  entries: FinanceEntry[]
+): { entries: FinanceEntry[]; changed: boolean; metrics: FinanceSyncMetrics } {
+  const metrics = createEmptyFinanceSyncMetrics();
+  const seenSourceKeys = new Set<string>();
+  let changed = false;
+
+  const nextEntries = entries.filter((entry) => {
+    if (entry.source !== "sync") {
+      return true;
+    }
+
+    const sourceKey = entry.sourceKey?.trim();
+
+    if (!sourceKey) {
+      metrics.removedSourceLessSyncEntries += 1;
+      changed = true;
+      return false;
+    }
+
+    if (seenSourceKeys.has(sourceKey)) {
+      metrics.removedDuplicateSyncEntries += 1;
+      changed = true;
+      return false;
+    }
+
+    seenSourceKeys.add(sourceKey);
+    return true;
+  });
+
+  return { entries: nextEntries, changed, metrics };
+}
+
+function mergeSyncMetrics(
+  base: FinanceSyncMetrics,
+  addition: FinanceSyncMetrics
+): FinanceSyncMetrics {
+  return {
+    removedDuplicateSyncEntries:
+      base.removedDuplicateSyncEntries + addition.removedDuplicateSyncEntries,
+    removedSourceLessSyncEntries:
+      base.removedSourceLessSyncEntries + addition.removedSourceLessSyncEntries,
+    removedObsoleteFacilityEntries:
+      base.removedObsoleteFacilityEntries + addition.removedObsoleteFacilityEntries,
+    addedFacilityEntries: base.addedFacilityEntries + addition.addedFacilityEntries,
+    removedObsoleteRacePrizeEntries:
+      base.removedObsoleteRacePrizeEntries + addition.removedObsoleteRacePrizeEntries,
+    addedRacePrizeEntries: base.addedRacePrizeEntries + addition.addedRacePrizeEntries,
+    updatedRacePrizeEntries: base.updatedRacePrizeEntries + addition.updatedRacePrizeEntries,
+  };
+}
+
+function countCorrections(metrics: FinanceSyncMetrics): number {
+  return (
+    metrics.removedDuplicateSyncEntries +
+    metrics.removedSourceLessSyncEntries +
+    metrics.removedObsoleteFacilityEntries +
+    metrics.addedFacilityEntries +
+    metrics.removedObsoleteRacePrizeEntries +
+    metrics.addedRacePrizeEntries +
+    metrics.updatedRacePrizeEntries
+  );
 }
 
 export function loadFinanceState(
@@ -357,17 +483,19 @@ export function loadFinanceState(
 export function saveFinanceState(state: FinanceState): void {
   try {
     localStorage.setItem(FINANCE_STORAGE_KEY, JSON.stringify(state));
+    window.dispatchEvent(new Event("cymanager:finance-updated"));
   } catch (error) {
     console.error("Erreur d'écriture localStorage finance", error);
   }
 }
 
-export function syncFinanceWithSettings(
-  settings: ClubSettings,
-  legacyStartingBalance = DEFAULT_STARTING_BALANCE
-): FinanceState {
-  const state = loadFinanceState(legacyStartingBalance);
-  let changed = false;
+function reconcileFinanceState(
+  state: FinanceState,
+  settings: ClubSettings
+): { state: FinanceState; changed: boolean; metrics: FinanceSyncMetrics } {
+  const dedupedEntries = dedupeSyncEntries(state.entries);
+  let changed = dedupedEntries.changed;
+  let metrics = dedupedEntries.metrics;
   const validFacilitySourceKeys = new Set<string>();
 
   (Object.keys(settings.facilities) as FacilityKey[]).forEach((facilityKey) => {
@@ -391,7 +519,7 @@ export function syncFinanceWithSettings(
     );
   });
 
-  const nextEntries = state.entries.filter((entry) => {
+  const nextEntries = dedupedEntries.entries.filter((entry) => {
     const shouldKeep = !(
       entry.source === "sync" &&
       entry.category === "facility-upgrade" &&
@@ -401,6 +529,7 @@ export function syncFinanceWithSettings(
 
     if (!shouldKeep) {
       changed = true;
+      metrics.removedObsoleteFacilityEntries += 1;
     }
 
     return shouldKeep;
@@ -445,22 +574,40 @@ export function syncFinanceWithSettings(
       sourceKey,
     });
     changed = true;
+    metrics.addedFacilityEntries += 1;
   });
 
   const racePrizeSync = syncRacePrizeEntries(nextEntries, settings);
+  metrics = mergeSyncMetrics(metrics, racePrizeSync.metrics);
 
   if (!changed && !racePrizeSync.changed) {
+    return { state, changed: false, metrics };
+  }
+
+  return {
+    state: {
+      ...state,
+      entries: sortEntries(racePrizeSync.entries),
+      updatedAt: new Date().toISOString(),
+    },
+    changed: true,
+    metrics,
+  };
+}
+
+export function syncFinanceWithSettings(
+  settings: ClubSettings,
+  legacyStartingBalance = DEFAULT_STARTING_BALANCE
+): FinanceState {
+  const state = loadFinanceState(legacyStartingBalance);
+  const reconciliation = reconcileFinanceState(state, settings);
+
+  if (!reconciliation.changed) {
     return state;
   }
 
-  const nextState: FinanceState = {
-    ...state,
-    entries: sortEntries(racePrizeSync.entries),
-    updatedAt: new Date().toISOString(),
-  };
-
-  saveFinanceState(nextState);
-  return nextState;
+  saveFinanceState(reconciliation.state);
+  return reconciliation.state;
 }
 
 export function addManualFinanceEntry(
@@ -517,7 +664,14 @@ export function getFinanceSnapshot(settings: ClubSettings, riders: Rider[]) {
     settings.financialBalance > 0
       ? settings.financialBalance
       : DEFAULT_STARTING_BALANCE;
-  const state = syncFinanceWithSettings(settings, seededBalance);
+  const loadedState = loadFinanceState(seededBalance);
+  const reconciliationResult = reconcileFinanceState(loadedState, settings);
+  const state = reconciliationResult.state;
+
+  if (reconciliationResult.changed) {
+    saveFinanceState(state);
+  }
+
   const currentBalance =
     state.startingBalance +
     state.entries.reduce((sum, entry) => sum + entry.amount, 0);
@@ -573,6 +727,67 @@ export function getFinanceSnapshot(settings: ClubSettings, riders: Rider[]) {
   const facilityEntries = automaticEntries.filter(
     (entry) => entry.category === "facility-upgrade"
   );
+  const racePrizeEntries = automaticEntries.filter(
+    (entry) => entry.category === "race-prize"
+  );
+  const salaryReferenceGap = weeklySalaryExpense - automaticWeeklySalaryExpense;
+  const reserveGap = currentBalance - BEGINNER_GUIDE_SAFETY_RESERVE_TARGET;
+  const projectedReserveGap =
+    projectedBalanceAfterThreeWeeks - BEGINNER_GUIDE_SAFETY_RESERVE_TARGET;
+  const correctionsApplied = countCorrections(reconciliationResult.metrics);
+  const reconciliationIssues: FinanceReconciliationIssue[] = [];
+
+  if (settings.manualWeeklySalaryExpense !== null && salaryReferenceGap !== 0) {
+    reconciliationIssues.push({
+      code: "salary-reference-gap",
+      severity: Math.abs(salaryReferenceGap) >= 5000 ? "warning" : "info",
+      label: "La masse salariale paramétrée diffère de l'effectif détecté.",
+      amount: salaryReferenceGap,
+    });
+  }
+
+  if (reserveGap < 0) {
+    reconciliationIssues.push({
+      code: "reserve-current-gap",
+      severity: "warning",
+      label: "Le solde actuel est sous la réserve de sécurité visée.",
+      amount: reserveGap,
+    });
+  }
+
+  if (projectedReserveGap < 0) {
+    reconciliationIssues.push({
+      code: "reserve-projected-gap",
+      severity: projectedReserveGap <= -100000 ? "critical" : "warning",
+      label: "La projection à 3 semaines passe sous la réserve de sécurité.",
+      amount: projectedReserveGap,
+    });
+  }
+
+  if (correctionsApplied > 0) {
+    reconciliationIssues.push({
+      code: "sync-corrections",
+      severity: "info",
+      label: "Des écritures automatiques ont été réconciliées.",
+      amount: correctionsApplied,
+    });
+  }
+
+  const reconciliation: FinanceReconciliationSummary = {
+    syncEntryCount: automaticEntries.length,
+    manualEntryCount: state.entries.length - automaticEntries.length,
+    racePrizeEntryCount: racePrizeEntries.length,
+    facilityEntryCount: facilityEntries.length,
+    activeSalarySource:
+      settings.manualWeeklySalaryExpense !== null && settings.manualWeeklySalaryExpense >= 0
+        ? "parametree"
+        : "effectif",
+    salaryReferenceGap,
+    reserveGap,
+    projectedReserveGap,
+    correctionsApplied,
+    issues: reconciliationIssues,
+  };
 
   return {
     state,
@@ -588,6 +803,8 @@ export function getFinanceSnapshot(settings: ClubSettings, riders: Rider[]) {
     projectedBalanceAfterThreeWeeks,
     automaticEntries,
     facilityEntries,
+    racePrizeEntries,
+    reconciliation,
     prizeTables: PRIZE_REFERENCE_TABLES,
   };
 }
