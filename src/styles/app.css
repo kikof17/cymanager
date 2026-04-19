@@ -610,6 +610,42 @@ select, select option {
   margin-bottom: 12px;
 }
 
+.transfer-decision-warning-line {
+  margin: 0 -8px;
+  padding: 8px;
+  border-left: 4px solid #d76b5f;
+  border-radius: 8px;
+  background: rgba(215, 107, 95, 0.14);
+  color: #ffd6d1;
+}
+
+.transfer-salary-overrun-low {
+  margin: 0 -8px;
+  padding: 8px;
+  border-left: 4px solid #d8a458;
+  border-radius: 8px;
+  background: rgba(216, 164, 88, 0.14);
+  color: #f7dfb6;
+}
+
+.transfer-salary-overrun-medium {
+  margin: 0 -8px;
+  padding: 8px;
+  border-left: 4px solid #d76b5f;
+  border-radius: 8px;
+  background: rgba(215, 107, 95, 0.16);
+  color: #ffd6d1;
+}
+
+.transfer-salary-overrun-high {
+  margin: 0 -8px;
+  padding: 8px;
+  border-left: 4px solid #ff5f73;
+  border-radius: 8px;
+  background: rgba(255, 95, 115, 0.18);
+  color: #ffd9df;
+}
+
 .transfer-selection-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }

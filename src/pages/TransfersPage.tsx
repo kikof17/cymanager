@@ -173,6 +173,24 @@ function getPriorityGradeRank(score: number, canRecruit: boolean): number {
   return rankByGrade[grade] ?? 0;
 }
 
+function getSalaryOverrunSeverityClass(overrun: number, salaryCap: number): string {
+  if (overrun <= 0 || salaryCap <= 0) {
+    return "";
+  }
+
+  const overrunRatio = overrun / salaryCap;
+
+  if (overrunRatio <= 0.03) {
+    return "transfer-salary-overrun-low";
+  }
+
+  if (overrunRatio <= 0.08) {
+    return "transfer-salary-overrun-medium";
+  }
+
+  return "transfer-salary-overrun-high";
+}
+
 const FINANCIAL_PLANNING_BY_TOLERANCE: Record<
   ClubSettings["salaryTolerance"],
   {
@@ -576,18 +594,26 @@ export default function TransfersPage() {
   );
 
   const decisionSalarySummary = useMemo<DecisionSalarySummary>(() => {
-    const projectedSalaryDelta = selectedAnalysis?.rider.salaryWeekly ?? 0;
+    const projectedSalaryDelta = shortlistedAnalyses.reduce(
+      (sum, analysis) => sum + analysis.rider.salaryWeekly,
+      0
+    );
+    const currentWeeklySalaryExpense = financeSnapshot.weeklySalaryExpense;
     const projectedWeeklySalaryExpense =
-      financeSnapshot.weeklySalaryExpense + projectedSalaryDelta;
+      currentWeeklySalaryExpense + projectedSalaryDelta;
 
     return {
-      currentWeeklySalaryExpense: financeSnapshot.weeklySalaryExpense,
+      currentWeeklySalaryExpense,
       projectedWeeklySalaryExpense,
       projectedSalaryDelta,
       projectedSalaryHeadroom:
         decisionBudgetGuidance.salaryCap - projectedWeeklySalaryExpense,
     };
-  }, [decisionBudgetGuidance.salaryCap, financeSnapshot.weeklySalaryExpense, selectedAnalysis]);
+  }, [
+    decisionBudgetGuidance.salaryCap,
+    financeSnapshot.weeklySalaryExpense,
+    shortlistedAnalyses,
+  ]);
 
   function handleAnalyze() {
     const result = parseTransferMarketData(marketRidersCsv, marketAuctionsCsv);
@@ -848,8 +874,12 @@ export default function TransfersPage() {
             <p><strong>Masse salariale hebdo actuelle :</strong> {formatCurrency(decisionSalarySummary.currentWeeklySalaryExpense)}</p>
             <p><strong>Après recrutement sélectionné :</strong> {formatCurrency(decisionSalarySummary.projectedWeeklySalaryExpense)}</p>
             <p><strong>Impact salaire candidat :</strong> {formatCurrency(decisionSalarySummary.projectedSalaryDelta)}</p>
-            <p><strong>Plafond masse salariale conseillé :</strong> {formatCurrency(decisionBudgetGuidance.salaryCap)}</p>
-            <p><strong>{decisionSalarySummary.projectedSalaryHeadroom >= 0 ? "Marge salariale après recrutement" : "Dépassement salarial après recrutement"} :</strong> {formatCurrency(Math.abs(decisionSalarySummary.projectedSalaryHeadroom))}</p>
+            <p className={decisionSalarySummary.projectedWeeklySalaryExpense > decisionBudgetGuidance.salaryCap ? "transfer-decision-warning-line" : undefined}>
+              <strong>Plafond masse salariale conseillé :</strong> {formatCurrency(decisionBudgetGuidance.salaryCap)}
+            </p>
+            <p className={decisionSalarySummary.projectedSalaryHeadroom < 0 ? getSalaryOverrunSeverityClass(Math.abs(decisionSalarySummary.projectedSalaryHeadroom), decisionBudgetGuidance.salaryCap) : undefined}>
+              <strong>{decisionSalarySummary.projectedSalaryHeadroom >= 0 ? "Marge salariale après recrutement" : "Dépassement salarial après recrutement"} :</strong> {formatCurrency(Math.abs(decisionSalarySummary.projectedSalaryHeadroom))}
+            </p>
             <p><strong>Charge fixe hebdo :</strong> {formatCurrency(financeSnapshot.weeklyFixedCosts)}</p>
             <p><strong>Travaux planifiés à provisionner :</strong> {formatCurrency(financeSnapshot.plannedFacilityUpgradeCost)}</p>
             <p><strong>Projection trésorerie à 3 sem. :</strong> {formatCurrency(financeSnapshot.projectedBalanceAfterThreeWeeks)}</p>
