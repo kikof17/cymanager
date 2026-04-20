@@ -414,6 +414,36 @@ function getEffectiveTransferAmount(
     : analysis.candidate.auction.currentBid;
 }
 
+function normalizeTransferIdentity(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function buildTransferCandidateIdentities(candidate: TransferMarketCandidate): string[] {
+  const identities = new Set<string>();
+
+  if (candidate.id) {
+    identities.add(candidate.id);
+  }
+
+  const riderName = normalizeTransferIdentity(candidate.rider.name);
+  const displayName = normalizeTransferIdentity(candidate.auction.displayName);
+
+  if (riderName) {
+    identities.add(`rider:${riderName}`);
+  }
+
+  if (displayName) {
+    identities.add(`auction:${displayName}`);
+  }
+
+  return [...identities];
+}
+
 function mergeTransferCandidates(
   currentCandidates: TransferMarketCandidate[],
   incomingCandidates: TransferMarketCandidate[]
@@ -422,28 +452,43 @@ function mergeTransferCandidates(
   addedCount: number;
   updatedCount: number;
 } {
-  const candidateById = new Map(
-    currentCandidates.map((candidate) => [candidate.id, candidate])
-  );
+  const mergedCandidates = [...currentCandidates];
+  const candidateIndexByIdentity = new Map<string, number>();
+
+  mergedCandidates.forEach((candidate, index) => {
+    buildTransferCandidateIdentities(candidate).forEach((identity) => {
+      candidateIndexByIdentity.set(identity, index);
+    });
+  });
+
   let addedCount = 0;
   let updatedCount = 0;
 
   incomingCandidates.forEach((candidate) => {
-    if (candidateById.has(candidate.id)) {
+    const matchingIndex = buildTransferCandidateIdentities(candidate)
+      .map((identity) => candidateIndexByIdentity.get(identity))
+      .find((index): index is number => index !== undefined);
+
+    if (matchingIndex !== undefined) {
       updatedCount += 1;
+      mergedCandidates[matchingIndex] = candidate;
+
+      buildTransferCandidateIdentities(candidate).forEach((identity) => {
+        candidateIndexByIdentity.set(identity, matchingIndex);
+      });
     } else {
       addedCount += 1;
-    }
+      const nextIndex = mergedCandidates.length;
 
-    candidateById.set(candidate.id, candidate);
+      mergedCandidates.push(candidate);
+      buildTransferCandidateIdentities(candidate).forEach((identity) => {
+        candidateIndexByIdentity.set(identity, nextIndex);
+      });
+    }
   });
 
-  const preservedCandidates = currentCandidates.filter(
-    (candidate) => !incomingCandidates.some((incoming) => incoming.id === candidate.id)
-  );
-
   return {
-    mergedCandidates: [...preservedCandidates, ...incomingCandidates],
+    mergedCandidates,
     addedCount,
     updatedCount,
   };
