@@ -478,11 +478,11 @@ export default function FinancePage() {
                 <input
                   id="finance-entry-amount"
                   className="input"
-                  type="number"
-                  min={0}
-                  step={1000}
+                  type="text"
+                  inputMode="numeric"
                   value={entryAmount}
                   onChange={(event) => setEntryAmount(event.target.value)}
+                  placeholder="Ex. 90979"
                 />
               </div>
 
