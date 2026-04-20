@@ -768,26 +768,6 @@ export default function FinancePage() {
             </div>
           )}
         </Card>
-
-        <Card title="Primes courses synchronisées">
-          {snapshot.racePrizeEntries.length === 0 ? (
-            <p className="muted">Aucune prime automatique détectée pour le moment.</p>
-          ) : (
-            <div className="finance-entry-list finance-entry-list-compact">
-              {snapshot.racePrizeEntries.slice(0, 6).map((entry) => (
-                <div key={entry.id} className="finance-entry-item finance-entry-item-compact">
-                  <div className="finance-entry-copy finance-entry-copy-compact">
-                    <strong>{entry.label}</strong>
-                    {entry.note ? <p className="muted">{entry.note}</p> : null}
-                  </div>
-                  <strong className="finance-positive">
-                    {formatCurrency(entry.amount)}
-                  </strong>
-                </div>
-              ))}
-            </div>
-          )}
-        </Card>
       </div>
 
       <Card title="Historique des écritures">
