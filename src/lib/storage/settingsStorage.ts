@@ -124,6 +124,39 @@ function migrateLegacyFacilities(settings: ClubSettings): ClubSettings {
   return nextSettings;
 }
 
+function normalizeFacilityLaunchTransitions(
+  previousSettings: ClubSettings,
+  nextSettings: ClubSettings
+): ClubSettings {
+  const normalizedSettings: ClubSettings = {
+    ...nextSettings,
+    facilities: {
+      ...nextSettings.facilities,
+    },
+  };
+
+  (Object.keys(normalizedSettings.facilities) as Array<keyof ClubSettings["facilities"]>).forEach(
+    (facilityKey) => {
+      const previousFacility = previousSettings.facilities[facilityKey];
+      const nextFacility = normalizedSettings.facilities[facilityKey];
+      const startsNow = !previousFacility.upgradeInProgress && nextFacility.upgradeInProgress;
+      const hasValidTarget =
+        nextFacility.targetLevel !== null && nextFacility.targetLevel > nextFacility.level;
+      const keptSameLaunchDate =
+        nextFacility.upgradeStartedAt === previousFacility.upgradeStartedAt;
+
+      if (startsNow && hasValidTarget && keptSameLaunchDate) {
+        normalizedSettings.facilities[facilityKey] = {
+          ...nextFacility,
+          upgradeStartedAt: nowIsoLocal(),
+        };
+      }
+    }
+  );
+
+  return normalizedSettings;
+}
+
 export function loadClubSettings(): ClubSettings {
   try {
     const raw = localStorage.getItem(CLUB_SETTINGS_KEY);
@@ -184,10 +217,11 @@ export function loadClubSettings(): ClubSettings {
 
 export function saveClubSettings(settings: ClubSettings): void {
   try {
-    const normalizedSettings: ClubSettings = {
+    const previousSettings = loadClubSettings();
+    const normalizedSettings: ClubSettings = normalizeFacilityLaunchTransitions(previousSettings, {
       ...settings,
       financialBalance: defaultClubSettings.financialBalance,
-    };
+    });
 
     localStorage.setItem(CLUB_SETTINGS_KEY, JSON.stringify(normalizedSettings));
     syncFinanceWithSettings(
