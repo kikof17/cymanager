@@ -1456,6 +1456,10 @@ a {
   gap: 12px;
 }
 
+.finance-entry-list-compact {
+  gap: 8px;
+}
+
 .finance-entry-item {
   display: flex;
   justify-content: space-between;
@@ -1464,6 +1468,26 @@ a {
   border: 1px solid var(--border);
   border-radius: 14px;
   background: var(--surface-soft);
+}
+
+.finance-entry-item-compact {
+  padding: 9px 14px;
+  align-items: center;
+}
+
+.finance-entry-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.finance-entry-copy-compact {
+  gap: 3px;
+}
+
+.finance-entry-copy p,
+.finance-entry-copy strong {
+  margin: 0;
 }
 
 .finance-badge {
