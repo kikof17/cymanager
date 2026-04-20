@@ -25,6 +25,30 @@ type AuctionCsvRow = {
   highestBidder: string;
 };
 
+function getRowValue(row: CsvRow, ...candidateHeaders: string[]): string {
+  for (const candidateHeader of candidateHeaders) {
+    if (candidateHeader in row) {
+      return row[candidateHeader] ?? "";
+    }
+  }
+
+  const normalizedEntries = Object.entries(row).map(([key, value]) => ({
+    normalizedKey: normalizeComparable(key),
+    value,
+  }));
+
+  for (const candidateHeader of candidateHeaders) {
+    const normalizedCandidate = normalizeComparable(candidateHeader);
+    const match = normalizedEntries.find((entry) => entry.normalizedKey === normalizedCandidate);
+
+    if (match) {
+      return match.value;
+    }
+  }
+
+  return "";
+}
+
 function normalizeComparable(value: string): string {
   return value
     .normalize("NFD")
@@ -142,54 +166,60 @@ function normalizeCategory(value: string): RiderCategory {
 }
 
 function buildRiderFromCsvRow(row: CsvRow): Rider {
-  const age = parseLongAge(row.Age ?? "");
-  const name = (row.Nom ?? "").trim();
+  const age = parseLongAge(getRowValue(row, "Age", "Âge"));
+  const name = getRowValue(row, "Nom").trim();
 
   return {
     id: slugifyName(name),
     name,
-    currentTeam: (row.Equipe ?? "").trim(),
-    value: parseFrenchInteger(row.Valeur ?? "0"),
-    salaryWeekly: parseFrenchInteger(row.Salaire_par_semaine ?? "0"),
-    nationality: (row["Nationalité"] ?? "").trim(),
+    currentTeam: getRowValue(row, "Equipe", "Équipe").trim(),
+    value: parseFrenchInteger(getRowValue(row, "Valeur") || "0"),
+    salaryWeekly: parseFrenchInteger(
+      getRowValue(row, "Salaire par semaine", "Salaire_par_semaine") || "0"
+    ),
+    nationality: getRowValue(row, "Nationalité", "Nationalite").trim(),
     ageYears: age.ageYears,
     ageWeeks: age.ageWeeks,
-    form: parseFrenchInteger(row.Forme ?? "0"),
-    injury: (row.Blessure ?? "").trim(),
-    category: normalizeCategory(row["Catégorie"] ?? "Pro"),
-    endurance: parseFrenchInteger(row.Endurance ?? "0"),
-    resistance: parseFrenchInteger(row["Résistance"] ?? "0"),
-    recovery: parseFrenchInteger(row["Récupération"] ?? "0"),
-    flat: parseFrenchInteger(row.Plaine ?? "0"),
-    hill: parseFrenchInteger(row.Vallon ?? "0"),
-    sprint: parseFrenchInteger(row.Sprint ?? "0"),
-    cobble: parseFrenchInteger(row.Pavé ?? "0"),
-    agility: parseFrenchInteger(row["Agilité"] ?? "0"),
-    breakaway: parseFrenchInteger(row.Baroudeur ?? "0"),
-    mountain: parseFrenchInteger(row.Montagne ?? "0"),
-    downhill: parseFrenchInteger(row.Descente ?? "0"),
-    timeTrial: parseFrenchInteger(row["Contre-la-montre"] ?? "0"),
-    stageRace: parseFrenchInteger(row["Course_à_étapes"] ?? "0"),
-    experience: parseFrenchInteger(row["Expérience"] ?? "0"),
-    total: parseFrenchInteger(row.Total ?? "0"),
+    form: parseFrenchInteger(getRowValue(row, "Forme") || "0"),
+    injury: getRowValue(row, "Blessure").trim(),
+    category: normalizeCategory(getRowValue(row, "Catégorie", "Categorie") || "Pro"),
+    endurance: parseFrenchInteger(getRowValue(row, "Endurance") || "0"),
+    resistance: parseFrenchInteger(getRowValue(row, "Résistance", "Resistance") || "0"),
+    recovery: parseFrenchInteger(getRowValue(row, "Récupération", "Recuperation") || "0"),
+    flat: parseFrenchInteger(getRowValue(row, "Plaine") || "0"),
+    hill: parseFrenchInteger(getRowValue(row, "Vallon") || "0"),
+    sprint: parseFrenchInteger(getRowValue(row, "Sprint") || "0"),
+    cobble: parseFrenchInteger(getRowValue(row, "Pavé", "Pave") || "0"),
+    agility: parseFrenchInteger(getRowValue(row, "Agilité", "Agilite") || "0"),
+    breakaway: parseFrenchInteger(getRowValue(row, "Baroudeur") || "0"),
+    mountain: parseFrenchInteger(getRowValue(row, "Montagne") || "0"),
+    downhill: parseFrenchInteger(getRowValue(row, "Descente") || "0"),
+    timeTrial: parseFrenchInteger(
+      getRowValue(row, "Contre-la-montre", "Contre la montre") || "0"
+    ),
+    stageRace: parseFrenchInteger(
+      getRowValue(row, "Course à étapes", "Course_a_etapes", "Course a etapes") || "0"
+    ),
+    experience: parseFrenchInteger(getRowValue(row, "Expérience", "Experience") || "0"),
+    total: parseFrenchInteger(getRowValue(row, "Total") || "0"),
     updatedAt: new Date().toISOString(),
   };
 }
 
 function buildAuctionRow(row: CsvRow): AuctionCsvRow {
-  const age = parseShortAge(row["Âge"] ?? "");
+  const age = parseShortAge(getRowValue(row, "Âge", "Age"));
 
   return {
-    deadlineLabel: (row["Échéance"] ?? "").trim(),
-    displayName: (row.Nom ?? "").trim(),
-    seller: (row.Vendeur ?? "").trim(),
+    deadlineLabel: getRowValue(row, "Échéance", "Echéance").trim(),
+    displayName: getRowValue(row, "Nom").trim(),
+    seller: getRowValue(row, "Vendeur").trim(),
     ageYears: age.ageYears,
     ageWeeks: age.ageWeeks,
-    form: parseFrenchInteger(row.Forme ?? "0"),
-    value: parseFrenchInteger(row.Valeur ?? "0"),
-    salaryWeekly: parseFrenchInteger(row.Salaire ?? "0"),
-    currentBid: parseFrenchInteger(row["Enchère"] ?? "0"),
-    highestBidder: (row.Acheteur ?? "").trim(),
+    form: parseFrenchInteger(getRowValue(row, "Forme") || "0"),
+    value: parseFrenchInteger(getRowValue(row, "Valeur") || "0"),
+    salaryWeekly: parseFrenchInteger(getRowValue(row, "Salaire") || "0"),
+    currentBid: parseFrenchInteger(getRowValue(row, "Enchère", "Enchere") || "0"),
+    highestBidder: getRowValue(row, "Acheteur").trim(),
   };
 }
 
