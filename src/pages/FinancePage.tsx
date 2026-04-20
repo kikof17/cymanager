@@ -61,6 +61,23 @@ function formatDateLabel(value: string): string {
   }).format(date);
 }
 
+function formatDateTimeLabel(value: string | null): string {
+  if (!value) {
+    return "Pas encore traitée";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("fr-FR", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
+}
+
 function getDefaultEntryDate(): string {
   return new Date().toISOString().slice(0, 10);
 }
@@ -121,7 +138,7 @@ function getReconciliationLineClass(
 export default function FinancePage() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [message, setMessage] = useState(
-    "Le solde est calculé à partir du capital initial, des écritures manuelles et des travaux détectés dans Paramètres."
+    "Le solde combine les écritures manuelles, les travaux détectés et les débits automatiques du lundi pour salaires et entretien."
   );
   const [entryType, setEntryType] = useState<"income" | "expense">("expense");
   const [entryLabel, setEntryLabel] = useState("");
@@ -356,7 +373,7 @@ export default function FinancePage() {
     <div className="page-stack">
       <PageTitle
         title="Finance"
-        subtitle="Suivi de la trésorerie du club, des dépenses d'installation et des revenus saisis à partir des barèmes FAQ."
+        subtitle="Suivi de la trésorerie du club, avec débits automatiques du lundi et revenus sponsors/boutique saisis manuellement."
       />
 
       <div className="message-box">
@@ -599,6 +616,10 @@ export default function FinancePage() {
         <Card title="Charges automatiques et projection">
           <div className="dashboard-lines">
             <p>
+              <strong>Dernier lundi traité automatiquement :</strong>{" "}
+              {formatDateTimeLabel(snapshot.weeklyEconomyProcessedThrough)}
+            </p>
+            <p>
               <strong>Masse salariale hebdomadaire :</strong>{" "}
               {formatCurrency(snapshot.weeklySalaryExpense)}
             </p>
@@ -621,6 +642,10 @@ export default function FinancePage() {
             <p>
               <strong>Réserve de sécurité visée :</strong>{" "}
               {formatCurrency(BEGINNER_GUIDE_SAFETY_RESERVE_TARGET)}
+            </p>
+            <p>
+              <strong>Revenus sponsors / boutique :</strong>{" "}
+              à saisir manuellement chaque lundi.
             </p>
           </div>
         </Card>
@@ -676,6 +701,53 @@ export default function FinancePage() {
       </div>
 
       <div className="two-columns finance-layout">
+        <Card title="Mise à jour économique du lundi">
+          <div className="page-stack">
+            <div className="finance-reconciliation-stats">
+              <div className="finance-prize-preview">
+                <span className="muted">Débits auto du lundi</span>
+                <strong>{snapshot.weeklyEconomyEntries.length}</strong>
+                <span className="muted">Salaires + entretien générés automatiquement</span>
+              </div>
+
+              <div className="finance-prize-preview">
+                <span className="muted">Salaire pris en compte</span>
+                <strong>{formatCurrency(snapshot.weeklySalaryExpense)}</strong>
+                <span className="muted">Prélevé chaque lundi</span>
+              </div>
+
+              <div className="finance-prize-preview">
+                <span className="muted">Entretien pris en compte</span>
+                <strong>{formatCurrency(snapshot.weeklyFacilityMaintenance)}</strong>
+                <span className="muted">Prélevé chaque lundi</span>
+              </div>
+            </div>
+
+            <p className="muted">
+              Les salaires des coureurs et l'entretien des installations sont ajoutés automatiquement chaque lundi. Les revenus sponsors et boutique restent à saisir manuellement via les opérations ci-dessus.
+            </p>
+
+            {snapshot.weeklyEconomyEntries.length === 0 ? (
+              <p className="muted">Aucune écriture hebdomadaire automatique enregistrée pour le moment.</p>
+            ) : (
+              <div className="finance-entry-list">
+                {snapshot.weeklyEconomyEntries.slice(0, 6).map((entry) => (
+                  <div key={entry.id} className="finance-entry-item">
+                    <div>
+                      <strong>{entry.label}</strong>
+                      <p className="muted">{formatDateLabel(entry.occurredAt)}</p>
+                      {entry.note ? <p className="muted">{entry.note}</p> : null}
+                    </div>
+                    <strong className="finance-negative">
+                      {formatCurrency(entry.amount)}
+                    </strong>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </Card>
+
         <Card title="Travaux détectés depuis Paramètres">
           {snapshot.facilityEntries.length === 0 ? (
             <p className="muted">Aucun coût automatique détecté pour le moment.</p>
@@ -846,9 +918,11 @@ export default function FinancePage() {
                         </button>
                       ) : (
                         <span className="muted">
-                          {entry.category === "race-prize"
-                            ? "Depuis les résultats"
-                            : "Depuis Paramètres"}
+                          {entry.sourceKey?.startsWith("weekly-")
+                            ? "Depuis la mise à jour du lundi"
+                            : entry.category === "race-prize"
+                              ? "Depuis les résultats"
+                              : "Depuis Paramètres"}
                         </span>
                       )}
                     </td>

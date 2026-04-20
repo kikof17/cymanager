@@ -22,6 +22,7 @@ export type FinanceState = {
   startingBalance: number;
   entries: FinanceEntry[];
   updatedAt: string;
+  weeklyEconomyProcessedThrough: string | null;
 };
 
 export type PrizeReferenceRow = {

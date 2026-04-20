@@ -6,6 +6,7 @@ import {
 } from "../finance/faqFinance";
 import { getProRacePrize } from "../finance/racePrizeTable";
 import { getAllResultsFromStorage } from "../scoring/extractPoints";
+import { loadRidersFromStorage } from "./localStorage";
 import { loadManualTodos } from "./todoStorage";
 import type {
   FinanceEntry,
@@ -52,6 +53,8 @@ type FinanceSyncMetrics = {
   removedObsoleteRacePrizeEntries: number;
   addedRacePrizeEntries: number;
   updatedRacePrizeEntries: number;
+  addedWeeklySalaryEntries: number;
+  addedWeeklyMaintenanceEntries: number;
 };
 
 export type FinanceReconciliationSeverity = "info" | "warning" | "critical";
@@ -85,7 +88,53 @@ function createEmptyFinanceSyncMetrics(): FinanceSyncMetrics {
     removedObsoleteRacePrizeEntries: 0,
     addedRacePrizeEntries: 0,
     updatedRacePrizeEntries: 0,
+    addedWeeklySalaryEntries: 0,
+    addedWeeklyMaintenanceEntries: 0,
   };
+}
+
+function getStartOfWeek(value: Date): Date {
+  const date = new Date(value);
+  const day = date.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+
+  date.setHours(0, 0, 0, 0);
+  date.setDate(date.getDate() + diff);
+
+  return date;
+}
+
+function addDays(value: Date, days: number): Date {
+  const date = new Date(value);
+  date.setDate(date.getDate() + days);
+  return date;
+}
+
+function formatWeekSourceDate(value: Date): string {
+  return value.toISOString().slice(0, 10);
+}
+
+function getWeeklySalaryExpense(settings: ClubSettings, riders: Rider[]): number {
+  const automaticWeeklySalaryExpense = riders.reduce(
+    (sum, rider) => sum + rider.salaryWeekly,
+    0
+  );
+
+  return settings.manualWeeklySalaryExpense !== null && settings.manualWeeklySalaryExpense >= 0
+    ? settings.manualWeeklySalaryExpense
+    : automaticWeeklySalaryExpense;
+}
+
+function getWeeklyFacilityMaintenance(settings: ClubSettings): number {
+  return (Object.keys(settings.facilities) as FacilityKey[]).reduce(
+    (sum, facilityKey) =>
+      sum +
+      getFacilityWeeklyMaintenance(
+        facilityKey,
+        settings.facilities[facilityKey].level
+      ),
+    0
+  );
 }
 
 function normalizeComparable(value: string): string {
@@ -188,6 +237,7 @@ function normalizeFinanceState(
       startingBalance: legacyStartingBalance,
       entries: [],
       updatedAt: new Date().toISOString(),
+      weeklyEconomyProcessedThrough: null,
     };
   }
 
@@ -202,6 +252,11 @@ function normalizeFinanceState(
     startingBalance: legacyStartingBalance,
     entries: sortEntries(entries),
     updatedAt: toIsoDate(candidate.updatedAt ?? ""),
+    weeklyEconomyProcessedThrough:
+      typeof candidate.weeklyEconomyProcessedThrough === "string" &&
+      candidate.weeklyEconomyProcessedThrough.trim().length > 0
+        ? toIsoDate(candidate.weeklyEconomyProcessedThrough)
+        : null,
   };
 }
 
@@ -448,6 +503,10 @@ function mergeSyncMetrics(
       base.removedObsoleteRacePrizeEntries + addition.removedObsoleteRacePrizeEntries,
     addedRacePrizeEntries: base.addedRacePrizeEntries + addition.addedRacePrizeEntries,
     updatedRacePrizeEntries: base.updatedRacePrizeEntries + addition.updatedRacePrizeEntries,
+    addedWeeklySalaryEntries:
+      base.addedWeeklySalaryEntries + addition.addedWeeklySalaryEntries,
+    addedWeeklyMaintenanceEntries:
+      base.addedWeeklyMaintenanceEntries + addition.addedWeeklyMaintenanceEntries,
   };
 }
 
@@ -459,8 +518,100 @@ function countCorrections(metrics: FinanceSyncMetrics): number {
     metrics.addedFacilityEntries +
     metrics.removedObsoleteRacePrizeEntries +
     metrics.addedRacePrizeEntries +
-    metrics.updatedRacePrizeEntries
+    metrics.updatedRacePrizeEntries +
+    metrics.addedWeeklySalaryEntries +
+    metrics.addedWeeklyMaintenanceEntries
   );
+}
+
+function syncWeeklyEconomyEntries(
+  state: FinanceState,
+  settings: ClubSettings,
+  riders: Rider[]
+): { state: FinanceState; changed: boolean; metrics: FinanceSyncMetrics } {
+  const currentWeekStart = getStartOfWeek(new Date());
+  const lastProcessedWeek = state.weeklyEconomyProcessedThrough
+    ? getStartOfWeek(new Date(state.weeklyEconomyProcessedThrough))
+    : null;
+  const firstWeekToProcess = lastProcessedWeek
+    ? addDays(lastProcessedWeek, 7)
+    : currentWeekStart;
+
+  if (
+    firstWeekToProcess.getTime() > currentWeekStart.getTime() &&
+    state.weeklyEconomyProcessedThrough
+  ) {
+    return { state, changed: false, metrics: createEmptyFinanceSyncMetrics() };
+  }
+
+  const weeklySalaryExpense = getWeeklySalaryExpense(settings, riders);
+  const weeklyFacilityMaintenance = getWeeklyFacilityMaintenance(settings);
+  const metrics = createEmptyFinanceSyncMetrics();
+  const nextEntries = [...state.entries];
+  let changed = false;
+
+  for (
+    let weekDate = new Date(firstWeekToProcess);
+    weekDate.getTime() <= currentWeekStart.getTime();
+    weekDate = addDays(weekDate, 7)
+  ) {
+    const sourceDate = formatWeekSourceDate(weekDate);
+
+    if (weeklySalaryExpense > 0) {
+      const salarySourceKey = `weekly-salary:${sourceDate}`;
+
+      if (!nextEntries.some((entry) => entry.sourceKey === salarySourceKey)) {
+        nextEntries.push({
+          id: createId("weekly-salary"),
+          label: `Salaires hebdomadaires - ${sourceDate}`,
+          amount: -weeklySalaryExpense,
+          occurredAt: weekDate.toISOString(),
+          category: "other",
+          source: "sync",
+          note: "Débit automatique du lundi pour la masse salariale.",
+          sourceKey: salarySourceKey,
+        });
+        changed = true;
+        metrics.addedWeeklySalaryEntries += 1;
+      }
+    }
+
+    if (weeklyFacilityMaintenance > 0) {
+      const maintenanceSourceKey = `weekly-maintenance:${sourceDate}`;
+
+      if (!nextEntries.some((entry) => entry.sourceKey === maintenanceSourceKey)) {
+        nextEntries.push({
+          id: createId("weekly-maintenance"),
+          label: `Entretien installations - ${sourceDate}`,
+          amount: -weeklyFacilityMaintenance,
+          occurredAt: weekDate.toISOString(),
+          category: "other",
+          source: "sync",
+          note: "Débit automatique du lundi pour l'entretien des installations.",
+          sourceKey: maintenanceSourceKey,
+        });
+        changed = true;
+        metrics.addedWeeklyMaintenanceEntries += 1;
+      }
+    }
+  }
+
+  const nextProcessedThrough = currentWeekStart.toISOString();
+
+  if (!changed && state.weeklyEconomyProcessedThrough === nextProcessedThrough) {
+    return { state, changed: false, metrics };
+  }
+
+  return {
+    state: {
+      ...state,
+      entries: sortEntries(nextEntries),
+      updatedAt: new Date().toISOString(),
+      weeklyEconomyProcessedThrough: nextProcessedThrough,
+    },
+    changed: true,
+    metrics,
+  };
 }
 
 export function loadFinanceState(
@@ -491,11 +642,13 @@ export function saveFinanceState(state: FinanceState): void {
 
 function reconcileFinanceState(
   state: FinanceState,
-  settings: ClubSettings
+  settings: ClubSettings,
+  riders: Rider[]
 ): { state: FinanceState; changed: boolean; metrics: FinanceSyncMetrics } {
-  const dedupedEntries = dedupeSyncEntries(state.entries);
+  const weeklySynced = syncWeeklyEconomyEntries(state, settings, riders);
+  const dedupedEntries = dedupeSyncEntries(weeklySynced.state.entries);
   let changed = dedupedEntries.changed;
-  let metrics = dedupedEntries.metrics;
+  let metrics = mergeSyncMetrics(weeklySynced.metrics, dedupedEntries.metrics);
   const validFacilitySourceKeys = new Set<string>();
 
   (Object.keys(settings.facilities) as FacilityKey[]).forEach((facilityKey) => {
@@ -581,12 +734,16 @@ function reconcileFinanceState(
   metrics = mergeSyncMetrics(metrics, racePrizeSync.metrics);
 
   if (!changed && !racePrizeSync.changed) {
-    return { state, changed: false, metrics };
+    return {
+      state: weeklySynced.state,
+      changed: weeklySynced.changed,
+      metrics,
+    };
   }
 
   return {
     state: {
-      ...state,
+      ...weeklySynced.state,
       entries: sortEntries(racePrizeSync.entries),
       updatedAt: new Date().toISOString(),
     },
@@ -600,7 +757,8 @@ export function syncFinanceWithSettings(
   legacyStartingBalance = DEFAULT_STARTING_BALANCE
 ): FinanceState {
   const state = loadFinanceState(legacyStartingBalance);
-  const reconciliation = reconcileFinanceState(state, settings);
+  const riders = loadRidersFromStorage();
+  const reconciliation = reconcileFinanceState(state, settings, riders);
 
   if (!reconciliation.changed) {
     return state;
@@ -665,7 +823,7 @@ export function getFinanceSnapshot(settings: ClubSettings, riders: Rider[]) {
       ? settings.financialBalance
       : DEFAULT_STARTING_BALANCE;
   const loadedState = loadFinanceState(seededBalance);
-  const reconciliationResult = reconcileFinanceState(loadedState, settings);
+  const reconciliationResult = reconcileFinanceState(loadedState, settings, riders);
   const state = reconciliationResult.state;
 
   if (reconciliationResult.changed) {
@@ -687,21 +845,8 @@ export function getFinanceSnapshot(settings: ClubSettings, riders: Rider[]) {
     (sum, rider) => sum + rider.salaryWeekly,
     0
   );
-  const weeklySalaryExpense =
-    settings.manualWeeklySalaryExpense !== null && settings.manualWeeklySalaryExpense >= 0
-      ? settings.manualWeeklySalaryExpense
-      : automaticWeeklySalaryExpense;
-  const weeklyFacilityMaintenance = (
-    Object.keys(settings.facilities) as FacilityKey[]
-  ).reduce(
-    (sum, facilityKey) =>
-      sum +
-      getFacilityWeeklyMaintenance(
-        facilityKey,
-        settings.facilities[facilityKey].level
-      ),
-    0
-  );
+  const weeklySalaryExpense = getWeeklySalaryExpense(settings, riders);
+  const weeklyFacilityMaintenance = getWeeklyFacilityMaintenance(settings);
   const plannedFacilityUpgradeCost = (
     Object.keys(settings.facilities) as FacilityKey[]
   ).reduce((sum, facilityKey) => {
@@ -724,6 +869,11 @@ export function getFinanceSnapshot(settings: ClubSettings, riders: Rider[]) {
   const projectedBalanceAfterThreeWeeks =
     currentBalance - weeklyFixedCosts * 3 - plannedFacilityUpgradeCost;
   const automaticEntries = state.entries.filter((entry) => entry.source === "sync");
+  const weeklyEconomyEntries = automaticEntries.filter(
+    (entry) =>
+      entry.sourceKey?.startsWith("weekly-salary:") ||
+      entry.sourceKey?.startsWith("weekly-maintenance:")
+  );
   const facilityEntries = automaticEntries.filter(
     (entry) => entry.category === "facility-upgrade"
   );
@@ -804,6 +954,8 @@ export function getFinanceSnapshot(settings: ClubSettings, riders: Rider[]) {
     automaticEntries,
     facilityEntries,
     racePrizeEntries,
+    weeklyEconomyEntries,
+    weeklyEconomyProcessedThrough: state.weeklyEconomyProcessedThrough,
     reconciliation,
     prizeTables: PRIZE_REFERENCE_TABLES,
   };
