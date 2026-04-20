@@ -414,6 +414,41 @@ function getEffectiveTransferAmount(
     : analysis.candidate.auction.currentBid;
 }
 
+function mergeTransferCandidates(
+  currentCandidates: TransferMarketCandidate[],
+  incomingCandidates: TransferMarketCandidate[]
+): {
+  mergedCandidates: TransferMarketCandidate[];
+  addedCount: number;
+  updatedCount: number;
+} {
+  const candidateById = new Map(
+    currentCandidates.map((candidate) => [candidate.id, candidate])
+  );
+  let addedCount = 0;
+  let updatedCount = 0;
+
+  incomingCandidates.forEach((candidate) => {
+    if (candidateById.has(candidate.id)) {
+      updatedCount += 1;
+    } else {
+      addedCount += 1;
+    }
+
+    candidateById.set(candidate.id, candidate);
+  });
+
+  const preservedCandidates = currentCandidates.filter(
+    (candidate) => !incomingCandidates.some((incoming) => incoming.id === candidate.id)
+  );
+
+  return {
+    mergedCandidates: [...preservedCandidates, ...incomingCandidates],
+    addedCount,
+    updatedCount,
+  };
+}
+
 export default function TransfersPage() {
   const persistedState = useMemo(() => loadTransfersPageState(), []);
   const comparisonTableContainerRef = useRef<HTMLDivElement | null>(null);
@@ -587,26 +622,34 @@ export default function TransfersPage() {
     const result = parseTransferMarketData(marketRidersCsv, marketAuctionsCsv);
 
     if (result.candidates.length === 0) {
-      setCandidates([]);
-      setSelectedCandidateId("");
-      setShortlistedCandidateIds([]);
-      setMessages(result.errors.length > 0 ? result.errors : ["Aucun coureur exploitable trouvé dans les CSV collés."]);
+      setMessages(
+        result.errors.length > 0
+          ? [
+              "Aucun nouveau coureur exploitable n'a été ajouté. L'analyse existante est conservée.",
+              ...result.errors,
+            ]
+          : ["Aucun nouveau coureur exploitable trouvé dans les CSV collés. L'analyse existante est conservée."]
+      );
       return;
     }
 
+    const mergeResult = mergeTransferCandidates(candidates, result.candidates);
+
     const currentShortlist = new Set(shortlistedCandidateIds);
-    const nextShortlist = result.candidates
+    const nextShortlist = mergeResult.mergedCandidates
       .filter((candidate) => currentShortlist.has(candidate.id))
       .map((candidate) => candidate.id);
-    const nextSelectedId = result.candidates.some((candidate) => candidate.id === selectedCandidateId)
+    const nextSelectedId = mergeResult.mergedCandidates.some(
+      (candidate) => candidate.id === selectedCandidateId
+    )
       ? selectedCandidateId
-      : result.candidates[0]?.id ?? "";
+      : selectedCandidateId || result.candidates[0]?.id || mergeResult.mergedCandidates[0]?.id || "";
 
-    setCandidates(result.candidates);
+    setCandidates(mergeResult.mergedCandidates);
     setSelectedCandidateId(nextSelectedId);
     setShortlistedCandidateIds(nextShortlist);
     setMessages([
-      `${result.candidates.length} coureur(s) analysable(s) détecté(s). Les coureurs restent en place jusqu'à suppression manuelle.`,
+      `${result.candidates.length} coureur(s) importé(s) : ${mergeResult.addedCount} ajouté(s), ${mergeResult.updatedCount} mis à jour. Analyse conservée jusqu'à suppression manuelle.`,
       ...result.errors,
     ]);
   }
