@@ -341,6 +341,47 @@ function buildRacePrizeSourceKey(entry: CoursePrizeBreakdown): string {
   ].join(":");
 }
 
+function parseCourseDateLabel(value: string): string | null {
+  if (!value) {
+    return null;
+  }
+
+  const match = value.match(/(\d{2})[\/-](\d{2})[\/-](\d{4})/);
+
+  if (!match) {
+    return null;
+  }
+
+  const [, day, month, year] = match;
+  const parsed = new Date(`${year}-${month}-${day}T12:00:00`);
+
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  return parsed.toISOString();
+}
+
+function resolveCourseOccurredAt(course: ReturnType<typeof loadManualTodos>[number] | undefined): string {
+  if (!course) {
+    return new Date().toISOString();
+  }
+
+  const detailsDate = parseCourseDateLabel(course.details ?? "");
+
+  if (detailsDate) {
+    return detailsDate;
+  }
+
+  const titleDate = parseCourseDateLabel(course.title);
+
+  if (titleDate) {
+    return titleDate;
+  }
+
+  return course.createdAt || new Date().toISOString();
+}
+
 function buildCoursePrizeEntries(settings: ClubSettings): CoursePrizeBreakdown[] {
   const results = getAllResultsFromStorage();
   const todos = loadManualTodos();
@@ -373,7 +414,7 @@ function buildCoursePrizeEntries(settings: ClubSettings): CoursePrizeBreakdown[]
           return {
             courseId,
             courseTitle: course?.title ?? courseId,
-            occurredAt: course?.createdAt ?? new Date().toISOString(),
+            occurredAt: resolveCourseOccurredAt(course),
             position: row.position,
             riderName: row.riderName,
             amount,
