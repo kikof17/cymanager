@@ -2,6 +2,16 @@ import type { TransferHistoryEntry, TransferHistoryEntryKind } from "../../types
 
 const TRANSFER_HISTORY_STORAGE_KEY = "cymanager:transfer-history";
 const MAX_TRANSFER_HISTORY_ENTRIES = 120;
+const INITIAL_TRANSFER_HISTORY: Array<Omit<TransferHistoryEntry, "id">> = [
+  {
+    occurredAt: "2026-04-15T09:30:00.000Z",
+    kind: "recruit",
+    riderName: "Simon Sarko",
+    note: "Recrutement seed de départ: Simon Sarko ajouté pour initialiser l'historique transferts.",
+    amount: 425000,
+    shortlistSize: 0,
+  },
+];
 
 function isObjectRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
@@ -77,7 +87,7 @@ export function loadTransferHistory(): TransferHistoryEntry[] {
     const raw = localStorage.getItem(TRANSFER_HISTORY_STORAGE_KEY);
 
     if (!raw) {
-      return [];
+      return normalizeTransferHistory(INITIAL_TRANSFER_HISTORY);
     }
 
     return normalizeTransferHistory(JSON.parse(raw));
