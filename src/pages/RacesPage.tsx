@@ -6,6 +6,10 @@ function adaptRaceTableToParsedRace(parsed: ParsedRaceTable): ParsedRace {
     name: parsed.name,
     raceType: 'simple',
     distanceKm: parsed.distanceKm,
+    raceKey: undefined,
+    scheduledAt: undefined,
+    stageNumber: undefined,
+    tourKey: undefined,
     detectedProfile: parsed.profil,
     weights: {
       flat: parsed.secteursPlats ? 40 : 0,
@@ -49,6 +53,16 @@ import { loadRidersFromStorage } from "../lib/storage/localStorage";
 import { initialRiders } from "../store/initialState";
 import { saveManualTodos, loadManualTodos } from "../lib/storage/todoStorage";
 import { saveCalendarRaceProfile } from "../lib/storage/calendarRaceProfile";
+import { getParsedRaceResultCategory } from "../lib/utils/courseCategory";
+import { extractRaceScheduledAt, formatCourseDateLabel } from "../lib/utils/courseDates";
+import { ensureRaceKey, getRaceKey } from "../lib/utils/raceIdentity";
+import {
+  buildTourKey,
+  detectRaceTypeFromImport,
+  extractStageNumber,
+  findMatchingTourKey,
+  type RaceImportMode,
+} from "../lib/utils/stageRaces";
 import type { TodoItem } from "../types/todo";
 import type { ParsedRace, RaceRole, RiderRaceSetup } from "../types/race";
 import type { Rider } from "../types/rider";
@@ -67,14 +81,6 @@ function loadStoredRaceSetups(): StoredRaceSetupMap {
   } catch {
     return {};
   }
-}
-
-function buildRaceKey(race: ParsedRace | null): string {
-  if (!race) {
-    return "";
-  }
-
-  return `${race.name}::${race.raceType}::${race.distanceKm}::${race.detectedProfile}`;
 }
 
 function getInitialRiders(): Rider[] {
@@ -168,6 +174,108 @@ function sanitizeSavedSetup(
   );
 }
 
+function getSelectedRiderIdsFromSetup(setup: Record<string, RiderRaceSetup>): string[] {
+  return Object.keys(setup);
+}
+
+function buildTourSelection(
+  races: ParsedRace[],
+  riders: Rider[],
+  blockedYoungRiders: Set<string>
+): string[] {
+  const aggregateScores = new Map<string, { rider: Rider; score: number }>();
+
+  races.forEach((race) => {
+    const filteredRiders = filterRidersForRace(race, riders, blockedYoungRiders);
+    const ranking = buildRaceAnalysis(filteredRiders, race).ranking;
+
+    ranking.forEach((entry) => {
+      const rider = filteredRiders.find((candidate) => candidate.id === entry.riderId);
+
+      if (!rider) {
+        return;
+      }
+
+      const current = aggregateScores.get(entry.riderId);
+      aggregateScores.set(entry.riderId, {
+        rider,
+        score: (current?.score ?? 0) + entry.score,
+      });
+    });
+  });
+
+  return [...aggregateScores.entries()]
+    .sort((left, right) => {
+      if (right[1].score !== left[1].score) {
+        return right[1].score - left[1].score;
+      }
+
+      return right[1].rider.total - left[1].rider.total;
+    })
+    .slice(0, 7)
+    .map(([riderId]) => riderId);
+}
+
+function resolveImportedRaces(
+  races: ParsedRace[],
+  mode: RaceImportMode,
+  tourLabel: string,
+  existingTodos: TodoItem[]
+): { races: ParsedRace[]; warnings: string[] } {
+  const warnings: string[] = [];
+  const explicitTourKey = tourLabel.trim() ? buildTourKey(tourLabel.trim()) : null;
+  const stageRaces = races.filter((race) => race.raceType === "etapes");
+  const batchTourKey =
+    explicitTourKey ??
+    (stageRaces.length > 1
+      ? buildTourKey(stageRaces[0].name, stageRaces[0].scheduledAt)
+      : null);
+
+  return {
+    races: races.map((race) => {
+      const raceType = detectRaceTypeFromImport(race.name, mode);
+      const stageNumber = extractStageNumber(race.name);
+
+      if (raceType !== "etapes") {
+        return ensureRaceKey({
+          ...race,
+          raceType,
+          stageNumber: undefined,
+          tourKey: undefined,
+        });
+      }
+
+      const matchedTourKey = findMatchingTourKey(stageNumber, race.scheduledAt ?? null, existingTodos);
+      const detectedTourKey =
+        explicitTourKey ??
+        batchTourKey ??
+        matchedTourKey ??
+        buildTourKey(race.name, race.scheduledAt);
+
+      if (!explicitTourKey && !batchTourKey && !matchedTourKey && stageNumber !== 1) {
+        warnings.push(
+          `Étape ${stageNumber} importée sans tour existant clairement identifiable. Ajoute une référence du tour pour verrouiller l'inscription commune sur les prochains imports.`
+        );
+      }
+
+      return ensureRaceKey({
+        ...race,
+        raceType,
+        stageNumber: stageNumber ?? undefined,
+        tourKey: detectedTourKey,
+        weights: {
+          ...race.weights,
+          stageRace: Math.max(race.weights.stageRace, 38),
+          recovery: Math.max(race.weights.recovery, 20),
+          endurance: Math.max(race.weights.endurance, 12),
+          resistance: Math.max(race.weights.resistance, 8),
+        },
+      });
+    }),
+    warnings,
+  };
+}
+
 function buildSetupMap(
   races: ParsedRace[],
   riders: Rider[]
@@ -175,15 +283,50 @@ function buildSetupMap(
   const next: Record<string, Record<string, RiderRaceSetup>> = {};
   const u25u21InPro = getBlockedYoungRidersInProRaces(races, riders);
 
+  const existingTodos = loadManualTodos();
+  const racesByGroup = new Map<string, ParsedRace[]>();
+
   races.forEach((race) => {
-    const filteredRiders = filterRidersForRace(race, riders, u25u21InPro);
-    const analysis = buildRaceAnalysis(filteredRiders, race);
-    const raceKey = buildRaceKey(race);
-    const saved = loadRaceSetup(raceKey);
-    const sanitizedSaved = sanitizeSavedSetup(saved, analysis.selected);
-    next[raceKey] = Object.keys(sanitizedSaved).length > 0
-      ? sanitizedSaved
-      : buildDefaultRaceSetupMap(analysis.race, analysis.selected);
+    const groupKey = race.raceType === "etapes" ? race.tourKey ?? getRaceKey(race) : getRaceKey(race);
+    const currentGroup = racesByGroup.get(groupKey) ?? [];
+    currentGroup.push(race);
+    racesByGroup.set(groupKey, currentGroup);
+  });
+
+  racesByGroup.forEach((groupRaces, groupKey) => {
+    let lockedSelectedIds: string[] | undefined;
+
+    if (groupRaces[0]?.raceType === "etapes") {
+      const existingGroupTodos = existingTodos.filter((todo) => todo.tourKey === groupKey);
+
+      for (const todo of existingGroupTodos) {
+        if (!todo.raceKey) {
+          continue;
+        }
+
+        const setup = loadRaceSetup(todo.raceKey);
+
+        if (Object.keys(setup).length > 0) {
+          lockedSelectedIds = getSelectedRiderIdsFromSetup(setup);
+          break;
+        }
+      }
+
+      if (!lockedSelectedIds || lockedSelectedIds.length === 0) {
+        lockedSelectedIds = buildTourSelection(groupRaces, riders, u25u21InPro);
+      }
+    }
+
+    groupRaces.forEach((race) => {
+      const filteredRiders = filterRidersForRace(race, riders, u25u21InPro);
+      const analysis = buildRaceAnalysis(filteredRiders, race, lockedSelectedIds);
+      const raceKey = getRaceKey(race);
+      const saved = loadRaceSetup(raceKey);
+      const sanitizedSaved = sanitizeSavedSetup(saved, analysis.selected);
+      next[raceKey] = Object.keys(sanitizedSaved).length > 0
+        ? sanitizedSaved
+        : buildDefaultRaceSetupMap(analysis.race, analysis.selected);
+    });
   });
 
   return next;
@@ -197,7 +340,7 @@ export default function RacesPage() {
   const [generalSummary, setGeneralSummary] = useState<string>("");
 
 
-  function handleAnalyze(rawText: string) {
+  function handleAnalyze(rawText: string, mode: RaceImportMode, tourLabel: string) {
     if (!rawText.trim()) {
       setMessages(["Le texte de course est vide."]);
       return;
@@ -213,31 +356,37 @@ export default function RacesPage() {
         const parsedTable = parseRaceTable(block);
         const parsed = adaptRaceTableToParsedRace(parsedTable);
         parsed.rawText = block;
+        parsed.scheduledAt = extractRaceScheduledAt(parsed) ?? undefined;
+        parsed.raceType = detectRaceTypeFromImport(parsed.name, mode);
+        parsed.stageNumber = extractStageNumber(parsed.name) ?? undefined;
         parsedRaces.push(parsed);
         debugMessages.push(
           `--- Course ${idx + 1} ---`,
           ...parsed.summary,
           `Catégorie détectée : ${detectRaceCategory(parsed) ?? "Aucune"}`,
           `Profil détecté : ${parsed.detectedProfile}`,
-          `Type : course simple.`
+          `Type : ${parsed.raceType === "etapes" ? "course à étapes" : "course simple"}.`
         );
       } catch (e) {
         debugMessages.push(`Erreur lors de l'analyse du tableau ${idx + 1} : ${(e as Error).message}`);
       }
     });
 
-    setRaces(parsedRaces);
-    setSetupByRiderList(buildSetupMap(parsedRaces, riders));
+    const resolvedImport = resolveImportedRaces(parsedRaces, mode, tourLabel, loadManualTodos());
+
+    setRaces(resolvedImport.races);
+    setSetupByRiderList(buildSetupMap(resolvedImport.races, riders));
     setMessages([
-      `Nombre de courses détectées : ${parsedRaces.length}`,
+      `Nombre de courses détectées : ${resolvedImport.races.length}`,
+      ...resolvedImport.warnings,
       ...debugMessages,
-      parsedRaces.length === 0 ? "Aucune course valide détectée." : "Analyse terminée."
+      resolvedImport.races.length === 0 ? "Aucune course valide détectée." : "Analyse terminée."
     ]);
   }
 
   function handleRoleChange(raceIdx: number, riderId: string, role: Exclude<RaceRole, "Remplaçant">) {
     const race = races[raceIdx];
-    const raceKey = buildRaceKey(race);
+    const raceKey = getRaceKey(race);
     setSetupByRiderList((current) => {
       const prev = current[raceKey] || {};
       const existing = prev[riderId] ?? {
@@ -261,7 +410,7 @@ export default function RacesPage() {
 
   function handlePercentChange(raceIdx: number, riderId: string, effortPercent: number) {
     const race = races[raceIdx];
-    const raceKey = buildRaceKey(race);
+    const raceKey = getRaceKey(race);
     setSetupByRiderList((current) => {
       const prev = current[raceKey] || {};
       const existing = prev[riderId] ?? {
@@ -285,7 +434,7 @@ export default function RacesPage() {
 
   function handleBreakawayChange(raceIdx: number, riderId: string, morningBreakaway: boolean) {
     const race = races[raceIdx];
-    const raceKey = buildRaceKey(race);
+    const raceKey = getRaceKey(race);
     setSetupByRiderList((current) => {
       const prev = current[raceKey] || {};
       const existing = prev[riderId] ?? {
@@ -311,8 +460,9 @@ export default function RacesPage() {
     const race = races[raceIdx];
     const blockedYoungRiders = getBlockedYoungRidersInProRaces(races, riders);
     const filteredRiders = filterRidersForRace(race, riders, blockedYoungRiders);
-    const analysis = buildRaceAnalysis(filteredRiders, race);
-    const raceKey = buildRaceKey(race);
+    const raceKey = getRaceKey(race);
+    const lockedSelectedIds = Object.keys(setupByRiderList[raceKey] || {});
+    const analysis = buildRaceAnalysis(filteredRiders, race, lockedSelectedIds);
     const newSetup = buildDefaultRaceSetupMap(analysis.race, analysis.selected);
     setSetupByRiderList((current) => ({
       ...current,
@@ -330,29 +480,23 @@ export default function RacesPage() {
   function handleAddToCalendar() {
     if (!races.length) return;
     const todos: TodoItem[] = races.map(race => {
-      const raceKey = buildRaceKey(race);
-      // Recherche de la date si possible (depuis rawText ou summary)
-      let date = '';
-      if (race.rawText) {
-        const m = race.rawText.match(/Date\s*\|\s*([\d/-]+)/i);
-        if (m) date = m[1];
-      }
-      if (!date && race.summary) {
-        const found = race.summary.find(s => s.toLowerCase().includes('date'));
-        if (found) {
-          const m = found.match(/([\d]{2}\/\d{2}\/\d{4})/);
-          if (m) date = m[1];
-        }
-      }
+      const raceKey = getRaceKey(race);
+      const scheduledAt = extractRaceScheduledAt(race);
+      const dateLabel = scheduledAt ? formatCourseDateLabel(scheduledAt) : '';
+
       return {
         id: `calendar-${Date.now()}-${Math.floor(Math.random()*10000)}`,
-        title: `${race.name} (${date ? date + ' · ' : ''}${race.distanceKm ? race.distanceKm + ' km' : ''})`,
-        details: `Date: ${date}\nProfil: ${race.detectedProfile}\nType: ${race.raceType}\nRésumé: ${race.summary?.join(' | ')}`,
+        title: `${race.name} (${dateLabel ? dateLabel + ' · ' : ''}${race.distanceKm ? race.distanceKm + ' km' : ''})`,
+        details: `Date: ${dateLabel || '-'}\nProfil: ${race.detectedProfile}\nType: ${race.raceType}\nRésumé: ${race.summary?.join(' | ')}`,
         source: 'manual',
         status: 'todo',
         priority: 'moyenne',
         category: 'courses',
         createdAt: new Date().toISOString(),
+        scheduledAt: scheduledAt ?? undefined,
+        courseCategory: getParsedRaceResultCategory(race),
+        stageNumber: race.stageNumber,
+        tourKey: race.tourKey,
         raceKey,
       };
     });
@@ -360,7 +504,7 @@ export default function RacesPage() {
     try {
       const allSetups = loadStoredRaceSetups();
       races.forEach((race) => {
-        const raceKey = buildRaceKey(race);
+        const raceKey = getRaceKey(race);
         const setup = setupByRiderList[raceKey];
         if (setup && Object.keys(setup).length > 0) {
           allSetups[raceKey] = setup;
@@ -429,13 +573,18 @@ export default function RacesPage() {
       {races.map((race, idx) => {
         const blockedYoungRiders = getBlockedYoungRidersInProRaces(races, riders);
         const filteredRiders = filterRidersForRace(race, riders, blockedYoungRiders);
-        const analysis = buildRaceAnalysis(filteredRiders, race);
-        const raceKey = buildRaceKey(race);
+        const raceKey = getRaceKey(race);
         const setupByRider = setupByRiderList[raceKey] || {};
+        const analysis = buildRaceAnalysis(filteredRiders, race, Object.keys(setupByRider));
         return (
           <div key={raceKey} className="race-stage-block">
-            <Card title={`Étape ${idx + 1} : ${race.name}`}>
+            <Card title={`${race.raceType === 'etapes' ? `Étape ${race.stageNumber ?? idx + 1}` : 'Course'} : ${race.name}`}>
               <RaceSummary race={race} />
+              {race.raceType === 'etapes' ? (
+                <p className="muted">
+                  Inscription commune sur le tour : les 7 coureurs restent identiques sur toutes les étapes de cette série.
+                </p>
+              ) : null}
               <div className="race-stage-setup">
                 <OdcPresetSelector onApplyDefault={() => handleApplyDefaultPresets(idx)} />
                 <RaceSetupTable

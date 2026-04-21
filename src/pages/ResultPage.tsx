@@ -1,9 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Card from '../components/common/Card';
 import PageTitle from '../components/common/PageTitle';
 import { getProRacePrize } from '../lib/finance/racePrizeTable';
+import { getStoredResultCategory, type ResultCategory } from '../lib/utils/courseCategory';
 import { loadClubSettings } from '../lib/storage/settingsStorage';
 import { loadManualTodos } from '../lib/storage/todoStorage';
+import { getTodoScheduledAt } from '../lib/utils/courseDates';
+import { getCourseDisplayTitle, groupCourseTodos } from '../lib/utils/stageRaces';
 import { formatCurrency } from '../lib/utils/numbers';
 import type { TodoItem } from '../types/todo';
 
@@ -11,8 +14,6 @@ import type { TodoItem } from '../types/todo';
 const RESULT_KEY = 'cymanager:results';
 
 type ResultMap = Record<string, string | { result: string; category: string }>
-
-type ResultCategory = 'pro' | 'u25' | 'u21';
 
 const TEAM_NAME = 'Kritoff Team';
 
@@ -38,36 +39,14 @@ function normalizeComparable(value: string): string {
     .trim();
 }
 
-function inferCategoryFromCourseTitle(title: string): ResultCategory {
-  const normalized = normalizeComparable(title);
-
-  if (normalized.includes('u25')) {
-    return 'u25';
-  }
-
-  if (normalized.includes('u21')) {
-    return 'u21';
-  }
-
-  return 'pro';
-}
-
 function getStoredCategory(
   result: string | { result: string; category?: string },
-  courseTitle: string
-): ResultCategory {
-  if (typeof result === 'object' && result?.category) {
-    if (result.category === 'u25' || result.category === 'u21') {
-      return result.category;
-    }
-
-    return 'pro';
-  }
-
-  return inferCategoryFromCourseTitle(courseTitle);
+  course: TodoItem | undefined
+) {
+  return getStoredResultCategory(result, course);
 }
 
-function getDivisionForCategory(category: ResultCategory) {
+function getDivisionForCategory(category: 'pro' | 'u25' | 'u21') {
   const settings = loadClubSettings();
 
   if (category === 'u25') {
@@ -127,6 +106,11 @@ export default function ResultPage() {
   const courseSelectRef = useRef<HTMLDivElement | null>(null);
   const selectedCourseHasResult = hasStoredResult(results[selectedCourseId]);
   const selectedCourse = courses.find((course) => course.id === selectedCourseId);
+  const courseGroups = useMemo(() => groupCourseTodos(courses), [courses]);
+  const selectedCourseGroup = useMemo(
+    () => courseGroups.find((group) => group.todos.some((course) => course.id === selectedCourseId)) ?? null,
+    [courseGroups, selectedCourseId]
+  );
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -152,7 +136,7 @@ export default function ResultPage() {
 
   function renderResultTable(result: string | { result: string; category?: string }) {
     const courseTitle = selectedCourse?.title ?? '';
-    const category = getStoredCategory(result, selectedCourse?.title ?? '');
+    const category = getStoredCategory(result, selectedCourse);
     const showPrizeColumn = category === 'pro';
     const resultStr = getResultString(result);
     const lines = resultStr.trim().split(/\r?\n/);
@@ -231,32 +215,43 @@ export default function ResultPage() {
 
               {isCourseListOpen && (
                 <div className="custom-select-menu" role="listbox" aria-label="Choisir une course">
-                  {courses.map((course) => {
-                    const courseHasResult = hasStoredResult(results[course.id]);
-                    const isSelected = course.id === selectedCourseId;
-                    const className = courseHasResult
-                      ? "custom-select-option custom-select-option-done"
-                      : "custom-select-option custom-select-option-upcoming";
+                  {courseGroups.map((group) => (
+                    <div key={group.key} className="result-group-options">
+                      {group.isTour ? (
+                        <div className="result-group-option-header">
+                          <span className="result-group-option-title">{group.title}</span>
+                          <span className="result-group-option-meta">{group.todos.length} étape(s)</span>
+                        </div>
+                      ) : null}
 
-                    return (
-                      <button
-                        key={course.id}
-                        type="button"
-                        role="option"
-                        aria-selected={isSelected}
-                        className={isSelected ? `${className} custom-select-option-selected` : className}
-                        onClick={() => {
-                          setSelectedCourseId(course.id);
-                          setIsCourseListOpen(false);
-                        }}
-                      >
-                        <span className={courseHasResult ? "custom-select-option-text custom-select-option-text-bold" : "custom-select-option-text"}>
-                          {courseHasResult ? "[Resultat] " : "[A venir] "}
-                          {course.title}
-                        </span>
-                      </button>
-                    );
-                  })}
+                      {group.todos.map((course) => {
+                        const courseHasResult = hasStoredResult(results[course.id]);
+                        const isSelected = course.id === selectedCourseId;
+                        const className = courseHasResult
+                          ? "custom-select-option custom-select-option-done"
+                          : "custom-select-option custom-select-option-upcoming";
+
+                        return (
+                          <button
+                            key={course.id}
+                            type="button"
+                            role="option"
+                            aria-selected={isSelected}
+                            className={isSelected ? `${className} custom-select-option-selected` : className}
+                            onClick={() => {
+                              setSelectedCourseId(course.id);
+                              setIsCourseListOpen(false);
+                            }}
+                          >
+                            <span className={courseHasResult ? "custom-select-option-text custom-select-option-text-bold" : "custom-select-option-text"}>
+                              {courseHasResult ? "[Resultat] " : "[A venir] "}
+                              {group.isTour ? `${course.stageNumber ? `Étape ${course.stageNumber} - ` : ''}${getCourseDisplayTitle(course)}` : course.title}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -270,8 +265,35 @@ export default function ResultPage() {
             <div className={selectedCourseHasResult ? "result-status-badge result-status-badge-done" : "result-status-badge result-status-badge-upcoming"}>
               {selectedCourseHasResult ? "Résultat enregistré" : "Course à venir"}
             </div>
+            {selectedCourseGroup?.isTour ? (
+              <div className="result-tour-summary">
+                <div className="result-tour-summary-header">
+                  <strong>{selectedCourseGroup.title}</strong>
+                  <span>{selectedCourseGroup.todos.filter((course) => hasStoredResult(results[course.id])).length}/{selectedCourseGroup.todos.length} étape(s) avec résultat</span>
+                </div>
+                <div className="result-tour-stage-list">
+                  {selectedCourseGroup.todos.map((course) => {
+                    const courseHasResult = hasStoredResult(results[course.id]);
+                    const isSelected = course.id === selectedCourseId;
+
+                    return (
+                      <button
+                        key={course.id}
+                        type="button"
+                        className={isSelected ? 'result-tour-stage-chip result-tour-stage-chip-selected' : 'result-tour-stage-chip'}
+                        onClick={() => setSelectedCourseId(course.id)}
+                      >
+                        <span>{course.stageNumber ? `E${course.stageNumber}` : 'Etape'}</span>
+                        <span>{courseHasResult ? 'Résultat' : 'À venir'}</span>
+                        <span>{new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(new Date(getTodoScheduledAt(course) ?? course.createdAt))}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
             <div className="course-details">{selectedCourse?.details?.split('\n').join(' | ')}</div>
-            {selectedCourse && /u25|u21/i.test(selectedCourse.title) ? (
+            {selectedCourse && getStoredCategory(results[selectedCourseId] ?? '', selectedCourse) !== 'pro' ? (
               <div className="message-box">
                 <p className="muted">
                   Les primes individuelles U25/U21 ne sont plus calculées automatiquement. Le système actuel repose sur le classement par équipe de l'étape et n'est pas encore documenté dans la FAQ.

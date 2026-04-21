@@ -21,12 +21,20 @@ import {
   getStorageDiagnostics,
   type StorageDiagnosticIssue,
 } from "../lib/storage/storageDiagnostics";
+import { appendManagementHistoryEntry } from "../lib/storage/managementHistoryStorage";
 import {
   defaultClubSettings,
   loadClubSettings,
   saveClubSettings,
 } from "../lib/storage/settingsStorage";
 import type { ClubSettings, FacilityKey } from "../types/settings";
+
+const FACILITY_LABELS: Record<FacilityKey, string> = {
+  headOffice: "Siège social",
+  trainingCenter: "Centre d'entraînement",
+  formationCenter: "Centre de formation",
+  shop: "Boutique",
+};
 
 function toDateTimeLocalValue(value: string): string {
   if (!value) {
@@ -94,6 +102,76 @@ function getPreviewActionLabel(action: ImportBackupPreview["sections"][number]["
   return "Restaurer depuis le backup";
 }
 
+function buildSettingsChangeLog(previousSettings: ClubSettings, nextSettings: ClubSettings): string {
+  const changes: string[] = [];
+
+  if (previousSettings.divisionPro !== nextSettings.divisionPro) {
+    changes.push(`division Pro ${previousSettings.divisionPro} -> ${nextSettings.divisionPro}`);
+  }
+
+  if (previousSettings.divisionU25 !== nextSettings.divisionU25) {
+    changes.push(`division U25 ${previousSettings.divisionU25} -> ${nextSettings.divisionU25}`);
+  }
+
+  if (previousSettings.divisionU21 !== nextSettings.divisionU21) {
+    changes.push(`division U21 ${previousSettings.divisionU21} -> ${nextSettings.divisionU21}`);
+  }
+
+  if (previousSettings.clubObjective !== nextSettings.clubObjective) {
+    changes.push(`objectif ${previousSettings.clubObjective} -> ${nextSettings.clubObjective}`);
+  }
+
+  if (previousSettings.salaryTolerance !== nextSettings.salaryTolerance) {
+    changes.push(`tolérance salariale ${previousSettings.salaryTolerance} -> ${nextSettings.salaryTolerance}`);
+  }
+
+  if (previousSettings.manualWeeklySalaryExpense !== nextSettings.manualWeeklySalaryExpense) {
+    changes.push(
+      nextSettings.manualWeeklySalaryExpense === null
+        ? "masse salariale manuelle retirée"
+        : `masse salariale manuelle fixée à ${nextSettings.manualWeeklySalaryExpense.toLocaleString("fr-FR")} €`
+    );
+  }
+
+  if (previousSettings.globalNotes.trim() !== nextSettings.globalNotes.trim()) {
+    changes.push("notes globales mises à jour");
+  }
+
+  (Object.keys(nextSettings.facilities) as FacilityKey[]).forEach((facilityKey) => {
+    const previousFacility = previousSettings.facilities[facilityKey];
+    const nextFacility = nextSettings.facilities[facilityKey];
+    const facilityLabel = FACILITY_LABELS[facilityKey];
+
+    if (previousFacility.level !== nextFacility.level) {
+      changes.push(`${facilityLabel} niveau ${previousFacility.level} -> ${nextFacility.level}`);
+    }
+
+    if (!previousFacility.upgradeInProgress && nextFacility.upgradeInProgress) {
+      changes.push(`${facilityLabel} travaux lancés vers niveau ${nextFacility.targetLevel ?? "?"}`);
+    } else if (previousFacility.upgradeInProgress && !nextFacility.upgradeInProgress) {
+      changes.push(`${facilityLabel} travaux clôturés`);
+    }
+
+    if (!previousFacility.plannedUpgrade && nextFacility.plannedUpgrade) {
+      changes.push(`${facilityLabel} planifié vers niveau ${nextFacility.targetLevel ?? "?"}`);
+    } else if (previousFacility.plannedUpgrade && !nextFacility.plannedUpgrade) {
+      changes.push(`planification retirée pour ${facilityLabel.toLowerCase()}`);
+    }
+  });
+
+  if (changes.length === 0) {
+    return "";
+  }
+
+  const visibleChanges = changes.slice(0, 4);
+
+  if (changes.length > visibleChanges.length) {
+    visibleChanges.push(`+${changes.length - visibleChanges.length} autre(s) ajustement(s)`);
+  }
+
+  return visibleChanges.join(" • ");
+}
+
 export default function SettingsPage() {
   const importInputRef = useRef<HTMLInputElement | null>(null);
   const [settings, setSettings] = useState<ClubSettings>(getInitialSettings);
@@ -109,7 +187,20 @@ export default function SettingsPage() {
   }
 
   function handleSave() {
+    const previousSettings = loadClubSettings();
+    const decisionNote = buildSettingsChangeLog(previousSettings, settings);
+
     saveClubSettings(settings);
+
+    if (decisionNote) {
+      appendManagementHistoryEntry({
+        area: "settings",
+        kind: "settings-update",
+        title: "Réglages club mis à jour",
+        note: decisionNote,
+      });
+    }
+
     setMessage("Paramètres sauvegardés.");
   }
 
@@ -117,6 +208,12 @@ export default function SettingsPage() {
     const resetSettings = normalizeForForm(defaultClubSettings);
     setSettings(resetSettings);
     saveClubSettings(resetSettings);
+    appendManagementHistoryEntry({
+      area: "settings",
+      kind: "settings-reset",
+      title: "Paramètres réinitialisés",
+      note: "Retour aux réglages par défaut du club et des installations.",
+    });
     setMessage("Paramètres réinitialisés avec les valeurs par défaut.");
   }
 
@@ -131,6 +228,12 @@ export default function SettingsPage() {
     anchor.click();
 
     URL.revokeObjectURL(url);
+    appendManagementHistoryEntry({
+      area: "system",
+      kind: "backup-export",
+      title: "Backup exporté",
+      note: "Export complet du club au format Cymanager.",
+    });
     setMessage("Sauvegarde du club exportée.");
   }
 
@@ -185,6 +288,12 @@ export default function SettingsPage() {
 
     try {
       const result = importCymanagerBackup(pendingImportRaw);
+      appendManagementHistoryEntry({
+        area: "system",
+        kind: "backup-import",
+        title: "Backup importé",
+        note: `${result.restoredKeys.length} section(s) restaurée(s), ${result.sanitizedKeys.length} normalisée(s), ${result.clearedKeys.length} effacée(s).`,
+      });
       clearPendingImport();
       refreshDiagnostics();
       setMessage(
@@ -210,6 +319,16 @@ export default function SettingsPage() {
     const result = cleanupStorageDiagnosticIssue(pendingCleanupIssue);
     setPendingCleanupIssue(null);
     refreshDiagnostics();
+
+    if (result.removedEntries > 0) {
+      appendManagementHistoryEntry({
+        area: "system",
+        kind: "data-cleanup",
+        title: "Nettoyage de données appliqué",
+        note: `${pendingCleanupIssue.label} : ${result.removedEntries} élément(s) nettoyé(s).${result.refreshedFinance ? " Finance resynchronisée." : ""}`,
+      });
+    }
+
     setMessage(
       result.removedEntries > 0
         ? `${result.removedEntries} élément(s) nettoyé(s) depuis le diagnostic.${result.refreshedFinance ? " La finance a été resynchronisée." : ""}`

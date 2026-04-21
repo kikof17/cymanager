@@ -3,6 +3,7 @@ import PageTitle from "../components/common/PageTitle";
 import Card from "../components/common/Card";
 import ClubOverviewCard from "../components/home/ClubOverviewCard";
 import FacilitiesOverviewCard from "../components/home/FacilitiesOverviewCard";
+import ManagementJournalCard from "../components/home/ManagementJournalCard";
 import RaceOverviewCard from "../components/home/RaceOverviewCard";
 import TodoOverviewCard from "../components/home/TodoOverviewCard";
 import TrainingOverviewCard from "../components/home/TrainingOverviewCard";
@@ -12,6 +13,7 @@ import { getFinanceSnapshot } from "../lib/storage/financeStorage";
 import { loadLastRaceSnapshot, type RaceSnapshot } from "../lib/storage/lastRaceStorage";
 import { loadRaceSetup } from "../lib/storage/raceStorage";
 import { loadRidersFromStorage } from "../lib/storage/localStorage";
+import { loadManagementHistory } from "../lib/storage/managementHistoryStorage";
 import { loadClubSettings } from "../lib/storage/settingsStorage";
 import { loadTodoStatuses, loadManualTodos } from "../lib/storage/todoStorage";
 import { buildTodoList } from "../lib/todo/buildTodoList";
@@ -42,6 +44,8 @@ export default function HomePage() {
   const financeSnapshot = useMemo(() => {
     return getFinanceSnapshot(clubSettings, riders);
   }, [clubSettings, riders]);
+
+  const managementHistory = useMemo(() => loadManagementHistory().slice(0, 6), []);
 
   const raceSnapshot = useMemo(() => loadLastRaceSnapshot(), []);
   const raceKey = useMemo(() => buildRaceKey(raceSnapshot), [raceSnapshot]);
@@ -179,6 +183,7 @@ export default function HomePage() {
         <RaceOverviewCard race={race} selected={raceSelected} />
         <TodoOverviewCard items={todoItems} />
         <FacilitiesOverviewCard settings={clubSettings} />
+        <ManagementJournalCard entries={managementHistory} />
       </div>
     </div>
   );

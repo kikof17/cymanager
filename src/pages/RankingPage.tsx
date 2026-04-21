@@ -10,6 +10,8 @@ import { loadClubSettings } from "../lib/storage/settingsStorage";
 import type { RiderPoints, StoredResult } from "../lib/scoring/extractPoints";
 import type { BaselineRankingRow } from "../lib/ranking/seasonBaseline";
 import { loadManualTodos } from "../lib/storage/todoStorage";
+import { getStoredResultCategory } from "../lib/utils/courseCategory";
+import { getTodoScheduledAt } from "../lib/utils/courseDates";
 import type { TodoItem } from "../types/todo";
 
 type TeamPoints = { team: string; points: number };
@@ -26,27 +28,20 @@ type RankingData = {
   mergedIndividuals: Record<RankingCategory, BaselineRankingRow[]>;
 };
 
-function parseDateFromCourseTitle(title: string): Date | null {
-  const match = title.match(/(\d{2})\/(\d{2})\/(\d{4})/);
-
-  if (!match) {
-    return null;
-  }
-
-  const [, day, month, year] = match;
-  const date = new Date(`${year}-${month}-${day}T12:00:00`);
-
-  return Number.isNaN(date.getTime()) ? null : date;
-}
-
 function isCourseAfterBaseline(todo: TodoItem | undefined): boolean {
   if (!todo) {
     return false;
   }
 
-  const courseDate = parseDateFromCourseTitle(todo.title);
+  const courseDateValue = getTodoScheduledAt(todo);
 
-  if (!courseDate) {
+  if (!courseDateValue) {
+    return false;
+  }
+
+  const courseDate = new Date(courseDateValue);
+
+  if (Number.isNaN(courseDate.getTime())) {
     return false;
   }
 
@@ -100,12 +95,6 @@ function mergeBaselineWithDeltas(
       ...row,
       rank: index + 1,
     }));
-}
-
-function detectCourseCategory(title: string): RankingCategory {
-  if (/u25/i.test(title)) return "u25";
-  if (/u21/i.test(title)) return "u21";
-  return "pro";
 }
 
 function persistResults(results: Record<string, StoredResult>) {
@@ -164,11 +153,6 @@ function buildRankingData(): RankingData {
     u21: settings.divisionU21,
   };
   const todos: TodoItem[] = loadManualTodos().filter((todo) => todo.id.startsWith("calendar-"));
-  const courseTitles: Record<string, string> = {};
-
-  todos.forEach((todo) => {
-    courseTitles[todo.id] = todo.title;
-  });
 
   let shouldPersist = false;
   Object.keys(results).forEach((courseId) => {
@@ -180,9 +164,10 @@ function buildRankingData(): RankingData {
 
   Object.entries(results).forEach(([courseId, stored]) => {
     if (typeof stored === "string") {
+      const todo = todos.find((entry) => entry.id === courseId);
       results[courseId] = {
         result: stored,
-        category: detectCourseCategory(courseTitles[courseId] || ""),
+        category: getStoredResultCategory(stored, todo),
       };
       shouldPersist = true;
     }
@@ -200,11 +185,11 @@ function buildRankingData(): RankingData {
   const u21DeltaMap = new Map<string, RiderPoints>();
 
   Object.entries(results).forEach(([courseId, stored]) => {
-    let category: RankingCategory = "pro";
+    const todo = todos.find((entry) => entry.id === courseId);
+    let category: RankingCategory = getStoredResultCategory(stored, todo);
     let result = stored as string;
     if (typeof stored === "object" && stored && "result" in stored && "category" in stored) {
       result = stored.result;
-      category = stored.category as RankingCategory;
     }
 
     const points = extractPointsFromResults({ [courseId]: result });

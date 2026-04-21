@@ -4,9 +4,12 @@ import { loadFinanceState } from "./financeStorage";
 import { loadLastRaceSnapshot } from "./lastRaceStorage";
 import { loadRidersFromStorage } from "./localStorage";
 import { loadRaceSetupStore } from "./raceStorage";
+import { loadRiderHistorySnapshots } from "./riderHistoryStorage";
 import { loadClubSettings } from "./settingsStorage";
 import { loadTeamStrategy } from "./teamStrategyStorage";
+import { loadManagementHistory } from "./managementHistoryStorage";
 import { loadManualTodos, loadTodoStatuses } from "./todoStorage";
+import { loadTransferHistory } from "./transferHistoryStorage";
 
 export const CYMANAGER_BACKUP_APP = "cymanager";
 export const CYMANAGER_BACKUP_SCHEMA_VERSION = 2;
@@ -24,6 +27,7 @@ export type BackupSlot = {
 export type CymanagerBackupData = {
 	clubSettings?: unknown;
 	riders?: unknown;
+	riderHistory?: unknown;
 	finance?: unknown;
 	teamStrategy?: unknown;
 	manualTodos?: unknown;
@@ -33,6 +37,8 @@ export type CymanagerBackupData = {
 	results?: unknown;
 	lastRace?: unknown;
 	transfersPageState?: unknown;
+	managementHistory?: unknown;
+	transferHistory?: unknown;
 };
 
 export type CymanagerBackupMetadata = {
@@ -51,6 +57,7 @@ export type CymanagerBackup = {
 export const CYMANAGER_BACKUP_SECTION_VERSIONS: CymanagerBackupMetadata["sectionVersions"] = {
 	clubSettings: 1,
 	riders: 1,
+	riderHistory: 1,
 	finance: 1,
 	teamStrategy: 1,
 	manualTodos: 1,
@@ -60,11 +67,14 @@ export const CYMANAGER_BACKUP_SECTION_VERSIONS: CymanagerBackupMetadata["section
 	results: 1,
 	lastRace: 1,
 	transfersPageState: 1,
+	managementHistory: 1,
+	transferHistory: 1,
 };
 
 export const CYMANAGER_BACKUP_SLOTS: BackupSlot[] = [
 	{ exportKey: "clubSettings", storageKey: "cymanager:club-settings", kind: "object" },
 	{ exportKey: "riders", storageKey: "cymanager:riders", kind: "array" },
+	{ exportKey: "riderHistory", storageKey: "cymanager:rider-history", kind: "array" },
 	{ exportKey: "finance", storageKey: "cymanager:finance", kind: "object" },
 	{ exportKey: "teamStrategy", storageKey: "cymanager:team-strategy", kind: "object" },
 	{ exportKey: "manualTodos", storageKey: "cymanager:manual-todos", kind: "array" },
@@ -74,6 +84,8 @@ export const CYMANAGER_BACKUP_SLOTS: BackupSlot[] = [
 	{ exportKey: "results", storageKey: "cymanager:results", kind: "object" },
 	{ exportKey: "lastRace", storageKey: "cymanager:last-race", kind: "object" },
 	{ exportKey: "transfersPageState", storageKey: "cymanager:transfers-page-state", kind: "object" },
+	{ exportKey: "managementHistory", storageKey: "cymanager:management-history", kind: "array" },
+	{ exportKey: "transferHistory", storageKey: "cymanager:transfer-history", kind: "array" },
 ];
 
 function readRawJson(storageKey: string): unknown | undefined {
@@ -117,6 +129,7 @@ export function buildCymanagerBackup(): CymanagerBackup {
 		data: {
 			clubSettings: loadClubSettings(),
 			riders: loadRidersFromStorage(),
+			riderHistory: loadRiderHistorySnapshots(),
 			finance: loadFinanceState(),
 			teamStrategy: loadTeamStrategy(),
 			manualTodos: loadManualTodos(),
@@ -126,6 +139,8 @@ export function buildCymanagerBackup(): CymanagerBackup {
 			results: getAllResultsFromStorage(),
 			lastRace: loadLastRaceSnapshot() ?? {},
 			transfersPageState: readRawJson("cymanager:transfers-page-state") ?? {},
+			managementHistory: loadManagementHistory(),
+			transferHistory: loadTransferHistory(),
 		},
 	};
 }

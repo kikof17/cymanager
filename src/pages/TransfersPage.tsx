@@ -17,13 +17,15 @@ import {
   getFinanceSnapshot,
 } from "../lib/storage/financeStorage";
 import { loadRidersFromStorage, saveRidersToStorage } from "../lib/storage/localStorage";
+import { appendManagementHistoryEntry } from "../lib/storage/managementHistoryStorage";
 import { loadClubSettings } from "../lib/storage/settingsStorage";
 import { loadTeamStrategy } from "../lib/storage/teamStrategyStorage";
+import { appendTransferHistoryEntry, loadTransferHistory } from "../lib/storage/transferHistoryStorage";
 import { formatCurrency, formatInteger, parseFrenchInteger } from "../lib/utils/numbers";
 import { initialRiders } from "../store/initialState";
 import type { Rider } from "../types/rider";
 import type { ClubSettings } from "../types/settings";
-import type { TransferMarketCandidate } from "../types/transfer";
+import type { TransferHistoryEntry, TransferMarketCandidate } from "../types/transfer";
 
 type TransferSortKey =
   | "name"
@@ -508,6 +510,7 @@ export default function TransfersPage() {
   const [transferDate, setTransferDate] = useState(persistedState.transferDate);
   const [sortConfig, setSortConfig] = useState<TransferSortConfig>(persistedState.sortConfig);
   const [pendingRemovalCandidateId, setPendingRemovalCandidateId] = useState<string>("");
+  const [transferHistory, setTransferHistory] = useState<TransferHistoryEntry[]>(() => loadTransferHistory());
 
   const settings = useMemo(() => loadClubSettings(), []);
   const teamStrategy = useMemo(() => loadTeamStrategy(), []);
@@ -693,10 +696,23 @@ export default function TransfersPage() {
     setCandidates(mergeResult.mergedCandidates);
     setSelectedCandidateId(nextSelectedId);
     setShortlistedCandidateIds(nextShortlist);
+    setTransferHistory(() =>
+      appendTransferHistoryEntry({
+        kind: "market-import",
+        note: `${result.candidates.length} coureur(s) importé(s), ${mergeResult.addedCount} ajouté(s), ${mergeResult.updatedCount} mis à jour.`,
+        shortlistSize: nextShortlist.length,
+      })
+    );
     setMessages([
       `${result.candidates.length} coureur(s) importé(s) : ${mergeResult.addedCount} ajouté(s), ${mergeResult.updatedCount} mis à jour. Analyse conservée jusqu'à suppression manuelle.`,
       ...result.errors,
     ]);
+    appendManagementHistoryEntry({
+      area: "transfers",
+      kind: "market-review",
+      title: "Marché des transferts réactualisé",
+      note: `${result.candidates.length} coureur(s) analysé(s), ${mergeResult.addedCount} ajouté(s), ${mergeResult.updatedCount} mis à jour.`,
+    });
   }
 
   function handleClearAnalysis() {
@@ -706,9 +722,25 @@ export default function TransfersPage() {
   }
 
   function handleAddToShortlist(candidateId: string) {
-    setShortlistedCandidateIds((current) =>
-      current.includes(candidateId) ? current : [...current, candidateId]
-    );
+    const analysis = analyses.find((entry) => entry.rider.id === candidateId);
+
+    setShortlistedCandidateIds((current) => {
+      if (current.includes(candidateId)) {
+        return current;
+      }
+
+      const next = [...current, candidateId];
+      setTransferHistory(() =>
+        appendTransferHistoryEntry({
+          kind: "shortlist-add",
+          candidateId,
+          riderName: analysis?.rider.name,
+          note: `${analysis?.rider.name ?? "Coureur"} ajouté à la shortlist.`,
+          shortlistSize: next.length,
+        })
+      );
+      return next;
+    });
   }
 
   function handleRequestCandidateRemoval(candidateId: string) {
@@ -743,6 +775,15 @@ export default function TransfersPage() {
       `${removedCandidate?.rider.name ?? "Le coureur"} a été retiré manuellement du comparatif.`,
       ...current,
     ]);
+    setTransferHistory(() =>
+      appendTransferHistoryEntry({
+        kind: "candidate-remove",
+        candidateId: pendingRemovalCandidateId,
+        riderName: removedCandidate?.rider.name,
+        note: `${removedCandidate?.rider.name ?? "Un coureur"} retiré manuellement du comparatif.`,
+        shortlistSize: shortlistedCandidateIds.filter((candidateId) => candidateId !== pendingRemovalCandidateId).length,
+      })
+    );
     setPendingRemovalCandidateId("");
   }
 
@@ -751,9 +792,25 @@ export default function TransfersPage() {
   }
 
   function handleRemoveFromShortlist(candidateId: string) {
-    setShortlistedCandidateIds((current) =>
-      current.filter((id) => id !== candidateId)
-    );
+    const analysis = analyses.find((entry) => entry.rider.id === candidateId);
+
+    setShortlistedCandidateIds((current) => {
+      const next = current.filter((id) => id !== candidateId);
+
+      if (next.length !== current.length) {
+        setTransferHistory(() =>
+          appendTransferHistoryEntry({
+            kind: "shortlist-remove",
+            candidateId,
+            riderName: analysis?.rider.name,
+            note: `${analysis?.rider.name ?? "Coureur"} retiré de la shortlist.`,
+            shortlistSize: next.length,
+          })
+        );
+      }
+
+      return next;
+    });
   }
 
   function handleSort(key: TransferSortKey) {
@@ -831,6 +888,25 @@ export default function TransfersPage() {
     );
 
     window.dispatchEvent(new Event("cymanager:finance-updated"));
+    setTransferHistory(() =>
+      appendTransferHistoryEntry({
+        kind: "recruit",
+        candidateId: analysis.rider.id,
+        riderName: analysis.rider.name,
+        note: `${analysis.rider.name} recruté depuis ${analysis.candidate.auction.seller || analysis.rider.currentTeam || "le marché"}.`,
+        amount: effectiveTransferAmount,
+        shortlistSize: shortlistedCandidateIds.length,
+        occurredAt: transferDate,
+      })
+    );
+    appendManagementHistoryEntry({
+      area: "transfers",
+      kind: "recruitment",
+      title: `Recrutement validé : ${analysis.rider.name}`,
+      note: `${analysis.rider.name} rejoint l'effectif depuis ${analysis.candidate.auction.seller || analysis.rider.currentTeam || "le marché"}.`,
+      amount: effectiveTransferAmount,
+      occurredAt: transferDate,
+    });
 
     setMessages([
       `${analysis.rider.name} a été intégré à l'effectif local et l'achat a été inscrit en finance pour ${formatCurrency(effectiveTransferAmount)}.`,
@@ -1151,6 +1227,28 @@ export default function TransfersPage() {
         )}
       </Card>
 
+      <Card title="Historique shortlist et transferts">
+        {transferHistory.length === 0 ? (
+          <p className="muted">Aucun historique enregistré pour le moment.</p>
+        ) : (
+          <div className="transfer-history-list">
+            {transferHistory.map((entry) => (
+              <div key={entry.id} className="transfer-history-item">
+                <div className="transfer-history-meta">
+                  <span className="transfer-history-badge">{getTransferHistoryBadgeLabel(entry.kind)}</span>
+                  <span className="transfer-history-date">{formatTransferHistoryDate(entry.occurredAt)}</span>
+                </div>
+                <p className="transfer-history-note">{entry.note}</p>
+                <div className="transfer-history-details">
+                  {entry.amount !== undefined ? <span>Montant : {formatCurrency(entry.amount)}</span> : null}
+                  {entry.shortlistSize !== undefined ? <span>Shortlist : {entry.shortlistSize}</span> : null}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+
         {selectedAnalysis ? (
           <>
           <div className="two-columns transfer-layout">
@@ -1333,4 +1431,35 @@ export default function TransfersPage() {
       />
     </>
   );
+}
+
+function formatTransferHistoryDate(value: string): string {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
+function getTransferHistoryBadgeLabel(kind: TransferHistoryEntry["kind"]): string {
+  if (kind === "recruit") {
+    return "Achat";
+  }
+
+  if (kind === "market-import") {
+    return "Import";
+  }
+
+  if (kind === "shortlist-add" || kind === "shortlist-remove") {
+    return "Shortlist";
+  }
+
+  return "Comparatif";
 }

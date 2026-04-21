@@ -1,4 +1,5 @@
 import type { Rider } from "../../types/rider";
+import { appendRiderHistorySnapshot } from "./riderHistoryStorage";
 
 const RIDERS_STORAGE_KEY = "cymanager:riders";
 
@@ -100,6 +101,7 @@ export function saveRidersToStorage(riders: Rider[]): void {
       .filter((rider): rider is Rider => rider !== null);
 
     localStorage.setItem(RIDERS_STORAGE_KEY, JSON.stringify(normalizedRiders));
+    appendRiderHistorySnapshot(normalizedRiders);
   } catch (error) {
     console.error("Erreur d'écriture localStorage riders", error);
   }

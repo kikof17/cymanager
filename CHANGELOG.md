@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.5.0 - 2026-04-21
+
+- Stabilisation du cycle mémoire club avec historique Transferts, shortlist, journal de gestion transverse et historique roster.
+- Lecture roster enrichie avec snapshots hebdomadaires, KPIs de capital, alertes métier, filtres persistants et timeline par coureur.
+- Fiabilisation des courses et résultats avec dates métier explicites, regroupement des courses à étapes et meilleure traçabilité Calendrier / Résultats.
+- Documentation produit, changelog applicatif et libellés de release alignés sur une version 1.5.0 désormais stabilisée.
+
 ## 1.4.0 - 2026-04-19
 
 - Ajout d'un export / import complet du club avec schéma de sauvegarde versionné.

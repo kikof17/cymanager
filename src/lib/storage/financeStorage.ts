@@ -8,6 +8,8 @@ import { getProRacePrize } from "../finance/racePrizeTable";
 import { getAllResultsFromStorage } from "../scoring/extractPoints";
 import { loadRidersFromStorage } from "./localStorage";
 import { loadManualTodos } from "./todoStorage";
+import { getStoredResultCategory } from "../utils/courseCategory";
+import { getTodoScheduledAt } from "../utils/courseDates";
 import type {
   FinanceEntry,
   FinanceEntryCategory,
@@ -145,20 +147,6 @@ function normalizeComparable(value: string): string {
     .trim();
 }
 
-function inferCategoryFromCourseTitle(title: string): ResultCategory {
-  const normalized = normalizeComparable(title);
-
-  if (normalized.includes("u25")) {
-    return "u25";
-  }
-
-  if (normalized.includes("u21")) {
-    return "u21";
-  }
-
-  return "pro";
-}
-
 function createId(prefix: string): string {
   if (
     typeof crypto !== "undefined" &&
@@ -271,7 +259,7 @@ function isStoredRaceResult(value: unknown): value is StoredRaceResult {
 
 function toStoredRaceResult(
   value: unknown,
-  fallbackTitle: string
+  fallbackCourse: ReturnType<typeof loadManualTodos>[number] | undefined
 ): StoredRaceResult | null {
   if (isStoredRaceResult(value)) {
     return value;
@@ -280,7 +268,7 @@ function toStoredRaceResult(
   if (typeof value === "string" && value.trim().length > 0) {
     return {
       result: value,
-      category: inferCategoryFromCourseTitle(fallbackTitle),
+      category: getStoredResultCategory(value, fallbackCourse),
     };
   }
 
@@ -341,45 +329,8 @@ function buildRacePrizeSourceKey(entry: CoursePrizeBreakdown): string {
   ].join(":");
 }
 
-function parseCourseDateLabel(value: string): string | null {
-  if (!value) {
-    return null;
-  }
-
-  const match = value.match(/(\d{2})[\/-](\d{2})[\/-](\d{4})/);
-
-  if (!match) {
-    return null;
-  }
-
-  const [, day, month, year] = match;
-  const parsed = new Date(`${year}-${month}-${day}T12:00:00`);
-
-  if (Number.isNaN(parsed.getTime())) {
-    return null;
-  }
-
-  return parsed.toISOString();
-}
-
 function resolveCourseOccurredAt(course: ReturnType<typeof loadManualTodos>[number] | undefined): string {
-  if (!course) {
-    return new Date().toISOString();
-  }
-
-  const detailsDate = parseCourseDateLabel(course.details ?? "");
-
-  if (detailsDate) {
-    return detailsDate;
-  }
-
-  const titleDate = parseCourseDateLabel(course.title);
-
-  if (titleDate) {
-    return titleDate;
-  }
-
-  return course.createdAt || new Date().toISOString();
+  return getTodoScheduledAt(course) ?? new Date().toISOString();
 }
 
 function buildCoursePrizeEntries(settings: ClubSettings): CoursePrizeBreakdown[] {
@@ -389,7 +340,7 @@ function buildCoursePrizeEntries(settings: ClubSettings): CoursePrizeBreakdown[]
 
   return Object.entries(results).flatMap(([courseId, stored]) => {
     const course = courseMap.get(courseId);
-    const storedRaceResult = toStoredRaceResult(stored, course?.title ?? courseId);
+    const storedRaceResult = toStoredRaceResult(stored, course);
 
     if (!storedRaceResult || storedRaceResult.category !== "pro") {
       return [];

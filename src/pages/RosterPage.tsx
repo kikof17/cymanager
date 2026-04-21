@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Card from "../components/common/Card";
 import PageTitle from "../components/common/PageTitle";
 import RosterAnalysisPanel from "../components/roster/RosterAnalysisPanel";
+import RiderHistoryCard from "../components/roster/RiderHistoryCard";
 import RiderTable from "../components/roster/RiderTable";
 import RosterImportBox from "../components/roster/RosterImportBox";
 import RosterStats from "../components/roster/RosterStats";
@@ -11,6 +12,7 @@ import {
   getFinanceSnapshot,
   getRecentPrizeIncomeByRider,
 } from "../lib/storage/financeStorage";
+import { loadRiderHistorySnapshots } from "../lib/storage/riderHistoryStorage";
 import { loadRidersFromStorage, saveRidersToStorage } from "../lib/storage/localStorage";
 import { loadClubSettings } from "../lib/storage/settingsStorage";
 import { loadTeamStrategy, saveTeamStrategy } from "../lib/storage/teamStrategyStorage";
@@ -29,6 +31,7 @@ export default function RosterPage() {
   const [messages, setMessages] = useState<string[]>([]);
   const [filter, setFilter] = useState("");
   const [teamStrategy, setTeamStrategy] = useState<TeamBuildingStrategy>(loadTeamStrategy);
+  const [riderHistorySnapshots, setRiderHistorySnapshots] = useState(loadRiderHistorySnapshots);
 
   const settings = useMemo(() => loadClubSettings(), []);
   const financeSnapshot = useMemo(() => getFinanceSnapshot(settings, riders), [settings, riders]);
@@ -44,6 +47,7 @@ export default function RosterPage() {
   useEffect(() => {
     if (riders.length > 0) {
       saveRidersToStorage(riders);
+      setRiderHistorySnapshots(loadRiderHistorySnapshots());
     }
   }, [riders]);
 
@@ -97,7 +101,7 @@ export default function RosterPage() {
     <div className="page-stack">
       <PageTitle
         title="Effectif"
-        subtitle="Import brut, profils automatiques et affichage détaillé des coureurs."
+        subtitle="Import brut, profils automatiques, mémoire sportive et lecture des tendances de l'effectif."
       />
 
       <RosterStats riders={riders} weeklySalaryExpense={financeSnapshot.weeklySalaryExpense} />
@@ -115,6 +119,13 @@ export default function RosterPage() {
         availableHistoryWeeks={availableHistoryWeeks}
         strategy={teamStrategy}
         onStrategyChange={handleStrategyChange}
+      />
+
+      <RiderHistoryCard
+        riders={riders}
+        snapshots={riderHistorySnapshots}
+        recentPrizeIncomeByRider={recentPrizeIncomeByRider}
+        settings={settings}
       />
 
       <div className="two-columns">

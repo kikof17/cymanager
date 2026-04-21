@@ -7,6 +7,8 @@ import { getFinanceSnapshot } from "../lib/storage/financeStorage";
 import { loadRidersFromStorage } from "../lib/storage/localStorage";
 import { loadClubSettings } from "../lib/storage/settingsStorage";
 import { loadManualTodos } from "../lib/storage/todoStorage";
+import { getStoredResultCategory } from "../lib/utils/courseCategory";
+import { getTodoScheduledAt } from "../lib/utils/courseDates";
 import { formatCurrency, formatInteger } from "../lib/utils/numbers";
 import { initialRiders } from "../store/initialState";
 import type { Rider } from "../types/rider";
@@ -48,20 +50,6 @@ function normalizeComparable(value: string): string {
     .trim();
 }
 
-function detectCourseCategory(title: string): ResultCategory {
-  const normalized = normalizeComparable(title);
-
-  if (normalized.includes("u25")) {
-    return "u25";
-  }
-
-  if (normalized.includes("u21")) {
-    return "u21";
-  }
-
-  return "pro";
-}
-
 function formatDateLabel(value: string): string {
   const date = new Date(value);
 
@@ -101,18 +89,18 @@ function parsePosition(value: string | undefined): number | null {
 
 function getStoredResultPayload(
   stored: StoredResult,
-  fallbackTitle: string
+  course: ReturnType<typeof loadManualTodos>[number] | undefined
 ): { result: string; category: ResultCategory } {
   if (typeof stored === "string") {
     return {
       result: stored,
-      category: detectCourseCategory(fallbackTitle),
+      category: getStoredResultCategory(stored, course),
     };
   }
 
   return {
     result: stored.result,
-    category: stored.category,
+    category: getStoredResultCategory(stored, course),
   };
 }
 
@@ -125,8 +113,8 @@ function extractTeamResultRows(): TeamResultRow[] {
     .flatMap(([courseId, stored]) => {
       const todo = courseMap.get(courseId);
       const courseTitle = todo?.title ?? courseId;
-      const occurredAt = todo?.createdAt ?? new Date().toISOString();
-      const payload = getStoredResultPayload(stored, courseTitle);
+      const occurredAt = getTodoScheduledAt(todo) ?? todo?.createdAt ?? new Date().toISOString();
+      const payload = getStoredResultPayload(stored, todo);
       const lines = payload.result.trim().split(/\r?\n/);
 
       if (lines.length < 2) {

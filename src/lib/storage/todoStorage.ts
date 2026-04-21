@@ -1,4 +1,6 @@
 import type { TodoItem } from "../../types/todo";
+import { getTodoScheduledAt } from "../utils/courseDates";
+import { inferResultCategory, normalizeResultCategory } from "../utils/courseCategory";
 
 const MANUAL_TODOS_KEY = "cymanager:manual-todos";
 const TODO_STATUS_KEY = "cymanager:todo-status";
@@ -50,6 +52,29 @@ function normalizeTodoItem(value: unknown): TodoItem | null {
     priority,
     category,
     createdAt: toIsoDate(value.createdAt),
+    scheduledAt:
+      typeof value.scheduledAt === "string" && value.scheduledAt.trim().length > 0
+        ? toIsoDate(value.scheduledAt) ?? value.scheduledAt
+        : category === "courses"
+          ? getTodoScheduledAt({
+              title: value.title,
+              details: typeof value.details === "string" ? value.details : "",
+              createdAt: toIsoDate(value.createdAt),
+            }) ?? undefined
+          : undefined,
+    courseCategory:
+      normalizeResultCategory(value.courseCategory) ??
+      (category === "courses"
+        ? inferResultCategory(
+            typeof value.title === "string" ? value.title : "",
+            typeof value.details === "string" ? value.details : ""
+          )
+        : undefined),
+    stageNumber:
+      typeof value.stageNumber === "number" && Number.isInteger(value.stageNumber)
+        ? value.stageNumber
+        : undefined,
+    tourKey: typeof value.tourKey === "string" ? value.tourKey : undefined,
     raceKey: typeof value.raceKey === "string" ? value.raceKey : undefined,
   };
 }

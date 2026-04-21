@@ -1,4 +1,6 @@
 import type { ParsedRace } from '../../types/race';
+import { parseCourseDateLabel } from '../utils/courseDates';
+import { extractStageNumber } from '../utils/stageRaces';
 
 const CALENDAR_RACE_PROFILE_KEY = 'cymanager:calendar-race-profiles';
 
@@ -57,6 +59,16 @@ function normalizeParsedRace(value: unknown): ParsedRace | null {
     name: value.name.trim(),
     raceType,
     distanceKm: Math.max(0, toFiniteNumber(value.distanceKm)),
+    raceKey: typeof value.raceKey === 'string' && value.raceKey.trim().length > 0 ? value.raceKey : undefined,
+    scheduledAt:
+      typeof value.scheduledAt === 'string' && value.scheduledAt.trim().length > 0
+        ? parseCourseDateLabel(value.scheduledAt) ?? value.scheduledAt
+        : undefined,
+    stageNumber:
+      typeof value.stageNumber === 'number' && Number.isInteger(value.stageNumber)
+        ? value.stageNumber
+        : extractStageNumber(value.name) ?? undefined,
+    tourKey: typeof value.tourKey === 'string' ? value.tourKey : undefined,
     detectedProfile,
     weights: {
       flat: toFiniteNumber(weightsCandidate.flat),
@@ -118,7 +130,7 @@ function saveStore(store: CalendarRaceProfileStore): void {
 
 export function saveCalendarRaceProfile(raceKey: string, profile: ParsedRace): void {
   const store = loadStore();
-  store[raceKey] = profile;
+  store[raceKey] = { ...profile, raceKey };
   saveStore(store);
 }
 

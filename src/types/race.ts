@@ -28,6 +28,10 @@ export type ParsedRace = {
   name: string;
   raceType: RaceType;
   distanceKm: number;
+  raceKey?: string;
+  scheduledAt?: string;
+  stageNumber?: number;
+  tourKey?: string;
   detectedProfile: RaceProfileType;
   weights: RaceProfileWeights;
   summary: string[];

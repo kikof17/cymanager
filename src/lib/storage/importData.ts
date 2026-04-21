@@ -14,9 +14,12 @@ import { loadFinanceState } from "./financeStorage";
 import { normalizeLastRaceSnapshot } from "./lastRaceStorage";
 import { loadRidersFromStorage } from "./localStorage";
 import { normalizeRaceSetupStore } from "./raceStorage";
+import { normalizeRiderHistorySnapshots } from "./riderHistoryStorage";
 import { loadClubSettings } from "./settingsStorage";
 import { normalizeTeamStrategy } from "./teamStrategyStorage";
+import { normalizeManagementHistory } from "./managementHistoryStorage";
 import { normalizeManualTodos, normalizeTodoStatuses } from "./todoStorage";
+import { normalizeTransferHistory } from "./transferHistoryStorage";
 import { normalizeStoredResults } from "../scoring/extractPoints";
 
 function isObjectRecord(value: unknown): value is Record<string, unknown> {
@@ -76,6 +79,7 @@ export type ImportBackupResult = {
 const BACKUP_SLOT_LABELS: Record<string, string> = {
 	"cymanager:club-settings": "Paramètres club",
 	"cymanager:riders": "Effectif",
+	"cymanager:rider-history": "Historique coureurs",
 	"cymanager:finance": "Finance",
 	"cymanager:team-strategy": "Stratégie d'équipe",
 	"cymanager:manual-todos": "Todos manuels",
@@ -85,6 +89,8 @@ const BACKUP_SLOT_LABELS: Record<string, string> = {
 	"cymanager:results": "Résultats",
 	"cymanager:last-race": "Dernière course",
 	"cymanager:transfers-page-state": "État Transferts",
+	"cymanager:management-history": "Journal de gestion",
+	"cymanager:transfer-history": "Historique Transferts",
 };
 
 function countEntries(value: unknown): number {
@@ -202,6 +208,7 @@ function sanitizeBackupData(data: CymanagerBackupData): CymanagerBackupData {
 			return [];
 		}
 	})();
+	sanitized.riderHistory = data.riderHistory === undefined ? undefined : normalizeRiderHistorySnapshots(data.riderHistory);
 	sanitized.finance = data.finance === undefined ? undefined : (() => {
 		try {
 			const current = localStorage.getItem("cymanager:finance");
@@ -232,6 +239,8 @@ function sanitizeBackupData(data: CymanagerBackupData): CymanagerBackupData {
 		: typeof data.transfersPageState === "object" && data.transfersPageState !== null && !Array.isArray(data.transfersPageState)
 			? data.transfersPageState
 			: undefined;
+	sanitized.managementHistory = data.managementHistory === undefined ? undefined : normalizeManagementHistory(data.managementHistory);
+	sanitized.transferHistory = data.transferHistory === undefined ? undefined : normalizeTransferHistory(data.transferHistory);
 
 	return sanitized;
 }

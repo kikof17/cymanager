@@ -5,6 +5,7 @@ import { loadRaceSetupStore, saveRaceSetupStore } from "./raceStorage";
 import { syncFinanceWithSettings } from "./financeStorage";
 import { loadClubSettings } from "./settingsStorage";
 import { loadManualTodos, loadTodoStatuses } from "./todoStorage";
+import { buildLegacyRaceKey } from "../utils/raceIdentity";
 
 type DiagnosticSeverity = "info" | "warning";
 
@@ -183,6 +184,9 @@ export function getStorageDiagnostics(): StorageDiagnosticsSummary {
       .map((todo) => todo.raceKey)
       .filter((raceKey): raceKey is string => typeof raceKey === "string" && raceKey.length > 0)
   );
+  const calendarProfileLegacyKeys = new Set(
+    Object.values(normalizedCalendarProfiles).map((profile) => buildLegacyRaceKey(profile))
+  );
   const raceSetupOrphans = Object.keys(normalizedRaceSetup).filter((raceKey) => !calendarRaceKeys.has(raceKey));
   const calendarProfileOrphans = Object.keys(normalizedCalendarProfiles).filter(
     (raceKey) => !calendarRaceKeys.has(raceKey)
@@ -230,6 +234,7 @@ export function getStorageDiagnostics(): StorageDiagnosticsSummary {
   if (
     lastRaceKey &&
     !calendarRaceKeys.has(lastRaceKey) &&
+    !calendarProfileLegacyKeys.has(lastRaceKey) &&
     !Object.prototype.hasOwnProperty.call(normalizedCalendarProfiles, lastRaceKey) &&
     !Object.prototype.hasOwnProperty.call(normalizedRaceSetup, lastRaceKey)
   ) {

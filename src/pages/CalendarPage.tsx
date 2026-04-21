@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Card from '../components/common/Card';
 import PageTitle from '../components/common/PageTitle';
 import RaceSetupTable from '../components/races/RaceSetupTable';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { getRiderStrengths } from '../lib/scoring/strengths';
 import { loadCalendarRaceProfile } from '../lib/storage/calendarRaceProfile';
-import type { StoredResult } from '../lib/scoring/extractPoints';
+import { saveAllResultsToStorage, type StoredResult } from '../lib/scoring/extractPoints';
 import { syncFinanceWithSettings } from '../lib/storage/financeStorage';
+import { appendManagementHistoryEntry } from '../lib/storage/managementHistoryStorage';
 import { loadClubSettings } from '../lib/storage/settingsStorage';
+import { getTodoResultCategory } from '../lib/utils/courseCategory';
+import { getTodoScheduledAt } from '../lib/utils/courseDates';
+import { getCourseDisplayTitle, groupCourseTodos } from '../lib/utils/stageRaces';
 
 import { saveManualTodos, loadManualTodos, loadTodoStatuses, saveTodoStatuses } from '../lib/storage/todoStorage';
 import type { RaceRiderScore, RiderRaceSetup } from '../types/race';
@@ -28,6 +32,14 @@ function loadStoredResults(): Record<string, StoredResult> {
   } catch {
     return {};
   }
+}
+
+function getStoredResultText(result: StoredResult | undefined): string {
+  if (!result) {
+    return '';
+  }
+
+  return typeof result === 'string' ? result : result.result;
 }
 
 function loadStoredRiders(): Rider[] {
@@ -91,6 +103,10 @@ const CalendarPage: React.FC = () => {
     loadManualTodos().filter((todo) => todo.id.startsWith('calendar-'))
   );
   const [statuses, setStatuses] = useState<Record<string, 'todo' | 'done'>>(loadTodoStatuses);
+  const groupedCalendarTodos = useMemo(
+    () => groupCourseTodos(calendarTodos),
+    [calendarTodos]
+  );
 
   // Parsing multi-lignes
   // parseLines supprimé (plus utilisé)
@@ -103,8 +119,21 @@ const CalendarPage: React.FC = () => {
   // Gestion du statut (coché ou non)
   function handleToggleStatus(id: string) {
     setStatuses((current) => {
-      const next: Record<string, "todo" | "done"> = { ...current, [id]: current[id] === 'done' ? 'todo' : 'done' };
+      const nextStatus = current[id] === 'done' ? 'todo' : 'done';
+      const next: Record<string, "todo" | "done"> = { ...current, [id]: nextStatus };
       saveTodoStatuses(next);
+      const todo = calendarTodos.find((item) => item.id === id);
+
+      if (todo) {
+        appendManagementHistoryEntry({
+          area: 'calendar',
+          kind: 'calendar-status',
+          title: `${todo.title} marqué ${nextStatus === 'done' ? 'fait' : 'à faire'}`,
+          note: `${todo.title} a été basculé dans le calendrier au statut ${nextStatus === 'done' ? 'traité' : 'à traiter'}.`,
+          occurredAt: getTodoScheduledAt(todo) ?? todo.createdAt,
+        });
+      }
+
       return next;
     });
   }
@@ -114,6 +143,8 @@ const CalendarPage: React.FC = () => {
   // Confirmation suppression
   const [confirmDeleteId, setConfirmDeleteId] = useState<string|null>(null);
   function handleDeleteCalendarTodo(id: string) {
+    const deletedTodo = calendarTodos.find((todo) => todo.id === id);
+
     setCalendarTodos((current) => {
       const next = current.filter((t) => t.id !== id);
       // Mise à jour du localStorage
@@ -128,34 +159,137 @@ const CalendarPage: React.FC = () => {
       });
       return next;
     });
+
+    if (deletedTodo) {
+      appendManagementHistoryEntry({
+        area: 'calendar',
+        kind: 'calendar-delete',
+        title: `Course retirée du calendrier : ${deletedTodo.title}`,
+        note: `${deletedTodo.title} a été retirée du calendrier local.`,
+        occurredAt: getTodoScheduledAt(deletedTodo) ?? deletedTodo.createdAt,
+      });
+    }
+
     setConfirmDeleteId(null);
   }
 
   // Gestion du module résultat (état local)
   const [resultModalId, setResultModalId] = useState<string|null>(null);
-  const [resultInput, setResultInput] = useState('');
+  const [resultDrafts, setResultDrafts] = useState<Record<string, string>>({});
+  const [activeResultCourseId, setActiveResultCourseId] = useState<string | null>(null);
+
+  const resultModalCourses = useMemo(() => {
+    if (!resultModalId) {
+      return [];
+    }
+
+    const matchingGroup = groupedCalendarTodos.find((group) =>
+      group.todos.some((todo) => todo.id === resultModalId)
+    );
+
+    return matchingGroup?.todos ?? [];
+  }, [groupedCalendarTodos, resultModalId]);
+
+  const activeResultCourse = useMemo(
+    () => resultModalCourses.find((course) => course.id === activeResultCourseId) ?? resultModalCourses[0] ?? null,
+    [activeResultCourseId, resultModalCourses]
+  );
+
+  const completedResultCount = useMemo(
+    () => resultModalCourses.filter((course) => (resultDrafts[course.id] ?? '').trim().length > 0).length,
+    [resultDrafts, resultModalCourses]
+  );
+
+  function persistResultsForCourses(courseIds: string[]) {
+    if (courseIds.length === 0) {
+      return;
+    }
+
+    const map = loadStoredResults();
+    const savedCourses: TodoItem[] = [];
+
+    courseIds.forEach((courseId) => {
+      const course = calendarTodos.find((todo) => todo.id === courseId);
+      const result = (resultDrafts[courseId] ?? '').trim();
+
+      if (!course || result.length === 0) {
+        return;
+      }
+
+      map[courseId] = { result, category: getTodoResultCategory(course) };
+      savedCourses.push(course);
+    });
+
+    saveAllResultsToStorage(map);
+    const settings = loadClubSettings();
+    syncFinanceWithSettings(settings, settings.financialBalance);
+    window.dispatchEvent(new Event('cymanager:finance-updated'));
+
+    if (savedCourses.length > 0) {
+      const primaryCourse = savedCourses[0];
+      appendManagementHistoryEntry({
+        area: 'results',
+        kind: 'result-save',
+        title:
+          savedCourses.length > 1
+            ? `Résultats enregistrés pour ${savedCourses.length} étape(s)`
+            : `Résultat enregistré : ${primaryCourse.title}`,
+        note:
+          savedCourses.length > 1
+            ? `${savedCourses.map((course) => course.stageNumber ? `E${course.stageNumber}` : course.title).join(', ')}.`
+            : `${primaryCourse.title} enregistré avec catégorie ${getTodoResultCategory(primaryCourse).toUpperCase()}.`,
+        occurredAt: getTodoScheduledAt(primaryCourse) ?? primaryCourse.createdAt,
+      });
+    }
+  }
+
   function handleOpenResultModal(id: string) {
+    const storedResults = loadStoredResults();
+    const matchingGroup = groupedCalendarTodos.find((group) =>
+      group.todos.some((todo) => todo.id === id)
+    );
+    const modalCourses = matchingGroup?.todos ?? [];
+
     setResultModalId(id);
-    setResultInput('');
+    setActiveResultCourseId(id);
+    setResultDrafts(
+      modalCourses.reduce<Record<string, string>>((drafts, course) => {
+        drafts[course.id] = getStoredResultText(storedResults[course.id]);
+        return drafts;
+      }, {})
+    );
   }
   function handleCloseResultModal() {
     setResultModalId(null);
-    setResultInput('');
+    setActiveResultCourseId(null);
+    setResultDrafts({});
   }
-  function handleSaveResult() {
-    if (resultModalId) {
-      // Sauvegarde dans localStorage
-      const map = loadStoredResults();
-      const course = calendarTodos.find(t => t.id === resultModalId);
-      const category = detectCourseCategory(course?.title || "");
-      map[resultModalId] = { result: resultInput, category };
-      localStorage.setItem('cymanager:results', JSON.stringify(map));
-      const settings = loadClubSettings();
-      syncFinanceWithSettings(settings, settings.financialBalance);
-      window.dispatchEvent(new Event('cymanager:finance-updated'));
+
+  function handleSaveCurrentResult() {
+    if (!activeResultCourse) {
+      return;
     }
-    setResultModalId(null);
-    setResultInput('');
+
+    persistResultsForCourses([activeResultCourse.id]);
+  }
+
+  function handleSaveAllResults() {
+    persistResultsForCourses(resultModalCourses.map((course) => course.id));
+  }
+
+  function handleSaveAndNextResult() {
+    if (!activeResultCourse) {
+      return;
+    }
+
+    persistResultsForCourses([activeResultCourse.id]);
+
+    const currentIndex = resultModalCourses.findIndex((course) => course.id === activeResultCourse.id);
+    const nextCourse = resultModalCourses[currentIndex + 1];
+
+    if (nextCourse) {
+      setActiveResultCourseId(nextCourse.id);
+    }
   }
 
   // Affichage des étapes déjà ajoutées (code couleur harmonisé)
@@ -239,8 +373,9 @@ const CalendarPage: React.FC = () => {
           />
           <div className="calendar-course-copy">
             <div className="calendar-course-title">{todo.title}</div>
+            {todo.tourKey ? <div className="calendar-course-subtitle">{getCourseDisplayTitle(todo)}</div> : null}
             <div className="calendar-course-details">{todo.details?.split('\n').join(' | ')}</div>
-            <span className="calendar-course-date">{formatCalendarDate(todo.createdAt)}</span>
+            <span className="calendar-course-date">{formatCalendarDate(getTodoScheduledAt(todo) ?? todo.createdAt)}</span>
           </div>
           <div className="calendar-course-actions">
           <button
@@ -275,31 +410,83 @@ const CalendarPage: React.FC = () => {
   // Module résultat (modal simple)
   function renderResultModal() {
     if (!resultModalId) return null;
-    const course = calendarTodos.find(t => t.id === resultModalId);
+
     return (
       <div className="calendar-result-overlay">
         <div className="calendar-result-dialog">
-          <h3 className="calendar-result-title">Résultat pour : {course?.title}</h3>
+          <div className="calendar-result-header">
+            <div>
+              <h3 className="calendar-result-title">
+                {resultModalCourses.length > 1 ? 'Résultats du tour' : 'Résultat de course'}
+              </h3>
+              <p className="calendar-result-subtitle">
+                {resultModalCourses.length > 1
+                  ? `${completedResultCount}/${resultModalCourses.length} étape(s) renseignée(s)`
+                  : activeResultCourse?.title}
+              </p>
+            </div>
+            {resultModalCourses.length > 1 ? (
+              <span className="calendar-result-badge">Saisie séquentielle</span>
+            ) : null}
+          </div>
+
+          {resultModalCourses.length > 1 ? (
+            <div className="calendar-result-stage-list">
+              {resultModalCourses.map((course) => {
+                const isActive = course.id === activeResultCourse?.id;
+                const isFilled = (resultDrafts[course.id] ?? '').trim().length > 0;
+
+                return (
+                  <button
+                    key={course.id}
+                    type="button"
+                    className={isActive ? 'calendar-result-stage-chip calendar-result-stage-chip-active' : 'calendar-result-stage-chip'}
+                    onClick={() => setActiveResultCourseId(course.id)}
+                  >
+                    <span>{course.stageNumber ? `Étape ${course.stageNumber}` : getCourseDisplayTitle(course)}</span>
+                    <span>{isFilled ? 'Renseigné' : 'À saisir'}</span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
+
+          <div className="calendar-result-course-meta">
+            <strong>{activeResultCourse?.title}</strong>
+            <span>{activeResultCourse ? formatCalendarDate(getTodoScheduledAt(activeResultCourse) ?? activeResultCourse.createdAt) : ''}</span>
+          </div>
+
           <textarea
-            value={resultInput}
-            onChange={e => setResultInput(e.target.value)}
+            value={activeResultCourse ? (resultDrafts[activeResultCourse.id] ?? '') : ''}
+            onChange={(event) => {
+              if (!activeResultCourse) {
+                return;
+              }
+
+              setResultDrafts((current) => ({
+                ...current,
+                [activeResultCourse.id]: event.target.value,
+              }));
+            }}
             rows={12}
             className="textarea calendar-result-input"
             placeholder={"Colle ici le résultat de la course (tableau)"}
           />
           <div className="calendar-result-actions">
             <button className="button" onClick={handleCloseResultModal} type="button">Annuler</button>
-            <button className="button button-primary" onClick={handleSaveResult} type="button">Enregistrer</button>
+            {resultModalCourses.length > 1 ? (
+              <button className="button button-secondary" onClick={handleSaveCurrentResult} type="button">Enregistrer l'étape</button>
+            ) : null}
+            {resultModalCourses.length > 1 ? (
+              <button className="button button-secondary" onClick={handleSaveAndNextResult} type="button">Enregistrer et suivante</button>
+            ) : null}
+            <button className="button button-primary" onClick={resultModalCourses.length > 1 ? handleSaveAllResults : handleSaveCurrentResult} type="button">
+              {resultModalCourses.length > 1 ? 'Tout enregistrer' : 'Enregistrer'}
+            </button>
           </div>
         </div>
       </div>
     );
-  }
-
-  function detectCourseCategory(title: string): "u25" | "u21" | "pro" {
-    if (/u25/i.test(title)) return "u25";
-    if (/u21/i.test(title)) return "u21";
-    return "pro";
   }
 
   return (
@@ -312,7 +499,29 @@ const CalendarPage: React.FC = () => {
       <Card title="Courses à venir et passées" className="calendar-card">
         {calendarTodos.length === 0 && <div className="muted">Aucune étape ajoutée pour l'instant.</div>}
         <div className="page-stack calendar-course-list">
-          {calendarTodos.map(renderCalendarTodo)}
+          {groupedCalendarTodos.map((group) => {
+            const completedCount = group.todos.filter((todo) => statuses[todo.id] === 'done').length;
+
+            return (
+              <div key={group.key} className={group.isTour ? 'calendar-group calendar-group-tour' : 'calendar-group'}>
+                {group.isTour ? (
+                  <div className="calendar-group-header">
+                    <div>
+                      <p className="calendar-group-eyebrow">Tour</p>
+                      <h3 className="calendar-group-title">{group.title}</h3>
+                    </div>
+                    <span className="calendar-group-badge">
+                      {completedCount}/{group.todos.length} étape(s) traitée(s)
+                    </span>
+                  </div>
+                ) : null}
+
+                <div className="page-stack calendar-group-list">
+                  {group.todos.map(renderCalendarTodo)}
+                </div>
+              </div>
+            );
+          })}
         </div>
         <ConfirmDialog
           open={!!confirmDeleteId}

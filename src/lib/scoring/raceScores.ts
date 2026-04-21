@@ -73,7 +73,11 @@ function assignRoleFromScoreIndex(
   return "Équipier";
 }
 
-export function buildRaceAnalysis(riders: Rider[], race: ParsedRace): RaceAnalysisResult {
+export function buildRaceAnalysis(
+  riders: Rider[],
+  race: ParsedRace,
+  lockedSelectedRiderIds?: string[]
+): RaceAnalysisResult {
   // Sélection intelligente : priorité Pro, U25/U21 seulement si effectif Pro insuffisant ou score > plus faible Pro
   const allRanked: RaceRiderScore[] = riders
     .map((rider) => {
@@ -95,22 +99,37 @@ export function buildRaceAnalysis(riders: Rider[], race: ParsedRace): RaceAnalys
   const proRanked = allRanked.filter(r => r.riderCategory === "Pro");
   const u25u21Ranked = allRanked.filter(r => r.riderCategory === "U25" || r.riderCategory === "U21");
 
-  // Prendre d'abord les 7 meilleurs Pro
-  let selected: RaceRiderScore[] = proRanked.slice(0, 7);
+  let selected: RaceRiderScore[];
 
-  // Si moins de 7 Pro, compléter avec U25/U21
-  if (selected.length < 7) {
-    const needed = 7 - selected.length;
-    selected = selected.concat(u25u21Ranked.slice(0, needed));
+  if (Array.isArray(lockedSelectedRiderIds) && lockedSelectedRiderIds.length > 0) {
+    const lockedIds = new Set(lockedSelectedRiderIds);
+    selected = allRanked.filter((rider) => lockedIds.has(rider.riderId)).slice(0, 7);
+
+    if (selected.length < 7) {
+      const selectedIds = new Set(selected.map((rider) => rider.riderId));
+      const missing = allRanked
+        .filter((rider) => !selectedIds.has(rider.riderId))
+        .slice(0, 7 - selected.length);
+      selected = selected.concat(missing);
+    }
   } else {
-    // Si on a 7 Pro, vérifier si un U25/U21 a un score supérieur au plus faible Pro sélectionné
-    const minProScore = selected[selected.length - 1]?.score ?? -Infinity;
-    const betterU25U21 = u25u21Ranked.filter(r => r.score > minProScore);
-    if (betterU25U21.length > 0) {
-      // Remplacer le(s) plus faible(s) Pro par le(s) meilleur(s) U25/U21
-      const combined = selected.concat(betterU25U21).sort((a, b) => b.score - a.score).slice(0, 7);
-      // Toujours priorité au score
-      selected = combined;
+    // Prendre d'abord les 7 meilleurs Pro
+    selected = proRanked.slice(0, 7);
+
+    // Si moins de 7 Pro, compléter avec U25/U21
+    if (selected.length < 7) {
+      const needed = 7 - selected.length;
+      selected = selected.concat(u25u21Ranked.slice(0, needed));
+    } else {
+      // Si on a 7 Pro, vérifier si un U25/U21 a un score supérieur au plus faible Pro sélectionné
+      const minProScore = selected[selected.length - 1]?.score ?? -Infinity;
+      const betterU25U21 = u25u21Ranked.filter(r => r.score > minProScore);
+      if (betterU25U21.length > 0) {
+        // Remplacer le(s) plus faible(s) Pro par le(s) meilleur(s) U25/U21
+        const combined = selected.concat(betterU25U21).sort((a, b) => b.score - a.score).slice(0, 7);
+        // Toujours priorité au score
+        selected = combined;
+      }
     }
   }
 

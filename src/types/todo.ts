@@ -20,6 +20,10 @@ export type TodoItem = {
   priority: TodoPriority;
   category: TodoCategory;
   createdAt: string;
+  scheduledAt?: string;
+  courseCategory?: "pro" | "u25" | "u21";
+  stageNumber?: number;
+  tourKey?: string;
   raceKey?: string; // Ajout pour compatibilité ODC calendrier
 };
 
