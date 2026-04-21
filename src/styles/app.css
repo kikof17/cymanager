@@ -2915,11 +2915,11 @@ select:focus {
   overflow-x: auto;
 }
 
-/* Dans la popup tactique, les tables s'adaptent à la largeur disponible */
+/* Dans la popup tactique, seule la table de sélection s'adapte (pas les ODC) */
 .calendar-result-dialog .table-wrap {
   overflow-x: hidden;
 }
-.calendar-result-dialog .data-table {
+.calendar-result-dialog .table-wrap .data-table {
   min-width: 0;
 }
 
