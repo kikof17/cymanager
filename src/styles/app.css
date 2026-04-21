@@ -1982,7 +1982,7 @@ body {
 }
 
 .app-shell {
-  grid-template-columns: 280px minmax(0, 1fr);
+  grid-template-columns: 240px minmax(0, 1fr);
   background: transparent;
 }
 
@@ -1993,7 +1993,7 @@ body {
   top: 0;
   height: 100svh;
   min-height: 100svh;
-  padding: 22px 16px 18px;
+  padding: 18px 14px 16px;
   background:
     linear-gradient(180deg, rgba(20, 29, 43, 0.98) 0%, rgba(14, 21, 34, 0.98) 100%);
   border-right: 1px solid var(--border);
@@ -2001,7 +2001,7 @@ body {
 }
 
 .sidebar-brand {
-  margin-bottom: 22px;
+  margin-bottom: 18px;
 }
 
 .sidebar-logo {
@@ -2013,15 +2013,15 @@ body {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   min-height: 0;
 }
 
 .nav-link {
-  padding: 10px 12px;
+  padding: 8px 11px;
   border: 1px solid transparent;
   border-radius: 14px;
-  font-size: 0.96rem;
+  font-size: 0.9rem;
 }
 
 .nav-link:hover {
@@ -2039,21 +2039,21 @@ body {
 
 .sidebar-clock {
   margin-top: auto;
-  padding: 14px 12px 2px;
+  padding: 12px 10px 2px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .sidebar-clock-time {
   margin: 0;
   color: var(--text);
-  font-size: 1.02rem;
+  font-size: 0.96rem;
   font-weight: 700;
 }
 
 .sidebar-clock-date {
   margin: 4px 0 0;
   color: var(--text-soft);
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   text-transform: capitalize;
   line-height: 1.35;
 }
@@ -2063,14 +2063,14 @@ body {
 }
 
 .topbar {
-  padding: 28px 36px 18px;
+  padding: 22px 28px 14px;
   background: rgba(11, 17, 27, 0.72);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .topbar-title {
-  font-size: 2rem;
+  font-size: 1.72rem;
   letter-spacing: -0.02em;
 }
 
@@ -2087,13 +2087,13 @@ body {
 
 .page-content {
   width: 100%;
-  max-width: 1500px;
+  max-width: 1680px;
   margin: 0 auto;
-  padding: 20px 36px 40px;
+  padding: 16px 28px 32px;
 }
 
 .page-stack {
-  gap: 24px;
+  gap: 18px;
 }
 
 .page-title-wrap {
@@ -2102,7 +2102,7 @@ body {
 }
 
 .page-title {
-  font-size: 2.05rem;
+  font-size: 1.84rem;
   letter-spacing: -0.025em;
 }
 
@@ -2114,9 +2114,9 @@ body {
 .card {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
   height: 100%;
-  padding: 22px;
+  padding: 18px;
   background:
     linear-gradient(180deg, rgba(24, 35, 52, 0.96) 0%, rgba(18, 27, 40, 0.98) 100%);
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -2126,7 +2126,7 @@ body {
 
 .card-title {
   margin: 0;
-  font-size: 1.02rem;
+  font-size: 0.96rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--text);
@@ -2760,22 +2760,22 @@ select:focus {
 }
 
 .calendar-card {
-  gap: 20px;
+  gap: 16px;
 }
 
 .calendar-course-list {
-  gap: 16px;
+  gap: 14px;
 }
 
 .calendar-group {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .calendar-group-tour {
-  padding: 16px;
-  border-radius: 18px;
+  padding: 14px;
+  border-radius: 16px;
   background: rgba(12, 19, 31, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
@@ -2784,7 +2784,7 @@ select:focus {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 14px;
 }
 
 .calendar-group-eyebrow {
@@ -2798,30 +2798,30 @@ select:focus {
 
 .calendar-group-title {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 0.98rem;
 }
 
 .calendar-group-badge {
   display: inline-flex;
   align-items: center;
-  padding: 8px 12px;
+  padding: 7px 10px;
   border-radius: 999px;
   background: rgba(199, 146, 54, 0.14);
   color: #f4d9a0;
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   font-weight: 700;
 }
 
 .calendar-group-list {
-  gap: 12px;
+  gap: 10px;
 }
 
 .calendar-course-item {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 18px;
-  border-radius: 18px;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   background: linear-gradient(180deg, rgba(16, 24, 37, 0.92) 0%, rgba(13, 20, 31, 0.96) 100%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
@@ -2851,13 +2851,13 @@ select:focus {
 .calendar-course-row {
   display: flex;
   align-items: flex-start;
-  gap: 16px;
+  gap: 14px;
 }
 
 .calendar-course-checkbox {
-  width: 18px;
-  height: 18px;
-  margin-top: 4px;
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
   accent-color: var(--primary-strong);
 }
 
@@ -2867,7 +2867,7 @@ select:focus {
 }
 
 .calendar-course-title {
-  font-size: 1.05rem;
+  font-size: 0.98rem;
   font-weight: 700;
   color: var(--text);
 }
@@ -2875,20 +2875,20 @@ select:focus {
 .calendar-course-subtitle {
   margin-top: 2px;
   color: #f4d9a0;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
 }
 
 .calendar-course-details {
   margin-top: 4px;
   color: var(--text-soft);
-  font-size: 0.92rem;
-  line-height: 1.5;
+  font-size: 0.84rem;
+  line-height: 1.45;
 }
 
 .calendar-course-date {
   display: inline-block;
-  margin-top: 10px;
-  font-size: 0.8rem;
+  margin-top: 8px;
+  font-size: 0.74rem;
   color: var(--text-muted);
 }
 
@@ -2896,11 +2896,11 @@ select:focus {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 8px;
 }
 
 .calendar-course-actions .button {
-  min-width: 104px;
+  min-width: 92px;
   margin: 0;
 }
 
@@ -3075,8 +3075,8 @@ select:focus {
   .topbar,
   .page-content,
   .footer {
-    padding-left: 22px;
-    padding-right: 22px;
+    padding-left: 18px;
+    padding-right: 18px;
   }
 
   .two-columns,
