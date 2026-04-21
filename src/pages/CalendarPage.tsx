@@ -324,6 +324,10 @@ const CalendarPage: React.FC = () => {
   const [tacticRegisteredIds, setTacticRegisteredIds] = useState<string[]>([]);
   const [tacticSetupByRider, setTacticSetupByRider] = useState<Record<string, RiderRaceSetup>>({});
   const [tacticError, setTacticError] = useState<string | null>(null);
+  const tacticRequiredSelectionCount = useMemo(
+    () => Math.min(7, tacticRanking.length),
+    [tacticRanking]
+  );
 
   function buildSetupForRegisteredIds(
     race: ParsedRace,
@@ -369,10 +373,12 @@ const CalendarPage: React.FC = () => {
     const analysis = buildRaceAnalysis(availability.availableRiders, raceProfile);
     const store = loadRaceSetupStore();
     const existingSetup = store[todo.raceKey] ?? {};
+    const maxSelectable = Math.min(7, analysis.ranking.length);
+    const rankingIds = new Set(analysis.ranking.map((rider) => rider.riderId));
     const initialRegisteredIds =
       Object.keys(existingSetup).length > 0
-        ? Object.keys(existingSetup).slice(0, 7)
-        : analysis.selected.map((rider) => rider.riderId).slice(0, 7);
+        ? Object.keys(existingSetup).filter((id) => rankingIds.has(id)).slice(0, maxSelectable)
+        : analysis.selected.map((rider) => rider.riderId).slice(0, maxSelectable);
 
     setTacticModalId(todoId);
     setTacticCourse(todo);
@@ -411,8 +417,8 @@ const CalendarPage: React.FC = () => {
     setTacticRegisteredIds((current) => {
       const isSelected = current.includes(riderId);
 
-      if (!isSelected && current.length >= 7) {
-        setTacticError('Inscription limitée à 7 coureurs. Retire un coureur avant d\'en ajouter un autre.');
+      if (!isSelected && current.length >= tacticRequiredSelectionCount) {
+        setTacticError(`Inscription limitée à ${tacticRequiredSelectionCount} coureur(s) pour cette course. Retire un coureur avant d'en ajouter un autre.`);
         return current;
       }
 
@@ -453,7 +459,7 @@ const CalendarPage: React.FC = () => {
     const eligibleRiders = filterEligibleRidersForCourseCategory(riders, tacticCourseCategory);
     const availability = buildRiderAvailabilitySummary(eligibleRiders);
 
-    if (availability.availableRiders.length < 7) {
+    if (availability.availableRiders.length < tacticRequiredSelectionCount) {
       setTacticError(`Effectif disponible insuffisant pour ${tacticCourseCategory.toUpperCase()}: ${availability.availableRiders.length} coureur(s) éligible(s).`);
       return;
     }
@@ -508,8 +514,8 @@ const CalendarPage: React.FC = () => {
         .map((rider) => rider.riderId);
     }
 
-    if (autoTop7Ids.length < 7) {
-      setTacticError('Impossible de déterminer automatiquement un Top 7 complet avec les données disponibles.');
+    if (autoTop7Ids.length < tacticRequiredSelectionCount) {
+      setTacticError('Impossible de déterminer automatiquement une sélection complète avec les données disponibles.');
       return;
     }
 
@@ -530,8 +536,13 @@ const CalendarPage: React.FC = () => {
       return;
     }
 
-    if (tacticRegisteredIds.length !== 7) {
-      setTacticError('Tu dois inscrire exactement 7 coureurs avant d\'enregistrer.');
+    if (tacticRequiredSelectionCount === 0) {
+      setTacticError('Aucun coureur éligible pour cette course.');
+      return;
+    }
+
+    if (tacticRegisteredIds.length !== tacticRequiredSelectionCount) {
+      setTacticError(`Tu dois inscrire exactement ${tacticRequiredSelectionCount} coureur(s) avant d'enregistrer.`);
       return;
     }
 
@@ -668,7 +679,7 @@ const CalendarPage: React.FC = () => {
 
           <div className="message-box">
             <p>
-              Inscrits: <strong>{tacticRegisteredIds.length}/7</strong>.
+              Inscrits: <strong>{tacticRegisteredIds.length}/{tacticRequiredSelectionCount}</strong>.
               {tacticCourse.tourKey && tacticGroupCourses.length > 1
                 ? ' Sur un tour, la même inscription est appliquée à toutes les étapes.'
                 : ' Cette inscription est propre à la course.'}
@@ -705,7 +716,7 @@ const CalendarPage: React.FC = () => {
               <tbody>
                 {tacticRanking.map((rider) => {
                   const selected = tacticRegisteredIds.includes(rider.riderId);
-                  const canSelectMore = selected || tacticRegisteredIds.length < 7;
+                  const canSelectMore = selected || tacticRegisteredIds.length < tacticRequiredSelectionCount;
 
                   return (
                     <tr key={rider.riderId}>
@@ -767,7 +778,7 @@ const CalendarPage: React.FC = () => {
 
           <div className="calendar-result-actions">
             <button className="button" onClick={handleCloseTacticModal} type="button">Annuler</button>
-            <button className="button button-primary" onClick={handleSaveTactic} type="button" disabled={tacticRegisteredIds.length !== 7}>
+            <button className="button button-primary" onClick={handleSaveTactic} type="button" disabled={tacticRequiredSelectionCount === 0 || tacticRegisteredIds.length !== tacticRequiredSelectionCount}>
               {tacticCourse.tourKey && tacticGroupCourses.length > 1
                 ? `Enregistrer le tour (${tacticGroupCourses.length} étapes)`
                 : 'Enregistrer la tactique'}
