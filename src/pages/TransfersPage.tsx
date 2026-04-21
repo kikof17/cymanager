@@ -512,6 +512,7 @@ export default function TransfersPage() {
   const [sortConfig, setSortConfig] = useState<TransferSortConfig>(persistedState.sortConfig);
   const [pendingRemovalCandidateId, setPendingRemovalCandidateId] = useState<string>("");
   const [transferHistory, setTransferHistory] = useState<TransferHistoryEntry[]>(() => loadTransferHistory());
+    const [checkedCandidateIds, setCheckedCandidateIds] = useState<string[]>([]);
 
   const settings = useMemo(() => loadClubSettings(), []);
   const teamStrategy = useMemo(() => loadTeamStrategy(), []);
@@ -1051,6 +1052,19 @@ export default function TransfersPage() {
                 <table className="data-table styled-table transfer-table">
                   <thead>
                     <tr>
+                      <th className="transfer-col-check">
+                        <input
+                          type="checkbox"
+                          aria-label="Tout cocher / décocher"
+                          checked={sortedAnalyses.length > 0 && checkedCandidateIds.length === sortedAnalyses.length}
+                          ref={(el) => {
+                            if (el) el.indeterminate = checkedCandidateIds.length > 0 && checkedCandidateIds.length < sortedAnalyses.length;
+                          }}
+                          onChange={(event) => {
+                            setCheckedCandidateIds(event.target.checked ? sortedAnalyses.map((a) => a.rider.id) : []);
+                          }}
+                        />
+                      </th>
                       <th className="transfer-col-actions">Actions</th>
                       <th className="transfer-col-choice">Choix</th>
                       <th className="transfer-col-rider" aria-sort={getAriaSort("name")}>
@@ -1106,7 +1120,21 @@ export default function TransfersPage() {
                         .join(" ");
 
                       return (
-                        <tr key={analysis.rider.id} className={rowClassName || undefined}>
+                        <tr key={analysis.rider.id} className={[rowClassName, checkedCandidateIds.includes(analysis.rider.id) ? "transfer-row-checked" : ""].filter(Boolean).join(" ") || undefined}>
+                          <td className="transfer-col-check">
+                            <input
+                              type="checkbox"
+                              aria-label={`Cocher ${analysis.rider.name}`}
+                              checked={checkedCandidateIds.includes(analysis.rider.id)}
+                              onChange={(event) => {
+                                setCheckedCandidateIds((current) =>
+                                  event.target.checked
+                                    ? [...current, analysis.rider.id]
+                                    : current.filter((id) => id !== analysis.rider.id)
+                                );
+                              }}
+                            />
+                          </td>
                           <td className="transfer-col-actions">
                             <div className="transfer-action-buttons">
                               {!isShortlisted ? (
@@ -1163,6 +1191,44 @@ export default function TransfersPage() {
                 </table>
               </div>
 
+              {checkedCandidateIds.length > 0 ? (
+                <div className="transfer-bulk-bar">
+                  <span className="transfer-bulk-count">{checkedCandidateIds.length} coureur{checkedCandidateIds.length > 1 ? "s" : ""} coché{checkedCandidateIds.length > 1 ? "s" : ""}</span>
+                  <button
+                    type="button"
+                    className="button button-secondary button-small"
+                    onClick={() => {
+                      const toAdd = checkedCandidateIds.filter((id) => !shortlistedCandidateIds.includes(id));
+                      toAdd.forEach((id) => handleAddToShortlist(id));
+                      setCheckedCandidateIds([]);
+                    }}
+                  >
+                    Ajouter à la sélection
+                  </button>
+                  <button
+                    type="button"
+                    className="button button-danger button-small"
+                    onClick={() => {
+                        const toDelete = new Set(checkedCandidateIds);
+                        setCandidates((current) =>
+                          current.filter((c) => !toDelete.has(c.id) && !toDelete.has(c.rider.id))
+                        );
+                        setShortlistedCandidateIds((current) => current.filter((id) => !toDelete.has(id)));
+                        setSelectedCandidateId((current) => (toDelete.has(current) ? "" : current));
+                      setCheckedCandidateIds([]);
+                    }}
+                  >
+                    Supprimer du comparatif
+                  </button>
+                  <button
+                    type="button"
+                    className="button button-secondary button-small"
+                    onClick={() => setCheckedCandidateIds([])}
+                  >
+                    Désélectionner
+                  </button>
+                </div>
+              ) : null}
               <div className="transfer-table-jump-controls transfer-table-jump-controls-bottom" aria-hidden="true">
                 <button type="button" className="button button-secondary button-small" onClick={() => jumpComparisonTableToEdge("start")}>{"<<"}</button>
                 <button type="button" className="button button-secondary button-small" onClick={() => jumpComparisonTableToEdge("end")}>{">>"}</button>

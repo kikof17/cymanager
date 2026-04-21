@@ -510,6 +510,38 @@ select, select option {
   min-width: 118px;
 }
 
+.transfer-table th.transfer-col-check,
+.transfer-table td.transfer-col-check {
+  width: 36px;
+  min-width: 36px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.transfer-row-checked {
+  outline: 1.5px solid var(--primary);
+  outline-offset: -1px;
+}
+
+.transfer-bulk-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1.5px solid var(--primary);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.transfer-bulk-count {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin-right: 4px;
+}
+
 .transfer-table th.transfer-col-choice,
 .transfer-table td.transfer-col-choice {
   width: 110px;
