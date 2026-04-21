@@ -386,6 +386,97 @@ const CalendarPage: React.FC = () => {
     });
   }
 
+  function handleApplyAutoOdcForCurrentSelection() {
+    if (!tacticRaceProfile || tacticRegisteredIds.length === 0) {
+      return;
+    }
+
+    const nextSetup = buildSetupForRegisteredIds(
+      tacticRaceProfile,
+      tacticRanking,
+      tacticRegisteredIds,
+      {}
+    );
+
+    setTacticSetupByRider(nextSetup);
+    setTacticError(null);
+  }
+
+  function handleApplyAutoTop7AndOdc() {
+    if (!tacticRaceProfile) {
+      return;
+    }
+
+    const riders = loadStoredRiders();
+    const availability = buildRiderAvailabilitySummary(riders);
+
+    if (availability.availableRiders.length < 7) {
+      setTacticError(`Effectif disponible insuffisant: ${availability.availableRiders.length} coureur(s) éligible(s).`);
+      return;
+    }
+
+    let autoTop7Ids: string[] = [];
+
+    if (tacticCourse?.tourKey && tacticGroupCourses.length > 1) {
+      const aggregateByRiderId = new Map<string, number>();
+      const riderTotalById = new Map<string, number>(
+        availability.availableRiders.map((rider) => [rider.id, rider.total])
+      );
+
+      tacticGroupCourses.forEach((course) => {
+        if (!course.raceKey) {
+          return;
+        }
+
+        const profile = loadCalendarRaceProfile(course.raceKey);
+
+        if (!profile) {
+          return;
+        }
+
+        const stageRanking = buildRaceAnalysis(availability.availableRiders, profile).ranking;
+        stageRanking.forEach((entry) => {
+          aggregateByRiderId.set(
+            entry.riderId,
+            (aggregateByRiderId.get(entry.riderId) ?? 0) + entry.score
+          );
+        });
+      });
+
+      autoTop7Ids = [...aggregateByRiderId.entries()]
+        .sort((left, right) => {
+          if (right[1] !== left[1]) {
+            return right[1] - left[1];
+          }
+
+          return (riderTotalById.get(right[0]) ?? 0) - (riderTotalById.get(left[0]) ?? 0);
+        })
+        .slice(0, 7)
+        .map(([riderId]) => riderId);
+    } else {
+      autoTop7Ids = buildRaceAnalysis(availability.availableRiders, tacticRaceProfile)
+        .selected
+        .slice(0, 7)
+        .map((rider) => rider.riderId);
+    }
+
+    if (autoTop7Ids.length < 7) {
+      setTacticError('Impossible de déterminer automatiquement un Top 7 complet avec les données disponibles.');
+      return;
+    }
+
+    const nextSetup = buildSetupForRegisteredIds(
+      tacticRaceProfile,
+      tacticRanking,
+      autoTop7Ids,
+      {}
+    );
+
+    setTacticRegisteredIds(autoTop7Ids);
+    setTacticSetupByRider(nextSetup);
+    setTacticError(null);
+  }
+
   function handleSaveTactic() {
     if (!tacticCourse || !tacticCourse.raceKey || !tacticRaceProfile) {
       return;
@@ -528,6 +619,15 @@ const CalendarPage: React.FC = () => {
                 ? ' Sur un tour, la même inscription est appliquée à toutes les étapes.'
                 : ' Cette inscription est propre à la course.'}
             </p>
+          </div>
+
+          <div className="inline-actions">
+            <button type="button" className="button button-secondary" onClick={handleApplyAutoTop7AndOdc}>
+              Top 7 auto + ODC auto
+            </button>
+            <button type="button" className="button button-secondary" onClick={handleApplyAutoOdcForCurrentSelection} disabled={tacticRegisteredIds.length === 0}>
+              ODC auto (inscrits)
+            </button>
           </div>
 
           {tacticError ? (
