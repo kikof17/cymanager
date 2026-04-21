@@ -22,6 +22,8 @@ import type { ParsedRace, RaceRiderScore, RiderRaceSetup } from '../types/race';
 import type { TodoItem } from '../types/todo';
 import type { Rider } from '../types/rider';
 
+type CourseCategory = 'pro' | 'u25' | 'u21';
+
 function loadStoredResults(): Record<string, StoredResult> {
   return getAllResultsFromStorage();
 }
@@ -64,6 +66,41 @@ function formatCalendarDate(value: string): string {
   return new Intl.DateTimeFormat('fr-FR', {
     dateStyle: 'medium',
   }).format(date);
+}
+
+function getCourseCategoryForTactic(todo: TodoItem, profile: ParsedRace | null): CourseCategory {
+  if (todo.courseCategory === 'u25' || todo.courseCategory === 'u21' || todo.courseCategory === 'pro') {
+    return todo.courseCategory;
+  }
+
+  if (profile?.category === 'U25') {
+    return 'u25';
+  }
+
+  if (profile?.category === 'U21') {
+    return 'u21';
+  }
+
+  return 'pro';
+}
+
+function filterEligibleRidersForCourseCategory(riders: Rider[], courseCategory: CourseCategory): Rider[] {
+  if (courseCategory === 'u25') {
+    return riders.filter(
+      (rider) =>
+        rider.category === 'U25' &&
+        rider.ageYears >= 22 &&
+        rider.ageYears <= 25
+    );
+  }
+
+  if (courseCategory === 'u21') {
+    return riders.filter(
+      (rider) => rider.category === 'U21' && rider.ageYears <= 21
+    );
+  }
+
+  return riders;
 }
 
 
@@ -282,6 +319,7 @@ const CalendarPage: React.FC = () => {
   const [tacticCourse, setTacticCourse] = useState<TodoItem | null>(null);
   const [tacticGroupCourses, setTacticGroupCourses] = useState<TodoItem[]>([]);
   const [tacticRaceProfile, setTacticRaceProfile] = useState<ParsedRace | null>(null);
+  const [tacticCourseCategory, setTacticCourseCategory] = useState<CourseCategory>('pro');
   const [tacticRanking, setTacticRanking] = useState<RaceRiderScore[]>([]);
   const [tacticRegisteredIds, setTacticRegisteredIds] = useState<string[]>([]);
   const [tacticSetupByRider, setTacticSetupByRider] = useState<Record<string, RiderRaceSetup>>({});
@@ -325,7 +363,9 @@ const CalendarPage: React.FC = () => {
     }
 
     const riders = loadStoredRiders();
-    const availability = buildRiderAvailabilitySummary(riders);
+    const courseCategory = getCourseCategoryForTactic(todo, raceProfile);
+    const eligibleRiders = filterEligibleRidersForCourseCategory(riders, courseCategory);
+    const availability = buildRiderAvailabilitySummary(eligibleRiders);
     const analysis = buildRaceAnalysis(availability.availableRiders, raceProfile);
     const store = loadRaceSetupStore();
     const existingSetup = store[todo.raceKey] ?? {};
@@ -342,6 +382,7 @@ const CalendarPage: React.FC = () => {
         : [todo]
     );
     setTacticRaceProfile(raceProfile);
+    setTacticCourseCategory(courseCategory);
     setTacticRanking(analysis.ranking);
     setTacticRegisteredIds(initialRegisteredIds);
     setTacticSetupByRider(
@@ -355,6 +396,7 @@ const CalendarPage: React.FC = () => {
     setTacticCourse(null);
     setTacticGroupCourses([]);
     setTacticRaceProfile(null);
+    setTacticCourseCategory('pro');
     setTacticRanking([]);
     setTacticRegisteredIds([]);
     setTacticSetupByRider({});
@@ -402,16 +444,17 @@ const CalendarPage: React.FC = () => {
     setTacticError(null);
   }
 
-  function handleApplyAutoTop7AndOdc() {
+  function handleApplyAutoSelectionAndOdc() {
     if (!tacticRaceProfile) {
       return;
     }
 
     const riders = loadStoredRiders();
-    const availability = buildRiderAvailabilitySummary(riders);
+    const eligibleRiders = filterEligibleRidersForCourseCategory(riders, tacticCourseCategory);
+    const availability = buildRiderAvailabilitySummary(eligibleRiders);
 
     if (availability.availableRiders.length < 7) {
-      setTacticError(`Effectif disponible insuffisant: ${availability.availableRiders.length} coureur(s) éligible(s).`);
+      setTacticError(`Effectif disponible insuffisant pour ${tacticCourseCategory.toUpperCase()}: ${availability.availableRiders.length} coureur(s) éligible(s).`);
       return;
     }
 
@@ -434,7 +477,12 @@ const CalendarPage: React.FC = () => {
           return;
         }
 
-        const stageRanking = buildRaceAnalysis(availability.availableRiders, profile).ranking;
+        const stageCategory = getCourseCategoryForTactic(course, profile);
+        const stageEligibleRiders = filterEligibleRidersForCourseCategory(
+          availability.availableRiders,
+          stageCategory
+        );
+        const stageRanking = buildRaceAnalysis(stageEligibleRiders, profile).ranking;
         stageRanking.forEach((entry) => {
           aggregateByRiderId.set(
             entry.riderId,
@@ -488,7 +536,8 @@ const CalendarPage: React.FC = () => {
     }
 
     const riders = loadStoredRiders();
-    const availability = buildRiderAvailabilitySummary(riders);
+    const eligibleRiders = filterEligibleRidersForCourseCategory(riders, tacticCourseCategory);
+    const availability = buildRiderAvailabilitySummary(eligibleRiders);
     const store = loadRaceSetupStore();
 
     const coursesToUpdate =
@@ -502,7 +551,12 @@ const CalendarPage: React.FC = () => {
       }
 
       const raceProfile = loadCalendarRaceProfile(course.raceKey) ?? tacticRaceProfile;
-      const stageRanking = buildRaceAnalysis(availability.availableRiders, raceProfile).ranking;
+      const stageCategory = getCourseCategoryForTactic(course, raceProfile);
+      const stageEligibleRiders = filterEligibleRidersForCourseCategory(
+        availability.availableRiders,
+        stageCategory
+      );
+      const stageRanking = buildRaceAnalysis(stageEligibleRiders, raceProfile).ranking;
       const stageExistingSetup = store[course.raceKey] ?? {};
 
       const nextSetup =
@@ -619,11 +673,12 @@ const CalendarPage: React.FC = () => {
                 ? ' Sur un tour, la même inscription est appliquée à toutes les étapes.'
                 : ' Cette inscription est propre à la course.'}
             </p>
+            <p className="muted">Catégorie détectée: {tacticCourseCategory.toUpperCase()} (sélection auto filtrée sur cette catégorie)</p>
           </div>
 
           <div className="inline-actions">
-            <button type="button" className="button button-secondary" onClick={handleApplyAutoTop7AndOdc}>
-              Top 7 auto + ODC auto
+            <button type="button" className="button button-secondary" onClick={handleApplyAutoSelectionAndOdc}>
+              Auto sélection ({tacticCourseCategory.toUpperCase()}) + ODC auto
             </button>
             <button type="button" className="button button-secondary" onClick={handleApplyAutoOdcForCurrentSelection} disabled={tacticRegisteredIds.length === 0}>
               ODC auto (inscrits)
