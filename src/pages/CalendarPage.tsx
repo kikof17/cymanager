@@ -3,11 +3,14 @@ import Card from '../components/common/Card';
 import PageTitle from '../components/common/PageTitle';
 import RaceSetupTable from '../components/races/RaceSetupTable';
 import ConfirmDialog from '../components/common/ConfirmDialog';
-import { getRiderStrengths } from '../lib/scoring/strengths';
+import { buildRiderAvailabilitySummary } from '../lib/scoring/riderAvailability';
+import { buildRaceAnalysis } from '../lib/scoring/raceScores';
+import { buildDefaultRaceSetupMap } from '../lib/scoring/odcScores';
 import { loadCalendarRaceProfile } from '../lib/storage/calendarRaceProfile';
 import { createStoredResult, getAllResultsFromStorage, getStoredResultText, saveAllResultsToStorage, type StoredResult } from '../lib/scoring/extractPoints';
 import { syncFinanceWithSettings } from '../lib/storage/financeStorage';
 import { appendManagementHistoryEntry } from '../lib/storage/managementHistoryStorage';
+import { loadRaceSetupStore, saveRaceSetupStore } from '../lib/storage/raceStorage';
 import { loadClubSettings } from '../lib/storage/settingsStorage';
 import { getTodoResultCategory } from '../lib/utils/courseCategory';
 import { getTodoScheduledAt } from '../lib/utils/courseDates';
@@ -15,11 +18,9 @@ import { getCourseDisplayTitle, groupCourseTodos } from '../lib/utils/stageRaces
 
 import { countUnstableCalendarIdentities, migrateCalendarRaceIdentities } from '../lib/storage/raceIdentityMigration';
 import { saveManualTodos, loadManualTodos, loadTodoStatuses, saveTodoStatuses } from '../lib/storage/todoStorage';
-import type { RaceRiderScore, RiderRaceSetup } from '../types/race';
+import type { ParsedRace, RaceRiderScore, RiderRaceSetup } from '../types/race';
 import type { TodoItem } from '../types/todo';
 import type { Rider } from '../types/rider';
-
-type StoredRaceSetupMap = Record<string, Record<string, RiderRaceSetup>>;
 
 function loadStoredResults(): Record<string, StoredResult> {
   return getAllResultsFromStorage();
@@ -34,20 +35,6 @@ function loadStoredRiders(): Rider[] {
     return Array.isArray(parsed) ? (parsed as Rider[]) : [];
   } catch {
     return [];
-  }
-}
-
-function loadStoredRaceSetups(): StoredRaceSetupMap {
-  try {
-    const raw = localStorage.getItem('cymanager:race-setup');
-    if (!raw) return {};
-
-    const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== 'object') return {};
-
-    return parsed as StoredRaceSetupMap;
-  } catch {
-    return {};
   }
 }
 
@@ -291,67 +278,177 @@ const CalendarPage: React.FC = () => {
     }
   }
 
-  // Affichage des étapes déjà ajoutées (code couleur harmonisé)
-  // Affichage ODC (tactique) déroulante
-  const [openTacticId, setOpenTacticId] = useState<string|null>(null);
+  const [tacticModalId, setTacticModalId] = useState<string | null>(null);
+  const [tacticCourse, setTacticCourse] = useState<TodoItem | null>(null);
+  const [tacticGroupCourses, setTacticGroupCourses] = useState<TodoItem[]>([]);
+  const [tacticRaceProfile, setTacticRaceProfile] = useState<ParsedRace | null>(null);
+  const [tacticRanking, setTacticRanking] = useState<RaceRiderScore[]>([]);
+  const [tacticRegisteredIds, setTacticRegisteredIds] = useState<string[]>([]);
+  const [tacticSetupByRider, setTacticSetupByRider] = useState<Record<string, RiderRaceSetup>>({});
+  const [tacticError, setTacticError] = useState<string | null>(null);
+
+  function buildSetupForRegisteredIds(
+    race: ParsedRace,
+    ranking: RaceRiderScore[],
+    registeredIds: string[],
+    previousSetup: Record<string, RiderRaceSetup>
+  ): Record<string, RiderRaceSetup> {
+    const selectedScores = ranking.filter((rider) => registeredIds.includes(rider.riderId));
+    const defaults = buildDefaultRaceSetupMap(race, selectedScores);
+
+    return registeredIds.reduce<Record<string, RiderRaceSetup>>((setup, riderId) => {
+      setup[riderId] =
+        previousSetup[riderId] ??
+        defaults[riderId] ?? {
+          riderId,
+          role: 'Équipier',
+          effortPercent: 75,
+          morningBreakaway: false,
+        };
+      return setup;
+    }, {});
+  }
+
+  function handleOpenTacticModal(todoId: string) {
+    const todo = calendarTodos.find((item) => item.id === todoId);
+
+    if (!todo || !todo.raceKey) {
+      setTacticError('Impossible d\'ouvrir la tactique: clé de course absente.');
+      return;
+    }
+
+    const raceProfile = loadCalendarRaceProfile(todo.raceKey);
+
+    if (!raceProfile) {
+      setTacticError('Impossible d\'ouvrir la tactique: profil de course introuvable. Réimporte la course depuis la page Courses.');
+      return;
+    }
+
+    const riders = loadStoredRiders();
+    const availability = buildRiderAvailabilitySummary(riders);
+    const analysis = buildRaceAnalysis(availability.availableRiders, raceProfile);
+    const store = loadRaceSetupStore();
+    const existingSetup = store[todo.raceKey] ?? {};
+    const initialRegisteredIds =
+      Object.keys(existingSetup).length > 0
+        ? Object.keys(existingSetup).slice(0, 7)
+        : analysis.selected.map((rider) => rider.riderId).slice(0, 7);
+
+    setTacticModalId(todoId);
+    setTacticCourse(todo);
+    setTacticGroupCourses(
+      todo.tourKey
+        ? groupedCalendarTodos.find((group) => group.key === todo.tourKey)?.todos ?? [todo]
+        : [todo]
+    );
+    setTacticRaceProfile(raceProfile);
+    setTacticRanking(analysis.ranking);
+    setTacticRegisteredIds(initialRegisteredIds);
+    setTacticSetupByRider(
+      buildSetupForRegisteredIds(raceProfile, analysis.ranking, initialRegisteredIds, existingSetup)
+    );
+    setTacticError(null);
+  }
+
+  function handleCloseTacticModal() {
+    setTacticModalId(null);
+    setTacticCourse(null);
+    setTacticGroupCourses([]);
+    setTacticRaceProfile(null);
+    setTacticRanking([]);
+    setTacticRegisteredIds([]);
+    setTacticSetupByRider({});
+    setTacticError(null);
+  }
+
+  function handleToggleTacticRider(riderId: string) {
+    if (!tacticRaceProfile) {
+      return;
+    }
+
+    setTacticRegisteredIds((current) => {
+      const isSelected = current.includes(riderId);
+
+      if (!isSelected && current.length >= 7) {
+        setTacticError('Inscription limitée à 7 coureurs. Retire un coureur avant d\'en ajouter un autre.');
+        return current;
+      }
+
+      const next = isSelected
+        ? current.filter((id) => id !== riderId)
+        : [...current, riderId];
+
+      setTacticSetupByRider((previous) =>
+        buildSetupForRegisteredIds(tacticRaceProfile, tacticRanking, next, previous)
+      );
+      setTacticError(null);
+      return next;
+    });
+  }
+
+  function handleSaveTactic() {
+    if (!tacticCourse || !tacticCourse.raceKey || !tacticRaceProfile) {
+      return;
+    }
+
+    if (tacticRegisteredIds.length !== 7) {
+      setTacticError('Tu dois inscrire exactement 7 coureurs avant d\'enregistrer.');
+      return;
+    }
+
+    const riders = loadStoredRiders();
+    const availability = buildRiderAvailabilitySummary(riders);
+    const store = loadRaceSetupStore();
+
+    const coursesToUpdate =
+      tacticCourse.tourKey && tacticGroupCourses.length > 1
+        ? tacticGroupCourses.filter((course) => Boolean(course.raceKey))
+        : [tacticCourse];
+
+    coursesToUpdate.forEach((course) => {
+      if (!course.raceKey) {
+        return;
+      }
+
+      const raceProfile = loadCalendarRaceProfile(course.raceKey) ?? tacticRaceProfile;
+      const stageRanking = buildRaceAnalysis(availability.availableRiders, raceProfile).ranking;
+      const stageExistingSetup = store[course.raceKey] ?? {};
+
+      const nextSetup =
+        course.id === tacticCourse.id
+          ? buildSetupForRegisteredIds(raceProfile, stageRanking, tacticRegisteredIds, tacticSetupByRider)
+          : buildSetupForRegisteredIds(raceProfile, stageRanking, tacticRegisteredIds, stageExistingSetup);
+
+      store[course.raceKey] = nextSetup;
+    });
+
+    saveRaceSetupStore(store);
+
+    appendManagementHistoryEntry({
+      area: 'calendar',
+      kind: 'calendar-status',
+      title:
+        coursesToUpdate.length > 1
+          ? `Tactique de tour mise à jour (${coursesToUpdate.length} étapes)`
+          : `Tactique mise à jour : ${tacticCourse.title}`,
+      note:
+        coursesToUpdate.length > 1
+          ? `${tacticRegisteredIds.length} coureur(s) inscrits sur tout le tour.`
+          : `${tacticRegisteredIds.length} coureur(s) inscrits sur la course.`,
+      occurredAt: getTodoScheduledAt(tacticCourse) ?? tacticCourse.createdAt,
+    });
+
+    setIdentityRepairMessage(
+      coursesToUpdate.length > 1
+        ? `Tactique enregistrée pour ${coursesToUpdate.length} étape(s) du tour.`
+        : 'Tactique de course enregistrée.'
+    );
+    handleCloseTacticModal();
+  }
+
   function renderCalendarTodo(todo: TodoItem) {
     const isDone = statuses[todo.id] === 'done';
     const courseToneClass = getCalendarPriorityTone(todo);
-
-    // Récupérer l'ODC/réglages si dispo (clé = titre de la course)
-    let odcContent: React.ReactNode = null;
-    try {
-      const raceKey = todo.raceKey;
-      const allSetups = loadStoredRaceSetups();
-      const ridersArr = loadStoredRiders();
-      if (raceKey) {
-        const setup = allSetups[raceKey];
-        if (setup) {
-          // Charger le vrai profil de course (ParsedRace) pour cette étape
-          const raceProfile = loadCalendarRaceProfile(raceKey);
-          const ridersForTable: RaceRiderScore[] = Object.values(setup).map((r) => {
-            const rider = ridersArr.find(rr => rr.id === r.riderId);
-            return {
-              riderId: r.riderId,
-              riderName: rider?.name || r.riderId,
-              riderForm: rider?.form ?? 0,
-              riderCategory: rider?.category ?? '',
-              score: raceProfile && rider ? (
-                rider.flat * raceProfile.weights.flat +
-                rider.hill * raceProfile.weights.hill +
-                rider.mountain * raceProfile.weights.mountain +
-                rider.sprint * raceProfile.weights.sprint +
-                rider.cobble * raceProfile.weights.cobble +
-                rider.timeTrial * raceProfile.weights.timeTrial +
-                rider.breakaway * raceProfile.weights.breakaway +
-                rider.endurance * raceProfile.weights.endurance +
-                rider.resistance * raceProfile.weights.resistance +
-                rider.recovery * raceProfile.weights.recovery +
-                rider.stageRace * raceProfile.weights.stageRace
-              ) : (rider?.total ?? 0),
-              role: r.role,
-              reasons: rider && raceProfile ? getRiderStrengths(rider, raceProfile) : [],
-            };
-          });
-          odcContent = (
-            <div className="calendar-tactic-panel">
-              <div className="calendar-tactic-table-wrap">
-                <RaceSetupTable
-                  riders={ridersForTable}
-                  setupByRider={setup}
-                  onRoleChange={() => {}}
-                  onPercentChange={() => {}}
-                  onBreakawayChange={() => {}}
-                  readOnly
-                />
-              </div>
-            </div>
-          );
-        }
-      }
-    } catch (error) {
-      console.error('Erreur de chargement de la tactique de course', error);
-    }
 
     return (
       <div
@@ -377,31 +474,151 @@ const CalendarPage: React.FC = () => {
             <span className="calendar-course-date">{formatCalendarDate(getTodoScheduledAt(todo) ?? todo.createdAt)}</span>
           </div>
           <div className="calendar-course-actions">
-          <button
-            type="button"
-            className="button button-secondary button-small"
-            onClick={() => handleOpenResultModal(todo.id)}
-          >
-            Résultat
-          </button>
-          <button
-            type="button"
-            className="button button-danger button-small"
-            onClick={() => setConfirmDeleteId(todo.id)}
-          >
-            Supprimer
-          </button>
-          <button
-            type="button"
-            className="button button-primary button-small"
-            onClick={() => setOpenTacticId(openTacticId === todo.id ? null : todo.id)}
-          >
-            Tactique
-          </button>
+            <button
+              type="button"
+              className="button button-secondary button-small"
+              onClick={() => handleOpenResultModal(todo.id)}
+            >
+              Résultat
+            </button>
+            <button
+              type="button"
+              className="button button-danger button-small"
+              onClick={() => setConfirmDeleteId(todo.id)}
+            >
+              Supprimer
+            </button>
+            <button
+              type="button"
+              className="button button-primary button-small"
+              onClick={() => handleOpenTacticModal(todo.id)}
+            >
+              Tactique
+            </button>
           </div>
         </div>
-        {/* Affichage ODC déroulant */}
-        {openTacticId === todo.id && odcContent}
+      </div>
+    );
+  }
+
+  function renderTacticModal() {
+    if (!tacticModalId || !tacticCourse || !tacticRaceProfile) {
+      return null;
+    }
+
+    const selectedRiders = tacticRanking.filter((rider) => tacticRegisteredIds.includes(rider.riderId));
+
+    return (
+      <div className="calendar-result-overlay">
+        <div className="calendar-result-dialog">
+          <div className="calendar-result-header">
+            <div>
+              <h3 className="calendar-result-title">Tactique de course</h3>
+              <p className="calendar-result-subtitle">{tacticCourse.title}</p>
+            </div>
+            {tacticCourse.tourKey && tacticGroupCourses.length > 1 ? (
+              <span className="calendar-result-badge">Tour: inscription commune</span>
+            ) : null}
+          </div>
+
+          <div className="message-box">
+            <p>
+              Inscrits: <strong>{tacticRegisteredIds.length}/7</strong>.
+              {tacticCourse.tourKey && tacticGroupCourses.length > 1
+                ? ' Sur un tour, la même inscription est appliquée à toutes les étapes.'
+                : ' Cette inscription est propre à la course.'}
+            </p>
+          </div>
+
+          {tacticError ? (
+            <div className="message-box message-box-warning">
+              <p>{tacticError}</p>
+            </div>
+          ) : null}
+
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Inscription</th>
+                  <th>Nom</th>
+                  <th>Cat.</th>
+                  <th>Forme</th>
+                  <th>Score</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tacticRanking.map((rider) => {
+                  const selected = tacticRegisteredIds.includes(rider.riderId);
+                  const canSelectMore = selected || tacticRegisteredIds.length < 7;
+
+                  return (
+                    <tr key={rider.riderId}>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={selected}
+                          disabled={!canSelectMore}
+                          onChange={() => handleToggleTacticRider(rider.riderId)}
+                        />
+                      </td>
+                      <td>{rider.riderName}</td>
+                      <td>{rider.riderCategory}</td>
+                      <td>{rider.riderForm}</td>
+                      <td>{rider.score}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="calendar-tactic-panel">
+            <p className="field-label">ODC des coureurs inscrits</p>
+            <div className="calendar-tactic-table-wrap">
+              <RaceSetupTable
+                riders={selectedRiders}
+                setupByRider={tacticSetupByRider}
+                onRoleChange={(riderId, role) =>
+                  setTacticSetupByRider((current) => ({
+                    ...current,
+                    [riderId]: {
+                      ...(current[riderId] ?? { riderId, role: 'Équipier', effortPercent: 75, morningBreakaway: false }),
+                      role,
+                    },
+                  }))
+                }
+                onPercentChange={(riderId, effortPercent) =>
+                  setTacticSetupByRider((current) => ({
+                    ...current,
+                    [riderId]: {
+                      ...(current[riderId] ?? { riderId, role: 'Équipier', effortPercent: 75, morningBreakaway: false }),
+                      effortPercent,
+                    },
+                  }))
+                }
+                onBreakawayChange={(riderId, morningBreakaway) =>
+                  setTacticSetupByRider((current) => ({
+                    ...current,
+                    [riderId]: {
+                      ...(current[riderId] ?? { riderId, role: 'Équipier', effortPercent: 75, morningBreakaway: false }),
+                      morningBreakaway,
+                    },
+                  }))
+                }
+              />
+            </div>
+          </div>
+
+          <div className="calendar-result-actions">
+            <button className="button" onClick={handleCloseTacticModal} type="button">Annuler</button>
+            <button className="button button-primary" onClick={handleSaveTactic} type="button" disabled={tacticRegisteredIds.length !== 7}>
+              {tacticCourse.tourKey && tacticGroupCourses.length > 1
+                ? `Enregistrer le tour (${tacticGroupCourses.length} étapes)`
+                : 'Enregistrer la tactique'}
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -549,6 +766,7 @@ const CalendarPage: React.FC = () => {
           onCancel={() => setConfirmDeleteId(null)}
         />
         {renderResultModal()}
+        {renderTacticModal()}
       </Card>
     </div>
   );
