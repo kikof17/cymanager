@@ -7,8 +7,8 @@ const INITIAL_TRANSFER_HISTORY: Array<Omit<TransferHistoryEntry, "id">> = [
     occurredAt: "2026-04-15T09:30:00.000Z",
     kind: "recruit",
     riderName: "Simon Sarko",
-    note: "Recrutement seed de départ: Simon Sarko ajouté pour initialiser l'historique transferts.",
-    amount: 425000,
+    note: "Recrutement de Simon Sarko.",
+    amount: 71000,
     shortlistSize: 0,
   },
 ];
