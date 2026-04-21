@@ -2933,9 +2933,10 @@ select:focus {
 }
 
 .calendar-result-dialog {
-  width: min(860px, 100%);
+  width: min(1100px, calc(100vw - 48px));
   max-height: calc(100vh - 48px);
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 30px;
   border-radius: 22px;
   background: linear-gradient(180deg, rgba(22, 32, 47, 0.98) 0%, rgba(15, 22, 34, 0.98) 100%);
