@@ -25,7 +25,8 @@ function createAutoTodo(
   title: string,
   details: string,
   priority: TodoItem["priority"],
-  category: TodoItem["category"]
+  category: TodoItem["category"],
+  entityLink?: TodoItem["entityLink"]
 ): TodoItem {
   return {
     id,
@@ -36,6 +37,7 @@ function createAutoTodo(
     priority,
     category,
     createdAt: new Date().toISOString(),
+    entityLink,
   };
 }
 
@@ -87,7 +89,8 @@ export function buildTodoList({
         "Réparer les références résultats",
         `${brokenResultReferenceCount} référence(s) résultat non validée(s) restent à corriger pour fiabiliser les décisions sport/finance.`,
         hasCriticalUnavailability ? "haute" : "moyenne",
-        "courses"
+        "courses",
+        { label: "Voir les résultats", href: "/resultats" }
       )
     );
   }
@@ -99,7 +102,8 @@ export function buildTodoList({
         "Importer l'effectif",
         "Aucun coureur n'est disponible dans l'application.",
         "haute",
-        "effectif"
+        "effectif",
+        { label: "Aller à l'effectif", href: "/effectif" }
       )
     );
   } else {
@@ -113,7 +117,8 @@ export function buildTodoList({
         "Vérifier l'effectif",
         `${riders.length} coureur(s) chargés, dont ${youngCount} jeune(s). Pense à mettre à jour la forme et les mouvements.`,
         "moyenne",
-        "effectif"
+        "effectif",
+        { label: "Aller à l'effectif", href: "/effectif" }
       )
     );
   }
@@ -125,7 +130,8 @@ export function buildTodoList({
         "Définir l'entraînement de la semaine",
         "Aucun plan d'entraînement n'a encore été calculé ou confirmé.",
         "haute",
-        "entrainement"
+        "entrainement",
+        { label: "Aller à l'entraînement", href: "/entrainement" }
       )
     );
   } else {
@@ -137,7 +143,8 @@ export function buildTodoList({
           ? "Contexte critique (effectif indisponible + références cassées) : sécuriser la récupération et limiter l'exposition avant validation du trio hebdo."
           : "Vérifie que le trio d'entraînement reste cohérent avec l'objectif de la semaine.",
         hasCrossCriticalAlert ? "haute" : "moyenne",
-        "entrainement"
+        "entrainement",
+        { label: "Aller à l'entraînement", href: "/entrainement" }
       )
     );
   }
@@ -149,7 +156,8 @@ export function buildTodoList({
         "Analyser la prochaine course",
         "Aucune course n'a encore été collée et analysée.",
         "haute",
-        "courses"
+        "courses",
+        { label: "Aller aux courses", href: "/courses" }
       )
     );
   } else {
@@ -161,7 +169,8 @@ export function buildTodoList({
           ? `La course "${race.name}" a été analysée, mais le contexte est critique (indisponibilité + références cassées). Revalider avant engagement.`
           : `La course "${race.name}" a été analysée. Vérifie la sélection proposée.`,
         hasCrossCriticalAlert ? "haute" : "moyenne",
-        "courses"
+        "courses",
+        { label: "Aller aux courses", href: "/courses" }
       )
     );
 
@@ -172,7 +181,8 @@ export function buildTodoList({
           "Finaliser les réglages de course",
           `Seulement ${raceSetupCount} réglage(s) de course enregistré(s) pour les 7 coureurs.`,
           "haute",
-          "courses"
+          "courses",
+          { label: "Aller aux courses", href: "/courses" }
         )
       );
     } else {
@@ -182,7 +192,8 @@ export function buildTodoList({
           "Relire rôles et pourcentages",
           "Les 7 coureurs ont un réglage enregistré. Vérifie une dernière fois rôles, pourcentages et échappée mat.",
           "moyenne",
-          "courses"
+          "courses",
+          { label: "Aller aux courses", href: "/courses" }
         )
       );
     }
@@ -203,7 +214,8 @@ export function buildTodoList({
           `Surveiller les travaux : ${label}`,
           `${label} en travaux vers le niveau ${facility.targetLevel ?? "?"} (${dayLabel}).`,
           "haute",
-          "installations"
+          "installations",
+          { label: "Voir les installations", href: "/parametres" }
         )
       );
     } else {
@@ -215,7 +227,8 @@ export function buildTodoList({
           facilityKey === "trainingCenter" || facilityKey === "formationCenter"
             ? "moyenne"
             : "basse",
-          "installations"
+          "installations",
+          { label: "Voir les installations", href: "/parametres" }
         )
       );
     }

@@ -1,7 +1,7 @@
 const ROSTER_HISTORY_VIEW_STORAGE_KEY = "cymanager:roster-history-view";
 
 export type RosterHistoryCategoryFilter = "all" | "Pro" | "U25" | "U21";
-export type RosterHistoryAlertKindFilter = "all" | "salary-drift" | "value-drop" | "veteran-yield";
+export type RosterHistoryAlertKindFilter = "all" | "salary-drift" | "value-drop" | "veteran-yield" | "peak-passed";
 
 export type RosterHistoryViewPreferences = {
   categoryFilter: RosterHistoryCategoryFilter;
@@ -26,7 +26,7 @@ function normalizeCategoryFilter(value: unknown): RosterHistoryCategoryFilter {
 }
 
 function normalizeAlertKindFilter(value: unknown): RosterHistoryAlertKindFilter {
-  return value === "salary-drift" || value === "value-drop" || value === "veteran-yield"
+  return value === "salary-drift" || value === "value-drop" || value === "veteran-yield" || value === "peak-passed"
     ? value
     : "all";
 }

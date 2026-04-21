@@ -1179,6 +1179,32 @@ a {
   color: var(--text);
 }
 
+.collapsible-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+
+.collapsible-box-chevron {
+  font-size: 0.75rem;
+  opacity: 0.6;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+.collapsible-box-body {
+  margin-top: 10px;
+}
+
 .table-wrap {
   overflow-x: auto;
 }
@@ -1451,6 +1477,19 @@ a {
   font-weight: 600;
   letter-spacing: 0.01em;
   margin-right: 4px;
+}
+
+.todo-badge-link {
+  background: #1a3a2a;
+  border-color: #4fcf8a;
+  color: #4fcf8a;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.todo-badge-link:hover {
+  background: #234d38;
 }
 
 .priority-haute {

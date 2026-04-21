@@ -21,6 +21,7 @@ import { appendManagementHistoryEntry } from "../lib/storage/managementHistorySt
 import { loadClubSettings } from "../lib/storage/settingsStorage";
 import { loadTeamStrategy } from "../lib/storage/teamStrategyStorage";
 import { appendTransferHistoryEntry, loadTransferHistory } from "../lib/storage/transferHistoryStorage";
+import { simulateRecruitment } from "../lib/finance/recruitmentSimulator";
 import { formatCurrency, formatInteger, parseFrenchInteger } from "../lib/utils/numbers";
 import { initialRiders } from "../store/initialState";
 import type { Rider } from "../types/rider";
@@ -1398,6 +1399,53 @@ export default function TransfersPage() {
               <p><strong>Montant retenu :</strong> {formatCurrency(getEffectiveTransferAmount(selectedAnalysis, parsedTransferAmount))}</p>
               <p><strong>Source du montant :</strong> {parsedTransferAmount > 0 ? "Saisie manuelle" : "Enchère actuelle"}</p>
             </div>
+
+            {(() => {
+              const sim = simulateRecruitment(
+                financeSnapshot.currentBalance,
+                financeSnapshot.weeklyFixedCosts,
+                selectedAnalysis.rider.salaryWeekly,
+                getEffectiveTransferAmount(selectedAnalysis, parsedTransferAmount)
+              );
+              const verdictClass =
+                sim.verdict === "danger"
+                  ? "message-box message-box-warning"
+                  : sim.verdict === "caution"
+                  ? "message-box"
+                  : "message-box message-box-success";
+              return (
+                <div className="page-stack">
+                  <p className="field-label">Simulation d'impact recrutement</p>
+                  <div className="settings-diagnostics-grid">
+                    <div className="finance-prize-preview">
+                      <span className="muted">Solde avant</span>
+                      <strong>{formatCurrency(sim.balanceBefore)}</strong>
+                      <span className="muted">Solde après</span>
+                      <strong>{formatCurrency(sim.balanceAfter)}</strong>
+                    </div>
+                    <div className="finance-prize-preview">
+                      <span className="muted">Charge fixe hebdo avant</span>
+                      <strong>{formatCurrency(sim.weeklyFixedCostsBefore)}</strong>
+                      <span className="muted">Charge fixe hebdo après</span>
+                      <strong>{formatCurrency(sim.weeklyFixedCostsAfter)}</strong>
+                    </div>
+                    <div className="finance-prize-preview">
+                      <span className="muted">Autonomie avant</span>
+                      <strong>{sim.autonomyWeeksBefore.toFixed(1)} sem.</strong>
+                      <span className="muted">Autonomie après</span>
+                      <strong>
+                        {sim.autonomyWeeksAfter.toFixed(1)} sem.{" "}
+                        ({sim.autonomyDelta >= 0 ? "+" : ""}{sim.autonomyDelta.toFixed(1)})
+                      </strong>
+                    </div>
+                  </div>
+                  <div className={verdictClass}>
+                    <p>{sim.verdictLabel}</p>
+                  </div>
+                </div>
+              );
+            })()}
+
             <div className="inline-actions transfer-actions">
               <button
                 type="button"

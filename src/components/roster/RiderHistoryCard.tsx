@@ -62,7 +62,7 @@ type RiderBusinessAlert = {
   riderName: string;
   riderCategory: RiderHistorySnapshotEntry["category"];
   severity: "high" | "medium";
-  kind: "salary-drift" | "value-drop" | "veteran-yield";
+  kind: "salary-drift" | "value-drop" | "veteran-yield" | "peak-passed";
   title: string;
   note: string;
 };
@@ -283,7 +283,8 @@ function buildRiderHistoryRows(
 function buildBusinessAlerts(
   rows: RiderHistoryRow[],
   recentPrizeIncomeByRider: Record<string, number>,
-  settings: ClubSettings
+  settings: ClubSettings,
+  weeklySnapshots: RiderHistorySnapshot[]
 ): RiderBusinessAlert[] {
   if (rows.length === 0) {
     return [];
@@ -354,6 +355,38 @@ function buildBusinessAlerts(
         });
       }
 
+      // Pic de valeur dépassé : Pro > 30 ans avec déclin consécutif sur 3+ semaines
+      if (row.category === "Pro" && row.currentAgeYears >= 30 && weeklySnapshots.length >= 3) {
+        const valueSeries = weeklySnapshots
+          .map((snapshot) => snapshot.riders.find((entry) => entry.riderId === row.riderId)?.value ?? null)
+          .filter((value): value is number => value !== null);
+
+        if (valueSeries.length >= 3) {
+          let consecutiveDeclines = 0;
+          for (let i = 0; i < valueSeries.length - 1; i++) {
+            if (valueSeries[i] < valueSeries[i + 1]) {
+              consecutiveDeclines++;
+            } else {
+              break;
+            }
+          }
+
+          if (consecutiveDeclines >= 2) {
+            const totalDecline = valueSeries[0] - valueSeries[Math.min(consecutiveDeclines, valueSeries.length - 1)];
+            alerts.push({
+              riderId: `${row.riderId}-peak-passed`,
+              riderSourceId: row.riderId,
+              riderName: row.riderName,
+              riderCategory: row.category,
+              severity: consecutiveDeclines >= 3 || totalDecline < -80000 ? "high" : "medium",
+              kind: "peak-passed",
+              title: "Pic de valeur probablement dépassé",
+              note: `${row.currentAgeYears}a, valeur en déclin ${consecutiveDeclines} semaine(s) de suite (${formatCurrency(totalDecline)} cumulé). Envisager une vente avant nouvelle dépréciation.`,
+            });
+          }
+        }
+      }
+
       return alerts;
     })
     .sort((left, right) => {
@@ -365,12 +398,66 @@ function buildBusinessAlerts(
     });
 }
 
+type U21Progression = {
+  riderId: string;
+  riderName: string;
+  /** Nombre de semaines consécutives de progression */
+  consecutiveWeeks: number;
+  /** Delta total cumulé sur la période */
+  totalGain: number;
+};
+
+function buildU21Progressions(
+  rows: RiderHistoryRow[],
+  weeklySnapshots: RiderHistorySnapshot[]
+): U21Progression[] {
+  if (weeklySnapshots.length < 3) {
+    return [];
+  }
+
+  const u21Rows = rows.filter((row) => row.category === "U21");
+  const result: U21Progression[] = [];
+
+  for (const row of u21Rows) {
+    // Reconstruire la série de totaux dans l'ordre du plus récent au plus ancien
+    const series = weeklySnapshots
+      .map((snapshot) => snapshot.riders.find((entry) => entry.riderId === row.riderId)?.total ?? null)
+      .filter((total): total is number => total !== null);
+
+    if (series.length < 3) {
+      continue;
+    }
+
+    // Compter les semaines consécutives de hausse (du plus récent vers le plus ancien)
+    let consecutive = 0;
+    for (let i = 0; i < series.length - 1; i++) {
+      if (series[i] > series[i + 1]) {
+        consecutive++;
+      } else {
+        break;
+      }
+    }
+
+    if (consecutive >= 2) {
+      result.push({
+        riderId: row.riderId,
+        riderName: row.riderName,
+        consecutiveWeeks: consecutive,
+        totalGain: series[0] - series[Math.min(consecutive, series.length - 1)],
+      });
+    }
+  }
+
+  return result.sort((left, right) => right.consecutiveWeeks - left.consecutiveWeeks);
+}
+
 function buildCriticalAlertCounters(alerts: RiderBusinessAlert[]): CriticalAlertCounter[] {
   const criticalAlerts = alerts.filter((alert) => alert.severity === "high");
   const counterDefinitions: Array<Pick<CriticalAlertCounter, "kind" | "title">> = [
     { kind: "salary-drift", title: "Salaire sans progrès" },
     { kind: "value-drop", title: "Décrochage de valeur" },
     { kind: "veteran-yield", title: "Vétérans peu rentables" },
+    { kind: "peak-passed", title: "Pic de valeur dépassé" },
   ];
 
   return counterDefinitions.map(({ kind, title }) => {
@@ -465,10 +552,11 @@ export default function RiderHistoryCard({ riders, snapshots, recentPrizeIncomeB
   const baseTrend = useMemo(() => buildSnapshotTrend(snapshots), [snapshots]);
   const weeklySnapshots = useMemo(() => getLatestSnapshotPerWeek(snapshots), [snapshots]);
   const businessAlerts = useMemo(
-    () => buildBusinessAlerts(rows, recentPrizeIncomeByRider, settings),
-    [recentPrizeIncomeByRider, rows, settings]
+    () => buildBusinessAlerts(rows, recentPrizeIncomeByRider, settings, weeklySnapshots),
+    [recentPrizeIncomeByRider, rows, settings, weeklySnapshots]
   );
   const criticalAlertCounters = useMemo(() => buildCriticalAlertCounters(businessAlerts), [businessAlerts]);
+  const u21Progressions = useMemo(() => buildU21Progressions(rows, weeklySnapshots), [rows, weeklySnapshots]);
   const [categoryFilter, setCategoryFilter] = useState<RosterHistoryCategoryFilter>(
     initialViewPreferences.categoryFilter
   );
@@ -849,6 +937,28 @@ export default function RiderHistoryCard({ riders, snapshots, recentPrizeIncomeB
                 </div>
               ) : (
                 <p className="muted">Aucune alerte d'âge particulière sur l'effectif actuel.</p>
+              )}
+            </div>
+
+            <div className="roster-history-panel">
+              <p className="field-label">Talents U21 en progression</p>
+              {u21Progressions.length > 0 ? (
+                <div className="roster-aging-alert-list">
+                  {u21Progressions.map((progression) => (
+                    <div key={progression.riderId} className="roster-aging-alert">
+                      <strong>{progression.riderName}</strong>
+                      <span>
+                        +{progression.totalGain} total sur {progression.consecutiveWeeks} semaine{progression.consecutiveWeeks > 1 ? "s" : ""} de suite — Potentiel en développement
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="muted">
+                  {weeklySnapshots.length < 3
+                    ? "3 semaines de snapshots nécessaires pour détecter une progression U21."
+                    : "Aucune progression U21 régulière détectée sur 3 semaines glissantes."}
+                </p>
               )}
             </div>
           </div>

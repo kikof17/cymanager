@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Card from "../components/common/Card";
 import PageTitle from "../components/common/PageTitle";
 import { buildCrossRecommendations } from "../lib/app/crossRecommendations";
+import CollapsibleBox from "../components/common/CollapsibleBox";
 import {
   getPrizeAmount,
   getPrizeColumnLabelForDivision,
@@ -478,13 +479,15 @@ export default function FinancePage() {
       </div>
 
       <Card title="Recommandations croisées finance">
-        <div className="dashboard-lines">
-          {crossRecommendations.finance.map((item, index) => (
-            <p key={`${item.severity}-${index}`} className={item.severity === "critical" ? "settings-diagnostic-line settings-diagnostic-line-warning" : undefined}>
-              <strong>{item.severity === "critical" ? "Critique" : item.severity === "warning" ? "Vigilance" : "Info"}:</strong> {item.text}
-            </p>
-          ))}
-        </div>
+        <CollapsibleBox title="Afficher / masquer les recommandations" defaultExpanded={crossRecommendations.finance.some((item) => item.severity !== "info")}>
+          <div className="dashboard-lines">
+            {crossRecommendations.finance.map((item, index) => (
+              <p key={`${item.severity}-${index}`} className={item.severity === "critical" ? "settings-diagnostic-line settings-diagnostic-line-warning" : undefined}>
+                <strong>{item.severity === "critical" ? "Critique" : item.severity === "warning" ? "Vigilance" : "Info"}:</strong> {item.text}
+              </p>
+            ))}
+          </div>
+        </CollapsibleBox>
       </Card>
 
       <div className="finance-summary-grid">

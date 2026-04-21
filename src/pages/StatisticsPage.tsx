@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Card from "../components/common/Card";
 import PageTitle from "../components/common/PageTitle";
 import { buildCrossRecommendations } from "../lib/app/crossRecommendations";
+import CollapsibleBox from "../components/common/CollapsibleBox";
 import { buildRiderProfiles } from "../lib/scoring/riderProfile";
 import { buildResultReferenceSummary, getAllResultsFromStorage, type StoredResult } from "../lib/scoring/extractPoints";
 import { buildRiderAvailabilitySummary } from "../lib/scoring/riderAvailability";
@@ -568,13 +569,15 @@ export default function StatisticsPage() {
           </div>
 
           <Card title="Recommandations croisées (lot 4)">
-            <div className="dashboard-lines">
-              {[...crossRecommendations.training.slice(0, 1), ...crossRecommendations.finance.slice(0, 1), ...crossRecommendations.results.slice(0, 1)].map((item, index) => (
-                <p key={`${item.severity}-${index}`} className={item.severity === "critical" ? "settings-diagnostic-line settings-diagnostic-line-warning" : undefined}>
-                  <strong>{item.severity === "critical" ? "Critique" : item.severity === "warning" ? "Vigilance" : "Info"}:</strong> {item.text}
-                </p>
-              ))}
-            </div>
+            <CollapsibleBox title="Afficher / masquer les recommandations" defaultExpanded={true}>
+              <div className="dashboard-lines">
+                {[...crossRecommendations.training.slice(0, 1), ...crossRecommendations.finance.slice(0, 1), ...crossRecommendations.results.slice(0, 1)].map((item, index) => (
+                  <p key={`${item.severity}-${index}`} className={item.severity === "critical" ? "settings-diagnostic-line settings-diagnostic-line-warning" : undefined}>
+                    <strong>{item.severity === "critical" ? "Critique" : item.severity === "warning" ? "Vigilance" : "Info"}:</strong> {item.text}
+                  </p>
+                ))}
+              </div>
+            </CollapsibleBox>
           </Card>
 
           <div className="stats-two-columns">

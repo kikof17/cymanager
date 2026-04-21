@@ -25,6 +25,8 @@ export type TodoItem = {
   stageNumber?: number;
   tourKey?: string;
   raceKey?: string; // Ajout pour compatibilité ODC calendrier
+  /** Lien vers la section applicative concernée */
+  entityLink?: { label: string; href: string };
 };
 
 export type ManualTodoDraft = {

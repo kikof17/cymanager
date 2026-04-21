@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { TodoItem as TodoItemType } from "../../types/todo";
 
 type TodoItemProps = {
@@ -25,6 +26,11 @@ export default function TodoItem({ item, onToggle, onDelete }: TodoItemProps) {
           <span className={`todo-badge priority-${item.priority}`}>{item.priority}</span>
           <span className="todo-badge">{item.category}</span>
           <span className="todo-badge">{item.source}</span>
+          {item.entityLink ? (
+            <Link to={item.entityLink.href} className="todo-badge todo-badge-link">
+              {item.entityLink.label} →
+            </Link>
+          ) : null}
         </div>
       </div>
 
