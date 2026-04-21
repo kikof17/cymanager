@@ -74,6 +74,8 @@ type PersistedTransfersPageState = {
   transferAmount: string;
   transferDate: string;
   sortConfig: TransferSortConfig;
+  comparisonSearch: string;
+  recruitableOnly: boolean;
 };
 
 function isPersistedTransferMarketCandidate(value: unknown): value is TransferMarketCandidate {
@@ -324,6 +326,8 @@ function getDefaultTransfersPageState(): PersistedTransfersPageState {
     transferAmount: "",
     transferDate: getDefaultTransferDate(),
     sortConfig: null,
+    comparisonSearch: "",
+    recruitableOnly: false,
   };
 }
 
@@ -378,6 +382,14 @@ function loadTransfersPageState(): PersistedTransfersPageState {
         parsed.sortConfig && typeof parsed.sortConfig === "object"
           ? (parsed.sortConfig as TransferSortConfig)
           : fallback.sortConfig,
+      comparisonSearch:
+        typeof parsed.comparisonSearch === "string"
+          ? parsed.comparisonSearch
+          : fallback.comparisonSearch,
+      recruitableOnly:
+        typeof parsed.recruitableOnly === "boolean"
+          ? parsed.recruitableOnly
+          : fallback.recruitableOnly,
     };
   } catch (error) {
     console.error("Erreur de lecture localStorage transferts", error);
@@ -510,9 +522,11 @@ export default function TransfersPage() {
   const [transferAmount, setTransferAmount] = useState(persistedState.transferAmount);
   const [transferDate, setTransferDate] = useState(persistedState.transferDate);
   const [sortConfig, setSortConfig] = useState<TransferSortConfig>(persistedState.sortConfig);
+  const [comparisonSearch, setComparisonSearch] = useState<string>(persistedState.comparisonSearch);
+  const [recruitableOnly, setRecruitableOnly] = useState<boolean>(persistedState.recruitableOnly);
   const [pendingRemovalCandidateId, setPendingRemovalCandidateId] = useState<string>("");
   const [transferHistory, setTransferHistory] = useState<TransferHistoryEntry[]>(() => loadTransferHistory());
-    const [checkedCandidateIds, setCheckedCandidateIds] = useState<string[]>([]);
+  const [checkedCandidateIds, setCheckedCandidateIds] = useState<string[]>([]);
 
   const settings = useMemo(() => loadClubSettings(), []);
   const teamStrategy = useMemo(() => loadTeamStrategy(), []);
@@ -542,6 +556,8 @@ export default function TransfersPage() {
       transferAmount,
       transferDate,
       sortConfig,
+      comparisonSearch,
+      recruitableOnly,
     });
   }, [
     candidates,
@@ -551,6 +567,8 @@ export default function TransfersPage() {
     selectedCandidateId,
     shortlistedCandidateIds,
     sortConfig,
+    comparisonSearch,
+    recruitableOnly,
     transferAmount,
     transferDate,
   ]);
@@ -632,6 +650,36 @@ export default function TransfersPage() {
       return comparison * directionMultiplier;
     });
   }, [analyses, sortConfig]);
+
+  const filteredSortedAnalyses = useMemo(() => {
+    const needle = comparisonSearch.trim().toLowerCase();
+
+    return sortedAnalyses.filter((analysis) => {
+      if (recruitableOnly && !analysis.canRecruit) {
+        return false;
+      }
+
+      if (!needle) {
+        return true;
+      }
+
+      const haystack = [
+        analysis.rider.name,
+        analysis.rider.category,
+        analysis.profileLabel,
+        analysis.recommendation,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return haystack.includes(needle);
+    });
+  }, [comparisonSearch, recruitableOnly, sortedAnalyses]);
+
+  useEffect(() => {
+    const visibleIds = new Set(filteredSortedAnalyses.map((analysis) => analysis.rider.id));
+    setCheckedCandidateIds((current) => current.filter((id) => visibleIds.has(id)));
+  }, [filteredSortedAnalyses]);
 
   const selectedAnalysis = useMemo(() => {
     if (!selectedCandidateId) {
@@ -1048,6 +1096,36 @@ export default function TransfersPage() {
                 <button type="button" className="button button-secondary button-small" onClick={() => jumpComparisonTableToEdge("end")}>{">>"}</button>
               </div>
 
+              <div className="transfer-bulk-bar transfer-bulk-bar-filters">
+                <input
+                  className="input transfer-search-input"
+                  type="text"
+                  value={comparisonSearch}
+                  onChange={(event) => setComparisonSearch(event.target.value)}
+                  placeholder="Filtrer: nom, cat., profil, recommandation"
+                />
+                <label className="roster-history-toggle">
+                  <input
+                    type="checkbox"
+                    checked={recruitableOnly}
+                    onChange={(event) => setRecruitableOnly(event.target.checked)}
+                  />
+                  <span>Recrutables uniquement</span>
+                </label>
+                {(comparisonSearch.trim().length > 0 || recruitableOnly) ? (
+                  <button
+                    type="button"
+                    className="button button-secondary button-small"
+                    onClick={() => {
+                      setComparisonSearch("");
+                      setRecruitableOnly(false);
+                    }}
+                  >
+                    Réinitialiser
+                  </button>
+                ) : null}
+              </div>
+
               <div ref={comparisonTableContainerRef} className="table-container transfer-table-container">
                 <table className="data-table styled-table transfer-table">
                   <thead>
@@ -1056,12 +1134,12 @@ export default function TransfersPage() {
                         <input
                           type="checkbox"
                           aria-label="Tout cocher / décocher"
-                          checked={sortedAnalyses.length > 0 && checkedCandidateIds.length === sortedAnalyses.length}
+                        checked={filteredSortedAnalyses.length > 0 && checkedCandidateIds.length === filteredSortedAnalyses.length}
                           ref={(el) => {
-                            if (el) el.indeterminate = checkedCandidateIds.length > 0 && checkedCandidateIds.length < sortedAnalyses.length;
+                          if (el) el.indeterminate = checkedCandidateIds.length > 0 && checkedCandidateIds.length < filteredSortedAnalyses.length;
                           }}
                           onChange={(event) => {
-                            setCheckedCandidateIds(event.target.checked ? sortedAnalyses.map((a) => a.rider.id) : []);
+                          setCheckedCandidateIds(event.target.checked ? filteredSortedAnalyses.map((a) => a.rider.id) : []);
                           }}
                         />
                       </th>
@@ -1107,7 +1185,7 @@ export default function TransfersPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {sortedAnalyses.map((analysis, index) => {
+                    {filteredSortedAnalyses.map((analysis, index) => {
                       const isSelected = selectedAnalysis?.rider.id === analysis.rider.id;
                       const isBest = bestOption?.rider.id === analysis.rider.id;
                       const isShortlisted = shortlistedCandidateIds.includes(analysis.rider.id);
@@ -1229,6 +1307,13 @@ export default function TransfersPage() {
                   </button>
                 </div>
               ) : null}
+
+              {filteredSortedAnalyses.length === 0 ? (
+                <div className="message-box">
+                  <p className="muted">Aucun candidat ne correspond aux filtres actifs.</p>
+                </div>
+              ) : null}
+
               <div className="transfer-table-jump-controls transfer-table-jump-controls-bottom" aria-hidden="true">
                 <button type="button" className="button button-secondary button-small" onClick={() => jumpComparisonTableToEdge("start")}>{"<<"}</button>
                 <button type="button" className="button button-secondary button-small" onClick={() => jumpComparisonTableToEdge("end")}>{">>"}</button>

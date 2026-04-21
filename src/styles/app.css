@@ -542,6 +542,15 @@ select, select option {
   margin-right: 4px;
 }
 
+.transfer-bulk-bar-filters {
+  justify-content: space-between;
+}
+
+.transfer-search-input {
+  min-width: 280px;
+  flex: 1;
+}
+
 .transfer-table th.transfer-col-choice,
 .transfer-table td.transfer-col-choice {
   width: 110px;
@@ -1546,6 +1555,10 @@ a {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+}
+
+.todo-bulk-actions {
+  margin-bottom: 12px;
 }
 
 @media (max-width: 1100px) {

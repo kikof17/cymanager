@@ -26,6 +26,14 @@ import type {
   TodoStatus,
 } from "../types/todo";
 
+type TodoSortMode = "priority" | "recent" | "category";
+
+const PRIORITY_RANK: Record<TodoItem["priority"], number> = {
+  haute: 3,
+  moyenne: 2,
+  basse: 1,
+};
+
 function buildRaceKey(race: RaceSnapshot | null): string {
   if (!race) {
     return "";
@@ -52,6 +60,8 @@ export default function TodoPage() {
 
   const [statusFilter, setStatusFilter] = useState<TodoStatus | "all">("todo");
   const [categoryFilter, setCategoryFilter] = useState<TodoCategory | "all">("all");
+  const [searchText, setSearchText] = useState<string>("");
+  const [sortMode, setSortMode] = useState<TodoSortMode>("priority");
 
   const [draft, setDraft] = useState<ManualTodoDraft>({
     title: "",
@@ -137,10 +147,44 @@ export default function TodoPage() {
       const statusOk = statusFilter === "all" || item.status === statusFilter;
       const categoryOk =
         categoryFilter === "all" || item.category === categoryFilter;
+      const needle = searchText.trim().toLowerCase();
+      const searchOk =
+        needle.length === 0 ||
+        `${item.title} ${item.details ?? ""}`.toLowerCase().includes(needle);
 
-      return statusOk && categoryOk;
+      return statusOk && categoryOk && searchOk;
     });
-  }, [mergedTodos, statusFilter, categoryFilter]);
+  }, [mergedTodos, statusFilter, categoryFilter, searchText]);
+
+  const sortedTodos = useMemo(() => {
+    const byDateDesc = (left: TodoItem, right: TodoItem) =>
+      new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime();
+
+    return [...filteredTodos].sort((left, right) => {
+      if (sortMode === "recent") {
+        return byDateDesc(left, right);
+      }
+
+      if (sortMode === "category") {
+        const categoryComparison = left.category.localeCompare(right.category, "fr", {
+          sensitivity: "base",
+        });
+
+        if (categoryComparison !== 0) {
+          return categoryComparison;
+        }
+      }
+
+      const priorityComparison =
+        PRIORITY_RANK[right.priority] - PRIORITY_RANK[left.priority];
+
+      if (priorityComparison !== 0) {
+        return priorityComparison;
+      }
+
+      return byDateDesc(left, right);
+    });
+  }, [filteredTodos, sortMode]);
 
   function handleToggle(id: string) {
     setStatuses((current) => ({
@@ -185,6 +229,30 @@ export default function TodoPage() {
       details: "",
       priority: "moyenne",
       category: "general",
+    });
+  }
+
+  function handleMarkFilteredAsDone() {
+    setStatuses((current) => {
+      const next = { ...current };
+
+      filteredTodos.forEach((item) => {
+        next[item.id] = "done";
+      });
+
+      return next;
+    });
+  }
+
+  function handleResetFilteredDone() {
+    setStatuses((current) => {
+      const next = { ...current };
+
+      filteredTodos.forEach((item) => {
+        next[item.id] = "todo";
+      });
+
+      return next;
     });
   }
 
@@ -310,15 +378,27 @@ export default function TodoPage() {
           <TodoFilters
             status={statusFilter}
             category={categoryFilter}
+            searchText={searchText}
+            sortMode={sortMode}
             onStatusChange={setStatusFilter}
             onCategoryChange={setCategoryFilter}
+            onSearchTextChange={setSearchText}
+            onSortModeChange={setSortMode}
           />
         </Card>
       </div>
 
       <Card title="Liste des tâches">
+        <div className="inline-actions todo-bulk-actions">
+          <button type="button" className="button button-secondary" onClick={handleMarkFilteredAsDone}>
+            Tout marquer fait (vue)
+          </button>
+          <button type="button" className="button button-secondary" onClick={handleResetFilteredDone}>
+            Remettre à faire (vue)
+          </button>
+        </div>
         <TodoList
-          items={filteredTodos}
+          items={sortedTodos}
           onToggle={handleToggle}
           onDeleteManual={handleDeleteManual}
         />
