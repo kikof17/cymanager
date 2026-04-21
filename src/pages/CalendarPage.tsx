@@ -103,11 +103,32 @@ function filterEligibleRidersForCourseCategory(riders: Rider[], courseCategory: 
   return riders;
 }
 
+function isLegacyCalendarTodo(todo: TodoItem): boolean {
+  if (todo.id.startsWith('calendar-')) {
+    return true;
+  }
+
+  if (todo.category !== 'courses' || todo.source !== 'manual') {
+    return false;
+  }
+
+  if (typeof todo.raceKey === 'string' || typeof todo.tourKey === 'string' || typeof todo.stageNumber === 'number') {
+    return true;
+  }
+
+  const details = typeof todo.details === 'string' ? todo.details : '';
+  return /(^|\n)\s*(Date|Profil|Type)\s*:/i.test(details);
+}
+
+function loadCalendarTodosFromStorage(): TodoItem[] {
+  return loadManualTodos().filter(isLegacyCalendarTodo);
+}
+
 
 const CalendarPage: React.FC = () => {
   // Hooks inutilisés supprimés (input, parsedList, success)
   const [calendarTodos, setCalendarTodos] = useState<TodoItem[]>(() =>
-    loadManualTodos().filter((todo) => todo.id.startsWith('calendar-'))
+    loadCalendarTodosFromStorage()
   );
   const [statuses, setStatuses] = useState<Record<string, 'todo' | 'done'>>(loadTodoStatuses);
   const [identityIssueCount, setIdentityIssueCount] = useState<number>(() =>
@@ -132,7 +153,7 @@ const CalendarPage: React.FC = () => {
   function handleMigrateIdentities() {
     const result = migrateCalendarRaceIdentities();
     setIdentityIssueCount(0);
-    setCalendarTodos(loadManualTodos().filter((todo) => todo.id.startsWith('calendar-')));
+    setCalendarTodos(loadCalendarTodosFromStorage());
     setIdentityRepairMessage(
       result.migratedCount > 0
         ? `Identité stabilisée pour ${result.migratedCount} course(s). Setups déplacés : ${result.setupsMigrated}. Profils migrés : ${result.profilesMigrated}.`
