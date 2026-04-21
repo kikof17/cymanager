@@ -44,6 +44,7 @@ function normalizeKind(value: unknown): ManagementHistoryEntryKind | null {
     value === "calendar-status" ||
     value === "calendar-delete" ||
     value === "result-save" ||
+    value === "result-repair" ||
     value === "recruitment"
     ? value
     : null;

@@ -3,9 +3,12 @@ import Card from "../components/common/Card";
 import PageTitle from "../components/common/PageTitle";
 import IndividualTrainingTable from "../components/training/IndividualTrainingTable";
 import TrainingPlanCard from "../components/training/TrainingPlanCard";
+import { buildCrossRecommendations } from "../lib/app/crossRecommendations";
 import { buildTrainingPlan } from "../lib/scoring/trainingScores";
+import { buildResultReferenceSummary, getAllResultsFromStorage } from "../lib/scoring/extractPoints";
 import { loadRidersFromStorage } from "../lib/storage/localStorage";
 import { loadClubSettings } from "../lib/storage/settingsStorage";
+import { loadManualTodos } from "../lib/storage/todoStorage";
 import { initialRiders } from "../store/initialState";
 import type { Rider } from "../types/rider";
 
@@ -16,8 +19,24 @@ export default function TrainingPage() {
   }, []);
 
   const settings = useMemo(() => loadClubSettings(), []);
+  const resultReferenceSummary = useMemo(
+    () =>
+      buildResultReferenceSummary(
+        getAllResultsFromStorage(),
+        loadManualTodos().filter((todo) => todo.id.startsWith("calendar-"))
+      ),
+    []
+  );
 
   const plan = useMemo(() => buildTrainingPlan(riders, settings), [riders, settings]);
+  const crossRecommendations = useMemo(
+    () =>
+      buildCrossRecommendations({
+        riders,
+        resultReferenceSummary,
+      }),
+    [riders, resultReferenceSummary]
+  );
 
   return (
     <div className="page-stack">
@@ -50,6 +69,16 @@ export default function TrainingPage() {
           </div>
         </Card>
       </div>
+
+      <Card title="Recommandations croisées entraînement">
+        <div className="dashboard-lines">
+          {crossRecommendations.training.map((item, index) => (
+            <p key={`${item.severity}-${index}`} className={item.severity === "critical" ? "settings-diagnostic-line settings-diagnostic-line-warning" : undefined}>
+              <strong>{item.severity === "critical" ? "Critique" : item.severity === "warning" ? "Vigilance" : "Info"}:</strong> {item.text}
+            </p>
+          ))}
+        </div>
+      </Card>
 
       <Card title="Conseil individuel par coureur">
         <IndividualTrainingTable advices={plan.individualAdvices} />

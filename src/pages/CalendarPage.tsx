@@ -5,7 +5,7 @@ import RaceSetupTable from '../components/races/RaceSetupTable';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { getRiderStrengths } from '../lib/scoring/strengths';
 import { loadCalendarRaceProfile } from '../lib/storage/calendarRaceProfile';
-import { saveAllResultsToStorage, type StoredResult } from '../lib/scoring/extractPoints';
+import { createStoredResult, getAllResultsFromStorage, getStoredResultText, saveAllResultsToStorage, type StoredResult } from '../lib/scoring/extractPoints';
 import { syncFinanceWithSettings } from '../lib/storage/financeStorage';
 import { appendManagementHistoryEntry } from '../lib/storage/managementHistoryStorage';
 import { loadClubSettings } from '../lib/storage/settingsStorage';
@@ -13,6 +13,7 @@ import { getTodoResultCategory } from '../lib/utils/courseCategory';
 import { getTodoScheduledAt } from '../lib/utils/courseDates';
 import { getCourseDisplayTitle, groupCourseTodos } from '../lib/utils/stageRaces';
 
+import { countUnstableCalendarIdentities, migrateCalendarRaceIdentities } from '../lib/storage/raceIdentityMigration';
 import { saveManualTodos, loadManualTodos, loadTodoStatuses, saveTodoStatuses } from '../lib/storage/todoStorage';
 import type { RaceRiderScore, RiderRaceSetup } from '../types/race';
 import type { TodoItem } from '../types/todo';
@@ -21,25 +22,7 @@ import type { Rider } from '../types/rider';
 type StoredRaceSetupMap = Record<string, Record<string, RiderRaceSetup>>;
 
 function loadStoredResults(): Record<string, StoredResult> {
-  try {
-    const raw = localStorage.getItem('cymanager:results');
-    if (!raw) return {};
-
-    const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== 'object') return {};
-
-    return parsed as Record<string, StoredResult>;
-  } catch {
-    return {};
-  }
-}
-
-function getStoredResultText(result: StoredResult | undefined): string {
-  if (!result) {
-    return '';
-  }
-
-  return typeof result === 'string' ? result : result.result;
+  return getAllResultsFromStorage();
 }
 
 function loadStoredRiders(): Rider[] {
@@ -103,6 +86,11 @@ const CalendarPage: React.FC = () => {
     loadManualTodos().filter((todo) => todo.id.startsWith('calendar-'))
   );
   const [statuses, setStatuses] = useState<Record<string, 'todo' | 'done'>>(loadTodoStatuses);
+  const [identityIssueCount, setIdentityIssueCount] = useState<number>(() =>
+    countUnstableCalendarIdentities()
+  );
+  const [identityRepairMessage, setIdentityRepairMessage] = useState<string | null>(null);
+
   const groupedCalendarTodos = useMemo(
     () => groupCourseTodos(calendarTodos),
     [calendarTodos]
@@ -117,6 +105,17 @@ const CalendarPage: React.FC = () => {
   // renderStageCard supprimé (plus utilisé)
 
   // Gestion du statut (coché ou non)
+  function handleMigrateIdentities() {
+    const result = migrateCalendarRaceIdentities();
+    setIdentityIssueCount(0);
+    setCalendarTodos(loadManualTodos().filter((todo) => todo.id.startsWith('calendar-')));
+    setIdentityRepairMessage(
+      result.migratedCount > 0
+        ? `Identité stabilisée pour ${result.migratedCount} course(s). Setups déplacés : ${result.setupsMigrated}. Profils migrés : ${result.profilesMigrated}.`
+        : 'Aucune course à migrer.'
+    );
+  }
+
   function handleToggleStatus(id: string) {
     setStatuses((current) => {
       const nextStatus = current[id] === 'done' ? 'todo' : 'done';
@@ -216,7 +215,7 @@ const CalendarPage: React.FC = () => {
         return;
       }
 
-      map[courseId] = { result, category: getTodoResultCategory(course) };
+      map[courseId] = createStoredResult(result, course);
       savedCourses.push(course);
     });
 
@@ -495,6 +494,25 @@ const CalendarPage: React.FC = () => {
         title="Calendrier"
         subtitle="Importe et visualise les étapes à venir ou passées. Ajoute-les à la todo pour planifier facilement."
       />
+
+      {identityRepairMessage && (
+        <div className="message-box message-box-success">
+          <p>{identityRepairMessage}</p>
+          <button type="button" className="button button-small" onClick={() => setIdentityRepairMessage(null)}>Fermer</button>
+        </div>
+      )}
+
+      {identityIssueCount > 0 && !identityRepairMessage && (
+        <div className="message-box message-box-warning">
+          <p>
+            <strong>{identityIssueCount} course(s)</strong> du calendrier n'ont pas encore de clé d'identité stable.
+            Les réglages ODC et les résultats associés pourraient être perdus si le nom ou la date de ces courses change.
+          </p>
+          <button type="button" className="button button-primary button-small" onClick={handleMigrateIdentities}>
+            Stabiliser l'identité
+          </button>
+        </div>
+      )}
 
       <Card title="Courses à venir et passées" className="calendar-card">
         {calendarTodos.length === 0 && <div className="muted">Aucune étape ajoutée pour l'instant.</div>}

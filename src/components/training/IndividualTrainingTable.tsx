@@ -16,6 +16,7 @@ type SortKey =
   | "foncierGap"
   | "priority"
   | "suggestedTraining"
+  | "suggestedIntensity"
   | "salaryRisk"
   | "reason";
 
@@ -29,6 +30,7 @@ const columns: { key: SortKey; label: string; isNumeric?: boolean }[] = [
   { key: "foncierGap", label: "Écart", isNumeric: true },
   { key: "priority", label: "Priorité" },
   { key: "suggestedTraining", label: "Entraînement retenu" },
+  { key: "suggestedIntensity", label: "Intensité" },
   { key: "salaryRisk", label: "Risque salaire" },
   { key: "reason", label: "Motif" },
 ];
@@ -44,6 +46,7 @@ function getCellValue(advice: IndividualTrainingAdvice, key: SortKey) {
   if (key === "foncierGap") return advice.foncierGap;
   if (key === "priority") return advice.priority;
   if (key === "suggestedTraining") return advice.suggestedTraining;
+  if (key === "suggestedIntensity") return advice.suggestedIntensity;
   if (key === "salaryRisk") return advice.salaryRisk;
   if (key === "reason") return advice.reason;
   return "";
@@ -122,6 +125,7 @@ export default function IndividualTrainingTable({ advices }: IndividualTrainingT
                   </div>
                 ) : null}
               </td>
+              <td>{advice.suggestedIntensity}</td>
               <td>{advice.salaryRisk}</td>
               <td>{advice.reason}</td>
             </tr>

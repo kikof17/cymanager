@@ -3,10 +3,12 @@ import type {
   IndividualTrainingAdvice,
   SalaryRisk,
   TrainingPlan,
+  TrainingIntensity,
   TrainingPriority,
   TrainingType,
 } from "../../types/training";
 import type { ClubSettings, DivisionLevel } from "../../types/settings";
+import { buildRiderAvailabilitySummary } from "./riderAvailability";
 
 function getTargetDivisionForCategory(
   settings: ClubSettings,
@@ -130,15 +132,19 @@ function getSalaryRisk(rider: Rider, primaryValue: number): SalaryRisk {
 }
 
 function getFoncierTrainingForRider(rider: Rider, primaryLabel: string): TrainingType {
-  if (primaryLabel === "Montagne" || primaryLabel === "Course à étapes") {
-    return rider.stageRace >= rider.mountain ? "Course à étapes" : "Montagne";
-  }
+  const lowestFoncier = Math.min(rider.endurance, rider.resistance, rider.recovery);
 
-  if (primaryLabel === "CLM") {
+  // Pour du foncier prioritaire, on évite les entraînements à primaire métier
+  // (Montagne, Plaine, etc.) qui gonflent le salaire sans corriger la base.
+  if (lowestFoncier === rider.resistance) {
     return "Rouleur";
   }
 
-  if (primaryLabel === "Pavé") {
+  if (lowestFoncier === rider.recovery) {
+    return "CLM";
+  }
+
+  if (primaryLabel === "CLM" || primaryLabel === "Pavé") {
     return "Rouleur";
   }
 
@@ -178,6 +184,10 @@ function getIdealTraining(
     priority === "Foncier très prioritaire" ||
     priority === "Foncier prioritaire"
   ) {
+    if (salaryRisk === "Fort") {
+      return "Endurance";
+    }
+
     return getFoncierTrainingForRider(rider, primaryLabel);
   }
 
@@ -278,11 +288,71 @@ function buildIndividualAdvice(
     priority,
     idealTraining,
     suggestedTraining: idealTraining,
+    suggestedIntensity: "Normal",
     salaryRisk,
     urgencyScore,
     reason,
     reassigned: false,
   };
+}
+
+function parseRiderAgeYears(riderAge: string): number {
+  const years = Number.parseInt(riderAge.split("a")[0], 10);
+  return Number.isNaN(years) ? 30 : years;
+}
+
+function chooseIntensityForTrainingGroup(
+  group: IndividualTrainingAdvice[]
+): TrainingIntensity {
+  if (group.length === 0) {
+    return "Normal";
+  }
+
+  const fragileCount = group.filter((item) => item.salaryRisk === "Fort").length;
+  const priorityCount = group.filter((item) => item.priority === "Primaire prioritaire").length;
+  const meanAge =
+    group.reduce((sum, item) => sum + parseRiderAgeYears(item.riderAge), 0) / group.length;
+
+  if (fragileCount / group.length >= 0.34) {
+    return "Tranquille";
+  }
+
+  if (
+    fragileCount === 0 &&
+    priorityCount / group.length >= 0.6 &&
+    meanAge <= 24
+  ) {
+    return "À fond";
+  }
+
+  return "Normal";
+}
+
+function buildSelectedIntensities(
+  selectedTypes: TrainingType[],
+  advices: IndividualTrainingAdvice[]
+): Array<{ training: TrainingType; intensity: TrainingIntensity }> {
+  return selectedTypes.map((training) => {
+    const group = advices.filter((item) => item.suggestedTraining === training);
+    return {
+      training,
+      intensity: chooseIntensityForTrainingGroup(group),
+    };
+  });
+}
+
+function applyIntensityByTraining(
+  advices: IndividualTrainingAdvice[],
+  selectedIntensities: Array<{ training: TrainingType; intensity: TrainingIntensity }>
+): IndividualTrainingAdvice[] {
+  const intensityMap = new Map<TrainingType, TrainingIntensity>(
+    selectedIntensities.map((item) => [item.training, item.intensity])
+  );
+
+  return advices.map((advice) => ({
+    ...advice,
+    suggestedIntensity: intensityMap.get(advice.suggestedTraining) ?? "Normal",
+  }));
 }
 
 function buildWeeklySummary(individualAdvices: IndividualTrainingAdvice[]): {
@@ -389,18 +459,40 @@ export function buildTrainingPlan(
   if (riders.length === 0) {
     return {
       selectedTypes: [],
+      selectedIntensities: [],
       rationale: ["Aucun coureur disponible pour calculer un plan."],
       individualAdvices: [],
       coverageCounts: [],
     };
   }
 
-  const rawAdvices = riders
+  const availability = buildRiderAvailabilitySummary(riders);
+  const availableRiders = availability.availableRiders;
+
+  if (availableRiders.length === 0) {
+    return {
+      selectedTypes: [],
+      selectedIntensities: [],
+      rationale: [
+        "Aucun coureur alignable cette semaine: blessure ou forme critique (<35) sur tout l'effectif.",
+        "Priorité immédiate: récupération de forme et stabilisation médicale avant de relancer la progression primaire.",
+      ],
+      individualAdvices: [],
+      coverageCounts: [],
+    };
+  }
+
+  const rawAdvices = availableRiders
     .map((rider) => buildIndividualAdvice(rider, settings))
     .sort((a, b) => b.urgencyScore - a.urgencyScore);
 
   const weeklySummary = buildWeeklySummary(rawAdvices);
-  const finalAdvices = finalizeAdvices(rawAdvices, weeklySummary.selectedTypes);
+  const assignedAdvices = finalizeAdvices(rawAdvices, weeklySummary.selectedTypes);
+  const selectedIntensities = buildSelectedIntensities(
+    weeklySummary.selectedTypes,
+    assignedAdvices
+  );
+  const finalAdvices = applyIntensityByTraining(assignedAdvices, selectedIntensities);
   const coverageCounts = buildCoverageCounts(finalAdvices);
 
   const reassignedCount = finalAdvices.filter((item) => item.reassigned).length;
@@ -410,10 +502,14 @@ export function buildTrainingPlan(
     "Le foncier est calculé via endurance + résistance + récupération.",
     `Les cibles utilisées sont Pro ${settings.targetDivisionPro}, U25 ${settings.targetDivisionU25} et U21 ${settings.targetDivisionU21}.`,
     `${reassignedCount} coureur(s) ont été rabattus sur un des 3 entraînements retenus.`,
+    "L'intensité est définie au niveau des 3 entraînements retenus (et non coureur par coureur).",
+    `${availability.unavailableRiders.length} coureur(s) exclus du calcul pour indisponibilité (blessure ou forme critique).`,
+    `${availability.lowFormWarningCount} coureur(s) restent sélectionnables avec forme fragile (35-49).`,
   ];
 
   return {
     selectedTypes: weeklySummary.selectedTypes,
+    selectedIntensities,
     rationale,
     individualAdvices: finalAdvices,
     coverageCounts,

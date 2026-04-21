@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import PageTitle from "../components/common/PageTitle";
 import Card from "../components/common/Card";
-import { extractPointsFromResults, getAllResultsFromStorage } from "../lib/scoring/extractPoints";
+import { extractPointsFromResults, getAllResultsFromStorage, reconcileStoredResultsWithCourses, saveAllResultsToStorage } from "../lib/scoring/extractPoints";
 import {
   BASELINE_EFFECTIVE_DATE,
   BASELINE_INDIVIDUAL_RANKINGS,
@@ -98,11 +98,7 @@ function mergeBaselineWithDeltas(
 }
 
 function persistResults(results: Record<string, StoredResult>) {
-  try {
-    localStorage.setItem("cymanager:results", JSON.stringify(results));
-  } catch (error) {
-    console.error("Erreur d'ecriture localStorage resultats", error);
-  }
+  saveAllResultsToStorage(results);
 }
 
 function aggregateTeams(arr: Array<{ team: string; points: number }>): TeamPoints[] {
@@ -174,7 +170,7 @@ function buildRankingData(): RankingData {
   });
 
   if (shouldPersist) {
-    persistResults(results);
+    persistResults(reconcileStoredResultsWithCourses(results, todos).results);
   }
 
   const proMap = new Map<string, RiderPoints>();

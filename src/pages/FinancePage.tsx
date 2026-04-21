@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Card from "../components/common/Card";
 import PageTitle from "../components/common/PageTitle";
+import { buildCrossRecommendations } from "../lib/app/crossRecommendations";
 import {
   getPrizeAmount,
   getPrizeColumnLabelForDivision,
@@ -11,8 +12,10 @@ import {
   deleteManualFinanceEntry,
   getFinanceSnapshot,
 } from "../lib/storage/financeStorage";
+import { buildResultReferenceSummary, getAllResultsFromStorage, type ResultReferenceIssue } from "../lib/scoring/extractPoints";
 import { loadRidersFromStorage } from "../lib/storage/localStorage";
 import { loadClubSettings } from "../lib/storage/settingsStorage";
+import { loadManualTodos } from "../lib/storage/todoStorage";
 import { formatCurrency } from "../lib/utils/numbers";
 import { initialRiders } from "../store/initialState";
 import type { FinanceEntryCategory } from "../types/finance";
@@ -26,6 +29,7 @@ type FinanceSortConfig = {
 };
 
 type HistoryWeekFilter = "current" | "previous";
+type HistoryReferenceFilter = "all" | "invalid-race-prize";
 
 const ENTRY_CATEGORY_OPTIONS: Array<{
   value: FinanceEntryCategory;
@@ -135,6 +139,46 @@ function getReconciliationLineClass(
   return "finance-reconciliation-line finance-reconciliation-line-info";
 }
 
+function getRacePrizeCourseId(sourceKey?: string): string | null {
+  if (!sourceKey || !sourceKey.startsWith("race-prize:")) {
+    return null;
+  }
+
+  const [prefix, courseId] = sourceKey.split(":");
+
+  if (prefix !== "race-prize" || !courseId) {
+    return null;
+  }
+
+  return courseId;
+}
+
+function getReferenceBadgeClass(issue: ResultReferenceIssue | null): string {
+  if (!issue || issue.status === "valid") {
+    return "finance-badge finance-badge-sync";
+  }
+
+  return issue.status === "orphan"
+    ? "finance-badge finance-reference-badge-critical"
+    : "finance-badge finance-reference-badge-warning";
+}
+
+function getReferenceBadgeLabel(issue: ResultReferenceIssue | null): string {
+  if (!issue || issue.status === "valid") {
+    return "Référence OK";
+  }
+
+  if (issue.status === "missing-race-reference") {
+    return "Référence manquante";
+  }
+
+  if (issue.status === "mismatched-race-reference") {
+    return "Référence incohérente";
+  }
+
+  return "Résultat orphelin";
+}
+
 export default function FinancePage() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [message, setMessage] = useState(
@@ -153,6 +197,8 @@ export default function FinancePage() {
   });
   const [historyWeekFilter, setHistoryWeekFilter] =
     useState<HistoryWeekFilter>("current");
+  const [historyReferenceFilter, setHistoryReferenceFilter] =
+    useState<HistoryReferenceFilter>("all");
 
   const settings = useMemo(() => loadClubSettings(), [refreshKey]);
   const riders = useMemo(() => {
@@ -162,6 +208,14 @@ export default function FinancePage() {
   const snapshot = useMemo(
     () => getFinanceSnapshot(settings, riders),
     [settings, riders]
+  );
+  const resultReferenceSummary = useMemo(
+    () => buildResultReferenceSummary(getAllResultsFromStorage(), loadManualTodos().filter((todo) => todo.id.startsWith("calendar-"))),
+    [refreshKey]
+  );
+  const resultReferenceIssueMap = useMemo(
+    () => new Map(resultReferenceSummary.issues.map((issue) => [issue.courseId, issue])),
+    [resultReferenceSummary.issues]
   );
   const sortedEntries = useMemo(() => {
     const entries = [...snapshot.state.entries];
@@ -201,12 +255,55 @@ export default function FinancePage() {
 
     return entries;
   }, [snapshot.state.entries, sortConfig]);
-  const filteredEntries = useMemo(
+  const entriesBySelectedWeek = useMemo(
     () =>
       sortedEntries.filter((entry) =>
         isEntryInSelectedWeek(entry.occurredAt, historyWeekFilter, new Date())
       ),
     [historyWeekFilter, sortedEntries]
+  );
+  const invalidReferencePrizeCount = useMemo(
+    () =>
+      entriesBySelectedWeek.filter((entry) => {
+        if (entry.category !== "race-prize") {
+          return false;
+        }
+
+        const issue = resultReferenceIssueMap.get(getRacePrizeCourseId(entry.sourceKey) ?? "") ?? null;
+        return Boolean(issue && issue.status !== "valid");
+      }).length,
+    [entriesBySelectedWeek, resultReferenceIssueMap]
+  );
+  const filteredEntries = useMemo(() => {
+    if (historyReferenceFilter === "all") {
+      return entriesBySelectedWeek;
+    }
+
+    return entriesBySelectedWeek.filter((entry) => {
+      if (entry.category !== "race-prize") {
+        return false;
+      }
+
+      const issue = resultReferenceIssueMap.get(getRacePrizeCourseId(entry.sourceKey) ?? "") ?? null;
+      return Boolean(issue && issue.status !== "valid");
+    });
+  }, [entriesBySelectedWeek, historyReferenceFilter, resultReferenceIssueMap]);
+  const crossRecommendations = useMemo(
+    () =>
+      buildCrossRecommendations({
+        riders,
+        resultReferenceSummary,
+        invalidRacePrizeCount: invalidReferencePrizeCount,
+        currentBalance: snapshot.currentBalance,
+        weeklyFixedCosts: snapshot.weeklyFixedCosts,
+      }),
+    [
+      invalidReferencePrizeCount,
+      resultReferenceSummary,
+      riders,
+      snapshot.currentBalance,
+      snapshot.weeklyFixedCosts,
+    ]
   );
   const weeklyResultStats = useMemo(() => {
     const income = filteredEntries
@@ -379,6 +476,16 @@ export default function FinancePage() {
       <div className="message-box">
         <p className="muted">{message}</p>
       </div>
+
+      <Card title="Recommandations croisées finance">
+        <div className="dashboard-lines">
+          {crossRecommendations.finance.map((item, index) => (
+            <p key={`${item.severity}-${index}`} className={item.severity === "critical" ? "settings-diagnostic-line settings-diagnostic-line-warning" : undefined}>
+              <strong>{item.severity === "critical" ? "Critique" : item.severity === "warning" ? "Vigilance" : "Info"}:</strong> {item.text}
+            </p>
+          ))}
+        </div>
+      </Card>
 
       <div className="finance-summary-grid">
         <Card title="Solde actuel">
@@ -682,6 +789,12 @@ export default function FinancePage() {
               </div>
             </div>
 
+            <div className="message-box">
+              <p>
+                <strong>Références résultats :</strong> {resultReferenceSummary.validCount} valide(s), {resultReferenceSummary.missingRaceReferenceCount} sans référence, {resultReferenceSummary.mismatchedRaceReferenceCount} incohérente(s), {resultReferenceSummary.orphanCount} orpheline(s).
+              </p>
+            </div>
+
             {snapshot.reconciliation.issues.length === 0 ? (
               <p className="muted">Aucune incohérence notable détectée.</p>
             ) : (
@@ -770,6 +883,43 @@ export default function FinancePage() {
         </Card>
       </div>
 
+      <Card title="Primes de course synchronisées">
+        <div className="page-stack">
+          <p className="muted">
+            Les primes ci-dessous sont générées depuis les résultats. Une référence non validée signale qu'un revenu dépend encore d'un résultat à réaligner ou devenu orphelin.
+          </p>
+
+          {snapshot.racePrizeEntries.length === 0 ? (
+            <p className="muted">Aucune prime de course synchronisée pour le moment.</p>
+          ) : (
+            <div className="finance-entry-list">
+              {snapshot.racePrizeEntries.map((entry) => {
+                const issue = resultReferenceIssueMap.get(getRacePrizeCourseId(entry.sourceKey) ?? "") ?? null;
+
+                return (
+                  <div
+                    key={entry.id}
+                    className={issue && issue.status !== "valid" ? "finance-entry-item finance-entry-item-warning" : "finance-entry-item"}
+                  >
+                    <div className="finance-entry-copy">
+                      <strong>{entry.label}</strong>
+                      <p className="muted">{formatDateLabel(entry.occurredAt)}</p>
+                      {entry.note ? <p className="muted">{entry.note}</p> : null}
+                      <span className={getReferenceBadgeClass(issue)}>
+                        {getReferenceBadgeLabel(issue)}
+                      </span>
+                    </div>
+                    <strong className="finance-positive">
+                      {formatCurrency(entry.amount)}
+                    </strong>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </Card>
+
       <Card title="Historique des écritures">
         {snapshot.state.entries.length === 0 ? (
           <p className="muted">Aucune écriture enregistrée pour le moment.</p>
@@ -798,11 +948,35 @@ export default function FinancePage() {
               >
                 Semaine passée
               </button>
+              <button
+                type="button"
+                className={
+                  historyReferenceFilter === "all"
+                    ? "button button-primary finance-filter-button"
+                    : "button button-secondary finance-filter-button"
+                }
+                onClick={() => setHistoryReferenceFilter("all")}
+              >
+                Toutes les écritures
+              </button>
+              <button
+                type="button"
+                className={
+                  historyReferenceFilter === "invalid-race-prize"
+                    ? "button button-primary finance-filter-button"
+                    : "button button-secondary finance-filter-button"
+                }
+                onClick={() => setHistoryReferenceFilter("invalid-race-prize")}
+              >
+                Primes à référence non validée ({invalidReferencePrizeCount})
+              </button>
             </div>
 
             {filteredEntries.length === 0 ? (
               <p className="muted">
-                Aucune écriture sur la période sélectionnée.
+                {historyReferenceFilter === "invalid-race-prize"
+                  ? "Aucune prime à référence non validée sur la période sélectionnée."
+                  : "Aucune écriture sur la période sélectionnée."}
               </p>
             ) : (
               <div className="table-container">
@@ -859,11 +1033,26 @@ export default function FinancePage() {
               </thead>
               <tbody>
                 {filteredEntries.map((entry) => (
-                  <tr key={entry.id}>
+                  <tr
+                    key={entry.id}
+                    className={
+                      entry.category === "race-prize" &&
+                      (resultReferenceIssueMap.get(getRacePrizeCourseId(entry.sourceKey) ?? "")?.status ?? "valid") !== "valid"
+                        ? "finance-history-row-warning"
+                        : undefined
+                    }
+                  >
                     <td>{formatDateLabel(entry.occurredAt)}</td>
                     <td>
                       <strong>{entry.label}</strong>
                       {entry.note ? <div className="muted">{entry.note}</div> : null}
+                      {entry.category === "race-prize" ? (
+                        <div className="muted">
+                          {getReferenceBadgeLabel(
+                            resultReferenceIssueMap.get(getRacePrizeCourseId(entry.sourceKey) ?? "") ?? null
+                          )}
+                        </div>
+                      ) : null}
                     </td>
                     <td>
                       <span

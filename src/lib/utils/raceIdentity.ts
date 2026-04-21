@@ -36,6 +36,12 @@ export function getRaceKey(
   return buildLegacyRaceKey(race);
 }
 
+/** Retourne true si la clé est une clé opaque stable (préfixe "race-"), false si absente ou format legacy. */
+export function isStableOpaqueRaceKey(key: string | null | undefined): boolean {
+  if (!key || typeof key !== "string") return false;
+  return key.startsWith("race-");
+}
+
 export function ensureRaceKey<T extends ParsedRace>(race: T): T {
   if (typeof race.raceKey === "string" && race.raceKey.trim().length > 0) {
     return race;

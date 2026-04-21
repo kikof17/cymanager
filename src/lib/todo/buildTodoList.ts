@@ -9,6 +9,8 @@ type BuildTodoListArgs = {
   race: ParsedRace | null;
   raceSetupCount: number;
   clubSettings: ClubSettings;
+  unavailableCount: number;
+  brokenResultReferenceCount: number;
 };
 
 const FACILITY_LABELS: Record<FacilityKey, string> = {
@@ -58,8 +60,37 @@ export function buildTodoList({
   race,
   raceSetupCount,
   clubSettings,
+  unavailableCount,
+  brokenResultReferenceCount,
 }: BuildTodoListArgs): TodoItem[] {
   const todos: TodoItem[] = [];
+  const hasCriticalUnavailability = unavailableCount >= 4;
+  const hasBrokenResultReferences = brokenResultReferenceCount > 0;
+  const hasCrossCriticalAlert = hasCriticalUnavailability && hasBrokenResultReferences;
+
+  if (hasCrossCriticalAlert) {
+    todos.push(
+      createAutoTodo(
+        "auto-cross-critical-availability-results",
+        "Alerte transverse effectif + références",
+        `${unavailableCount} indisponibilité(s) et ${brokenResultReferenceCount} référence(s) résultat cassée(s) détectées. Prioriser la consolidation d'effectif et la réparation des références avant engagement agressif.`,
+        "haute",
+        "general"
+      )
+    );
+  }
+
+  if (hasBrokenResultReferences) {
+    todos.push(
+      createAutoTodo(
+        "auto-results-reference-repair",
+        "Réparer les références résultats",
+        `${brokenResultReferenceCount} référence(s) résultat non validée(s) restent à corriger pour fiabiliser les décisions sport/finance.`,
+        hasCriticalUnavailability ? "haute" : "moyenne",
+        "courses"
+      )
+    );
+  }
 
   if (riders.length === 0) {
     todos.push(
@@ -102,8 +133,10 @@ export function buildTodoList({
       createAutoTodo(
         "auto-training-review",
         "Valider le plan d'entraînement",
-        "Vérifie que le trio d'entraînement reste cohérent avec l'objectif de la semaine.",
-        "moyenne",
+        hasCrossCriticalAlert
+          ? "Contexte critique (effectif indisponible + références cassées) : sécuriser la récupération et limiter l'exposition avant validation du trio hebdo."
+          : "Vérifie que le trio d'entraînement reste cohérent avec l'objectif de la semaine.",
+        hasCrossCriticalAlert ? "haute" : "moyenne",
         "entrainement"
       )
     );
@@ -124,8 +157,10 @@ export function buildTodoList({
       createAutoTodo(
         "auto-race-reviewed",
         "Contrôler la sélection de course",
-        `La course "${race.name}" a été analysée. Vérifie la sélection proposée.`,
-        "moyenne",
+        hasCrossCriticalAlert
+          ? `La course "${race.name}" a été analysée, mais le contexte est critique (indisponibilité + références cassées). Revalider avant engagement.`
+          : `La course "${race.name}" a été analysée. Vérifie la sélection proposée.`,
+        hasCrossCriticalAlert ? "haute" : "moyenne",
         "courses"
       )
     );

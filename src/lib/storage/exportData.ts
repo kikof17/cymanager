@@ -1,4 +1,5 @@
 import { getAllResultsFromStorage } from "../scoring/extractPoints";
+import { loadAvailabilityWeeklySnapshots } from "./availabilityHistoryStorage";
 import { loadCalendarRaceProfileStore } from "./calendarRaceProfile";
 import { loadFinanceState } from "./financeStorage";
 import { loadLastRaceSnapshot } from "./lastRaceStorage";
@@ -39,6 +40,7 @@ export type CymanagerBackupData = {
 	transfersPageState?: unknown;
 	managementHistory?: unknown;
 	transferHistory?: unknown;
+	availabilityHistory?: unknown;
 };
 
 export type CymanagerBackupMetadata = {
@@ -69,6 +71,7 @@ export const CYMANAGER_BACKUP_SECTION_VERSIONS: CymanagerBackupMetadata["section
 	transfersPageState: 1,
 	managementHistory: 1,
 	transferHistory: 1,
+	availabilityHistory: 1,
 };
 
 export const CYMANAGER_BACKUP_SLOTS: BackupSlot[] = [
@@ -86,6 +89,7 @@ export const CYMANAGER_BACKUP_SLOTS: BackupSlot[] = [
 	{ exportKey: "transfersPageState", storageKey: "cymanager:transfers-page-state", kind: "object" },
 	{ exportKey: "managementHistory", storageKey: "cymanager:management-history", kind: "array" },
 	{ exportKey: "transferHistory", storageKey: "cymanager:transfer-history", kind: "array" },
+	{ exportKey: "availabilityHistory", storageKey: "cymanager:availability-history", kind: "array" },
 ];
 
 function readRawJson(storageKey: string): unknown | undefined {
@@ -141,6 +145,7 @@ export function buildCymanagerBackup(): CymanagerBackup {
 			transfersPageState: readRawJson("cymanager:transfers-page-state") ?? {},
 			managementHistory: loadManagementHistory(),
 			transferHistory: loadTransferHistory(),
+			availabilityHistory: loadAvailabilityWeeklySnapshots(),
 		},
 	};
 }

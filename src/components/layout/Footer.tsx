@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="footer">
       <span>{APP_VERSION_LABEL}</span>
-      <span>Release 1.5.0 · React + Vite + TypeScript</span>
+      <span>{`Release ${__APP_VERSION__} · React + Vite + TypeScript`}</span>
     </footer>
   );
 }

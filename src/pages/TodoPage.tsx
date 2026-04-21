@@ -3,6 +3,8 @@ import Card from "../components/common/Card";
 import PageTitle from "../components/common/PageTitle";
 import TodoFilters from "../components/todo/TodoFilters";
 import TodoList from "../components/todo/TodoList";
+import { buildResultReferenceSummary, getAllResultsFromStorage } from "../lib/scoring/extractPoints";
+import { buildRiderAvailabilitySummary } from "../lib/scoring/riderAvailability";
 import { buildTodoList } from "../lib/todo/buildTodoList";
 import { loadLastRaceSnapshot, type RaceSnapshot } from "../lib/storage/lastRaceStorage";
 import { loadRaceSetup } from "../lib/storage/raceStorage";
@@ -77,6 +79,16 @@ export default function TodoPage() {
   }, [raceKey]);
 
   const autoTodos = useMemo(() => {
+    const availabilitySummary = buildRiderAvailabilitySummary(riders);
+    const resultReferenceSummary = buildResultReferenceSummary(
+      getAllResultsFromStorage(),
+      manualTodos.filter((todo) => todo.id.startsWith("calendar-"))
+    );
+    const brokenResultReferenceCount =
+      resultReferenceSummary.missingRaceReferenceCount +
+      resultReferenceSummary.mismatchedRaceReferenceCount +
+      resultReferenceSummary.orphanCount;
+
     return buildTodoList({
       riders,
       trainingExists: riders.length > 0,
@@ -106,8 +118,10 @@ export default function TodoPage() {
         : null,
       raceSetupCount,
       clubSettings,
+      unavailableCount: availabilitySummary.unavailableRiders.length,
+      brokenResultReferenceCount,
     });
-  }, [riders, raceSnapshot, raceSetupCount, clubSettings]);
+  }, [riders, raceSnapshot, raceSetupCount, clubSettings, manualTodos]);
 
   const mergedTodos = useMemo(() => {
     const allTodos = [...autoTodos, ...manualTodos];

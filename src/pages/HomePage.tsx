@@ -9,6 +9,8 @@ import TodoOverviewCard from "../components/home/TodoOverviewCard";
 import TrainingOverviewCard from "../components/home/TrainingOverviewCard";
 import { buildRaceAnalysis } from "../lib/scoring/raceScores";
 import { buildTrainingPlan } from "../lib/scoring/trainingScores";
+import { buildResultReferenceSummary, getAllResultsFromStorage } from "../lib/scoring/extractPoints";
+import { buildRiderAvailabilitySummary } from "../lib/scoring/riderAvailability";
 import { getFinanceSnapshot } from "../lib/storage/financeStorage";
 import { loadLastRaceSnapshot, type RaceSnapshot } from "../lib/storage/lastRaceStorage";
 import { loadRaceSetup } from "../lib/storage/raceStorage";
@@ -89,8 +91,18 @@ export default function HomePage() {
 
   const todoItems = useMemo(() => {
     const manualTodos = loadManualTodos();
+    const calendarTodos = manualTodos.filter((todo) => todo.id.startsWith("calendar-"));
     const statuses = loadTodoStatuses();
     const raceSetupCount = raceKey ? Object.keys(loadRaceSetup(raceKey)).length : 0;
+    const availabilitySummary = buildRiderAvailabilitySummary(riders);
+    const resultReferenceSummary = buildResultReferenceSummary(
+      getAllResultsFromStorage(),
+      calendarTodos
+    );
+    const brokenResultReferenceCount =
+      resultReferenceSummary.missingRaceReferenceCount +
+      resultReferenceSummary.mismatchedRaceReferenceCount +
+      resultReferenceSummary.orphanCount;
 
     const autoTodos = buildTodoList({
       riders,
@@ -98,6 +110,8 @@ export default function HomePage() {
       race,
       raceSetupCount,
       clubSettings,
+      unavailableCount: availabilitySummary.unavailableRiders.length,
+      brokenResultReferenceCount,
     });
 
     return [...autoTodos, ...manualTodos].map((item) => ({

@@ -1,11 +1,12 @@
 import { loadCalendarRaceProfileStore, saveCalendarRaceProfileStore } from "./calendarRaceProfile";
-import { getAllResultsFromStorage, saveAllResultsToStorage } from "../scoring/extractPoints";
+import { getAllResultsFromStorage, getStoredResultRaceKey, reconcileStoredResultsWithCourses, saveAllResultsToStorage } from "../scoring/extractPoints";
 import { buildRaceSnapshotKey, loadLastRaceSnapshot, saveLastRaceSnapshot } from "./lastRaceStorage";
 import { loadRaceSetupStore, saveRaceSetupStore } from "./raceStorage";
 import { syncFinanceWithSettings } from "./financeStorage";
 import { loadClubSettings } from "./settingsStorage";
 import { loadManualTodos, loadTodoStatuses } from "./todoStorage";
-import { buildLegacyRaceKey } from "../utils/raceIdentity";
+import { buildLegacyRaceKey, isStableOpaqueRaceKey } from "../utils/raceIdentity";
+import { migrateCalendarRaceIdentities } from "./raceIdentityMigration";
 
 type DiagnosticSeverity = "info" | "warning";
 
@@ -178,6 +179,7 @@ export function getStorageDiagnostics(): StorageDiagnosticsSummary {
   }
 
   const calendarTodos = normalizedManualTodos.filter((todo) => todo.id.startsWith("calendar-"));
+  const calendarTodoMap = new Map(calendarTodos.map((todo) => [todo.id, todo]));
   const calendarTodoIds = new Set(calendarTodos.map((todo) => todo.id));
   const calendarRaceKeys = new Set(
     calendarTodos
@@ -187,11 +189,45 @@ export function getStorageDiagnostics(): StorageDiagnosticsSummary {
   const calendarProfileLegacyKeys = new Set(
     Object.values(normalizedCalendarProfiles).map((profile) => buildLegacyRaceKey(profile))
   );
+  // Lot 2 — identité stable : todos calendrier sans raceKey opaque stable
+  const unstableIdentityTodos = calendarTodos.filter(
+    (todo) => !isStableOpaqueRaceKey(todo.raceKey)
+  );
+
   const raceSetupOrphans = Object.keys(normalizedRaceSetup).filter((raceKey) => !calendarRaceKeys.has(raceKey));
   const calendarProfileOrphans = Object.keys(normalizedCalendarProfiles).filter(
     (raceKey) => !calendarRaceKeys.has(raceKey)
   );
   const resultOrphans = Object.keys(normalizedResults).filter((resultKey) => !calendarTodoIds.has(resultKey));
+  const resultMissingRaceReferences = Object.entries(normalizedResults)
+    .filter(([courseId]) => calendarTodoIds.has(courseId))
+    .filter(([, stored]) => getStoredResultRaceKey(stored) === null)
+    .map(([courseId]) => courseId);
+  const resultMismatchedRaceReferences = Object.entries(normalizedResults)
+    .filter(([courseId]) => calendarTodoIds.has(courseId))
+    .filter(([courseId, stored]) => {
+      const todo = calendarTodoMap.get(courseId);
+      const storedRaceKey = getStoredResultRaceKey(stored);
+
+      if (!todo?.raceKey || !storedRaceKey) {
+        return false;
+      }
+
+      return todo.raceKey !== storedRaceKey;
+    })
+    .map(([courseId]) => courseId);
+
+  if (unstableIdentityTodos.length > 0) {
+    issues.push({
+      code: "unstable-calendar-race-identity",
+      severity: "warning",
+      label: "Des courses du calendrier n'ont pas encore de clé d'identité stable.",
+      count: unstableIdentityTodos.length,
+      details: buildDetails(unstableIdentityTodos.map((t) => t.title)),
+      keys: unstableIdentityTodos.map((t) => t.id),
+      cleanupLabel: "Stabiliser l'identité de ces courses",
+    });
+  }
 
   if (raceSetupOrphans.length > 0) {
     issues.push({
@@ -226,6 +262,30 @@ export function getStorageDiagnostics(): StorageDiagnosticsSummary {
       details: buildDetails(resultOrphans),
       keys: resultOrphans,
       cleanupLabel: "Supprimer ces résultats isolés",
+    });
+  }
+
+  if (resultMissingRaceReferences.length > 0) {
+    issues.push({
+      code: "missing-result-race-reference",
+      severity: "warning",
+      label: "Des résultats enregistrés n'ont pas encore de référence stable de course.",
+      count: resultMissingRaceReferences.length,
+      details: buildDetails(resultMissingRaceReferences),
+      keys: resultMissingRaceReferences,
+      cleanupLabel: "Rattacher ces résultats à leur course",
+    });
+  }
+
+  if (resultMismatchedRaceReferences.length > 0) {
+    issues.push({
+      code: "mismatched-result-race-reference",
+      severity: "warning",
+      label: "Des résultats pointent vers une référence de course qui ne correspond plus au calendrier.",
+      count: resultMismatchedRaceReferences.length,
+      details: buildDetails(resultMismatchedRaceReferences),
+      keys: resultMismatchedRaceReferences,
+      cleanupLabel: "Réaligner ces références de résultats",
     });
   }
 
@@ -288,7 +348,6 @@ export function cleanupStorageDiagnosticIssue(issue: StorageDiagnosticIssue): St
 
       issue.keys.forEach((key) => {
         if (Object.prototype.hasOwnProperty.call(store, key)) {
-          delete store[key];
           removedEntries += 1;
         }
       });
@@ -309,6 +368,30 @@ export function cleanupStorageDiagnosticIssue(issue: StorageDiagnosticIssue): St
       saveAllResultsToStorage(store);
       syncFinanceWithSettings(loadClubSettings());
       refreshedFinance = true;
+      break;
+    }
+    case "missing-result-race-reference":
+    case "mismatched-result-race-reference": {
+      const store = getAllResultsFromStorage();
+      const courses = loadManualTodos().filter((todo) => todo.id.startsWith("calendar-"));
+      const repaired = reconcileStoredResultsWithCourses(store, courses);
+
+      if (repaired.repairedCount > 0) {
+        saveAllResultsToStorage(repaired.results);
+        removedEntries = repaired.repairedCount;
+        syncFinanceWithSettings(loadClubSettings());
+        refreshedFinance = true;
+      }
+
+      break;
+    }
+    case "unstable-calendar-race-identity": {
+      const result = migrateCalendarRaceIdentities();
+      removedEntries = result.migratedCount;
+      if (result.resultsReconciled > 0) {
+        syncFinanceWithSettings(loadClubSettings());
+        refreshedFinance = true;
+      }
       break;
     }
     case "orphan-last-race": {

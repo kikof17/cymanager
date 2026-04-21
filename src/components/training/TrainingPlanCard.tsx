@@ -13,7 +13,7 @@ export default function TrainingPlanCard({ plan }: TrainingPlanCardProps) {
           <div className="training-chip-list">
             {plan.selectedTypes.map((training) => (
               <span key={training} className="training-chip">
-                {training}
+                {training} ({plan.selectedIntensities.find((item) => item.training === training)?.intensity ?? "Normal"})
               </span>
             ))}
           </div>

@@ -47,6 +47,7 @@ import RaceSummary from "../components/races/RaceSummary";
 import TeamSelectionTable from "../components/races/TeamSelectionTable";
 import { parseRaceTable } from "../lib/parser/raceTableParser";
 import { buildDefaultRaceSetupMap } from "../lib/scoring/odcScores";
+import { buildRiderAvailabilitySummary } from "../lib/scoring/riderAvailability";
 import { buildRaceAnalysis } from "../lib/scoring/raceScores";
 import { loadRaceSetup, saveRaceSetup } from "../lib/storage/raceStorage";
 import { loadRidersFromStorage } from "../lib/storage/localStorage";
@@ -124,7 +125,8 @@ function getBlockedYoungRidersInProRaces(
 
   proRaceIndices.forEach((idx) => {
     const race = races[idx];
-    const analysis = buildRaceAnalysis(riders, race);
+    const availability = buildRiderAvailabilitySummary(riders);
+    const analysis = buildRaceAnalysis(availability.availableRiders, race);
     analysis.selected.forEach((rider) => {
       if (rider.riderCategory === "U25" || rider.riderCategory === "U21") {
         blocked.add(rider.riderId);
@@ -319,7 +321,8 @@ function buildSetupMap(
 
     groupRaces.forEach((race) => {
       const filteredRiders = filterRidersForRace(race, riders, u25u21InPro);
-      const analysis = buildRaceAnalysis(filteredRiders, race, lockedSelectedIds);
+      const availability = buildRiderAvailabilitySummary(filteredRiders);
+      const analysis = buildRaceAnalysis(availability.availableRiders, race, lockedSelectedIds);
       const raceKey = getRaceKey(race);
       const saved = loadRaceSetup(raceKey);
       const sanitizedSaved = sanitizeSavedSetup(saved, analysis.selected);
@@ -460,9 +463,10 @@ export default function RacesPage() {
     const race = races[raceIdx];
     const blockedYoungRiders = getBlockedYoungRidersInProRaces(races, riders);
     const filteredRiders = filterRidersForRace(race, riders, blockedYoungRiders);
+    const availability = buildRiderAvailabilitySummary(filteredRiders);
     const raceKey = getRaceKey(race);
     const lockedSelectedIds = Object.keys(setupByRiderList[raceKey] || {});
-    const analysis = buildRaceAnalysis(filteredRiders, race, lockedSelectedIds);
+    const analysis = buildRaceAnalysis(availability.availableRiders, race, lockedSelectedIds);
     const newSetup = buildDefaultRaceSetupMap(analysis.race, analysis.selected);
     setSetupByRiderList((current) => ({
       ...current,
@@ -573,13 +577,46 @@ export default function RacesPage() {
       {races.map((race, idx) => {
         const blockedYoungRiders = getBlockedYoungRidersInProRaces(races, riders);
         const filteredRiders = filterRidersForRace(race, riders, blockedYoungRiders);
+        const availability = buildRiderAvailabilitySummary(filteredRiders);
         const raceKey = getRaceKey(race);
         const setupByRider = setupByRiderList[raceKey] || {};
-        const analysis = buildRaceAnalysis(filteredRiders, race, Object.keys(setupByRider));
+        const analysis = buildRaceAnalysis(availability.availableRiders, race, Object.keys(setupByRider));
         return (
           <div key={raceKey} className="race-stage-block">
             <Card title={`${race.raceType === 'etapes' ? `Étape ${race.stageNumber ?? idx + 1}` : 'Course'} : ${race.name}`}>
               <RaceSummary race={race} />
+              {availability.unavailableRiders.length > 0 ? (
+                <div className="message-box message-box-warning">
+                  <p>
+                    Effectif indisponible pour cette course : <strong>{availability.unavailableRiders.length}</strong> coureur(s)
+                    exclu(s) (blessure ou forme critique).
+                  </p>
+                  <p className="muted">
+                    {availability.unavailableRiders
+                      .slice(0, 4)
+                      .map((issue) => `${issue.riderName} (${issue.label})`)
+                      .join(" · ")}
+                    {availability.unavailableRiders.length > 4
+                      ? ` · +${availability.unavailableRiders.length - 4} autre(s)`
+                      : ""}
+                  </p>
+                </div>
+              ) : null}
+              {availability.availableRiders.length < 7 ? (
+                <div className="message-box message-box-warning">
+                  <p>
+                    Effectif disponible insuffisant : seulement <strong>{availability.availableRiders.length}</strong> coureur(s)
+                    éligible(s) pour constituer une équipe complète.
+                  </p>
+                </div>
+              ) : null}
+              {availability.lowFormWarningCount > 0 ? (
+                <div className="message-box">
+                  <p>
+                    Vigilance forme : {availability.lowFormWarningCount} coureur(s) sélectionnable(s) sont entre 35 et 49 de forme.
+                  </p>
+                </div>
+              ) : null}
               {race.raceType === 'etapes' ? (
                 <p className="muted">
                   Inscription commune sur le tour : les 7 coureurs restent identiques sur toutes les étapes de cette série.

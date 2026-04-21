@@ -1,41 +1,52 @@
+import { Suspense, lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "./components/layout/AppLayout";
-import HomePage from "./pages/HomePage";
-import BeginnerGuidePage from "./pages/BeginnerGuidePage";
-import FAQPage from "./pages/FAQPage";
-import RosterPage from "./pages/RosterPage";
-import TrainingPage from "./pages/TrainingPage";
-import RacesPage from "./pages/RacesPage";
-import TodoPage from "./pages/TodoPage";
-import SettingsPage from "./pages/SettingsPage";
-import RankingPage from "./pages/RankingPage";
-import FinancePage from "./pages/FinancePage";
-import StatisticsPage from "./pages/StatisticsPage";
-import TransfersPage from "./pages/TransfersPage";
 
-import CalendarPage from "./pages/CalendarPage";
-import ResultPage from "./pages/ResultPage";
+const HomePage = lazy(() => import("./pages/HomePage"));
+const BeginnerGuidePage = lazy(() => import("./pages/BeginnerGuidePage"));
+const FAQPage = lazy(() => import("./pages/FAQPage"));
+const RosterPage = lazy(() => import("./pages/RosterPage"));
+const TrainingPage = lazy(() => import("./pages/TrainingPage"));
+const RacesPage = lazy(() => import("./pages/RacesPage"));
+const TodoPage = lazy(() => import("./pages/TodoPage"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const RankingPage = lazy(() => import("./pages/RankingPage"));
+const FinancePage = lazy(() => import("./pages/FinancePage"));
+const StatisticsPage = lazy(() => import("./pages/StatisticsPage"));
+const TransfersPage = lazy(() => import("./pages/TransfersPage"));
+const CalendarPage = lazy(() => import("./pages/CalendarPage"));
+const ResultPage = lazy(() => import("./pages/ResultPage"));
+
+function RouteFallback() {
+  return (
+    <div className="message-box">
+      <p className="muted">Chargement de la page...</p>
+    </div>
+  );
+}
 
 export default function App() {
   return (
     <AppLayout>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/guide" element={<BeginnerGuidePage />} />
-        <Route path="/faq" element={<FAQPage />} />
-        <Route path="/effectif" element={<RosterPage />} />
-        <Route path="/transferts" element={<TransfersPage />} />
-        <Route path="/entrainement" element={<TrainingPage />} />
-        <Route path="/courses" element={<RacesPage />} />
-        <Route path="/todo" element={<TodoPage />} />
-        <Route path="/parametres" element={<SettingsPage />} />
-        <Route path="/calendrier" element={<CalendarPage />} />
-        <Route path="/resultats" element={<ResultPage />} />
-        <Route path="/classement" element={<RankingPage />} />
-        <Route path="/statistiques" element={<StatisticsPage />} />
-        <Route path="/finance" element={<FinancePage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <Suspense fallback={<RouteFallback />}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/guide" element={<BeginnerGuidePage />} />
+          <Route path="/faq" element={<FAQPage />} />
+          <Route path="/effectif" element={<RosterPage />} />
+          <Route path="/transferts" element={<TransfersPage />} />
+          <Route path="/entrainement" element={<TrainingPage />} />
+          <Route path="/courses" element={<RacesPage />} />
+          <Route path="/todo" element={<TodoPage />} />
+          <Route path="/parametres" element={<SettingsPage />} />
+          <Route path="/calendrier" element={<CalendarPage />} />
+          <Route path="/resultats" element={<ResultPage />} />
+          <Route path="/classement" element={<RankingPage />} />
+          <Route path="/statistiques" element={<StatisticsPage />} />
+          <Route path="/finance" element={<FinancePage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
     </AppLayout>
   );
 }

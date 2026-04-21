@@ -23,6 +23,7 @@ export default function TrainingImpactTable({
             <th>Priorité</th>
             <th>Entraînement idéal</th>
             <th>Entraînement suggéré</th>
+            <th>Intensité</th>
             <th>Score d'urgence</th>
             <th>Risque salaire</th>
             <th>Raison</th>
@@ -37,6 +38,7 @@ export default function TrainingImpactTable({
               <td>{item.priority}</td>
               <td>{item.idealTraining}</td>
               <td>{item.suggestedTraining}</td>
+              <td>{item.suggestedIntensity}</td>
               <td>{item.urgencyScore}</td>
               <td>{item.salaryRisk}</td>
               <td>{item.reason}</td>

@@ -1,8 +1,14 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Card from "../components/common/Card";
 import PageTitle from "../components/common/PageTitle";
+import { buildCrossRecommendations } from "../lib/app/crossRecommendations";
 import { buildRiderProfiles } from "../lib/scoring/riderProfile";
-import { getAllResultsFromStorage, type StoredResult } from "../lib/scoring/extractPoints";
+import { buildResultReferenceSummary, getAllResultsFromStorage, type StoredResult } from "../lib/scoring/extractPoints";
+import { buildRiderAvailabilitySummary } from "../lib/scoring/riderAvailability";
+import {
+  appendAvailabilityWeeklySnapshot,
+  loadAvailabilityWeeklySnapshots,
+} from "../lib/storage/availabilityHistoryStorage";
 import { getFinanceSnapshot } from "../lib/storage/financeStorage";
 import { loadRidersFromStorage } from "../lib/storage/localStorage";
 import { loadClubSettings } from "../lib/storage/settingsStorage";
@@ -231,6 +237,9 @@ function buildAthleticStatRows(riders: Rider[]) {
 
 export default function StatisticsPage() {
   const [tab, setTab] = useState<StatsTab>("overview");
+  const [availabilitySnapshots, setAvailabilitySnapshots] = useState(
+    loadAvailabilityWeeklySnapshots
+  );
 
   const riders = useMemo(() => {
     const stored = loadRidersFromStorage();
@@ -240,6 +249,45 @@ export default function StatisticsPage() {
   const settings = useMemo(() => loadClubSettings(), []);
   const financeSnapshot = useMemo(() => getFinanceSnapshot(settings, riders), [settings, riders]);
   const teamResultRows = useMemo(() => extractTeamResultRows(), []);
+  const resultReferenceSummary = useMemo(
+    () => buildResultReferenceSummary(getAllResultsFromStorage(), loadManualTodos().filter((todo) => todo.id.startsWith("calendar-"))),
+    []
+  );
+  const availabilitySummary = useMemo(() => buildRiderAvailabilitySummary(riders), [riders]);
+
+  useEffect(() => {
+    const updated = appendAvailabilityWeeklySnapshot(riders);
+    setAvailabilitySnapshots(updated);
+  }, [riders]);
+
+  const availabilityTrendRows = useMemo(() => {
+    return availabilitySnapshots.slice(0, 8).map((snapshot, index, rows) => {
+      const previous = rows[index + 1] ?? null;
+      const unavailableDelta = previous
+        ? snapshot.unavailableCount - previous.unavailableCount
+        : 0;
+
+      return {
+        ...snapshot,
+        unavailableDelta,
+      };
+    });
+  }, [availabilitySnapshots]);
+
+  const criticalAvailabilityWeeks = useMemo(
+    () => availabilitySnapshots.filter((snapshot) => snapshot.unavailableCount >= 4).length,
+    [availabilitySnapshots]
+  );
+  const crossRecommendations = useMemo(
+    () =>
+      buildCrossRecommendations({
+        riders,
+        resultReferenceSummary,
+        currentBalance: financeSnapshot.currentBalance,
+        weeklyFixedCosts: financeSnapshot.weeklyFixedCosts,
+      }),
+    [financeSnapshot.currentBalance, financeSnapshot.weeklyFixedCosts, resultReferenceSummary, riders]
+  );
 
   const profileSummaries = useMemo(() => buildRiderProfiles(riders), [riders]);
 
@@ -466,6 +514,14 @@ export default function StatisticsPage() {
 
       {tab === "overview" && (
         <div className="page-stack">
+          {resultReferenceSummary.totalResults > 0 && (resultReferenceSummary.missingRaceReferenceCount > 0 || resultReferenceSummary.mismatchedRaceReferenceCount > 0 || resultReferenceSummary.orphanCount > 0) ? (
+            <div className="message-box">
+              <p>
+                <strong>Qualité des références résultats :</strong> {resultReferenceSummary.validCount} valide(s), {resultReferenceSummary.missingRaceReferenceCount} sans référence stable, {resultReferenceSummary.mismatchedRaceReferenceCount} incohérente(s), {resultReferenceSummary.orphanCount} orpheline(s).
+              </p>
+            </div>
+          ) : null}
+
           <div className="stats-kpi-grid">
             <Card>
               <div className="stats-kpi-card">
@@ -503,7 +559,23 @@ export default function StatisticsPage() {
                 <strong className="stats-kpi-value">{formatCurrency(overview.totalValue)}</strong>
               </div>
             </Card>
+            <Card>
+              <div className="stats-kpi-card">
+                <span className="stats-kpi-label">Indisponibles semaine</span>
+                <strong className="stats-kpi-value">{formatInteger(availabilitySummary.unavailableRiders.length)}</strong>
+              </div>
+            </Card>
           </div>
+
+          <Card title="Recommandations croisées (lot 4)">
+            <div className="dashboard-lines">
+              {[...crossRecommendations.training.slice(0, 1), ...crossRecommendations.finance.slice(0, 1), ...crossRecommendations.results.slice(0, 1)].map((item, index) => (
+                <p key={`${item.severity}-${index}`} className={item.severity === "critical" ? "settings-diagnostic-line settings-diagnostic-line-warning" : undefined}>
+                  <strong>{item.severity === "critical" ? "Critique" : item.severity === "warning" ? "Vigilance" : "Info"}:</strong> {item.text}
+                </p>
+              ))}
+            </div>
+          </Card>
 
           <div className="stats-two-columns">
             <Card title="Repères manager">
@@ -680,6 +752,84 @@ export default function StatisticsPage() {
 
       {tab === "squad" && (
         <div className="page-stack">
+          <Card title="Effectif indisponible de la semaine">
+            {availabilitySummary.unavailableRiders.length === 0 ? (
+              <p className="muted">Aucun coureur indisponible détecté (blessure/forme critique).</p>
+            ) : (
+              <div className="table-container">
+                <table className="data-table styled-table">
+                  <thead>
+                    <tr>
+                      <th>Coureur</th>
+                      <th>Forme</th>
+                      <th>Blessure</th>
+                      <th>Cause</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {availabilitySummary.unavailableRiders.map((row) => (
+                      <tr key={row.riderId}>
+                        <td>{row.riderName}</td>
+                        <td>{formatInteger(row.form)}</td>
+                        <td>{row.injury || "-"}</td>
+                        <td>{row.label}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {availabilitySummary.lowFormWarningCount > 0 ? (
+              <p className="muted">
+                Vigilance complémentaire: {availabilitySummary.lowFormWarningCount} coureur(s) sélectionnable(s) sont en forme fragile (35-49).
+              </p>
+            ) : null}
+          </Card>
+
+          <Card title="Tendance hebdo indisponibilité">
+            {availabilityTrendRows.length === 0 ? (
+              <p className="muted">Aucun snapshot hebdomadaire disponible.</p>
+            ) : (
+              <>
+                <div className="table-container">
+                  <table className="data-table styled-table">
+                    <thead>
+                      <tr>
+                        <th>Semaine</th>
+                        <th>Indisponibles</th>
+                        <th>Blessés</th>
+                        <th>Forme &lt; 35</th>
+                        <th>Fragiles (35-49)</th>
+                        <th>Delta</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {availabilityTrendRows.map((row) => (
+                        <tr key={row.id}>
+                          <td>{formatWeekLabel(row.weekKey)}</td>
+                          <td>{formatInteger(row.unavailableCount)}</td>
+                          <td>{formatInteger(row.injuryUnavailableCount)}</td>
+                          <td>{formatInteger(row.criticalFormUnavailableCount)}</td>
+                          <td>{formatInteger(row.lowFormWarningCount)}</td>
+                          <td>
+                            {row.unavailableDelta > 0
+                              ? `+${formatInteger(row.unavailableDelta)}`
+                              : formatInteger(row.unavailableDelta)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <p className="muted">
+                  {criticalAvailabilityWeeks} semaine(s) critique(s) détectée(s) (seuil: 4 indisponibles ou plus).
+                </p>
+              </>
+            )}
+          </Card>
+
           <div className="stats-two-columns">
             <Card title="Répartition par catégorie">
               <div className="table-container">
@@ -859,4 +1009,8 @@ export default function StatisticsPage() {
       )}
     </div>
   );
+}
+
+function formatWeekLabel(weekKey: string): string {
+  return `Semaine du ${formatDateLabel(weekKey)}`;
 }

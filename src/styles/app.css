@@ -1584,6 +1584,11 @@ a {
   background: var(--surface-soft);
 }
 
+.finance-entry-item-warning {
+  border-color: rgba(216, 164, 88, 0.5);
+  background: rgba(216, 164, 88, 0.1);
+}
+
 .finance-entry-copy {
   display: flex;
   flex-direction: column;
@@ -1604,6 +1609,20 @@ a {
   border-radius: 999px;
   font-size: 0.8rem;
   font-weight: 700;
+}
+
+.finance-reference-badge-warning {
+  color: #8a5a12;
+  background: rgba(216, 164, 88, 0.18);
+}
+
+.finance-reference-badge-critical {
+  color: #9d2f2f;
+  background: rgba(215, 107, 95, 0.18);
+}
+
+.finance-history-row-warning {
+  background: rgba(216, 164, 88, 0.08);
 }
 
 .finance-badge-sync {
@@ -2089,6 +2108,16 @@ body {
 .message-box {
   min-height: 0;
   color: var(--text-soft);
+}
+
+.message-box.message-box-warning {
+  border-color: rgba(240, 177, 55, 0.42);
+  background: rgba(76, 52, 10, 0.45);
+}
+
+.message-box.message-box-success {
+  border-color: rgba(76, 176, 118, 0.42);
+  background: rgba(19, 68, 44, 0.45);
 }
 
 .muted,

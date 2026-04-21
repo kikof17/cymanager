@@ -21,12 +21,14 @@ import {
   getStorageDiagnostics,
   type StorageDiagnosticIssue,
 } from "../lib/storage/storageDiagnostics";
+import { buildResultReferenceSummary, getAllResultsFromStorage } from "../lib/scoring/extractPoints";
 import { appendManagementHistoryEntry } from "../lib/storage/managementHistoryStorage";
 import {
   defaultClubSettings,
   loadClubSettings,
   saveClubSettings,
 } from "../lib/storage/settingsStorage";
+import { loadManualTodos } from "../lib/storage/todoStorage";
 import type { ClubSettings, FacilityKey } from "../types/settings";
 
 const FACILITY_LABELS: Record<FacilityKey, string> = {
@@ -181,6 +183,10 @@ export default function SettingsPage() {
   const [pendingImportPreview, setPendingImportPreview] = useState<ImportBackupPreview | null>(null);
   const [pendingCleanupIssue, setPendingCleanupIssue] = useState<StorageDiagnosticIssue | null>(null);
   const diagnostics = useMemo(() => getStorageDiagnostics(), [diagnosticsRefreshKey]);
+  const resultReferenceSummary = useMemo(
+    () => buildResultReferenceSummary(getAllResultsFromStorage(), loadManualTodos().filter((todo) => todo.id.startsWith("calendar-"))),
+    [diagnosticsRefreshKey]
+  );
 
   function handleChange(next: ClubSettings) {
     setSettings(next);
@@ -518,7 +524,21 @@ export default function SettingsPage() {
               <strong>{diagnostics.issueCount}</strong>
               <span className="muted">Vue rapide de la cohérence de tes sauvegardes locales</span>
             </div>
+
+            <div className="finance-prize-preview">
+              <span className="muted">Références résultats valides</span>
+              <strong>{resultReferenceSummary.validCount}</strong>
+              <span className="muted">{resultReferenceSummary.missingRaceReferenceCount + resultReferenceSummary.mismatchedRaceReferenceCount + resultReferenceSummary.orphanCount} anomalie(s) métier</span>
+            </div>
           </div>
+
+          {resultReferenceSummary.totalResults > 0 ? (
+            <div className="message-box">
+              <p>
+                <strong>Lecture 1.6.0 des résultats :</strong> {resultReferenceSummary.validCount} référence(s) validée(s), {resultReferenceSummary.missingRaceReferenceCount} manquante(s), {resultReferenceSummary.mismatchedRaceReferenceCount} incohérente(s), {resultReferenceSummary.orphanCount} orpheline(s).
+              </p>
+            </div>
+          ) : null}
 
           {diagnostics.issues.length === 0 ? (
             <p className="muted">Aucune anomalie structurelle détectée dans les données locales.</p>

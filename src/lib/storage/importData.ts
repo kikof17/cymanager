@@ -1,4 +1,7 @@
 import {
+	normalizeAvailabilityWeeklySnapshots,
+} from "./availabilityHistoryStorage";
+import {
 	CYMANAGER_BACKUP_APP,
 	CYMANAGER_BACKUP_FORMAT_VERSION,
 	CYMANAGER_BACKUP_SCHEMA_VERSION,
@@ -91,6 +94,7 @@ const BACKUP_SLOT_LABELS: Record<string, string> = {
 	"cymanager:transfers-page-state": "État Transferts",
 	"cymanager:management-history": "Journal de gestion",
 	"cymanager:transfer-history": "Historique Transferts",
+	"cymanager:availability-history": "Historique indisponibilité",
 };
 
 function countEntries(value: unknown): number {
@@ -241,6 +245,10 @@ function sanitizeBackupData(data: CymanagerBackupData): CymanagerBackupData {
 			: undefined;
 	sanitized.managementHistory = data.managementHistory === undefined ? undefined : normalizeManagementHistory(data.managementHistory);
 	sanitized.transferHistory = data.transferHistory === undefined ? undefined : normalizeTransferHistory(data.transferHistory);
+	sanitized.availabilityHistory =
+		data.availabilityHistory === undefined
+			? undefined
+			: normalizeAvailabilityWeeklySnapshots(data.availabilityHistory);
 
 	return sanitized;
 }

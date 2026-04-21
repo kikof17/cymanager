@@ -10,6 +10,7 @@ export type ManagementHistoryEntryKind =
   | "calendar-status"
   | "calendar-delete"
   | "result-save"
+  | "result-repair"
   | "recruitment";
 
 export type ManagementHistoryEntry = {

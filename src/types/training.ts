@@ -42,6 +42,8 @@ export type TrainingPriority =
 
 export type SalaryRisk = "Faible" | "Moyen" | "Fort";
 
+export type TrainingIntensity = "Tranquille" | "Normal" | "À fond";
+
 export type IndividualTrainingAdvice = {
   riderId: string;
   riderName: string;
@@ -55,6 +57,7 @@ export type IndividualTrainingAdvice = {
   priority: TrainingPriority;
   idealTraining: TrainingType;
   suggestedTraining: TrainingType;
+  suggestedIntensity: TrainingIntensity;
   salaryRisk: SalaryRisk;
   urgencyScore: number;
   reason: string;
@@ -66,6 +69,7 @@ export type RiderTrainingAssignment = IndividualTrainingAdvice;
 
 export type TrainingPlan = {
   selectedTypes: TrainingType[];
+  selectedIntensities: Array<{ training: TrainingType; intensity: TrainingIntensity }>;
   rationale: string[];
   individualAdvices: IndividualTrainingAdvice[];
   coverageCounts: Array<{ training: TrainingType; count: number }>;
