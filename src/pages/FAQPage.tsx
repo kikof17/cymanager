@@ -1,5 +1,4 @@
-﻿import { useMemo, type ReactNode } from "react";
-import faqHtml from "../assets/data/cymanager-faq-reference.html?raw";
+﻿import { useEffect, useState, type ReactNode } from "react";
 import Card from "../components/common/Card";
 import PageTitle from "../components/common/PageTitle";
 
@@ -203,7 +202,74 @@ const faqHighlights: Array<{ label: string; value: ReactNode }> = [
 ];
 
 export default function FAQPage() {
-  const faqSections = useMemo(() => buildSectionsFromHtml(faqHtml), []);
+  const [faqSections, setFaqSections] = useState<FaqSection[]>([]);
+  const [loadingState, setLoadingState] = useState<"loading" | "ready" | "error">("loading");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadFaq() {
+      setLoadingState("loading");
+
+      try {
+        const module = await import("../assets/data/cymanager-faq-reference.html?raw");
+
+        if (cancelled) {
+          return;
+        }
+
+        setFaqSections(buildSectionsFromHtml(module.default));
+        setLoadingState("ready");
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
+
+        console.error("Erreur de chargement FAQ", error);
+        setFaqSections([]);
+        setLoadingState("error");
+      }
+    }
+
+    loadFaq();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (loadingState !== "ready" || faqSections.length === 0) {
+      return;
+    }
+
+    const validIds = new Set(faqSections.map((section) => section.id));
+
+    function applyHashNavigation() {
+      const hash = window.location.hash.replace("#", "").trim();
+
+      if (!hash || !validIds.has(hash)) {
+        return;
+      }
+
+      const target = document.getElementById(hash);
+
+      if (!target) {
+        return;
+      }
+
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    // Délai court pour garantir que le DOM est peint avant le scroll initial.
+    const timer = window.setTimeout(applyHashNavigation, 0);
+    window.addEventListener("hashchange", applyHashNavigation);
+
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("hashchange", applyHashNavigation);
+    };
+  }, [faqSections, loadingState]);
 
   return (
     <div className="page-stack">
@@ -232,6 +298,18 @@ export default function FAQPage() {
           </div>
         </div>
       </Card>
+
+      {loadingState === "loading" ? (
+        <div className="message-box">
+          <p className="muted">Chargement de la FAQ en cours...</p>
+        </div>
+      ) : null}
+
+      {loadingState === "error" ? (
+        <div className="message-box message-box-warning">
+          <p>Impossible de charger la FAQ HTML. Réessaie un rechargement de la page.</p>
+        </div>
+      ) : null}
 
       <div className="guide-layout">
         <aside className="guide-toc card">
