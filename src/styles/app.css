@@ -318,6 +318,122 @@ select, select option {
 .result-status-badge {
   display: inline-flex;
   align-items: center;
+
+/* Shell V2 */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 35;
+}
+
+.topbar-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.season-strip {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid rgba(137, 180, 255, 0.2);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(20, 29, 43, 0.96) 0%, rgba(16, 24, 38, 0.94) 100%);
+}
+
+.season-strip-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.season-strip-title {
+  margin: 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  color: #dfe8f7;
+  font-weight: 700;
+}
+
+.season-strip-kpis {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.season-kpi {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(137, 180, 255, 0.2);
+  background: rgba(91, 149, 255, 0.12);
+  color: #dfe8f7;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.season-kpi-danger {
+  border-color: rgba(212, 106, 106, 0.45);
+  background: rgba(212, 106, 106, 0.2);
+  color: #ffd7d7;
+}
+
+.season-kpi-warning {
+  border-color: rgba(199, 146, 54, 0.45);
+  background: rgba(199, 146, 54, 0.2);
+  color: #ffecbf;
+}
+
+.season-timeline {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.season-week {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-soft);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.season-week.active {
+  border-color: rgba(137, 180, 255, 0.56);
+  background: rgba(91, 149, 255, 0.24);
+  color: #eff5ff;
+}
+
+@media (max-width: 1024px) {
+  .topbar-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .season-strip {
+    padding: 10px;
+  }
+
+  .season-timeline {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .season-timeline {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
   margin-bottom: 12px;
   padding: 6px 10px;
   border-radius: 999px;
