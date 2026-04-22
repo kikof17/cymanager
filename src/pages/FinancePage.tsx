@@ -31,6 +31,7 @@ type FinanceSortConfig = {
 
 type HistoryWeekFilter = "current" | "previous";
 type HistoryReferenceFilter = "all" | "invalid-race-prize";
+type FinanceTab = "overview" | "operations" | "configuration" | "history";
 
 const ENTRY_CATEGORY_OPTIONS: Array<{
   value: FinanceEntryCategory;
@@ -182,6 +183,7 @@ function getReferenceBadgeLabel(issue: ResultReferenceIssue | null): string {
 
 export default function FinancePage() {
   const [refreshKey, setRefreshKey] = useState(0);
+  const [tab, setTab] = useState<FinanceTab>("overview");
   const [message, setMessage] = useState(
     "Le solde combine les écritures manuelles, les travaux détectés et les débits automatiques du lundi pour salaires et entretien."
   );
@@ -474,23 +476,56 @@ export default function FinancePage() {
         subtitle="Suivi de la trésorerie du club, avec débits automatiques du lundi et revenus sponsors/boutique saisis manuellement."
       />
 
-      <div className="message-box">
-        <p className="muted">{message}</p>
+      <div className="stats-tabs">
+        <button
+          type="button"
+          className={tab === "overview" ? "tab-btn tab-btn-active" : "tab-btn"}
+          onClick={() => setTab("overview")}
+        >
+          Vue d'ensemble
+        </button>
+        <button
+          type="button"
+          className={tab === "operations" ? "tab-btn tab-btn-active" : "tab-btn"}
+          onClick={() => setTab("operations")}
+        >
+          Opérations
+        </button>
+        <button
+          type="button"
+          className={tab === "configuration" ? "tab-btn tab-btn-active" : "tab-btn"}
+          onClick={() => setTab("configuration")}
+        >
+          Configuration
+        </button>
+        <button
+          type="button"
+          className={tab === "history" ? "tab-btn tab-btn-active" : "tab-btn"}
+          onClick={() => setTab("history")}
+        >
+          Historique
+        </button>
       </div>
 
-      <Card title="Recommandations croisées finance">
-        <CollapsibleBox title="Afficher / masquer les recommandations" defaultExpanded={crossRecommendations.finance.some((item) => item.severity !== "info")}>
-          <div className="dashboard-lines">
-            {crossRecommendations.finance.map((item, index) => (
-              <p key={`${item.severity}-${index}`} className={item.severity === "critical" ? "settings-diagnostic-line settings-diagnostic-line-warning" : undefined}>
-                <strong>{item.severity === "critical" ? "Critique" : item.severity === "warning" ? "Vigilance" : "Info"}:</strong> {item.text}
-              </p>
-            ))}
+      {tab === "overview" && (
+        <div className="page-stack">
+          <div className="message-box">
+            <p className="muted">{message}</p>
           </div>
-        </CollapsibleBox>
-      </Card>
 
-      <div className="finance-summary-grid">
+          <Card title="Recommandations croisées finance">
+            <CollapsibleBox title="Afficher / masquer les recommandations" defaultExpanded={crossRecommendations.finance.some((item) => item.severity !== "info")}>
+              <div className="dashboard-lines">
+                {crossRecommendations.finance.map((item, index) => (
+                  <p key={`${item.severity}-${index}`} className={item.severity === "critical" ? "settings-diagnostic-line settings-diagnostic-line-warning" : undefined}>
+                    <strong>{item.severity === "critical" ? "Critique" : item.severity === "warning" ? "Vigilance" : "Info"}:</strong> {item.text}
+                  </p>
+                ))}
+              </div>
+            </CollapsibleBox>
+          </Card>
+
+          <div className="finance-summary-grid">
         <Card title="Solde actuel">
           <p className="finance-summary-value">
             {formatCurrency(snapshot.currentBalance)}
@@ -523,8 +558,12 @@ export default function FinancePage() {
           </p>
         </Card>
       </div>
+        </div>
+      )}
 
-      <div className="two-columns finance-layout">
+      {tab === "operations" && (
+        <div className="page-stack">
+          <div className="two-columns finance-layout">
         <Card title="Ajouter une opération">
           <form className="page-stack" onSubmit={handleManualEntrySubmit}>
             <div className="settings-grid">
@@ -721,46 +760,50 @@ export default function FinancePage() {
           </div>
         </Card>
       </div>
+        </div>
+      )}
 
-      <div className="two-columns finance-layout">
-        <Card title="Charges automatiques et projection">
-          <div className="dashboard-lines">
-            <p>
-              <strong>Dernier lundi traité automatiquement :</strong>{" "}
-              {formatDateTimeLabel(snapshot.weeklyEconomyProcessedThrough)}
-            </p>
-            <p>
-              <strong>Masse salariale hebdomadaire :</strong>{" "}
-              {formatCurrency(snapshot.weeklySalaryExpense)}
-            </p>
-            <p>
-              <strong>Entretien hebdomadaire des installations :</strong>{" "}
-              {formatCurrency(snapshot.weeklyFacilityMaintenance)}
-            </p>
-            <p>
-              <strong>Solde après une semaine de charges fixes :</strong>{" "}
-              {formatCurrency(snapshot.projectedBalanceAfterWeeklyCosts)}
-            </p>
-            <p>
-              <strong>Travaux planifiés à provisionner :</strong>{" "}
-              {formatCurrency(snapshot.plannedFacilityUpgradeCost)}
-            </p>
-            <p>
-              <strong>Projection trésorerie à 3 semaines :</strong>{" "}
-              {formatCurrency(snapshot.projectedBalanceAfterThreeWeeks)}
-            </p>
-            <p>
-              <strong>Réserve de sécurité visée :</strong>{" "}
-              {formatCurrency(BEGINNER_GUIDE_SAFETY_RESERVE_TARGET)}
-            </p>
-            <p>
-              <strong>Revenus sponsors / boutique :</strong>{" "}
-              à saisir manuellement chaque lundi.
-            </p>
-          </div>
-        </Card>
+      {tab === "configuration" && (
+        <div className="page-stack">
+          <div className="two-columns finance-layout">
+            <Card title="Charges automatiques et projection">
+              <div className="dashboard-lines">
+                <p>
+                  <strong>Dernier lundi traité automatiquement :</strong>{" "}
+                  {formatDateTimeLabel(snapshot.weeklyEconomyProcessedThrough)}
+                </p>
+                <p>
+                  <strong>Masse salariale hebdomadaire :</strong>{" "}
+                  {formatCurrency(snapshot.weeklySalaryExpense)}
+                </p>
+                <p>
+                  <strong>Entretien hebdomadaire des installations :</strong>{" "}
+                  {formatCurrency(snapshot.weeklyFacilityMaintenance)}
+                </p>
+                <p>
+                  <strong>Solde après une semaine de charges fixes :</strong>{" "}
+                  {formatCurrency(snapshot.projectedBalanceAfterWeeklyCosts)}
+                </p>
+                <p>
+                  <strong>Travaux planifiés à provisionner :</strong>{" "}
+                  {formatCurrency(snapshot.plannedFacilityUpgradeCost)}
+                </p>
+                <p>
+                  <strong>Projection trésorerie à 3 semaines :</strong>{" "}
+                  {formatCurrency(snapshot.projectedBalanceAfterThreeWeeks)}
+                </p>
+                <p>
+                  <strong>Réserve de sécurité visée :</strong>{" "}
+                  {formatCurrency(BEGINNER_GUIDE_SAFETY_RESERVE_TARGET)}
+                </p>
+                <p>
+                  <strong>Revenus sponsors / boutique :</strong>{" "}
+                  à saisir manuellement chaque lundi.
+                </p>
+              </div>
+            </Card>
 
-        <Card title="Audit de réconciliation">
+            <Card title="Audit de réconciliation">
           <div className="page-stack">
             <div className="finance-reconciliation-stats">
               <div className="finance-prize-preview">
@@ -885,8 +928,12 @@ export default function FinancePage() {
           )}
         </Card>
       </div>
+        </div>
+      )}
 
-      <Card title="Primes de course synchronisées">
+      {tab === "history" && (
+        <div className="page-stack">
+          <Card title="Primes de course synchronisées">
         <div className="page-stack">
           <p className="muted">
             Les primes ci-dessous sont générées depuis les résultats. Une référence non validée signale qu'un revenu dépend encore d'un résultat à réaligner ou devenu orphelin.
@@ -1154,6 +1201,8 @@ export default function FinancePage() {
           </p>
         </div>
       </Card>
+        </div>
+      )}
     </div>
   );
 }
