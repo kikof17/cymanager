@@ -23,6 +23,7 @@ import type { TodoItem } from '../types/todo';
 import type { Rider } from '../types/rider';
 
 type CourseCategory = 'pro' | 'u25' | 'u21';
+type CalendarViewMode = 'week' | 'all';
 
 function loadStoredResults(): Record<string, StoredResult> {
   return getAllResultsFromStorage();
@@ -66,6 +67,32 @@ function formatCalendarDate(value: string): string {
   return new Intl.DateTimeFormat('fr-FR', {
     dateStyle: 'medium',
   }).format(date);
+}
+
+function getStartOfWeek(value: Date): Date {
+  const date = new Date(value);
+  const day = date.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+
+  date.setHours(0, 0, 0, 0);
+  date.setDate(date.getDate() + diff);
+
+  return date;
+}
+
+function isTodoInCurrentWeek(todo: TodoItem, now: Date): boolean {
+  const scheduledAt = getTodoScheduledAt(todo) ?? todo.createdAt;
+  const scheduledDate = new Date(scheduledAt);
+
+  if (Number.isNaN(scheduledDate.getTime())) {
+    return false;
+  }
+
+  const weekStart = getStartOfWeek(now);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 7);
+
+  return scheduledDate >= weekStart && scheduledDate < weekEnd;
 }
 
 function getCourseCategoryForTactic(todo: TodoItem, profile: ParsedRace | null): CourseCategory {
@@ -135,11 +162,45 @@ const CalendarPage: React.FC = () => {
     countUnstableCalendarIdentities()
   );
   const [identityRepairMessage, setIdentityRepairMessage] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<CalendarViewMode>('week');
 
   const groupedCalendarTodos = useMemo(
     () => groupCourseTodos(calendarTodos),
     [calendarTodos]
   );
+
+  const calendarBoard = useMemo(() => {
+    const now = new Date();
+    const weekTodos = calendarTodos.filter((todo) => isTodoInCurrentWeek(todo, now));
+    const doneInWeek = weekTodos.filter((todo) => statuses[todo.id] === 'done').length;
+    const pendingInWeek = weekTodos.length - doneInWeek;
+    const missingRaceKeyCount = weekTodos.filter((todo) => !todo.raceKey).length;
+    const tacticsReadyCount = weekTodos.filter((todo) => Boolean(todo.raceKey)).length;
+
+    return {
+      totalCourses: calendarTodos.length,
+      weekCourses: weekTodos.length,
+      doneInWeek,
+      pendingInWeek,
+      missingRaceKeyCount,
+      tacticsReadyCount,
+    };
+  }, [calendarTodos, statuses]);
+
+  const visibleGroupedCalendarTodos = useMemo(() => {
+    if (viewMode === 'all') {
+      return groupedCalendarTodos;
+    }
+
+    const now = new Date();
+
+    return groupedCalendarTodos
+      .map((group) => ({
+        ...group,
+        todos: group.todos.filter((todo) => isTodoInCurrentWeek(todo, now)),
+      }))
+      .filter((group) => group.todos.length > 0);
+  }, [groupedCalendarTodos, viewMode]);
 
   // Parsing multi-lignes
   // parseLines supprimé (plus utilisé)
@@ -919,9 +980,64 @@ const CalendarPage: React.FC = () => {
       )}
 
       <Card title="Courses à venir et passées" className="calendar-card">
+        <section className="calendar-board" aria-label="Pilotage hebdomadaire du calendrier">
+          <div className="calendar-board-header">
+            <h3 className="calendar-board-title">Board hebdo</h3>
+            <div className="calendar-board-actions">
+              <button
+                type="button"
+                className={viewMode === 'week' ? 'button button-small button-primary' : 'button button-small button-secondary'}
+                onClick={() => setViewMode('week')}
+              >
+                Semaine en cours
+              </button>
+              <button
+                type="button"
+                className={viewMode === 'all' ? 'button button-small button-primary' : 'button button-small button-secondary'}
+                onClick={() => setViewMode('all')}
+              >
+                Toute la saison
+              </button>
+            </div>
+          </div>
+
+          <div className="calendar-board-grid">
+            <article className="calendar-board-item">
+              <p className="calendar-board-label">Courses semaine</p>
+              <p className="calendar-board-value">{calendarBoard.weekCourses}</p>
+            </article>
+            <article className="calendar-board-item">
+              <p className="calendar-board-label">A traiter</p>
+              <p className="calendar-board-value calendar-board-value-warning">{calendarBoard.pendingInWeek}</p>
+            </article>
+            <article className="calendar-board-item">
+              <p className="calendar-board-label">Traitées</p>
+              <p className="calendar-board-value calendar-board-value-success">{calendarBoard.doneInWeek}</p>
+            </article>
+            <article className="calendar-board-item">
+              <p className="calendar-board-label">Tactiques prêtes</p>
+              <p className="calendar-board-value">{calendarBoard.tacticsReadyCount}</p>
+            </article>
+            <article className="calendar-board-item">
+              <p className="calendar-board-label">Clés manquantes</p>
+              <p className="calendar-board-value calendar-board-value-danger">{calendarBoard.missingRaceKeyCount}</p>
+            </article>
+            <article className="calendar-board-item">
+              <p className="calendar-board-label">Total courses</p>
+              <p className="calendar-board-value">{calendarBoard.totalCourses}</p>
+            </article>
+          </div>
+        </section>
+
         {calendarTodos.length === 0 && <div className="muted">Aucune étape ajoutée pour l'instant.</div>}
+        {viewMode === 'week' && visibleGroupedCalendarTodos.length === 0 && calendarTodos.length > 0 ? (
+          <div className="message-box">
+            <p className="muted">Aucune course planifiée sur la semaine en cours.</p>
+          </div>
+        ) : null}
+
         <div className="page-stack calendar-course-list">
-          {groupedCalendarTodos.map((group) => {
+          {visibleGroupedCalendarTodos.map((group) => {
             const completedCount = group.todos.filter((todo) => statuses[todo.id] === 'done').length;
 
             return (
