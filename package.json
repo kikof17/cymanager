@@ -9,8 +9,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "build:desktop": "tsc -b && vite build --base ./",
     "desktop:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
-    "desktop:build": "npm run build && electron-builder",
+    "desktop:build": "npm run build:desktop && electron-builder",
     "desktop:dist": "npm run desktop:build"
   },
   "dependencies": {
