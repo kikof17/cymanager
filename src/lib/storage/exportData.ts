@@ -153,3 +153,19 @@ export function buildCymanagerBackup(): CymanagerBackup {
 export function serializeCymanagerBackup(): string {
 	return JSON.stringify(buildCymanagerBackup(), null, 2);
 }
+
+export function resetAllData(): void {
+	const keysToRemove: string[] = [];
+
+	for (let index = 0; index < localStorage.length; index++) {
+		const key = localStorage.key(index);
+
+		if (key && key.startsWith("cymanager:")) {
+			keysToRemove.push(key);
+		}
+	}
+
+	for (const key of keysToRemove) {
+		localStorage.removeItem(key);
+	}
+}
