@@ -33,11 +33,11 @@ export const defaultClubSettings: ClubSettings = {
     },
     trainingCenter: {
       level: 0,
-      upgradeInProgress: true,
+      upgradeInProgress: false,
       plannedUpgrade: false,
-      targetLevel: 1,
+      targetLevel: null,
       upgradeStartedAt: nowIsoLocal(),
-      notes: "Travaux lancés vers le niveau 1.",
+      notes: "",
     },
     formationCenter: {
       level: 0,
