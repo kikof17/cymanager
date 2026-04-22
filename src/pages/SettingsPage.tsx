@@ -352,6 +352,41 @@ export default function SettingsPage() {
         subtitle="Réglages du club, installations et notes utiles pour la gestion."
       />
 
+      <section className="finance-board" aria-label="Tableau de bord paramètres">
+        <div className="finance-board-header">
+          <span className="finance-board-title">Club</span>
+        </div>
+        <div className="finance-board-grid">
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Division</span>
+            <span className="finance-board-value">Pro {settings.divisionPro}</span>
+            <span className="finance-board-sub">U25 {settings.divisionU25} · U21 {settings.divisionU21}</span>
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Objectif</span>
+            <span className="finance-board-value">Pro {settings.targetDivisionPro}</span>
+            <span className="finance-board-sub">U25 {settings.targetDivisionU25} · U21 {settings.targetDivisionU21}</span>
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Stratégie</span>
+            <span className="finance-board-value">{settings.clubObjective ?? "–"}</span>
+          </div>
+          <div className={`finance-board-item ${diagnostics.issueCount > 0 ? "finance-board-item--warning" : "finance-board-item--success"}`}>
+            <span className="finance-board-label">Problèmes stockage</span>
+            <span className="finance-board-value">{diagnostics.issueCount}</span>
+            {diagnostics.invalidRecordCount > 0 && <span className="finance-board-sub">{diagnostics.invalidRecordCount} invalide{diagnostics.invalidRecordCount > 1 ? "s" : ""}</span>}
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Référ. cassées</span>
+            <span className="finance-board-value">{resultReferenceSummary.missingRaceReferenceCount + resultReferenceSummary.mismatchedRaceReferenceCount}</span>
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Version</span>
+            <span className="finance-board-value">{RELEASE_VERSION}</span>
+          </div>
+        </div>
+      </section>
+
       <div className="stats-tabs">
         <button
           type="button"

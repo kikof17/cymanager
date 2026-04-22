@@ -260,6 +260,9 @@ export default function TodoPage() {
   const doneCount = mergedTodos.filter((item) => item.status === "done").length;
   const todoCount = totalCount - doneCount;
 
+  const urgentCount = mergedTodos.filter(item => item.priority === "haute" && item.status !== "done").length;
+  const autoCount = mergedTodos.filter(item => item.source !== "manual").length;
+
   return (
     <div className="page-stack">
       <PageTitle
@@ -267,23 +270,38 @@ export default function TodoPage() {
         subtitle="Suivi des tâches automatiques et manuelles du club."
       />
 
-      <div className="stat-grid">
-        <Card title="Total tâches">
-          <p className="stat-value">{totalCount}</p>
-        </Card>
-
-        <Card title="À faire">
-          <p className="stat-value">{todoCount}</p>
-        </Card>
-
-        <Card title="Faites">
-          <p className="stat-value">{doneCount}</p>
-        </Card>
-
-        <Card title="Effectif chargé">
-          <p className="stat-value">{riders.length}</p>
-        </Card>
-      </div>
+      <section className="finance-board" aria-label="Tableau de bord tâches">
+        <div className="finance-board-header">
+          <span className="finance-board-title">Tâches</span>
+        </div>
+        <div className="finance-board-grid">
+          <div className={`finance-board-item ${todoCount > 0 ? "finance-board-item--warning" : "finance-board-item--success"}`}>
+            <span className="finance-board-label">À faire</span>
+            <span className="finance-board-value">{todoCount}</span>
+            <span className="finance-board-sub">sur {totalCount} tâches</span>
+          </div>
+          <div className={`finance-board-item ${urgentCount > 0 ? "finance-board-item--danger" : "finance-board-item--success"}`}>
+            <span className="finance-board-label">Priorité haute</span>
+            <span className="finance-board-value">{urgentCount}</span>
+          </div>
+          <div className="finance-board-item finance-board-item--success">
+            <span className="finance-board-label">Faites</span>
+            <span className="finance-board-value">{doneCount}</span>
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Auto-générées</span>
+            <span className="finance-board-value">{autoCount}</span>
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Manuelles</span>
+            <span className="finance-board-value">{manualTodos.length}</span>
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Effectif</span>
+            <span className="finance-board-value">{riders.length} coureurs</span>
+          </div>
+        </div>
+      </section>
 
       <div className="two-columns">
         <Card title="Ajouter une tâche manuelle">

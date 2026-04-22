@@ -535,6 +535,39 @@ export default function RacesPage() {
         subtitle="Analyse d'une course ou d'un mini-tour, sélection des 7 et réglages d'inscription plus proches de l'écran de jeu."
       />
 
+      <section className="finance-board" aria-label="Tableau de bord courses">
+        <div className="finance-board-header">
+          <span className="finance-board-title">Session en cours</span>
+        </div>
+        <div className="finance-board-grid">
+          <div className={`finance-board-item ${races.length > 0 ? "finance-board-item--success" : "finance-board-item--neutral"}`}>
+            <span className="finance-board-label">{races.length > 1 ? "Étapes" : "Course"} chargée{races.length > 1 ? "s" : ""}</span>
+            <span className="finance-board-value">{races.length > 0 ? races.length : "–"}</span>
+            {races.length > 0 && <span className="finance-board-sub">{races[0].name}</span>}
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Effectif</span>
+            <span className="finance-board-value">{riders.length} coureurs</span>
+          </div>
+          <div className={`finance-board-item ${Object.keys(setupByRiderList).length > 0 ? "finance-board-item--success" : "finance-board-item--neutral"}`}>
+            <span className="finance-board-label">Réglages sauvés</span>
+            <span className="finance-board-value">{Object.keys(setupByRiderList).length}</span>
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Profil détecté</span>
+            <span className="finance-board-value">{races.length > 0 ? (races[0].detectedProfile ?? "–") : "–"}</span>
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Distance</span>
+            <span className="finance-board-value">{races.length > 0 ? `${races[0].distanceKm} km` : "–"}</span>
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Catégorie</span>
+            <span className="finance-board-value">{races.length > 0 ? (races[0].category ?? "–") : "–"}</span>
+          </div>
+        </div>
+      </section>
+
       <div className="two-columns">
         <Card title="Import course ou mini-tour">
           <RaceImportBox onAnalyze={handleAnalyze} />
