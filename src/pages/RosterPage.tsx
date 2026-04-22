@@ -3,6 +3,7 @@ import Card from "../components/common/Card";
 import CollapsibleBox from "../components/common/CollapsibleBox";
 import PageTitle from "../components/common/PageTitle";
 import RosterAnalysisPanel from "../components/roster/RosterAnalysisPanel";
+import RiderDrawer from "../components/roster/RiderDrawer";
 import RiderHistoryCard from "../components/roster/RiderHistoryCard";
 import RiderTable from "../components/roster/RiderTable";
 import RosterImportBox from "../components/roster/RosterImportBox";
@@ -21,6 +22,8 @@ import { mergeRidersByName, parseRosterText } from "../lib/parser/rosterParser";
 import { initialRiders } from "../store/initialState";
 import type { TeamBuildingStrategy } from "../types/teamStrategy";
 
+type RosterTab = "tous" | "pro" | "u25" | "u21" | "indispos";
+
 function getInitialRiders(): Rider[] {
   const storedRiders = loadRidersFromStorage();
 
@@ -33,6 +36,8 @@ export default function RosterPage() {
   const [filter, setFilter] = useState("");
   const [teamStrategy, setTeamStrategy] = useState<TeamBuildingStrategy>(loadTeamStrategy);
   const [riderHistorySnapshots, setRiderHistorySnapshots] = useState(loadRiderHistorySnapshots);
+  const [rosterTab, setRosterTab] = useState<RosterTab>("tous");
+  const [selectedRiderId, setSelectedRiderId] = useState<string | null>(null);
 
   const settings = useMemo(() => loadClubSettings(), []);
   const financeSnapshot = useMemo(() => getFinanceSnapshot(settings, riders), [settings, riders]);
@@ -80,18 +85,26 @@ export default function RosterPage() {
 
   const filteredRiders = useMemo(() => {
     const search = filter.trim().toLowerCase();
+    let base = riders;
 
-    if (!search) {
-      return riders;
-    }
+    // Tab filter
+    if (rosterTab === "pro") base = riders.filter(r => r.category === "Pro");
+    else if (rosterTab === "u25") base = riders.filter(r => r.category === "U25");
+    else if (rosterTab === "u21") base = riders.filter(r => r.category === "U21");
+    else if (rosterTab === "indispos") base = riders.filter(r =>
+      r.form < 35 || (r.injury && r.injury.trim() !== "" && r.injury.toLowerCase() !== "aucune" && r.injury.toLowerCase() !== "sain")
+    );
 
-    return riders.filter((rider) => {
-      return (
-        rider.name.toLowerCase().includes(search) ||
-        rider.category.toLowerCase().includes(search)
-      );
-    });
-  }, [riders, filter]);
+    if (!search) return base;
+    return base.filter(r =>
+      r.name.toLowerCase().includes(search) || r.category.toLowerCase().includes(search)
+    );
+  }, [riders, filter, rosterTab]);
+
+  const selectedRider = useMemo(
+    () => selectedRiderId ? riders.find(r => r.id === selectedRiderId) ?? null : null,
+    [selectedRiderId, riders]
+  );
 
   function handleStrategyChange(nextStrategy: TeamBuildingStrategy) {
     const normalized = saveTeamStrategy(nextStrategy);
@@ -153,9 +166,43 @@ export default function RosterPage() {
 
       <RosterStats riders={riders} weeklySalaryExpense={financeSnapshot.weeklySalaryExpense} />
 
-      <Card title={`Liste des coureurs (${filteredRiders.length})`}>
-        <RiderTable riders={filteredRiders} onDelete={handleDelete} />
-      </Card>
+      {/* Split view : onglets + table à gauche, drawer à droite */}
+      <div className={`roster-split${selectedRider ? " roster-split--open" : ""}`}>
+        <div className="roster-split-left">
+          <div className="roster-tabs">
+            {([
+              ["tous", `Tous (${riders.length})`],
+              ["pro", `Pro (${riders.filter(r => r.category === "Pro").length})`],
+              ["u25", `U25 (${riders.filter(r => r.category === "U25").length})`],
+              ["u21", `U21 (${riders.filter(r => r.category === "U21").length})`],
+              ["indispos", `Indispos (${riders.filter(r => r.form < 35 || (r.injury && r.injury.trim() !== "" && r.injury.toLowerCase() !== "aucune" && r.injury.toLowerCase() !== "sain")).length})`],
+            ] as [RosterTab, string][]).map(([tab, label]) => (
+              <button
+                key={tab}
+                type="button"
+                className={rosterTab === tab ? "tab-btn tab-btn-active" : "tab-btn"}
+                onClick={() => setRosterTab(tab)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <RiderTable
+            riders={filteredRiders}
+            onDelete={handleDelete}
+            onRowClick={(rider) => setSelectedRiderId(prev => prev === rider.id ? null : rider.id)}
+            selectedRiderId={selectedRiderId ?? undefined}
+          />
+        </div>
+
+        <RiderDrawer
+          rider={selectedRider}
+          onClose={() => setSelectedRiderId(null)}
+          recentPrizeIncomeByRider={recentPrizeIncomeByRider}
+          snapshots={riderHistorySnapshots}
+        />
+      </div>
 
       <CollapsibleBox title="Analyse de l'effectif" defaultExpanded={false}>
         <RosterAnalysisPanel

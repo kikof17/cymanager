@@ -3165,6 +3165,330 @@ select:focus {
 }
 
 /* ============================================================
+   ROSTER SPLIT VIEW V2
+   ============================================================ */
+
+.roster-split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  min-height: 0;
+}
+
+.roster-split--open {
+  grid-template-columns: 1fr 400px;
+  gap: 16px;
+  align-items: start;
+}
+
+.roster-split-left {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.roster-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.rider-table-row-clickable {
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.rider-table-row-clickable:hover {
+  background: rgba(137, 180, 255, 0.08);
+}
+
+.rider-table-row-selected {
+  background: rgba(137, 180, 255, 0.14) !important;
+  outline: 1px solid rgba(137, 180, 255, 0.35);
+}
+
+/* ============================================================
+   RIDER DRAWER V2
+   ============================================================ */
+
+.rider-drawer {
+  background: rgba(10, 18, 30, 0.8);
+  border: 1px solid rgba(137, 180, 255, 0.15);
+  border-radius: 18px;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+  position: sticky;
+  top: 80px;
+}
+
+.rider-drawer-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(137, 180, 255, 0.05);
+}
+
+.rider-drawer-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.rider-drawer-name {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #e8edf4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rider-drawer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.rider-drawer-close {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 2px 8px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.rider-drawer-close:hover {
+  color: #e8edf4;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.rider-drawer-body {
+  overflow-y: auto;
+  padding: 0 18px 18px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.rider-drawer-section {
+  padding: 12px 0 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.rider-drawer-section:last-child {
+  border-bottom: none;
+}
+
+.rider-drawer-section-title {
+  margin: 0 0 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.rider-drawer-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.rider-drawer-badge--neutral {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.rider-drawer-badge--success {
+  background: rgba(72, 199, 142, 0.15);
+  color: #d8f5e1;
+}
+
+.rider-drawer-badge--warning {
+  background: rgba(255, 200, 70, 0.15);
+  color: #ffecbf;
+}
+
+.rider-drawer-badge--danger {
+  background: rgba(255, 100, 100, 0.15);
+  color: #ffd7d7;
+}
+
+.rider-drawer-badge--cat-pro {
+  background: rgba(137, 180, 255, 0.15);
+  color: #89b4ff;
+}
+
+.rider-drawer-badge--cat-u25 {
+  background: rgba(199, 146, 54, 0.15);
+  color: #f4d9a0;
+}
+
+.rider-drawer-badge--cat-u21 {
+  background: rgba(160, 100, 220, 0.15);
+  color: #d4b0f0;
+}
+
+.rider-drawer-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.rider-drawer-profile-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.rider-drawer-profile-primary {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #89b4ff;
+}
+
+.rider-drawer-profile-sep {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.rider-drawer-profile-secondary {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.rider-drawer-strengths {
+  margin: 4px 0 2px;
+  font-size: 0.78rem;
+  color: #d8f5e1;
+}
+
+.rider-drawer-weaknesses {
+  margin: 2px 0;
+  font-size: 0.78rem;
+  color: rgba(255, 200, 70, 0.8);
+}
+
+.rider-drawer-kpi-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.rider-drawer-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 80px;
+}
+
+.rider-drawer-kpi-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.rider-drawer-kpi-value {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #e8edf4;
+}
+
+.rider-drawer-kpi-value--success {
+  color: #d8f5e1;
+}
+
+.rider-drawer-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.rider-stat-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 28px;
+  gap: 6px;
+  align-items: center;
+}
+
+.rider-stat-label {
+  font-size: 0.73rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: right;
+}
+
+.rider-stat-bar-track {
+  height: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rider-stat-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+.rider-stat-bar--low { background: #ff6464; }
+.rider-stat-bar--mid { background: #ffb84d; }
+.rider-stat-bar--high { background: #48c78e; }
+.rider-stat-bar--top { background: #89b4ff; }
+
+.rider-stat-value-num {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: right;
+}
+
+/* Deltas */
+.rider-drawer-delta {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.delta-up { color: #48c78e; }
+.delta-down { color: #ff6464; }
+.delta-flat { color: rgba(255, 255, 255, 0.4); }
+
+/* SeasonHeader deltas */
+.season-kpi-up { color: #48c78e !important; }
+.season-kpi-down { color: #ff6464 !important; }
+
+@media (max-width: 900px) {
+  .roster-split--open {
+    grid-template-columns: 1fr;
+  }
+
+  .rider-drawer {
+    position: static;
+    max-height: none;
+  }
+}
+
+/* ============================================================
    TRAINING BOARD V2
    ============================================================ */
 

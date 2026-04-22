@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getFinanceSnapshot } from "../../lib/storage/financeStorage";
 import { loadRidersFromStorage } from "../../lib/storage/localStorage";
+import { loadRiderHistorySnapshots } from "../../lib/storage/riderHistoryStorage";
 import { loadClubSettings } from "../../lib/storage/settingsStorage";
 import { loadManualTodos, loadTodoStatuses } from "../../lib/storage/todoStorage";
 import { initialRiders } from "../../store/initialState";
@@ -21,6 +22,7 @@ type SeasonHeaderSnapshot = {
   pendingTodoCount: number;
   financeCriticalCount: number;
   financeWarningCount: number;
+  formDelta: number | null;
 };
 
 const BASE_SEASON = 97;
@@ -64,6 +66,20 @@ function buildSnapshot(now: Date): SeasonHeaderSnapshot {
     (issue) => issue.severity === "warning"
   ).length;
 
+  // Delta forme vs snapshot précédent
+  const currentAvgForm = activeRiders.length > 0
+    ? activeRiders.reduce((sum, r) => sum + r.form, 0) / activeRiders.length
+    : 0;
+  const historySnapshots = loadRiderHistorySnapshots();
+  let formDelta: number | null = null;
+  if (historySnapshots.length > 0) {
+    const prevRiders = historySnapshots[0].riders;
+    if (prevRiders.length > 0) {
+      const prevAvgForm = prevRiders.reduce((sum, r) => sum + r.form, 0) / prevRiders.length;
+      formDelta = Math.round((currentAvgForm - prevAvgForm) * 10) / 10;
+    }
+  }
+
   return {
     season: cycle.season,
     week: cycle.week,
@@ -75,6 +91,7 @@ function buildSnapshot(now: Date): SeasonHeaderSnapshot {
     pendingTodoCount,
     financeCriticalCount,
     financeWarningCount,
+    formDelta,
   };
 }
 
@@ -124,6 +141,11 @@ export default function SeasonHeaderV2() {
         <div className="season-strip-kpis">
           <span className="season-kpi">Division Pro {snapshot.division}</span>
           <span className="season-kpi">Solde {formatCurrency(snapshot.balance)}</span>
+          {snapshot.formDelta !== null && (
+            <span className={`season-kpi ${snapshot.formDelta > 0 ? "season-kpi-up" : snapshot.formDelta < 0 ? "season-kpi-down" : ""}`}>
+              Forme {snapshot.formDelta > 0 ? "+" : ""}{snapshot.formDelta}
+            </span>
+          )}
           <span className={`season-kpi ${criticalAlerts > 0 ? "season-kpi-danger" : ""}`}>
             Alertes critiques {criticalAlerts}
           </span>

@@ -6,12 +6,14 @@ import { useState } from "react";
 type RiderTableProps = {
   riders: Rider[];
   onDelete: (riderId: string) => void;
+  onRowClick?: (rider: Rider) => void;
+  selectedRiderId?: string;
 };
 
 type SortableRiderValue = string | number;
 
 
-export default function RiderTable({ riders, onDelete }: RiderTableProps) {
+export default function RiderTable({ riders, onDelete, onRowClick, selectedRiderId }: RiderTableProps) {
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
 
   if (riders.length === 0) {
@@ -106,7 +108,11 @@ export default function RiderTable({ riders, onDelete }: RiderTableProps) {
         </thead>
         <tbody>
           {sortedRiders.map((rider) => (
-            <tr key={rider.id}>
+            <tr
+              key={rider.id}
+              className={`${onRowClick ? "rider-table-row-clickable" : ""} ${selectedRiderId === rider.id ? "rider-table-row-selected" : ""}`}
+              onClick={() => onRowClick?.(rider)}
+            >
               <td>{rider.name}</td>
               <td>{rider.category}</td>
               <td>
