@@ -4,12 +4,13 @@ import {
   getFacilityWeeklyMaintenance,
   PRIZE_REFERENCE_TABLES,
 } from "../finance/faqFinance";
-import { getProRacePrize } from "../finance/racePrizeTable";
+import { getProGeneralClassificationPrize, getProRacePrize } from "../finance/racePrizeTable";
 import { getAllResultsFromStorage } from "../scoring/extractPoints";
 import { loadRidersFromStorage } from "./localStorage";
 import { loadManualTodos } from "./todoStorage";
 import { getStoredResultCategory } from "../utils/courseCategory";
 import { getTodoScheduledAt } from "../utils/courseDates";
+import { buildGeneralClassification, getTourGeneralClassificationType, parseStageResultRows } from "../results/generalClassification";
 import type {
   FinanceEntry,
   FinanceEntryCategory,
@@ -39,11 +40,10 @@ type StoredRaceResult = {
 };
 
 type CoursePrizeBreakdown = {
-  courseId: string;
-  courseTitle: string;
+  sourceKey: string;
+  label: string;
   occurredAt: string;
-  position: string;
-  riderName: string;
+  note: string;
   amount: number;
 };
 
@@ -275,62 +275,23 @@ function toStoredRaceResult(
   return null;
 }
 
-function parseResultRows(result: string) {
-  const lines = result.trim().split(/\r?\n/);
-
-  if (lines.length < 2) {
-    return [];
-  }
-
-  const headers = lines[0].split("\t");
-  const positionIdx = headers.findIndex((header) => {
-    const normalized = normalizeComparable(header);
-    return (
-      normalized === "#" ||
-      normalized.includes("place") ||
-      normalized === "cl" ||
-      normalized === "cl." ||
-      normalized.includes("classement") ||
-      normalized.includes("rank") ||
-      normalized.includes("pos")
-    );
-  });
-  const nameIdx = headers.findIndex((header) =>
-    normalizeComparable(header).includes("nom")
-  );
-  const teamIdx = headers.findIndex((header) => {
-    const normalized = normalizeComparable(header);
-    return normalized.includes("equipe") || normalized.includes("team");
-  });
-
-  if (positionIdx === -1 || nameIdx === -1 || teamIdx === -1) {
-    return [];
-  }
-
-  return lines
-    .slice(1)
-    .map((line) => line.split("\t"))
-    .map((cells) => ({
-      position: cells[positionIdx]?.trim() ?? "",
-      riderName: cells[nameIdx]?.trim() ?? "",
-      teamName: cells[teamIdx]?.trim() ?? "",
-    }))
-    .filter(
-      (row) => row.position.length > 0 && row.riderName.length > 0 && row.teamName.length > 0
-    );
-}
-
-function buildRacePrizeSourceKey(entry: CoursePrizeBreakdown): string {
-  return [
-    "race-prize",
-    entry.courseId,
-    entry.position,
-    normalizeComparable(entry.riderName),
-  ].join(":");
-}
-
 function resolveCourseOccurredAt(course: ReturnType<typeof loadManualTodos>[number] | undefined): string {
   return getTodoScheduledAt(course) ?? new Date().toISOString();
+}
+
+function sortTourStages(stages: ReturnType<typeof loadManualTodos>): ReturnType<typeof loadManualTodos> {
+  return [...stages].sort((left, right) => {
+    const leftStage = left.stageNumber ?? Number.MAX_SAFE_INTEGER;
+    const rightStage = right.stageNumber ?? Number.MAX_SAFE_INTEGER;
+
+    if (leftStage !== rightStage) {
+      return leftStage - rightStage;
+    }
+
+    const leftDate = left.scheduledAt ?? left.createdAt;
+    const rightDate = right.scheduledAt ?? right.createdAt;
+    return new Date(leftDate).getTime() - new Date(rightDate).getTime();
+  });
 }
 
 function buildCoursePrizeEntries(settings: ClubSettings): CoursePrizeBreakdown[] {
@@ -338,7 +299,7 @@ function buildCoursePrizeEntries(settings: ClubSettings): CoursePrizeBreakdown[]
   const todos = loadManualTodos();
   const courseMap = new Map(todos.map((todo) => [todo.id, todo]));
 
-  return Object.entries(results).flatMap(([courseId, stored]) => {
+  const stagePrizeEntries = Object.entries(results).flatMap(([courseId, stored]) => {
     const course = courseMap.get(courseId);
     const storedRaceResult = toStoredRaceResult(stored, course);
 
@@ -346,7 +307,7 @@ function buildCoursePrizeEntries(settings: ClubSettings): CoursePrizeBreakdown[]
       return [];
     }
 
-    return parseResultRows(storedRaceResult.result)
+    return parseStageResultRows(storedRaceResult)
         .filter(
           (row) =>
             normalizeComparable(row.teamName) === normalizeComparable(TEAM_NAME)
@@ -363,16 +324,92 @@ function buildCoursePrizeEntries(settings: ClubSettings): CoursePrizeBreakdown[]
           }
 
           return {
-            courseId,
-            courseTitle: course?.title ?? courseId,
+            sourceKey: [
+              "race-prize",
+              courseId,
+              row.position,
+              normalizeComparable(row.riderName),
+            ].join(":"),
+            label: `Prime course - ${row.riderName} - ${course?.title ?? courseId}`,
             occurredAt: resolveCourseOccurredAt(course),
-            position: row.position,
-            riderName: row.riderName,
+            note: `${row.position} place`,
             amount,
           };
         })
         .filter((row): row is CoursePrizeBreakdown => row !== null);
   });
+
+  const toursByKey = todos.reduce<Map<string, ReturnType<typeof loadManualTodos>>>((accumulator, todo) => {
+    if (!todo.tourKey) {
+      return accumulator;
+    }
+
+    const current = accumulator.get(todo.tourKey) ?? [];
+    current.push(todo);
+    accumulator.set(todo.tourKey, current);
+    return accumulator;
+  }, new Map());
+
+  const generalPrizeEntries: CoursePrizeBreakdown[] = [];
+
+  toursByKey.forEach((stages, tourKey) => {
+    const orderedStages = sortTourStages(stages);
+    const finalStage = orderedStages[orderedStages.length - 1];
+
+    if (!finalStage) {
+      return;
+    }
+
+    const tourType = getTourGeneralClassificationType(orderedStages.length);
+
+    if (!tourType) {
+      return;
+    }
+
+    const finalStoredResult = toStoredRaceResult(results[finalStage.id], finalStage);
+
+    if (!finalStoredResult || finalStoredResult.category !== "pro") {
+      return;
+    }
+
+    const ranking = buildGeneralClassification(orderedStages, results, finalStage.id);
+
+    if (ranking.consideredStageCount !== orderedStages.length || ranking.rows.length === 0) {
+      return;
+    }
+
+    ranking.rows
+      .filter((row) => normalizeComparable(row.teamName) === normalizeComparable(TEAM_NAME))
+      .forEach((row) => {
+        const amount = getProGeneralClassificationPrize(
+          settings.divisionPro,
+          row.rank,
+          orderedStages.length
+        );
+
+        if (amount === null || amount <= 0) {
+          return;
+        }
+
+        generalPrizeEntries.push({
+          sourceKey: [
+            "race-prize",
+            finalStage.id,
+            "general",
+            tourKey,
+            tourType,
+            row.rank,
+            normalizeComparable(row.riderName),
+          ].join(":"),
+          label: `Prime classement general ${tourType} - ${row.riderName} - ${finalStage.title}`,
+          occurredAt: resolveCourseOccurredAt(finalStage),
+          note: `${row.rank} place (classement general ${tourType})`,
+          amount,
+        });
+      });
+  });
+
+  return [...stagePrizeEntries, ...generalPrizeEntries];
 }
 
 function syncRacePrizeEntries(
@@ -380,9 +417,7 @@ function syncRacePrizeEntries(
   settings: ClubSettings
 ): { entries: FinanceEntry[]; changed: boolean; metrics: FinanceSyncMetrics } {
   const prizeEntries = buildCoursePrizeEntries(settings);
-  const validSourceKeys = new Set(
-    prizeEntries.map((entry) => buildRacePrizeSourceKey(entry))
-  );
+  const validSourceKeys = new Set(prizeEntries.map((entry) => entry.sourceKey));
   let changed = false;
   const metrics = createEmptyFinanceSyncMetrics();
 
@@ -403,7 +438,7 @@ function syncRacePrizeEntries(
   });
 
   prizeEntries.forEach((prizeEntry) => {
-    const sourceKey = buildRacePrizeSourceKey(prizeEntry);
+    const sourceKey = prizeEntry.sourceKey;
     const existingIndex = nextEntries.findIndex(
       (entry) => entry.sourceKey === sourceKey
     );
@@ -412,12 +447,12 @@ function syncRacePrizeEntries(
         existingIndex >= 0
           ? nextEntries[existingIndex].id
           : createId("race-prize"),
-      label: `Prime course - ${prizeEntry.riderName} - ${prizeEntry.courseTitle}`,
+      label: prizeEntry.label,
       amount: prizeEntry.amount,
       occurredAt: toIsoDate(prizeEntry.occurredAt),
       category: "race-prize",
       source: "sync",
-      note: `${prizeEntry.position} place`,
+      note: prizeEntry.note,
       sourceKey,
     };
 
@@ -965,11 +1000,18 @@ function isEntryRecent(entry: FinanceEntry, withinDays: number): boolean {
 }
 
 function extractRiderNameFromRacePrizeLabel(label: string): string | null {
-  if (!label.startsWith("Prime course - ")) {
+  const prefixes = [
+    "Prime course - ",
+    "Prime classement general GT - ",
+    "Prime classement general MT - ",
+  ];
+  const matchedPrefix = prefixes.find((prefix) => label.startsWith(prefix));
+
+  if (!matchedPrefix) {
     return null;
   }
 
-  const withoutPrefix = label.slice("Prime course - ".length);
+  const withoutPrefix = label.slice(matchedPrefix.length);
   const separatorIndex = withoutPrefix.lastIndexOf(" - ");
 
   if (separatorIndex <= 0) {

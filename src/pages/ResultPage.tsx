@@ -2,10 +2,11 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Card from '../components/common/Card';
 import PageTitle from '../components/common/PageTitle';
 import { buildCrossRecommendations } from '../lib/app/crossRecommendations';
-import { getProRacePrize } from '../lib/finance/racePrizeTable';
+import { getProGeneralClassificationPrize, getProRacePrize } from '../lib/finance/racePrizeTable';
 import { buildResultReferenceSummary, getAllResultsFromStorage, getStoredResultText, reconcileStoredResultsWithCourses, saveAllResultsToStorage, type ResultReferenceIssue, type StoredResult } from '../lib/scoring/extractPoints';
 import { appendManagementHistoryEntry } from '../lib/storage/managementHistoryStorage';
 import { syncFinanceWithSettings } from '../lib/storage/financeStorage';
+import { buildGeneralClassification, getTourGeneralClassificationType } from '../lib/results/generalClassification';
 import { getStoredResultCategory, type ResultCategory } from '../lib/utils/courseCategory';
 import { loadClubSettings } from '../lib/storage/settingsStorage';
 import { loadRidersFromStorage } from '../lib/storage/localStorage';
@@ -80,6 +81,19 @@ function getPrizeForRow(
   return getProRacePrize(division, position, courseTitle);
 }
 
+function getGeneralPrizeForRow(
+  position: number,
+  teamName: string,
+  stageCount: number
+): number | null {
+  if (normalizeComparable(teamName) !== normalizeComparable(TEAM_NAME)) {
+    return null;
+  }
+
+  const division = getDivisionForCategory('pro');
+  return getProGeneralClassificationPrize(division, position, stageCount);
+}
+
 function loadResults(): ResultMap {
   return getAllResultsFromStorage();
 }
@@ -112,6 +126,20 @@ export default function ResultPage() {
     [courseGroups, selectedCourseId]
   );
   const selectedCourseIssue = selectedCourseId ? resultReferenceIssueMap.get(selectedCourseId) ?? null : null;
+  const selectedTourGeneralClassification = useMemo(() => {
+    if (!selectedCourseGroup?.isTour || !selectedCourseId) {
+      return null;
+    }
+
+    return buildGeneralClassification(selectedCourseGroup.todos, results, selectedCourseId);
+  }, [results, selectedCourseGroup, selectedCourseId]);
+  const selectedTourFinalCourseId = selectedCourseGroup?.isTour
+    ? selectedCourseGroup.todos[selectedCourseGroup.todos.length - 1]?.id ?? null
+    : null;
+  const selectedTourIsFinalStage = Boolean(selectedTourFinalCourseId && selectedCourseId === selectedTourFinalCourseId);
+  const selectedTourType = selectedCourseGroup?.isTour
+    ? getTourGeneralClassificationType(selectedCourseGroup.todos.length)
+    : null;
   const crossRecommendations = useMemo(
     () =>
       buildCrossRecommendations({
@@ -394,6 +422,51 @@ export default function ResultPage() {
                   })}
                 </div>
               </div>
+            ) : null}
+            {selectedCourseGroup?.isTour ? (
+              <Card
+                title={selectedTourIsFinalStage
+                  ? `Classement general ${selectedTourType ?? 'tour'}`
+                  : `Classement general provisoire (apres etape ${selectedCourse?.stageNumber ?? selectedTourGeneralClassification?.consideredStageCount ?? 0})`}
+              >
+                {selectedTourGeneralClassification && selectedTourGeneralClassification.rows.length > 0 ? (
+                  <div className="table-container">
+                    <table className="data-table styled-table">
+                      <thead>
+                        <tr>
+                          <th>Rang</th>
+                          <th>Coureur</th>
+                          <th>Equipe</th>
+                          <th>Cumul places</th>
+                          <th>Etapes comptees</th>
+                          {selectedTourIsFinalStage && selectedTourType ? <th>Prime general</th> : null}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedTourGeneralClassification.rows.map((row) => {
+                          const prize = selectedTourIsFinalStage && selectedTourType
+                            ? getGeneralPrizeForRow(row.rank, row.teamName, selectedCourseGroup.todos.length)
+                            : null;
+                          const isTeamRider = normalizeComparable(row.teamName) === normalizeComparable(TEAM_NAME);
+
+                          return (
+                            <tr key={`${row.rank}-${row.riderName}`} className={isTeamRider ? 'highlight-row' : undefined}>
+                              <td>{row.rank}</td>
+                              <td>{row.riderName}</td>
+                              <td>{row.teamName}</td>
+                              <td>{row.cumulativePosition}</td>
+                              <td>{row.stageCount}</td>
+                              {selectedTourIsFinalStage && selectedTourType ? <td>{prize === null ? '' : formatCurrency(prize)}</td> : null}
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="muted">Classement general indisponible : il faut un resultat exploitable sur chaque etape deja courue.</p>
+                )}
+              </Card>
             ) : null}
             <div className="course-details">{selectedCourse?.details?.split('\n').join(' | ')}</div>
             {selectedCourse && getStoredCategory(results[selectedCourseId] ?? '', selectedCourse) !== 'pro' ? (

@@ -149,6 +149,18 @@ function roundUpToNextThousand(value: number): number {
   return Math.ceil(value / 1000) * 1000;
 }
 
+function getGeneralClassificationMultiplier(stageCount: number): number | null {
+  if (stageCount >= 5) {
+    return 2;
+  }
+
+  if (stageCount >= 3) {
+    return 1.5;
+  }
+
+  return null;
+}
+
 export function getProRacePrize(
   division: DivisionLevel,
   position: string | number,
@@ -163,4 +175,19 @@ export function getProRacePrize(
   return roundUpToNextThousand(
     basePrize * getIndividualRacePrizeMultiplier(courseTitle)
   );
+}
+
+export function getProGeneralClassificationPrize(
+  division: DivisionLevel,
+  position: string | number,
+  stageCount: number
+): number | null {
+  const basePrize = getIndividualRacePrizeBase(division, position);
+  const multiplier = getGeneralClassificationMultiplier(stageCount);
+
+  if (basePrize === null || multiplier === null) {
+    return null;
+  }
+
+  return roundUpToNextThousand(basePrize * multiplier);
 }
