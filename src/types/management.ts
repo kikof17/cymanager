@@ -11,7 +11,8 @@ export type ManagementHistoryEntryKind =
   | "calendar-delete"
   | "result-save"
   | "result-repair"
-  | "recruitment";
+  | "recruitment"
+  | "season-transition";
 
 export type ManagementHistoryEntry = {
   id: string;

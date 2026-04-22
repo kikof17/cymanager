@@ -69,6 +69,8 @@ export const defaultClubSettings: ClubSettings = {
   salaryTolerance: "normale",
   manualWeeklySalaryExpense: null,
   financialBalance: 1000000, // Valeur par défaut : 1 000 000 €
+  baseSeason: 97,
+  seasonStartIso: "2026-04-15T00:00:00.000Z",
 };
 
 function isLegacyTrainingCenterSeed(
@@ -208,6 +210,14 @@ export function loadClubSettings(): ClubSettings {
           ? parsed.manualWeeklySalaryExpense
           : defaultClubSettings.manualWeeklySalaryExpense,
       financialBalance: defaultClubSettings.financialBalance,
+      baseSeason:
+        typeof parsed.baseSeason === "number" && parsed.baseSeason > 0
+          ? parsed.baseSeason
+          : defaultClubSettings.baseSeason,
+      seasonStartIso:
+        typeof parsed.seasonStartIso === "string" && parsed.seasonStartIso.length > 0
+          ? parsed.seasonStartIso
+          : defaultClubSettings.seasonStartIso,
     });
   } catch (error) {
     console.error("Erreur de lecture localStorage club settings", error);

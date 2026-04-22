@@ -25,18 +25,19 @@ type SeasonHeaderSnapshot = {
   formDelta: number | null;
 };
 
-const BASE_SEASON = 97;
-const BASE_SEASON_START_ISO = "2026-04-15T00:00:00.000Z";
 const WEEKS_PER_SEASON = 10;
 
 function getSeasonCycle(now: Date): SeasonCycle {
-  const baseStartMs = new Date(BASE_SEASON_START_ISO).getTime();
+  const settings = loadClubSettings();
+  const baseSeason = settings.baseSeason ?? 97;
+  const seasonStartIso = settings.seasonStartIso ?? "2026-04-15T00:00:00.000Z";
+  const baseStartMs = new Date(seasonStartIso).getTime();
   const weekDelta = Math.floor((now.getTime() - baseStartMs) / (7 * 24 * 60 * 60 * 1000));
   const seasonOffset = Math.floor(weekDelta / WEEKS_PER_SEASON);
   const weekIndex = ((weekDelta % WEEKS_PER_SEASON) + WEEKS_PER_SEASON) % WEEKS_PER_SEASON;
 
   return {
-    season: BASE_SEASON + seasonOffset,
+    season: baseSeason + seasonOffset,
     week: weekIndex + 1,
   };
 }

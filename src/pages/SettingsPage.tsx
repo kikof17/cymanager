@@ -28,8 +28,11 @@ import {
   loadClubSettings,
   saveClubSettings,
 } from "../lib/storage/settingsStorage";
+import { loadRidersFromStorage, saveRidersToStorage } from "../lib/storage/localStorage";
+import { appendRiderHistorySnapshot } from "../lib/storage/riderHistoryStorage";
 import { loadManualTodos } from "../lib/storage/todoStorage";
 import type { ClubSettings, FacilityKey } from "../types/settings";
+import type { Rider, RiderCategory } from "../types/rider";
 
 const FACILITY_LABELS: Record<FacilityKey, string> = {
   headOffice: "Siège social",
@@ -185,6 +188,7 @@ export default function SettingsPage() {
   const [pendingImportRaw, setPendingImportRaw] = useState<string | null>(null);
   const [pendingImportPreview, setPendingImportPreview] = useState<ImportBackupPreview | null>(null);
   const [pendingCleanupIssue, setPendingCleanupIssue] = useState<StorageDiagnosticIssue | null>(null);
+  const [showSeasonTransition, setShowSeasonTransition] = useState(false);
   const diagnostics = useMemo(() => getStorageDiagnostics(), [diagnosticsRefreshKey]);
   const resultReferenceSummary = useMemo(
     () => buildResultReferenceSummary(getAllResultsFromStorage(), loadManualTodos().filter((todo) => todo.id.startsWith("calendar-"))),
@@ -193,6 +197,60 @@ export default function SettingsPage() {
 
   function handleChange(next: ClubSettings) {
     setSettings(next);
+  }
+
+  function handlePerformSeasonTransition() {
+    setShowSeasonTransition(false);
+    const currentSettings = loadClubSettings();
+    const riders = loadRidersFromStorage();
+
+    // 1. Snapshot avant transition (avant vieillissement)
+    appendRiderHistorySnapshot(riders);
+
+    // 2. Vieillissement + reclassification catégorie
+    function reclassify(ageYears: number): RiderCategory {
+      if (ageYears < 21) return "U21";
+      if (ageYears < 25) return "U25";
+      return "Pro";
+    }
+
+    const updatedRiders: Rider[] = riders.map((rider) => {
+      const newAge = rider.ageYears + 1;
+      return {
+        ...rider,
+        ageYears: newAge,
+        ageWeeks: 0,
+        category: reclassify(newAge),
+        updatedAt: new Date().toISOString(),
+      };
+    });
+    saveRidersToStorage(updatedRiders);
+
+    // 3. Mise à jour de la saison dans les settings
+    const nextSeason = (currentSettings.baseSeason ?? 97) + 1;
+    const prevStartMs = new Date(currentSettings.seasonStartIso ?? "2026-04-15T00:00:00.000Z").getTime();
+    const nextStartIso = new Date(prevStartMs + 10 * 7 * 24 * 60 * 60 * 1000).toISOString();
+
+    const nextSettings: ClubSettings = {
+      ...currentSettings,
+      baseSeason: nextSeason,
+      seasonStartIso: nextStartIso,
+    };
+    saveClubSettings(nextSettings);
+    setSettings(normalizeForForm(nextSettings));
+
+    // 4. Journal
+    const reclassifiedCount = updatedRiders.filter(
+      (r, i) => r.category !== riders[i].category
+    ).length;
+    appendManagementHistoryEntry({
+      area: "settings",
+      kind: "season-transition",
+      title: `Intersaison — Saison ${nextSeason} commencée`,
+      note: `${updatedRiders.length} coureur(s) vieillis d'un an. ${reclassifiedCount} reclassification(s) de catégorie.`,
+    });
+
+    setMessage(`Intersaison effectuée. Saison ${nextSeason} démarrée le ${new Date(nextStartIso).toLocaleDateString("fr-FR")}.`);
   }
 
   function handleSave() {
@@ -450,6 +508,14 @@ export default function SettingsPage() {
               >
                 Importer un backup
               </button>
+
+              <button
+                type="button"
+                className="button button-warning"
+                onClick={() => setShowSeasonTransition(true)}
+              >
+                🔄 Clôturer la saison
+              </button>
             </div>
 
             <input
@@ -660,6 +726,16 @@ export default function SettingsPage() {
         onCancel={() => setPendingCleanupIssue(null)}
         confirmLabel="Nettoyer"
         confirmButtonClassName="button button-danger"
+      />
+
+      <ConfirmDialog
+        open={showSeasonTransition}
+        title="Clôturer la saison"
+        message={`Cette action va :\n• Capturer un snapshot de l'effectif actuel\n• Vieillir tous les coureurs d'un an (ageWeeks → 0)\n• Reclassifier les catégories (U21 / U25 / Pro)\n• Incrémenter le compteur de saison\n\nCette opération est irréversible. Pensez à exporter un backup d'abord.`}
+        onConfirm={handlePerformSeasonTransition}
+        onCancel={() => setShowSeasonTransition(false)}
+        confirmLabel="Confirmer l'intersaison"
+        confirmButtonClassName="button button-warning"
       />
     </div>
   );

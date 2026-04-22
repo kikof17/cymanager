@@ -45,4 +45,7 @@ export type ClubSettings = {
   salaryTolerance: SalaryTolerance;
   manualWeeklySalaryExpense: number | null;
   financialBalance: number;
+  // Saison
+  baseSeason: number;
+  seasonStartIso: string;
 };
