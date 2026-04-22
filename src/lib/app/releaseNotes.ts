@@ -1,5 +1,5 @@
 export const RELEASE_VERSION = __APP_VERSION__;
-export const RELEASE_NAME = "Version 1.7.2 - interface épurée avec onglets et sections repliables";
+export const RELEASE_NAME = "Version 1.7.1 - classement general et primes GT/MT";
 
 export const RELEASE_HIGHLIGHTS: string[] = [
   "Simulateur d'impact recrutement : solde avant/après, charge fixe, autonomie projetée et verdict feu rouge.",

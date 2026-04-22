@@ -479,7 +479,7 @@ export default function ResultPage() {
             {selectedCourse && getStoredCategory(results[selectedCourseId] ?? '', selectedCourse) !== 'pro' ? (
               <div className="message-box">
                 <p className="muted">
-                  Les primes individuelles U25/U21 ne sont plus calculées automatiquement. Le système actuel repose sur le classement par équipe de l'étape et n'est pas encore documenté dans la FAQ.
+                  Les primes U25/U21 sont calculées sur la base du classement inter-équipes de la course (somme des positions des 3 meilleurs coureurs par équipe). Aucune prime individuelle, aucune prime de classement final de championnat.
                 </p>
               </div>
             ) : null}
@@ -500,9 +500,9 @@ export default function ResultPage() {
                   <span className="muted">Résultats à réaligner</span>
                 </div>
                 <div className="finance-prize-preview">
-                  <span className="muted">Références cassées</span>
-                  <strong>{resultReferenceSummary.mismatchedRaceReferenceCount + resultReferenceSummary.orphanCount}</strong>
-                  <span className="muted">Incohérences ou orphelins</span>
+                  <span className="muted">Orphelins / incohérents</span>
+                  <strong>{resultReferenceSummary.orphanCount + resultReferenceSummary.mismatchedRaceReferenceCount}</strong>
+                  <span className="muted">Actions de nettoyage recommandées</span>
                 </div>
               </div>
 
@@ -511,9 +511,13 @@ export default function ResultPage() {
                   type="button"
                   className="button button-secondary"
                   onClick={handleRepairReferences}
-                  disabled={resultReferenceSummary.missingRaceReferenceCount + resultReferenceSummary.mismatchedRaceReferenceCount === 0}
+                  disabled={
+                    resultReferenceSummary.missingRaceReferenceCount +
+                      resultReferenceSummary.mismatchedRaceReferenceCount ===
+                    0
+                  }
                 >
-                  Réaligner les références valides
+                  Réaligner les références résultats
                 </button>
                 <button
                   type="button"

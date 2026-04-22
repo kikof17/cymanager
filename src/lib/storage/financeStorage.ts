@@ -4,7 +4,7 @@ import {
   getFacilityWeeklyMaintenance,
   PRIZE_REFERENCE_TABLES,
 } from "../finance/faqFinance";
-import { getProGeneralClassificationPrize, getProRacePrize } from "../finance/racePrizeTable";
+import { getProGeneralClassificationPrize, getProRacePrize, getU25TeamRacePrize, getU21TeamRacePrize } from "../finance/racePrizeTable";
 import { getAllResultsFromStorage } from "../scoring/extractPoints";
 import { loadRidersFromStorage } from "./localStorage";
 import { loadManualTodos } from "./todoStorage";
@@ -409,7 +409,81 @@ function buildCoursePrizeEntries(settings: ClubSettings): CoursePrizeBreakdown[]
       });
   });
 
-  return [...stagePrizeEntries, ...generalPrizeEntries];
+  // U25/U21 team inter-ranking prize entries
+  const youngTeamPrizeEntries: CoursePrizeBreakdown[] = Object.entries(results).flatMap(([courseId, stored]) => {
+    const course = courseMap.get(courseId);
+    const storedRaceResult = toStoredRaceResult(stored, course);
+
+    if (
+      !storedRaceResult ||
+      (storedRaceResult.category !== "u25" && storedRaceResult.category !== "u21")
+    ) {
+      return [];
+    }
+
+    const category = storedRaceResult.category;
+    const rows = parseStageResultRows(storedRaceResult);
+
+    if (rows.length === 0) {
+      return [];
+    }
+
+    // Group riders by team, collect all positions
+    const teamPositionsMap = new Map<string, { rawName: string; positions: number[] }>();
+
+    rows.forEach((row) => {
+      const key = normalizeComparable(row.teamName);
+      const entry = teamPositionsMap.get(key) ?? { rawName: row.teamName, positions: [] };
+      entry.positions.push(row.position);
+      teamPositionsMap.set(key, entry);
+    });
+
+    // Compute team score: sum of 3 best positions (lower = better rank)
+    const teamScores: { key: string; score: number }[] = [];
+
+    teamPositionsMap.forEach((entry, key) => {
+      const sorted = [...entry.positions].sort((a, b) => a - b);
+      const score = sorted.slice(0, 3).reduce((sum, p) => sum + p, 0);
+      teamScores.push({ key, score });
+    });
+
+    teamScores.sort((a, b) => a.score - b.score);
+
+    const ourTeamKey = normalizeComparable(TEAM_NAME);
+    const teamRank = teamScores.findIndex((t) => t.key === ourTeamKey) + 1;
+
+    if (teamRank === 0) {
+      return [];
+    }
+
+    const division = category === "u25" ? settings.divisionU25 : settings.divisionU21;
+    const amount =
+      category === "u25"
+        ? getU25TeamRacePrize(division, teamRank)
+        : getU21TeamRacePrize(division, teamRank);
+
+    if (amount === null || amount <= 0) {
+      return [];
+    }
+
+    return [
+      {
+        sourceKey: [
+          "race-prize",
+          category,
+          "team",
+          courseId,
+          teamRank,
+        ].join(":"),
+        label: `Prime inter-équipe ${category.toUpperCase()} - ${course?.title ?? courseId}`,
+        occurredAt: resolveCourseOccurredAt(course),
+        note: `${teamRank}e équipe sur ${teamScores.length}`,
+        amount,
+      },
+    ];
+  });
+
+  return [...stagePrizeEntries, ...generalPrizeEntries, ...youngTeamPrizeEntries];
 }
 
 function syncRacePrizeEntries(

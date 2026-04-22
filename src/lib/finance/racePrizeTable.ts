@@ -191,3 +191,65 @@ export function getProGeneralClassificationPrize(
 
   return roundUpToNextThousand(basePrize * multiplier);
 }
+
+  // U25 team inter-ranking prizes: [first prize rank 1, last prize rank 20] per division D1-D9
+  const U25_TEAM_PRIZES: [number, number][] = [
+    [75000, 40000], // D1
+    [56000, 30000], // D2
+    [46000, 25000], // D3
+    [39000, 21000], // D4
+    [34000, 18000], // D5
+    [30000, 16000], // D6
+    [27000, 14000], // D7
+    [27000, 14000], // D8
+    [27000, 14000], // D9
+  ];
+
+  // U21 team inter-ranking prizes: [first prize rank 1, last prize rank 20] per division D1-D9
+  const U21_TEAM_PRIZES: [number, number][] = [
+    [30000, 16000], // D1
+    [23000, 12000], // D2
+    [18000, 10000], // D3
+    [15000, 8000],  // D4
+    [13000, 7000],  // D5
+    [12000, 6000],  // D6
+    [11000, 6000],  // D7
+    [11000, 6000],  // D8
+    [11000, 6000],  // D9
+  ];
+
+  const TEAMS_PER_DIVISION = 20;
+
+  function getTeamRacePrize(
+    prizesTable: [number, number][],
+    division: DivisionLevel,
+    teamRank: number
+  ): number | null {
+    const divIndex = Number.parseInt(division.replace("D", ""), 10) - 1;
+
+    if (Number.isNaN(divIndex) || divIndex < 0 || divIndex >= prizesTable.length) {
+      return null;
+    }
+
+    if (teamRank < 1 || teamRank > TEAMS_PER_DIVISION) {
+      return null;
+    }
+
+    const [first, last] = prizesTable[divIndex];
+    const t = (TEAMS_PER_DIVISION - teamRank) / (TEAMS_PER_DIVISION - 1);
+    return roundUpToNextThousand(last + t * (first - last));
+  }
+
+  export function getU25TeamRacePrize(
+    division: DivisionLevel,
+    teamRank: number
+  ): number | null {
+    return getTeamRacePrize(U25_TEAM_PRIZES, division, teamRank);
+  }
+
+  export function getU21TeamRacePrize(
+    division: DivisionLevel,
+    teamRank: number
+  ): number | null {
+    return getTeamRacePrize(U21_TEAM_PRIZES, division, teamRank);
+  }
