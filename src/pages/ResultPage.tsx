@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Card from '../components/common/Card';
+import CollapsibleBox from '../components/common/CollapsibleBox';
 import PageTitle from '../components/common/PageTitle';
 import { buildCrossRecommendations } from '../lib/app/crossRecommendations';
 import { getProGeneralClassificationPrize, getProRacePrize } from '../lib/finance/racePrizeTable';
@@ -424,10 +425,11 @@ export default function ResultPage() {
               </div>
             ) : null}
             {selectedCourseGroup?.isTour ? (
-              <Card
+              <CollapsibleBox
                 title={selectedTourIsFinalStage
                   ? `Classement general ${selectedTourType ?? 'tour'}`
                   : `Classement general provisoire (apres etape ${selectedCourse?.stageNumber ?? selectedTourGeneralClassification?.consideredStageCount ?? 0})`}
+                defaultExpanded={false}
               >
                 {selectedTourGeneralClassification && selectedTourGeneralClassification.rows.length > 0 ? (
                   <div className="table-container">
@@ -466,7 +468,7 @@ export default function ResultPage() {
                 ) : (
                   <p className="muted">Classement general indisponible : il faut un resultat exploitable sur chaque etape deja courue.</p>
                 )}
-              </Card>
+              </CollapsibleBox>
             ) : null}
             <div className="course-details">{selectedCourse?.details?.split('\n').join(' | ')}</div>
             {selectedCourse && getStoredCategory(results[selectedCourseId] ?? '', selectedCourse) !== 'pro' ? (
@@ -476,9 +478,11 @@ export default function ResultPage() {
                 </p>
               </div>
             ) : null}
-            {results[selectedCourseId]
-              ? renderResultTable(results[selectedCourseId])
-              : <div className="muted">Aucun résultat enregistré pour cette course.</div>}
+            <CollapsibleBox title="Classement de l'etape" defaultExpanded={false}>
+              {results[selectedCourseId]
+                ? renderResultTable(results[selectedCourseId])
+                : <div className="muted">Aucun résultat enregistré pour cette course.</div>}
+            </CollapsibleBox>
           </Card>
         )}
         {resultReferenceSummary.totalResults > 0 ? (
