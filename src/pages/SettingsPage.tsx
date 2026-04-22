@@ -38,6 +38,8 @@ const FACILITY_LABELS: Record<FacilityKey, string> = {
   shop: "Boutique",
 };
 
+type SettingsTab = "settings" | "version" | "diagnostic";
+
 function toDateTimeLocalValue(value: string): string {
   if (!value) {
     return "";
@@ -176,6 +178,7 @@ function buildSettingsChangeLog(previousSettings: ClubSettings, nextSettings: Cl
 
 export default function SettingsPage() {
   const importInputRef = useRef<HTMLInputElement | null>(null);
+  const [tab, setTab] = useState<SettingsTab>("settings");
   const [settings, setSettings] = useState<ClubSettings>(getInitialSettings);
   const [message, setMessage] = useState("Paramètres chargés.");
   const [diagnosticsRefreshKey, setDiagnosticsRefreshKey] = useState(0);
@@ -349,8 +352,33 @@ export default function SettingsPage() {
         subtitle="Réglages du club, installations et notes utiles pour la gestion."
       />
 
+      <div className="stats-tabs">
+        <button
+          type="button"
+          className={tab === "settings" ? "tab-btn tab-btn-active" : "tab-btn"}
+          onClick={() => setTab("settings")}
+        >
+          Réglages
+        </button>
+        <button
+          type="button"
+          className={tab === "version" ? "tab-btn tab-btn-active" : "tab-btn"}
+          onClick={() => setTab("version")}
+        >
+          Version
+        </button>
+        <button
+          type="button"
+          className={tab === "diagnostic" ? "tab-btn tab-btn-active" : "tab-btn"}
+          onClick={() => setTab("diagnostic")}
+        >
+          Diagnostic
+        </button>
+      </div>
 
-      <div className="two-columns">
+      {tab === "settings" && (
+        <div className="page-stack">
+          <div className="two-columns">
         <Card title="Réglages du club">
           <div className="page-stack">
             <ClubSettingsForm settings={settings} onChange={handleChange} />
@@ -405,8 +433,12 @@ export default function SettingsPage() {
 
         <FacilityPanel settings={settings} />
       </div>
+        </div>
+      )}
 
-      <Card title="Version et changelog">
+      {tab === "version" && (
+        <div className="page-stack">
+          <Card title="Version et changelog">
         <div className="page-stack">
           <div className="settings-release-header">
             <div>
@@ -442,9 +474,13 @@ export default function SettingsPage() {
           </div>
         </div>
       </Card>
+        </div>
+      )}
 
-      {pendingImportPreview ? (
-        <Card title="Aperçu avant import du backup">
+      {tab === "diagnostic" && (
+        <div className="page-stack">
+          {pendingImportPreview ? (
+            <Card title="Aperçu avant import du backup">
           <div className="page-stack">
             <div className="settings-diagnostics-grid">
               <div className="finance-prize-preview">
@@ -502,9 +538,9 @@ export default function SettingsPage() {
             </div>
           </div>
         </Card>
-      ) : null}
+          ) : null}
 
-      <Card title="Santé des données locales">
+          <Card title="Santé des données locales">
         <div className="page-stack">
           <div className="settings-diagnostics-grid">
             <div className="finance-prize-preview">
@@ -574,6 +610,8 @@ export default function SettingsPage() {
           )}
         </div>
       </Card>
+        </div>
+      )}
 
       <ConfirmDialog
         open={Boolean(pendingCleanupIssue)}
