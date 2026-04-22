@@ -424,6 +424,11 @@ export default function ResultPage() {
                 </div>
               </div>
             ) : null}
+            <CollapsibleBox title="Classement de l'etape" defaultExpanded={false}>
+              {results[selectedCourseId]
+                ? renderResultTable(results[selectedCourseId])
+                : <div className="muted">Aucun résultat enregistré pour cette course.</div>}
+            </CollapsibleBox>
             {selectedCourseGroup?.isTour ? (
               <CollapsibleBox
                 title={selectedTourIsFinalStage
@@ -478,11 +483,6 @@ export default function ResultPage() {
                 </p>
               </div>
             ) : null}
-            <CollapsibleBox title="Classement de l'etape" defaultExpanded={false}>
-              {results[selectedCourseId]
-                ? renderResultTable(results[selectedCourseId])
-                : <div className="muted">Aucun résultat enregistré pour cette course.</div>}
-            </CollapsibleBox>
           </Card>
         )}
         {resultReferenceSummary.totalResults > 0 ? (
