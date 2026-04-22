@@ -2440,6 +2440,110 @@ select:focus {
     linear-gradient(135deg, rgba(23, 33, 48, 0.98) 0%, rgba(17, 24, 37, 0.98) 68%, rgba(29, 48, 78, 0.95) 100%);
 }
 
+.season-cockpit {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid rgba(137, 180, 255, 0.2);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(20, 29, 43, 0.95) 0%, rgba(15, 22, 34, 0.95) 100%);
+}
+
+.season-cockpit-column {
+  min-width: 0;
+}
+
+.season-cockpit-title {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  color: #e6eefc;
+  letter-spacing: 0.01em;
+}
+
+.season-cockpit-list {
+  display: grid;
+  gap: 8px;
+}
+
+.season-cockpit-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-soft);
+}
+
+.season-cockpit-item strong {
+  color: #f2f6ff;
+  white-space: nowrap;
+}
+
+.season-cockpit-item:hover {
+  border-color: rgba(137, 180, 255, 0.36);
+  color: var(--text);
+}
+
+.cockpit-item-neutral {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.cockpit-item-warning {
+  background: rgba(199, 146, 54, 0.14);
+  border-color: rgba(199, 146, 54, 0.34);
+}
+
+.cockpit-item-danger {
+  background: rgba(212, 106, 106, 0.14);
+  border-color: rgba(212, 106, 106, 0.35);
+}
+
+.season-cockpit-impact-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.season-cockpit-impact-card {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.season-cockpit-impact-label {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-soft);
+}
+
+.season-cockpit-impact-value {
+  margin: 6px 0 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.cockpit-impact-neutral {
+  color: #eff5ff;
+}
+
+.cockpit-impact-positive {
+  color: #d8f5e1;
+}
+
+.cockpit-impact-warning {
+  color: #ffd7d7;
+}
+
+@media (max-width: 1180px) {
+  .season-cockpit {
+    grid-template-columns: 1fr;
+  }
+}
+
 .home-club-panel-header {
   display: flex;
   align-items: flex-start;

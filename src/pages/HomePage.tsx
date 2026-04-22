@@ -5,6 +5,7 @@ import ClubOverviewCard from "../components/home/ClubOverviewCard";
 import FacilitiesOverviewCard from "../components/home/FacilitiesOverviewCard";
 import ManagementJournalCard from "../components/home/ManagementJournalCard";
 import RaceOverviewCard from "../components/home/RaceOverviewCard";
+import SeasonCockpitCard from "../components/home/SeasonCockpitCard";
 import TodoOverviewCard from "../components/home/TodoOverviewCard";
 import TrainingOverviewCard from "../components/home/TrainingOverviewCard";
 import { buildRaceAnalysis } from "../lib/scoring/raceScores";
@@ -120,6 +121,92 @@ export default function HomePage() {
     }));
   }, [riders, race, raceKey, clubSettings]);
 
+  const cockpitModel = useMemo(() => {
+    const pendingTodos = todoItems.filter((item) => item.status !== "done");
+    const todoCourses = pendingTodos.filter((item) => item.category === "courses").length;
+    const todoTraining = pendingTodos.filter((item) => item.category === "entrainement").length;
+    const todoFacilities = pendingTodos.filter((item) => item.category === "installations").length;
+    const todoHighPriority = pendingTodos.filter((item) => item.priority === "haute").length;
+
+    const lowFormCount = riders.filter((rider) => rider.form < 50).length;
+    const injuredCount = riders.filter(
+      (rider) => rider.injury.trim().length > 0 && rider.injury.toLowerCase() !== "aucune"
+    ).length;
+    const overLimit = Math.max(0, riders.length - 25);
+    const financeCriticalCount = financeSnapshot.reconciliation.issues.filter(
+      (issue) => issue.severity === "critical"
+    ).length;
+    const financeWarningCount = financeSnapshot.reconciliation.issues.filter(
+      (issue) => issue.severity === "warning"
+    ).length;
+
+    return {
+      todos: [
+        { label: "Courses et inscriptions", count: todoCourses, href: "/calendrier" },
+        { label: "Plan d'entraînement", count: todoTraining, href: "/entrainement" },
+        { label: "Installations à traiter", count: todoFacilities, href: "/parametres" },
+        { label: "Priorités hautes", count: todoHighPriority, href: "/todo" },
+      ],
+      risks: [
+        { label: "Forme < 50", count: lowFormCount, level: "warning" as const, href: "/effectif" },
+        { label: "Blessures actives", count: injuredCount, level: "danger" as const, href: "/effectif" },
+        { label: "Effectif au-dessus de 25", count: overLimit, level: "danger" as const, href: "/effectif" },
+        {
+          label: "Alerte finance critique",
+          count: financeCriticalCount,
+          level: "danger" as const,
+          href: "/finance",
+        },
+        {
+          label: "Alerte finance vigilance",
+          count: financeWarningCount,
+          level: "warning" as const,
+          href: "/finance",
+        },
+      ],
+      impacts: [
+        {
+          label: "Solde après charges hebdo",
+          value: new Intl.NumberFormat("fr-FR", {
+            style: "currency",
+            currency: "EUR",
+            maximumFractionDigits: 0,
+          }).format(financeSnapshot.projectedBalanceAfterWeeklyCosts),
+          tone:
+            financeSnapshot.projectedBalanceAfterWeeklyCosts < 0
+              ? ("warning" as const)
+              : ("neutral" as const),
+        },
+        {
+          label: "Projection à 3 semaines",
+          value: new Intl.NumberFormat("fr-FR", {
+            style: "currency",
+            currency: "EUR",
+            maximumFractionDigits: 0,
+          }).format(financeSnapshot.projectedBalanceAfterThreeWeeks),
+          tone:
+            financeSnapshot.projectedBalanceAfterThreeWeeks < 0
+              ? ("warning" as const)
+              : ("neutral" as const),
+        },
+        {
+          label: "Groupes entraînement actifs",
+          value: `${trainingPlan.selectedTypes.length}/3`,
+          tone:
+            trainingPlan.selectedTypes.length === 3
+              ? ("positive" as const)
+              : ("neutral" as const),
+        },
+        {
+          label: "Coureurs sélectionnés course",
+          value: `${raceSelected.length}/7`,
+          tone:
+            raceSelected.length >= 6 ? ("positive" as const) : ("warning" as const),
+        },
+      ],
+    };
+  }, [todoItems, riders, financeSnapshot, trainingPlan.selectedTypes.length, raceSelected.length]);
+
   // Bloc présentation équipe/manager (infos dynamiques)
   // À adapter si tu veux rendre pays, id, date, etc. dynamiques (ici valeurs fixes ou issues des settings)
   const country = "France"; // À rendre dynamique si besoin
@@ -140,6 +227,12 @@ export default function HomePage() {
       <PageTitle
         title="Accueil"
         subtitle="Vue d'ensemble du club, des priorités et des décisions à prendre."
+      />
+
+      <SeasonCockpitCard
+        todos={cockpitModel.todos}
+        risks={cockpitModel.risks}
+        impacts={cockpitModel.impacts}
       />
 
       <Card title="Club et manager" className="home-club-panel">
