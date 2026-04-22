@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Card from "../components/common/Card";
+import CollapsibleBox from "../components/common/CollapsibleBox";
 import PageTitle from "../components/common/PageTitle";
 import RosterAnalysisPanel from "../components/roster/RosterAnalysisPanel";
 import RiderHistoryCard from "../components/roster/RiderHistoryCard";
@@ -110,25 +111,29 @@ export default function RosterPage() {
         <RiderTable riders={filteredRiders} onDelete={handleDelete} />
       </Card>
 
-      <RosterAnalysisPanel
-        riders={riders}
-        settings={settings}
-        currentBalance={financeSnapshot.currentBalance}
-        weeklyFixedCosts={financeSnapshot.weeklyFixedCosts}
-        recentPrizeIncomeByRider={recentPrizeIncomeByRider}
-        availableHistoryWeeks={availableHistoryWeeks}
-        strategy={teamStrategy}
-        onStrategyChange={handleStrategyChange}
-      />
+      <CollapsibleBox title="Analyse de l'effectif" defaultExpanded={false}>
+        <RosterAnalysisPanel
+          riders={riders}
+          settings={settings}
+          currentBalance={financeSnapshot.currentBalance}
+          weeklyFixedCosts={financeSnapshot.weeklyFixedCosts}
+          recentPrizeIncomeByRider={recentPrizeIncomeByRider}
+          availableHistoryWeeks={availableHistoryWeeks}
+          strategy={teamStrategy}
+          onStrategyChange={handleStrategyChange}
+        />
+      </CollapsibleBox>
 
-      <RiderHistoryCard
-        riders={riders}
-        snapshots={riderHistorySnapshots}
-        recentPrizeIncomeByRider={recentPrizeIncomeByRider}
-        settings={settings}
-      />
+      <CollapsibleBox title="Historique et tendances" defaultExpanded={false}>
+        <RiderHistoryCard
+          riders={riders}
+          snapshots={riderHistorySnapshots}
+          recentPrizeIncomeByRider={recentPrizeIncomeByRider}
+          settings={settings}
+        />
+      </CollapsibleBox>
 
-      <div className="two-columns">
+      <CollapsibleBox title="Gestion des données" defaultExpanded={false}>
         <Card title="Import brut">
           <RosterImportBox onImport={handleImport} />
         </Card>
@@ -175,7 +180,7 @@ export default function RosterPage() {
             </div>
           </div>
         </Card>
-      </div>
+      </CollapsibleBox>
 
     </div>
   );
