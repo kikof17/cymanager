@@ -11,6 +11,7 @@ import { buildGeneralClassification, getTourGeneralClassificationType } from '..
 import { getStoredResultCategory, type ResultCategory } from '../lib/utils/courseCategory';
 import { loadClubSettings } from '../lib/storage/settingsStorage';
 import { loadRidersFromStorage } from '../lib/storage/localStorage';
+import { loadTeamProfile } from '../lib/storage/teamProfileStorage';
 import { loadManualTodos } from '../lib/storage/todoStorage';
 import { getTodoScheduledAt } from '../lib/utils/courseDates';
 import { getCourseDisplayTitle, groupCourseTodos } from '../lib/utils/stageRaces';
@@ -21,7 +22,7 @@ import type { TodoItem } from '../types/todo';
 // Pour stocker les résultats associés à chaque course (clé = id de la course)
 type ResultMap = Record<string, StoredResult>
 
-const TEAM_NAME = 'Kritoff Team';
+const DEFAULT_TEAM_NAME = 'Kritoff Team';
 
 function hasStoredResult(result: StoredResult | undefined): boolean {
   if (!result) {
@@ -67,10 +68,11 @@ function findColumnIndex(headers: string[], matcher: (header: string) => boolean
 function getPrizeForRow(
   position: string,
   teamName: string,
+  ownTeamName: string,
   category: ResultCategory,
   courseTitle: string
 ): number | null {
-  if (normalizeComparable(teamName) !== normalizeComparable(TEAM_NAME)) {
+  if (normalizeComparable(teamName) !== normalizeComparable(ownTeamName)) {
     return null;
   }
 
@@ -85,9 +87,10 @@ function getPrizeForRow(
 function getGeneralPrizeForRow(
   position: number,
   teamName: string,
+  ownTeamName: string,
   stageCount: number
 ): number | null {
-  if (normalizeComparable(teamName) !== normalizeComparable(TEAM_NAME)) {
+  if (normalizeComparable(teamName) !== normalizeComparable(ownTeamName)) {
     return null;
   }
 
@@ -104,6 +107,7 @@ function loadCourses(): TodoItem[] {
 }
 
 export default function ResultPage() {
+  const profileTeamName = useMemo(() => loadTeamProfile().teamName || DEFAULT_TEAM_NAME, []);
   const [courses] = useState<TodoItem[]>(loadCourses);
   const [riders] = useState(() => {
     const stored = loadRidersFromStorage();
@@ -277,10 +281,10 @@ export default function ResultPage() {
             {lines.slice(1).map((line, i) => {
               const cells = line.split('\t');
               const position = cells[safePositionIdx]?.trim() ?? '';
-              const teamName = cells[safeTeamIdx]?.trim() ?? '';
-              const isTeamRider = normalizeComparable(teamName) === normalizeComparable(TEAM_NAME);
+              const rowTeamName = cells[safeTeamIdx]?.trim() ?? '';
+              const isTeamRider = normalizeComparable(rowTeamName) === normalizeComparable(profileTeamName);
               const prize = position
-                ? getPrizeForRow(position, teamName, category, courseTitle)
+                ? getPrizeForRow(position, rowTeamName, profileTeamName, category, courseTitle)
                 : null;
 
               return (
@@ -452,9 +456,9 @@ export default function ResultPage() {
                       <tbody>
                         {selectedTourGeneralClassification.rows.map((row) => {
                           const prize = selectedTourIsFinalStage && selectedTourType
-                            ? getGeneralPrizeForRow(row.rank, row.teamName, selectedCourseGroup.todos.length)
+                            ? getGeneralPrizeForRow(row.rank, row.teamName, profileTeamName, selectedCourseGroup.todos.length)
                             : null;
-                          const isTeamRider = normalizeComparable(row.teamName) === normalizeComparable(TEAM_NAME);
+                          const isTeamRider = normalizeComparable(row.teamName) === normalizeComparable(profileTeamName);
 
                           return (
                             <tr key={`${row.rank}-${row.riderName}`} className={isTeamRider ? 'highlight-row' : undefined}>

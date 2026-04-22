@@ -36,6 +36,23 @@ npm run lint
 Le site est publié automatiquement via GitHub Actions à chaque push sur la branche master.
 Il n'y a pas de commande de déploiement manuelle à lancer localement.
 
+## Client lourd Windows
+
+Une version desktop installable est disponible en plus du site web.
+La publication GitHub Pages reste inchangée.
+
+Commandes utiles :
+
+```bash
+npm run desktop:dev
+npm run desktop:build
+```
+
+- `desktop:dev` : lance Vite + Electron pour développer le client lourd.
+- `desktop:build` : génère un installateur Windows NSIS dans `desktop-dist/`.
+
+Au premier lancement, l'application desktop ouvre un assistant d'initialisation pour saisir les informations manager/equipe (nom d'equipe, ID, pays, saison, date de depart).
+
 ## Repères fonctionnels
 
 - page Effectif : lecture sportive et capitalistique du roster, timeline coureur, alertes métier

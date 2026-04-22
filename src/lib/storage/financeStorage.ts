@@ -8,6 +8,7 @@ import { getProGeneralClassificationPrize, getProRacePrize, getU25TeamRacePrize,
 import { getAllResultsFromStorage } from "../scoring/extractPoints";
 import { loadRidersFromStorage } from "./localStorage";
 import { loadManualTodos } from "./todoStorage";
+import { loadTeamProfile } from "./teamProfileStorage";
 import { getStoredResultCategory } from "../utils/courseCategory";
 import { getTodoScheduledAt } from "../utils/courseDates";
 import { buildGeneralClassification, getTourGeneralClassificationType, parseStageResultRows } from "../results/generalClassification";
@@ -21,7 +22,6 @@ import type { ClubSettings, FacilityKey } from "../../types/settings";
 
 const FINANCE_STORAGE_KEY = "cymanager:finance";
 const DEFAULT_STARTING_BALANCE = 1000000;
-const TEAM_NAME = "Kritoff Team";
 export const BEGINNER_GUIDE_SAFETY_RESERVE_TARGET = 450000;
 
 type ManualFinanceEntryInput = {
@@ -295,6 +295,7 @@ function sortTourStages(stages: ReturnType<typeof loadManualTodos>): ReturnType<
 }
 
 function buildCoursePrizeEntries(settings: ClubSettings): CoursePrizeBreakdown[] {
+  const teamName = loadTeamProfile().teamName;
   const results = getAllResultsFromStorage();
   const todos = loadManualTodos();
   const courseMap = new Map(todos.map((todo) => [todo.id, todo]));
@@ -310,7 +311,7 @@ function buildCoursePrizeEntries(settings: ClubSettings): CoursePrizeBreakdown[]
     return parseStageResultRows(storedRaceResult)
         .filter(
           (row) =>
-            normalizeComparable(row.teamName) === normalizeComparable(TEAM_NAME)
+            normalizeComparable(row.teamName) === normalizeComparable(teamName)
         )
         .map((row) => {
           const amount = getProRacePrize(
@@ -379,7 +380,7 @@ function buildCoursePrizeEntries(settings: ClubSettings): CoursePrizeBreakdown[]
     }
 
     ranking.rows
-      .filter((row) => normalizeComparable(row.teamName) === normalizeComparable(TEAM_NAME))
+      .filter((row) => normalizeComparable(row.teamName) === normalizeComparable(teamName))
       .forEach((row) => {
         const amount = getProGeneralClassificationPrize(
           settings.divisionPro,
@@ -449,7 +450,7 @@ function buildCoursePrizeEntries(settings: ClubSettings): CoursePrizeBreakdown[]
 
     teamScores.sort((a, b) => a.score - b.score);
 
-    const ourTeamKey = normalizeComparable(TEAM_NAME);
+    const ourTeamKey = normalizeComparable(teamName);
     const teamRank = teamScores.findIndex((t) => t.key === ourTeamKey) + 1;
 
     if (teamRank === 0) {

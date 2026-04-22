@@ -2318,6 +2318,31 @@ select:focus {
   color: var(--text);
 }
 
+.first-run-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 18px;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(86, 144, 255, 0.18) 0%, rgba(10, 16, 26, 0) 42%),
+    radial-gradient(circle at 86% 82%, rgba(48, 181, 126, 0.16) 0%, rgba(10, 16, 26, 0) 44%),
+    linear-gradient(180deg, rgba(9, 14, 23, 1) 0%, rgba(8, 12, 19, 1) 100%);
+}
+
+.first-run-card {
+  width: min(980px, 100%);
+  padding: 30px;
+  border-radius: 18px;
+  background: rgba(14, 22, 35, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.32);
+}
+
+.first-run-card h1 {
+  margin: 6px 0 10px;
+  font-size: clamp(1.5rem, 2.7vw, 2rem);
+}
+
 .home-club-panel {
   gap: 20px;
   background:
