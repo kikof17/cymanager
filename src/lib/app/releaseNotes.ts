@@ -1,5 +1,5 @@
 export const RELEASE_VERSION = __APP_VERSION__;
-export const RELEASE_NAME = "Version 1.8.0 - Drawer coureur, split view effectif et intersaison";
+export const RELEASE_NAME = "Version 2.0.0 - Drawer coureur, split view effectif et intersaison";
 
 export const RELEASE_HIGHLIGHTS: string[] = [
   "Drawer coureur : clic sur une ligne effectif ouvre un panneau lateral avec profil, stats, finance et deltas vs semaine precedente.",
