@@ -482,6 +482,51 @@ export default function StatisticsPage() {
         subtitle="Pilotage sportif, effectif et finance du club à partir des données réellement enregistrées."
       />
 
+      <section className="finance-board" aria-label="Tableau de bord statistiques">
+        <div className="finance-board-header">
+          <span className="finance-board-title">Saison en cours</span>
+        </div>
+        <div className="finance-board-grid">
+          <div className={`finance-board-item ${overview.totalPoints > 0 ? "finance-board-item--success" : "finance-board-item--neutral"}`}>
+            <span className="finance-board-label">Points totaux</span>
+            <span className="finance-board-value">{formatInteger(overview.totalPoints)}</span>
+            <span className="finance-board-sub">{overview.uniqueCourses} course{overview.uniqueCourses > 1 ? "s" : ""}</span>
+          </div>
+          <div className={`finance-board-item ${overview.wins > 0 ? "finance-board-item--success" : "finance-board-item--neutral"}`}>
+            <span className="finance-board-label">Victoires</span>
+            <span className="finance-board-value">{overview.wins}</span>
+            <span className="finance-board-sub">{overview.podiums} podium{overview.podiums > 1 ? "s" : ""} · {overview.top10} top 10</span>
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Primes reçues</span>
+            <span className="finance-board-value">{formatCurrency(overview.totalPrizeMoney)}</span>
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Meilleur coureur</span>
+            <span className="finance-board-value">{overview.bestPerformer?.riderName ?? "–"}</span>
+            <span className="finance-board-sub">{overview.bestPerformer ? formatInteger(overview.bestPerformer.points) + " pts" : ""}</span>
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Dispo semaine</span>
+            <span className="finance-board-value">{availabilitySummary.availableRiders.length}/{riders.length}</span>
+            {availabilitySummary.unavailableRiders.length > 0 && <span className="finance-board-sub">{availabilitySummary.unavailableRiders.length} indispo</span>}
+          </div>
+          <div className={`finance-board-item ${[...crossRecommendations.training, ...crossRecommendations.finance, ...crossRecommendations.results].some(r => r.severity === "critical") ? "finance-board-item--danger" : [...crossRecommendations.training, ...crossRecommendations.finance, ...crossRecommendations.results].some(r => r.severity === "warning") ? "finance-board-item--warning" : "finance-board-item--success"}`}>
+            <span className="finance-board-label">Alertes club</span>
+            <span className="finance-board-value">
+              {(() => {
+                const all = [...crossRecommendations.training, ...crossRecommendations.finance, ...crossRecommendations.results];
+                const crit = all.filter(r => r.severity === "critical").length;
+                const warn = all.filter(r => r.severity === "warning").length;
+                if (crit > 0) return `${crit} critique${crit > 1 ? "s" : ""}`;
+                if (warn > 0) return `${warn} vigilance`;
+                return "RAS";
+              })()}
+            </span>
+          </div>
+        </div>
+      </section>
+
       <div className="stats-tabs">
         <button
           type="button"

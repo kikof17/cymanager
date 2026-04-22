@@ -98,12 +98,58 @@ export default function RosterPage() {
     setTeamStrategy(normalized);
   }
 
+  const rosterBoard = useMemo(() => {
+    const total = riders.length;
+    const pro = riders.filter(r => r.category === "Pro").length;
+    const u25 = riders.filter(r => r.category === "U25").length;
+    const u21 = riders.filter(r => r.category === "U21").length;
+    const injured = riders.filter(r => r.injury && r.injury.trim() !== "" && r.injury.toLowerCase() !== "aucune" && r.injury.toLowerCase() !== "sain").length;
+    const criticalForm = riders.filter(r => r.form < 35).length;
+    const lowForm = riders.filter(r => r.form >= 35 && r.form < 50).length;
+    return { total, pro, u25, u21, injured, criticalForm, lowForm };
+  }, [riders]);
+
   return (
     <div className="page-stack">
       <PageTitle
         title="Effectif"
         subtitle="Import brut, profils automatiques, mémoire sportive et lecture des tendances de l'effectif."
       />
+
+      <section className="finance-board" aria-label="Tableau de bord effectif">
+        <div className="finance-board-header">
+          <span className="finance-board-title">Effectif</span>
+        </div>
+        <div className="finance-board-grid">
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Coureurs</span>
+            <span className="finance-board-value">{rosterBoard.total}</span>
+            <span className="finance-board-sub">Pro {rosterBoard.pro} · U25 {rosterBoard.u25} · U21 {rosterBoard.u21}</span>
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Masse salariale</span>
+            <span className="finance-board-value">{financeSnapshot.weeklySalaryExpense.toLocaleString("fr-FR")} €</span>
+            <span className="finance-board-sub">/semaine</span>
+          </div>
+          <div className={`finance-board-item ${rosterBoard.injured > 0 ? "finance-board-item--warning" : "finance-board-item--success"}`}>
+            <span className="finance-board-label">Blessés</span>
+            <span className="finance-board-value">{rosterBoard.injured}</span>
+          </div>
+          <div className={`finance-board-item ${rosterBoard.criticalForm > 0 ? "finance-board-item--danger" : rosterBoard.lowForm > 0 ? "finance-board-item--warning" : "finance-board-item--success"}`}>
+            <span className="finance-board-label">Forme critique</span>
+            <span className="finance-board-value">{rosterBoard.criticalForm}</span>
+            {rosterBoard.lowForm > 0 && <span className="finance-board-sub">{rosterBoard.lowForm} fragile{rosterBoard.lowForm > 1 ? "s" : ""}</span>}
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Solde club</span>
+            <span className="finance-board-value">{financeSnapshot.currentBalance.toLocaleString("fr-FR")} €</span>
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Valeur effectif</span>
+            <span className="finance-board-value">{riders.reduce((s, r) => s + r.value, 0).toLocaleString("fr-FR")} €</span>
+          </div>
+        </div>
+      </section>
 
       <RosterStats riders={riders} weeklySalaryExpense={financeSnapshot.weeklySalaryExpense} />
 
