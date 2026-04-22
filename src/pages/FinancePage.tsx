@@ -934,41 +934,43 @@ export default function FinancePage() {
       {tab === "history" && (
         <div className="page-stack">
           <Card title="Primes de course synchronisées">
-        <div className="page-stack">
-          <p className="muted">
-            Les primes ci-dessous sont générées depuis les résultats. Une référence non validée signale qu'un revenu dépend encore d'un résultat à réaligner ou devenu orphelin.
-          </p>
+            <CollapsibleBox title="Afficher / masquer les primes synchronisées" defaultExpanded={false}>
+              <div className="page-stack">
+                <p className="muted">
+                  Les primes ci-dessous sont générées depuis les résultats. Une référence non validée signale qu'un revenu dépend encore d'un résultat à réaligner ou devenu orphelin.
+                </p>
 
-          {snapshot.racePrizeEntries.length === 0 ? (
-            <p className="muted">Aucune prime de course synchronisée pour le moment.</p>
-          ) : (
-            <div className="finance-entry-list">
-              {snapshot.racePrizeEntries.map((entry) => {
-                const issue = resultReferenceIssueMap.get(getRacePrizeCourseId(entry.sourceKey) ?? "") ?? null;
+                {snapshot.racePrizeEntries.length === 0 ? (
+                  <p className="muted">Aucune prime de course synchronisée pour le moment.</p>
+                ) : (
+                  <div className="finance-entry-list">
+                    {snapshot.racePrizeEntries.map((entry) => {
+                      const issue = resultReferenceIssueMap.get(getRacePrizeCourseId(entry.sourceKey) ?? "") ?? null;
 
-                return (
-                  <div
-                    key={entry.id}
-                    className={issue && issue.status !== "valid" ? "finance-entry-item finance-entry-item-warning" : "finance-entry-item"}
-                  >
-                    <div className="finance-entry-copy">
-                      <strong>{entry.label}</strong>
-                      <p className="muted">{formatDateLabel(entry.occurredAt)}</p>
-                      {entry.note ? <p className="muted">{entry.note}</p> : null}
-                      <span className={getReferenceBadgeClass(issue)}>
-                        {getReferenceBadgeLabel(issue)}
-                      </span>
-                    </div>
-                    <strong className="finance-positive">
-                      {formatCurrency(entry.amount)}
-                    </strong>
+                      return (
+                        <div
+                          key={entry.id}
+                          className={issue && issue.status !== "valid" ? "finance-entry-item finance-entry-item-warning" : "finance-entry-item"}
+                        >
+                          <div className="finance-entry-copy">
+                            <strong>{entry.label}</strong>
+                            <p className="muted">{formatDateLabel(entry.occurredAt)}</p>
+                            {entry.note ? <p className="muted">{entry.note}</p> : null}
+                            <span className={getReferenceBadgeClass(issue)}>
+                              {getReferenceBadgeLabel(issue)}
+                            </span>
+                          </div>
+                          <strong className="finance-positive">
+                            {formatCurrency(entry.amount)}
+                          </strong>
+                        </div>
+                      );
+                    })}
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </Card>
+                )}
+              </div>
+            </CollapsibleBox>
+          </Card>
 
       <Card title="Historique des écritures">
         {snapshot.state.entries.length === 0 ? (
