@@ -3054,6 +3054,122 @@ select:focus {
   gap: 14px;
 }
 
+/* ============================================================
+   TRAINING BOARD V2
+   ============================================================ */
+
+.training-board {
+  background: rgba(10, 18, 30, 0.55);
+  border: 1px solid rgba(137, 180, 255, 0.12);
+  border-radius: 18px;
+  padding: 16px 20px 14px;
+  margin-bottom: 4px;
+}
+
+.training-board-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.training-board-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--primary, #89b4ff);
+  opacity: 0.8;
+}
+
+.training-board-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.training-board-item {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.training-board-item--group {
+  border-color: rgba(137, 180, 255, 0.18);
+  background: rgba(137, 180, 255, 0.05);
+}
+
+.training-board-item--action {
+  border-color: rgba(199, 146, 54, 0.18);
+  background: rgba(199, 146, 54, 0.04);
+}
+
+.training-board-item--empty {
+  opacity: 0.45;
+}
+
+.training-board-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.training-board-value {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #e8edf4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.training-board-sub {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.training-board-link {
+  color: #c79236;
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.training-board-link:hover {
+  text-decoration: underline;
+}
+
+.training-board-value--success .training-board-value {
+  color: #d8f5e1;
+}
+
+.training-board-value--warning .training-board-value {
+  color: #ffecbf;
+}
+
+.training-board-value--danger .training-board-value {
+  color: #ffd7d7;
+}
+
+@media (max-width: 1100px) {
+  .training-board-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .training-board-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
 .calendar-group {
   display: flex;
   flex-direction: column;
