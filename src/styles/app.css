@@ -3055,6 +3055,116 @@ select:focus {
 }
 
 /* ============================================================
+   FINANCE / TRANSFERS BOARD V2
+   ============================================================ */
+
+.finance-board {
+  background: rgba(10, 18, 30, 0.55);
+  border: 1px solid rgba(137, 180, 255, 0.12);
+  border-radius: 18px;
+  padding: 16px 20px 14px;
+  margin-bottom: 4px;
+}
+
+.finance-board-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.finance-board-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--primary, #89b4ff);
+  opacity: 0.8;
+}
+
+.finance-board-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.finance-board-item {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.finance-board-item--success {
+  border-color: rgba(72, 199, 142, 0.25);
+  background: rgba(72, 199, 142, 0.05);
+}
+
+.finance-board-item--warning {
+  border-color: rgba(255, 200, 70, 0.25);
+  background: rgba(255, 200, 70, 0.05);
+}
+
+.finance-board-item--danger {
+  border-color: rgba(255, 100, 100, 0.25);
+  background: rgba(255, 100, 100, 0.05);
+}
+
+.finance-board-item--neutral {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.finance-board-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.finance-board-value {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #e8edf4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.finance-board-sub {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.finance-board-item--success .finance-board-value {
+  color: #d8f5e1;
+}
+
+.finance-board-item--warning .finance-board-value {
+  color: #ffecbf;
+}
+
+.finance-board-item--danger .finance-board-value {
+  color: #ffd7d7;
+}
+
+@media (max-width: 1100px) {
+  .finance-board-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .finance-board-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ============================================================
    TRAINING BOARD V2
    ============================================================ */
 

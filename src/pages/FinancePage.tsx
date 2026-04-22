@@ -476,6 +476,48 @@ export default function FinancePage() {
         subtitle="Suivi de la trésorerie du club, avec débits automatiques du lundi et revenus sponsors/boutique saisis manuellement."
       />
 
+      <section className="finance-board" aria-label="Tableau de bord financier">
+        <div className="finance-board-header">
+          <span className="finance-board-title">Trésorerie</span>
+        </div>
+        <div className="finance-board-grid">
+          <div className={`finance-board-item ${snapshot.currentBalance < 0 ? "finance-board-item--danger" : snapshot.currentBalance < BEGINNER_GUIDE_SAFETY_RESERVE_TARGET ? "finance-board-item--warning" : "finance-board-item--success"}`}>
+            <span className="finance-board-label">Solde actuel</span>
+            <span className="finance-board-value">{formatCurrency(snapshot.currentBalance)}</span>
+          </div>
+          <div className={`finance-board-item ${snapshot.projectedBalanceAfterWeeklyCosts < 0 ? "finance-board-item--danger" : "finance-board-item--neutral"}`}>
+            <span className="finance-board-label">Solde projeté</span>
+            <span className="finance-board-value">{formatCurrency(snapshot.projectedBalanceAfterWeeklyCosts)}</span>
+            <span className="finance-board-sub">après charges semaine</span>
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Revenus cumulés</span>
+            <span className="finance-board-value">{formatCurrency(snapshot.totalIncome)}</span>
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Dépenses cumulées</span>
+            <span className="finance-board-value">{formatCurrency(snapshot.totalExpenses)}</span>
+          </div>
+          <div className="finance-board-item finance-board-item--neutral">
+            <span className="finance-board-label">Charges hebdo</span>
+            <span className="finance-board-value">{formatCurrency(snapshot.weeklyFixedCosts)}</span>
+            <span className="finance-board-sub">salaires + infra</span>
+          </div>
+          <div className={`finance-board-item ${crossRecommendations.finance.some(r => r.severity === "critical") ? "finance-board-item--danger" : crossRecommendations.finance.some(r => r.severity === "warning") ? "finance-board-item--warning" : "finance-board-item--success"}`}>
+            <span className="finance-board-label">Alertes</span>
+            <span className="finance-board-value">
+              {(() => {
+                const crit = crossRecommendations.finance.filter(r => r.severity === "critical").length;
+                const warn = crossRecommendations.finance.filter(r => r.severity === "warning").length;
+                if (crit > 0) return `${crit} critique${crit > 1 ? "s" : ""}`;
+                if (warn > 0) return `${warn} vigilance`;
+                return "RAS";
+              })()}
+            </span>
+          </div>
+        </div>
+      </section>
+
       <div className="stats-tabs">
         <button
           type="button"

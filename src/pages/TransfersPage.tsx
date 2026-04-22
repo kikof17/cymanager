@@ -976,6 +976,43 @@ export default function TransfersPage() {
           subtitle="Import CSV du marché, analyse enrichie des candidats et sélection persistante jusqu'à suppression manuelle."
         />
 
+        <section className="finance-board" aria-label="Tableau de bord transferts">
+          <div className="finance-board-header">
+            <span className="finance-board-title">Budget & marché</span>
+          </div>
+          <div className="finance-board-grid">
+            <div className={`finance-board-item ${decisionBudgetGuidance.transferBudget <= 0 ? "finance-board-item--danger" : decisionBudgetGuidance.transferBudget < 5000 ? "finance-board-item--warning" : "finance-board-item--success"}`}>
+              <span className="finance-board-label">Budget transfert</span>
+              <span className="finance-board-value">{formatCurrency(decisionBudgetGuidance.transferBudget)}</span>
+            </div>
+            <div className={`finance-board-item ${decisionBudgetGuidance.salaryHeadroom < 0 ? "finance-board-item--danger" : decisionBudgetGuidance.salaryHeadroom < 500 ? "finance-board-item--warning" : "finance-board-item--neutral"}`}>
+              <span className="finance-board-label">Marge salariale</span>
+              <span className="finance-board-value">{formatCurrency(decisionBudgetGuidance.salaryHeadroom)}</span>
+              <span className="finance-board-sub">/semaine</span>
+            </div>
+            <div className="finance-board-item finance-board-item--neutral">
+              <span className="finance-board-label">Solde actuel</span>
+              <span className="finance-board-value">{formatCurrency(financeSnapshot.currentBalance)}</span>
+            </div>
+            <div className="finance-board-item finance-board-item--neutral">
+              <span className="finance-board-label">Candidats marché</span>
+              <span className="finance-board-value">{analyses.length > 0 ? analyses.length : "–"}</span>
+            </div>
+            <div className={`finance-board-item ${shortlistedCandidateIds.length > 0 ? "finance-board-item--success" : "finance-board-item--neutral"}`}>
+              <span className="finance-board-label">Shortlistés</span>
+              <span className="finance-board-value">{shortlistedCandidateIds.length}</span>
+            </div>
+            <div className={`finance-board-item ${analyses.some(a => a.canRecruit && a.score >= 80) ? "finance-board-item--success" : analyses.some(a => a.canRecruit && a.score >= 60) ? "finance-board-item--warning" : "finance-board-item--neutral"}`}>
+              <span className="finance-board-label">Meilleur candidat</span>
+              <span className="finance-board-value">
+                {analyses.length > 0
+                  ? `${getPriorityGrade(analyses[0].score, analyses[0].canRecruit)} — ${formatInteger(analyses[0].score)}`
+                  : "–"}
+              </span>
+            </div>
+          </div>
+        </section>
+
       <div className="two-columns transfer-layout">
         <Card title="Import marché CSV">
           <div className="page-stack transfer-import-form">
