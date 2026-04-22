@@ -13,7 +13,6 @@ import {
 import { getFinanceSnapshot } from "../lib/storage/financeStorage";
 import { loadRidersFromStorage } from "../lib/storage/localStorage";
 import { loadClubSettings } from "../lib/storage/settingsStorage";
-import { loadTeamProfile } from "../lib/storage/teamProfileStorage";
 import { loadManualTodos } from "../lib/storage/todoStorage";
 import { getStoredResultCategory } from "../lib/utils/courseCategory";
 import { getTodoScheduledAt } from "../lib/utils/courseDates";
@@ -48,7 +47,7 @@ type RiderPerformanceRow = {
   value: number;
 };
 
-const DEFAULT_TEAM_NAME = "Kritoff Team";
+const TEAM_NAME = "Kritoff Team";
 
 function normalizeComparable(value: string): string {
   return value
@@ -112,7 +111,7 @@ function getStoredResultPayload(
   };
 }
 
-function extractTeamResultRows(teamName: string): TeamResultRow[] {
+function extractTeamResultRows(): TeamResultRow[] {
   const results = getAllResultsFromStorage();
   const todos = loadManualTodos();
   const courseMap = new Map(todos.map((todo) => [todo.id, todo]));
@@ -165,7 +164,7 @@ function extractTeamResultRows(teamName: string): TeamResultRow[] {
         .filter(
           (cells) =>
             normalizeComparable(cells[teamIdx] ?? "") ===
-            normalizeComparable(teamName)
+            normalizeComparable(TEAM_NAME)
         )
         .map((cells) => ({
           courseId,
@@ -243,7 +242,6 @@ export default function StatisticsPage() {
     loadAvailabilityWeeklySnapshots
   );
 
-  const teamName = useMemo(() => loadTeamProfile().teamName || DEFAULT_TEAM_NAME, []);
   const riders = useMemo(() => {
     const stored = loadRidersFromStorage();
     return stored.length > 0 ? stored : initialRiders;
@@ -251,7 +249,7 @@ export default function StatisticsPage() {
 
   const settings = useMemo(() => loadClubSettings(), []);
   const financeSnapshot = useMemo(() => getFinanceSnapshot(settings, riders), [settings, riders]);
-  const teamResultRows = useMemo(() => extractTeamResultRows(teamName), [teamName]);
+  const teamResultRows = useMemo(() => extractTeamResultRows(), []);
   const resultReferenceSummary = useMemo(
     () => buildResultReferenceSummary(getAllResultsFromStorage(), loadManualTodos().filter((todo) => todo.id.startsWith("calendar-"))),
     []

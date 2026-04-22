@@ -10,7 +10,7 @@ import {
   RELEASE_NAME,
   RELEASE_VERSION,
 } from "../lib/app/releaseNotes";
-import { buildBackupFilename, resetAllData, serializeCymanagerBackup } from "../lib/storage/exportData";
+import { buildBackupFilename, serializeCymanagerBackup } from "../lib/storage/exportData";
 import {
   importCymanagerBackup,
   previewCymanagerBackupImport,
@@ -185,7 +185,6 @@ export default function SettingsPage() {
   const [pendingImportRaw, setPendingImportRaw] = useState<string | null>(null);
   const [pendingImportPreview, setPendingImportPreview] = useState<ImportBackupPreview | null>(null);
   const [pendingCleanupIssue, setPendingCleanupIssue] = useState<StorageDiagnosticIssue | null>(null);
-  const [pendingFullReset, setPendingFullReset] = useState(false);
   const diagnostics = useMemo(() => getStorageDiagnostics(), [diagnosticsRefreshKey]);
   const resultReferenceSummary = useMemo(
     () => buildResultReferenceSummary(getAllResultsFromStorage(), loadManualTodos().filter((todo) => todo.id.startsWith("calendar-"))),
@@ -225,11 +224,6 @@ export default function SettingsPage() {
       note: "Retour aux réglages par défaut du club et des installations.",
     });
     setMessage("Paramètres réinitialisés avec les valeurs par défaut.");
-  }
-
-  function handleFullReset() {
-    resetAllData();
-    window.location.reload();
   }
 
   function handleExportBackup() {
@@ -404,14 +398,6 @@ export default function SettingsPage() {
                 onClick={handleReset}
               >
                 Réinitialiser
-              </button>
-
-              <button
-                type="button"
-                className="button button-danger"
-                onClick={() => setPendingFullReset(true)}
-              >
-                Repartir de zéro
               </button>
 
               <button
@@ -626,16 +612,6 @@ export default function SettingsPage() {
       </Card>
         </div>
       )}
-
-      <ConfirmDialog
-        open={pendingFullReset}
-        title="Repartir de zéro"
-        message="Toutes les données du club seront effacées (effectif, finances, paramètres, historique). Cette action est irréversible. Confirmer ?"
-        onConfirm={handleFullReset}
-        onCancel={() => setPendingFullReset(false)}
-        confirmLabel="Tout effacer"
-        confirmButtonClassName="button button-danger"
-      />
 
       <ConfirmDialog
         open={Boolean(pendingCleanupIssue)}

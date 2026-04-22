@@ -2,17 +2,12 @@
   "name": "cymanager",
   "private": true,
   "version": "1.7.1",
-  "main": "electron/main.cjs",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "build:desktop": "tsc -b && vite build --base ./",
-    "desktop:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
-    "desktop:build": "npm run build:desktop && electron-builder",
-    "desktop:dist": "npm run desktop:build"
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "^19.2.4",
@@ -25,45 +20,12 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
-    "concurrently": "^9.2.1",
-    "electron": "^38.3.0",
-    "electron-builder": "^26.0.12",
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.0",
-    "vite": "^8.0.4",
-    "wait-on": "^8.0.5"
-  },
-  "build": {
-    "appId": "com.cymanager.desktop",
-    "productName": "CyManager Desktop",
-    "directories": {
-      "output": "desktop-dist"
-    },
-    "files": [
-      "dist/**/*",
-      "electron/**/*",
-      "package.json"
-    ],
-    "win": {
-      "signAndEditExecutable": false,
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        }
-      ],
-      "artifactName": "${productName}-Setup-${version}.${ext}"
-    },
-    "nsis": {
-      "oneClick": false,
-      "perMachine": false,
-      "allowToChangeInstallationDirectory": true
-    }
+    "vite": "^8.0.4"
   }
 }

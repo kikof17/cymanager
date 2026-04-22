@@ -17,7 +17,6 @@ import { loadRaceSetup } from "../lib/storage/raceStorage";
 import { loadRidersFromStorage } from "../lib/storage/localStorage";
 import { loadManagementHistory } from "../lib/storage/managementHistoryStorage";
 import { loadClubSettings } from "../lib/storage/settingsStorage";
-import { loadTeamProfile } from "../lib/storage/teamProfileStorage";
 import { loadTodoStatuses, loadManualTodos } from "../lib/storage/todoStorage";
 import { buildTodoList } from "../lib/todo/buildTodoList";
 import { initialRiders } from "../store/initialState";
@@ -39,7 +38,6 @@ export default function HomePage() {
   }, []);
 
   const clubSettings = useMemo(() => loadClubSettings(), []);
-  const teamProfile = useMemo(() => loadTeamProfile(), []);
 
   const trainingPlan = useMemo(() => {
     return buildTrainingPlan(riders, clubSettings);
@@ -122,13 +120,11 @@ export default function HomePage() {
     }));
   }, [riders, race, raceKey, clubSettings]);
 
-  const country = teamProfile.country || "France";
-  const teamId = teamProfile.teamId || "-";
-  const startDate = new Intl.DateTimeFormat("fr-FR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).format(new Date(teamProfile.startedAt));
+  // Bloc présentation équipe/manager (infos dynamiques)
+  // À adapter si tu veux rendre pays, id, date, etc. dynamiques (ici valeurs fixes ou issues des settings)
+  const country = "France"; // À rendre dynamique si besoin
+  const teamId = "55893"; // À rendre dynamique si besoin
+  const startDate = "15/04/2026 (Saison 97)"; // À rendre dynamique si besoin
   // Divisions dynamiques depuis settings
   const divisionPro = clubSettings.divisionPro || "D9";
   const divisionU25 = clubSettings.divisionU25 || "D9";
@@ -150,13 +146,13 @@ export default function HomePage() {
         <div className="home-club-panel-header">
           <div>
             <p className="eyebrow">Manager</p>
-            <p className="home-club-panel-name">{teamProfile.managerName}</p>
+            <p className="home-club-panel-name">Kritoff</p>
             <p className="home-club-panel-subtitle">
               Repères rapides pour piloter le club sans perdre les priorités de vue.
             </p>
           </div>
 
-          <div className="home-club-panel-chip">{teamProfile.activeSeasonLabel}</div>
+          <div className="home-club-panel-chip">Saison 97</div>
         </div>
 
         <div className="home-club-panel-grid">

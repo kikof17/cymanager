@@ -1,8 +1,6 @@
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "./components/layout/AppLayout";
-import FirstRunSetupPage from "./pages/FirstRunSetupPage";
-import { isOnboardingCompleted } from "./lib/storage/teamProfileStorage";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const BeginnerGuidePage = lazy(() => import("./pages/BeginnerGuidePage"));
@@ -28,12 +26,6 @@ function RouteFallback() {
 }
 
 export default function App() {
-  const [onboardingCompleted, setOnboardingCompleted] = useState(() => isOnboardingCompleted());
-
-  if (!onboardingCompleted) {
-    return <FirstRunSetupPage onComplete={() => setOnboardingCompleted(true)} />;
-  }
-
   return (
     <AppLayout>
       <Suspense fallback={<RouteFallback />}>
