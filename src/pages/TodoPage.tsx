@@ -42,6 +42,51 @@ function buildRaceKey(race: RaceSnapshot | null): string {
   return `${race.name}::${race.raceType}::${race.distanceKm}::${race.detectedProfile}`;
 }
 
+function isCalendarCourseTodo(item: TodoItem): boolean {
+  return item.id.startsWith("calendar-") && item.source === "manual" && item.category === "courses";
+}
+
+function toTodoTimestamp(todo: TodoItem): number {
+  const scheduled = todo.scheduledAt ? new Date(todo.scheduledAt).getTime() : Number.NaN;
+
+  if (!Number.isNaN(scheduled)) {
+    return scheduled;
+  }
+
+  const created = new Date(todo.createdAt).getTime();
+  return Number.isNaN(created) ? Number.MAX_SAFE_INTEGER : created;
+}
+
+function keepOnlyNextCalendarCourseTodo(items: TodoItem[]): TodoItem[] {
+  const calendarTodos = items.filter((item) => isCalendarCourseTodo(item));
+
+  if (calendarTodos.length === 0) {
+    return items;
+  }
+
+  const nextCalendarTodo = calendarTodos
+    .filter((item) => item.status !== "done")
+    .sort((left, right) => {
+      const timeDiff = toTodoTimestamp(left) - toTodoTimestamp(right);
+
+      if (timeDiff !== 0) {
+        return timeDiff;
+      }
+
+      return left.id.localeCompare(right.id, "fr", { sensitivity: "base" });
+    })[0];
+
+  const visibleCalendarTodoId = nextCalendarTodo?.id;
+
+  return items.filter((item) => {
+    if (!isCalendarCourseTodo(item)) {
+      return true;
+    }
+
+    return item.id === visibleCalendarTodoId;
+  });
+}
+
 export default function TodoPage() {
   const [riders] = useState<Rider[]>(() => {
     const storedRiders = loadRidersFromStorage();
@@ -142,8 +187,13 @@ export default function TodoPage() {
     }));
   }, [autoTodos, manualTodos, statuses]);
 
+  const visibleTodos = useMemo(
+    () => keepOnlyNextCalendarCourseTodo(mergedTodos),
+    [mergedTodos]
+  );
+
   const filteredTodos = useMemo(() => {
-    return mergedTodos.filter((item) => {
+    return visibleTodos.filter((item) => {
       const statusOk = statusFilter === "all" || item.status === statusFilter;
       const categoryOk =
         categoryFilter === "all" || item.category === categoryFilter;
@@ -154,7 +204,7 @@ export default function TodoPage() {
 
       return statusOk && categoryOk && searchOk;
     });
-  }, [mergedTodos, statusFilter, categoryFilter, searchText]);
+  }, [visibleTodos, statusFilter, categoryFilter, searchText]);
 
   const sortedTodos = useMemo(() => {
     const byDateDesc = (left: TodoItem, right: TodoItem) =>
@@ -256,12 +306,12 @@ export default function TodoPage() {
     });
   }
 
-  const totalCount = mergedTodos.length;
-  const doneCount = mergedTodos.filter((item) => item.status === "done").length;
+  const totalCount = visibleTodos.length;
+  const doneCount = visibleTodos.filter((item) => item.status === "done").length;
   const todoCount = totalCount - doneCount;
 
-  const urgentCount = mergedTodos.filter(item => item.priority === "haute" && item.status !== "done").length;
-  const autoCount = mergedTodos.filter(item => item.source !== "manual").length;
+  const urgentCount = visibleTodos.filter(item => item.priority === "haute" && item.status !== "done").length;
+  const autoCount = visibleTodos.filter(item => item.source !== "manual").length;
 
   return (
     <div className="page-stack">
