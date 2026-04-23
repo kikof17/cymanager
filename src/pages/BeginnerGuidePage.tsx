@@ -1,5 +1,6 @@
-import type { ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import Card from "../components/common/Card";
+import CollapsibleBox from "../components/common/CollapsibleBox";
 import PageTitle from "../components/common/PageTitle";
 
 type GuideSection = {
@@ -22,6 +23,8 @@ type GuideTableProps = {
   headers: string[];
   rows: ReactNode[][];
 };
+
+type GuideTheme = "all" | "onboarding" | "training" | "market" | "races" | "facilities";
 
 function GuideCallout({ title, tone = "info", children }: GuideCalloutProps) {
   return (
@@ -651,23 +654,226 @@ const guideHighlights = [
   { label: "Priorité réelle", value: "Revenus + CDE avant le reste" },
 ];
 
-function scrollToSection(sectionId: string) {
-  const target = document.getElementById(sectionId);
+const quickStartSteps: Array<{ title: string; sectionId: string; action: string }> = [
+  {
+    title: "Semaine 1 - Diagnostic",
+    sectionId: "premiers-reperes",
+    action: "Valide la base de départ, la division et la capacité réelle du roster.",
+  },
+  {
+    title: "S1-S3 - Stabiliser",
+    sectionId: "investissements",
+    action: "Priorise siège social, boutique et centre d'entraînement avant les dépenses flashy.",
+  },
+  {
+    title: "S1-S4 - Rendre les coureurs jouables",
+    sectionId: "entrainement",
+    action: "Corrige le foncier et protège la forme plutôt que forcer une primaire trop tôt.",
+  },
+  {
+    title: "S3-S6 - Arbitrer le marché",
+    sectionId: "achats-transferts",
+    action: "Achète peu, vend utile, reste strict sur le budget et la masse salariale.",
+  },
+  {
+    title: "S6-S10 - Consolider",
+    sectionId: "plan-progression",
+    action: "Prépare la saison suivante avec une structure plus forte que ton point de départ.",
+  },
+];
 
-  if (!target) {
-    return;
+const guideSectionThemes: Record<string, GuideTheme[]> = {
+  "premiers-reperes": ["onboarding"],
+  "lire-division": ["onboarding"],
+  "comprendre-coureur": ["onboarding", "training"],
+  "tirage-initial": ["onboarding", "market"],
+  entrainement: ["training"],
+  investissements: ["facilities"],
+  "achats-transferts": ["market"],
+  "ventes-transferts": ["market"],
+  "courses-tactiques": ["races"],
+  installations: ["facilities"],
+  "plan-progression": ["onboarding"],
+};
+
+const guideThemeLabels: Array<{ id: GuideTheme; label: string }> = [
+  { id: "all", label: "Tous" },
+  { id: "onboarding", label: "Démarrage" },
+  { id: "training", label: "Entraînement" },
+  { id: "market", label: "Transferts" },
+  { id: "races", label: "Courses" },
+  { id: "facilities", label: "Installations" },
+];
+
+const GUIDE_PREFS_KEY = "cymanager:guide:v2:prefs";
+
+type GuidePrefs = {
+  viewMode: "quick" | "reference";
+  showAllSections: boolean;
+  activeSectionId: string;
+  searchQuery: string;
+  selectedTheme: GuideTheme;
+};
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function highlightText(value: string, query: string): ReactNode {
+  const trimmed = query.trim();
+
+  if (trimmed.length === 0) {
+    return value;
   }
 
-  target.scrollIntoView({ behavior: "smooth", block: "start" });
-  window.history.replaceState(null, "", `${window.location.pathname}#${sectionId}`);
+  const regex = new RegExp(`(${escapeRegExp(trimmed)})`, "gi");
+  const parts = value.split(regex);
+
+  return parts.map((part, index) =>
+    index % 2 === 1 ? (
+      <mark key={`${part}-${index}`} className="search-highlight">
+        {part}
+      </mark>
+    ) : (
+      <span key={`${part}-${index}`}>{part}</span>
+    )
+  );
+}
+
+function loadGuidePrefs(): GuidePrefs {
+  try {
+    const raw = localStorage.getItem(GUIDE_PREFS_KEY);
+
+    if (!raw) {
+      return {
+        viewMode: "quick",
+        showAllSections: false,
+        activeSectionId: sections[0]?.id ?? "premiers-reperes",
+        searchQuery: "",
+        selectedTheme: "all",
+      };
+    }
+
+    const parsed = JSON.parse(raw) as Partial<GuidePrefs>;
+
+    return {
+      viewMode: parsed.viewMode === "reference" ? "reference" : "quick",
+      showAllSections: parsed.showAllSections === true,
+      activeSectionId:
+        typeof parsed.activeSectionId === "string" && parsed.activeSectionId.length > 0
+          ? parsed.activeSectionId
+          : sections[0]?.id ?? "premiers-reperes",
+      searchQuery: typeof parsed.searchQuery === "string" ? parsed.searchQuery : "",
+      selectedTheme:
+        parsed.selectedTheme === "onboarding" ||
+        parsed.selectedTheme === "training" ||
+        parsed.selectedTheme === "market" ||
+        parsed.selectedTheme === "races" ||
+        parsed.selectedTheme === "facilities"
+          ? parsed.selectedTheme
+          : "all",
+    };
+  } catch {
+    return {
+      viewMode: "quick",
+      showAllSections: false,
+      activeSectionId: sections[0]?.id ?? "premiers-reperes",
+      searchQuery: "",
+      selectedTheme: "all",
+    };
+  }
 }
 
 export default function BeginnerGuidePage() {
+  const initialPrefs = useMemo(() => loadGuidePrefs(), []);
+  const [viewMode, setViewMode] = useState<"quick" | "reference">(initialPrefs.viewMode);
+  const [showAllSections, setShowAllSections] = useState(initialPrefs.showAllSections);
+  const [activeSectionId, setActiveSectionId] = useState(initialPrefs.activeSectionId);
+  const [searchQuery, setSearchQuery] = useState(initialPrefs.searchQuery);
+  const [selectedTheme, setSelectedTheme] = useState<GuideTheme>(initialPrefs.selectedTheme);
+
+  const normalizedQuery = searchQuery.trim().toLocaleLowerCase("fr");
+
+  const filteredSections = useMemo(() => {
+    if (normalizedQuery.length === 0) {
+      return sections;
+    }
+
+    return sections.filter((section) => {
+      if (
+        selectedTheme !== "all" &&
+        !(guideSectionThemes[section.id] ?? []).includes(selectedTheme)
+      ) {
+        return false;
+      }
+
+      const haystack = `${section.title} ${section.kicker} ${section.summary}`.toLocaleLowerCase("fr");
+      return haystack.includes(normalizedQuery);
+    });
+  }, [normalizedQuery, selectedTheme]);
+
+  const filteredQuickStartSteps = useMemo(() => {
+    if (normalizedQuery.length === 0) {
+      return quickStartSteps;
+    }
+
+    return quickStartSteps.filter((step) => {
+      const linkedSection = sections.find((section) => section.id === step.sectionId);
+
+      if (
+        selectedTheme !== "all" &&
+        linkedSection &&
+        !(guideSectionThemes[linkedSection.id] ?? []).includes(selectedTheme)
+      ) {
+        return false;
+      }
+
+      const haystack = `${step.title} ${step.action} ${linkedSection?.title ?? ""}`.toLocaleLowerCase("fr");
+      return haystack.includes(normalizedQuery);
+    });
+  }, [normalizedQuery, selectedTheme]);
+
+  const activeSection = useMemo(() => {
+    return (
+      filteredSections.find((section) => section.id === activeSectionId) ??
+      filteredSections[0] ??
+      null
+    );
+  }, [activeSectionId, filteredSections]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      GUIDE_PREFS_KEY,
+      JSON.stringify({
+        viewMode,
+        showAllSections,
+        activeSectionId,
+        searchQuery,
+        selectedTheme,
+      } satisfies GuidePrefs)
+    );
+  }, [viewMode, showAllSections, activeSectionId, searchQuery, selectedTheme]);
+
+  useEffect(() => {
+    if (!activeSection) {
+      return;
+    }
+
+    if (activeSection.id !== activeSectionId) {
+      setActiveSectionId(activeSection.id);
+    }
+  }, [activeSection, activeSectionId]);
+
+  function handleSelectSection(sectionId: string) {
+    setActiveSectionId(sectionId);
+    setShowAllSections(false);
+  }
+
   return (
     <div className="page-stack">
       <PageTitle
         title="Guide du débutant"
-        subtitle="Version longue et structurée pour comprendre les bases du jeu, sécuriser les premières saisons et éviter les erreurs coûteuses."
+        subtitle="Version V2: accès rapide aux actions clés puis navigation de référence par section."
       />
 
       <Card>
@@ -694,38 +900,143 @@ export default function BeginnerGuidePage() {
         </div>
       </Card>
 
-      <div className="guide-layout">
-        <aside className="guide-toc card">
-          <h3 className="card-title">Sommaire</h3>
-          <nav className="guide-toc-nav">
-            {sections.map((section) => (
-              <button
-                key={section.id}
-                type="button"
-                className="guide-toc-link"
-                onClick={() => scrollToSection(section.id)}
-              >
-                {section.title}
-              </button>
-            ))}
-          </nav>
-        </aside>
+      <Card className="guide-mode-card">
+        <div className="guide-mode-switch">
+          <button
+            type="button"
+            className={viewMode === "quick" ? "tab-btn tab-btn-active" : "tab-btn"}
+            onClick={() => setViewMode("quick")}
+          >
+            QuickStart
+          </button>
+          <button
+            type="button"
+            className={viewMode === "reference" ? "tab-btn tab-btn-active" : "tab-btn"}
+            onClick={() => setViewMode("reference")}
+          >
+            Référence complète
+          </button>
+        </div>
 
-        <div className="guide-content">
-          {sections.map((section) => (
-            <Card key={section.id}>
-              <section id={section.id} className="guide-section-anchor">
-                <header className="guide-section-header">
-                  <p className="guide-kicker">{section.kicker}</p>
-                  <h3 className="guide-section-title">{section.title}</h3>
-                  <p className="guide-section-summary">{section.summary}</p>
-                </header>
-                {section.content}
-              </section>
-            </Card>
+        <div className="guide-search-row">
+          <input
+            type="search"
+            className="input guide-search-input"
+            placeholder="Rechercher une section (titre, résumé, mots clés)"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
+          {searchQuery.trim().length > 0 ? (
+            <button type="button" className="ghost-button" onClick={() => setSearchQuery("")}>
+              Effacer
+            </button>
+          ) : null}
+        </div>
+
+        <div className="guide-theme-row" role="list" aria-label="Filtres du guide">
+          {guideThemeLabels.map((theme) => (
+            <button
+              key={theme.id}
+              type="button"
+              className={selectedTheme === theme.id ? "guide-theme-chip is-active" : "guide-theme-chip"}
+              onClick={() => setSelectedTheme(theme.id)}
+            >
+              {theme.label}
+            </button>
           ))}
         </div>
-      </div>
+
+        {viewMode === "quick" ? (
+          <div className="guide-quickstart-grid">
+            {filteredQuickStartSteps.map((step) => (
+              <article key={step.title} className="guide-quickstart-step">
+                <p className="guide-kicker">{highlightText(step.title, searchQuery)}</p>
+                <p>{highlightText(step.action, searchQuery)}</p>
+                <button
+                  type="button"
+                  className="ghost-button"
+                  onClick={() => {
+                    setViewMode("reference");
+                    handleSelectSection(step.sectionId);
+                  }}
+                >
+                  Ouvrir la section liée
+                </button>
+              </article>
+            ))}
+
+            {filteredQuickStartSteps.length === 0 ? (
+              <p className="muted">Aucun résultat pour cette recherche dans le QuickStart.</p>
+            ) : null}
+          </div>
+        ) : (
+          <div className="guide-reference-layout">
+            <div className="guide-reference-toolbar">
+              <label className="guide-reference-select-label" htmlFor="guide-section-select">
+                Section active
+              </label>
+              <select
+                id="guide-section-select"
+                className="input guide-reference-select"
+                value={activeSection?.id ?? ""}
+                onChange={(event) => handleSelectSection(event.target.value)}
+              >
+                {filteredSections.map((section) => (
+                  <option key={section.id} value={section.id}>
+                    {section.title}
+                  </option>
+                ))}
+              </select>
+
+              <button
+                type="button"
+                className="ghost-button"
+                onClick={() => setShowAllSections((current) => !current)}
+              >
+                {showAllSections ? "Afficher uniquement la section active" : "Afficher toutes les sections"}
+              </button>
+            </div>
+
+            {showAllSections ? (
+              <div className="guide-content">
+                {filteredSections.map((section) => (
+                  <CollapsibleBox
+                    key={section.id}
+                    title={`${section.title} - ${section.summary}`}
+                    defaultExpanded={section.id === activeSectionId}
+                  >
+                    <section id={section.id} className="guide-section-anchor">
+                      <header className="guide-section-header">
+                        <p className="guide-kicker">{section.kicker}</p>
+                        <h3 className="guide-section-title">{highlightText(section.title, searchQuery)}</h3>
+                        <p className="guide-section-summary">{highlightText(section.summary, searchQuery)}</p>
+                      </header>
+                      {section.content}
+                    </section>
+                  </CollapsibleBox>
+                ))}
+
+                {filteredSections.length === 0 ? (
+                  <p className="muted">Aucune section ne correspond à cette recherche.</p>
+                ) : null}
+              </div>
+            ) : activeSection ? (
+              <Card>
+                <section id={activeSection.id} className="guide-section-anchor">
+                  <header className="guide-section-header">
+                    <p className="guide-kicker">{activeSection.kicker}</p>
+                    <h3 className="guide-section-title">{highlightText(activeSection.title, searchQuery)}</h3>
+                    <p className="guide-section-summary">{highlightText(activeSection.summary, searchQuery)}</p>
+                  </header>
+                  {activeSection.content}
+                </section>
+              </Card>
+            ) : (
+              <p className="muted">Aucune section ne correspond à cette recherche.</p>
+            )}
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import Card from '../components/common/Card';
 import PageTitle from '../components/common/PageTitle';
+import SeasonTimeline from '../components/calendar/SeasonTimeline';
 import RaceSetupTable from '../components/races/RaceSetupTable';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { buildRiderAvailabilitySummary } from '../lib/scoring/riderAvailability';
@@ -980,6 +981,8 @@ const CalendarPage: React.FC = () => {
       )}
 
       <Card title="Courses à venir et passées" className="calendar-card">
+        <SeasonTimeline title="Timeline et deadlines de la saison" />
+
         <section className="calendar-board" aria-label="Pilotage hebdomadaire du calendrier">
           <div className="calendar-board-header">
             <h3 className="calendar-board-title">Board hebdo</h3>

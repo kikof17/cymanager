@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import PageTitle from "../components/common/PageTitle";
 import Card from "../components/common/Card";
 import ClubOverviewCard from "../components/home/ClubOverviewCard";
@@ -8,6 +8,7 @@ import RaceOverviewCard from "../components/home/RaceOverviewCard";
 import SeasonCockpitCard from "../components/home/SeasonCockpitCard";
 import TodoOverviewCard from "../components/home/TodoOverviewCard";
 import TrainingOverviewCard from "../components/home/TrainingOverviewCard";
+import SeasonTimeline from "../components/calendar/SeasonTimeline";
 import { buildRaceAnalysis } from "../lib/scoring/raceScores";
 import { buildTrainingPlan } from "../lib/scoring/trainingScores";
 import { buildResultReferenceSummary, getAllResultsFromStorage } from "../lib/scoring/extractPoints";
@@ -21,8 +22,11 @@ import { loadClubSettings } from "../lib/storage/settingsStorage";
 import { loadTodoStatuses, loadManualTodos } from "../lib/storage/todoStorage";
 import { buildTodoList } from "../lib/todo/buildTodoList";
 import { initialRiders } from "../store/initialState";
+import { formatSeasonStartLabel, getSeasonCycle } from "../lib/calendar/seasonCycle";
 import type { ParsedRace } from "../types/race";
 import type { Rider } from "../types/rider";
+
+type HomeTab = "week" | "team" | "pilotage";
 
 function buildRaceKey(race: RaceSnapshot | null): string {
   if (!race) {
@@ -33,6 +37,8 @@ function buildRaceKey(race: RaceSnapshot | null): string {
 }
 
 export default function HomePage() {
+  const [activeTab, setActiveTab] = useState<HomeTab>("week");
+
   const riders = useMemo<Rider[]>(() => {
     const stored = loadRidersFromStorage();
     return stored.length > 0 ? stored : initialRiders;
@@ -208,10 +214,10 @@ export default function HomePage() {
   }, [todoItems, riders, financeSnapshot, trainingPlan.selectedTypes.length, raceSelected.length]);
 
   // Bloc présentation équipe/manager (infos dynamiques)
-  // À adapter si tu veux rendre pays, id, date, etc. dynamiques (ici valeurs fixes ou issues des settings)
   const country = "France"; // À rendre dynamique si besoin
   const teamId = "55893"; // À rendre dynamique si besoin
-  const startDate = "15/04/2026 (Saison 97)"; // À rendre dynamique si besoin
+  const seasonCycle = getSeasonCycle(new Date());
+  const startDate = formatSeasonStartLabel(clubSettings.seasonStartIso, seasonCycle.season);
   // Divisions dynamiques depuis settings
   const divisionPro = clubSettings.divisionPro || "D9";
   const divisionU25 = clubSettings.divisionU25 || "D9";
@@ -226,7 +232,7 @@ export default function HomePage() {
     <div className="page-stack">
       <PageTitle
         title="Accueil"
-        subtitle="Vue d'ensemble du club, des priorités et des décisions à prendre."
+        subtitle="Cockpit compact du club pour agir vite sans long scroll."
       />
 
       <SeasonCockpitCard
@@ -235,63 +241,167 @@ export default function HomePage() {
         impacts={cockpitModel.impacts}
       />
 
-      <Card title="Club et manager" className="home-club-panel">
-        <div className="home-club-panel-header">
-          <div>
-            <p className="eyebrow">Manager</p>
-            <p className="home-club-panel-name">Kritoff</p>
-            <p className="home-club-panel-subtitle">
-              Repères rapides pour piloter le club sans perdre les priorités de vue.
-            </p>
+      <Card>
+        <SeasonTimeline compact />
+      </Card>
+
+      <Card className="home-v2-toolbar">
+        <div className="home-v2-toolbar-content">
+          <div className="stats-tabs">
+            <button
+              type="button"
+              className={activeTab === "week" ? "tab-btn tab-btn-active" : "tab-btn"}
+              onClick={() => setActiveTab("week")}
+            >
+              Cette semaine
+            </button>
+            <button
+              type="button"
+              className={activeTab === "team" ? "tab-btn tab-btn-active" : "tab-btn"}
+              onClick={() => setActiveTab("team")}
+            >
+              Equipe
+            </button>
+            <button
+              type="button"
+              className={activeTab === "pilotage" ? "tab-btn tab-btn-active" : "tab-btn"}
+              onClick={() => setActiveTab("pilotage")}
+            >
+              Pilotage
+            </button>
           </div>
 
-          <div className="home-club-panel-chip">Saison 97</div>
-        </div>
-
-        <div className="home-club-panel-grid">
-          <div className="home-club-panel-stat">
-            <span className="home-club-panel-label">Pays</span>
-            <strong>{country}</strong>
-          </div>
-          <div className="home-club-panel-stat">
-            <span className="home-club-panel-label">ID équipe</span>
-            <strong>{teamId}</strong>
-          </div>
-          <div className="home-club-panel-stat">
-            <span className="home-club-panel-label">Depuis</span>
-            <strong>{startDate}</strong>
-          </div>
-          <div className="home-club-panel-stat">
-            <span className="home-club-panel-label">Installations</span>
-            <strong>SS {ss} · Bt {bt} · CdE {cde} · CdF {cdf}</strong>
-          </div>
-          <div className="home-club-panel-stat">
-            <span className="home-club-panel-label">Division Pro</span>
-            <strong>{divisionPro}</strong>
-          </div>
-          <div className="home-club-panel-stat">
-            <span className="home-club-panel-label">Division U25</span>
-            <strong>{divisionU25}</strong>
-          </div>
-          <div className="home-club-panel-stat">
-            <span className="home-club-panel-label">Division U21</span>
-            <strong>{divisionU21}</strong>
-          </div>
+          <a className="ghost-button" href="#/planification">
+            Ouvrir la planification multi-saison
+          </a>
         </div>
       </Card>
 
-      <div className="dashboard-grid">
-        <ClubOverviewCard
-          riders={riders}
-          financialBalance={financeSnapshot.currentBalance}
-          weeklySalaryExpense={financeSnapshot.weeklySalaryExpense}
-        />
-        <TrainingOverviewCard plan={trainingPlan} />
-        <RaceOverviewCard race={race} selected={raceSelected} />
-        <TodoOverviewCard items={todoItems} />
-        <FacilitiesOverviewCard settings={clubSettings} />
-        <ManagementJournalCard entries={managementHistory} />
-      </div>
+      {activeTab === "week" ? (
+        <div className="dashboard-grid">
+          <TodoOverviewCard items={todoItems} />
+          <RaceOverviewCard race={race} selected={raceSelected} />
+          <TrainingOverviewCard plan={trainingPlan} />
+          <Card title="Vision finance rapide">
+            <div className="home-v2-finance-list">
+              <div className="home-v2-finance-row">
+                <span>Solde actuel</span>
+                <strong>
+                  {new Intl.NumberFormat("fr-FR", {
+                    style: "currency",
+                    currency: "EUR",
+                    maximumFractionDigits: 0,
+                  }).format(financeSnapshot.currentBalance)}
+                </strong>
+              </div>
+              <div className="home-v2-finance-row">
+                <span>Masse salariale hebdo</span>
+                <strong>
+                  {new Intl.NumberFormat("fr-FR", {
+                    style: "currency",
+                    currency: "EUR",
+                    maximumFractionDigits: 0,
+                  }).format(financeSnapshot.weeklySalaryExpense)}
+                </strong>
+              </div>
+              <div className="home-v2-finance-row">
+                <span>Projection a 3 semaines</span>
+                <strong>
+                  {new Intl.NumberFormat("fr-FR", {
+                    style: "currency",
+                    currency: "EUR",
+                    maximumFractionDigits: 0,
+                  }).format(financeSnapshot.projectedBalanceAfterThreeWeeks)}
+                </strong>
+              </div>
+            </div>
+          </Card>
+        </div>
+      ) : null}
+
+      {activeTab === "team" ? (
+        <>
+          <Card title="Club et manager" className="home-club-panel">
+            <div className="home-club-panel-header">
+              <div>
+                <p className="eyebrow">Manager</p>
+                <p className="home-club-panel-name">Kritoff</p>
+                <p className="home-club-panel-subtitle">
+                  Repères rapides pour piloter le club sans perdre les priorités de vue.
+                </p>
+              </div>
+
+              <div className="home-club-panel-chip">Saison {seasonCycle.season}</div>
+            </div>
+
+            <div className="home-club-panel-grid">
+              <div className="home-club-panel-stat">
+                <span className="home-club-panel-label">Pays</span>
+                <strong>{country}</strong>
+              </div>
+              <div className="home-club-panel-stat">
+                <span className="home-club-panel-label">ID équipe</span>
+                <strong>{teamId}</strong>
+              </div>
+              <div className="home-club-panel-stat">
+                <span className="home-club-panel-label">Depuis</span>
+                <strong>{startDate}</strong>
+              </div>
+              <div className="home-club-panel-stat">
+                <span className="home-club-panel-label">Installations</span>
+                <strong>SS {ss} · Bt {bt} · CdE {cde} · CdF {cdf}</strong>
+              </div>
+              <div className="home-club-panel-stat">
+                <span className="home-club-panel-label">Division Pro</span>
+                <strong>{divisionPro}</strong>
+              </div>
+              <div className="home-club-panel-stat">
+                <span className="home-club-panel-label">Division U25</span>
+                <strong>{divisionU25}</strong>
+              </div>
+              <div className="home-club-panel-stat">
+                <span className="home-club-panel-label">Division U21</span>
+                <strong>{divisionU21}</strong>
+              </div>
+            </div>
+          </Card>
+
+          <div className="dashboard-grid">
+            <ClubOverviewCard
+              riders={riders}
+              financialBalance={financeSnapshot.currentBalance}
+              weeklySalaryExpense={financeSnapshot.weeklySalaryExpense}
+            />
+            <FacilitiesOverviewCard settings={clubSettings} />
+          </div>
+        </>
+      ) : null}
+
+      {activeTab === "pilotage" ? (
+        <div className="dashboard-grid">
+          <ManagementJournalCard entries={managementHistory} />
+          <Card title="Actions prioritaires">
+            <ul className="home-v2-action-list">
+              {cockpitModel.todos.map((todo) => (
+                <li key={todo.label}>
+                  <a href={`#${todo.href}`}>{todo.label}</a>
+                  <strong>{todo.count}</strong>
+                </li>
+              ))}
+            </ul>
+          </Card>
+          <Card title="Risques actifs">
+            <ul className="home-v2-action-list">
+              {cockpitModel.risks.map((risk) => (
+                <li key={risk.label}>
+                  <a href={`#${risk.href}`}>{risk.label}</a>
+                  <strong>{risk.count}</strong>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </div>
+      ) : null}
     </div>
   );
 }

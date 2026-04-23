@@ -14,6 +14,7 @@ const links = [
   { to: "/classement", label: "Classement" },
   { to: "/statistiques", label: "Statistiques" },
   { to: "/finance", label: "Finance" },
+  { to: "/planification", label: "Planification" },
   { to: "/todo", label: "To-do" },
   { to: "/parametres", label: "Paramètres" },
 ];

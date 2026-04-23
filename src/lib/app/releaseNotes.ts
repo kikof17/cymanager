@@ -1,12 +1,12 @@
 export const RELEASE_VERSION = __APP_VERSION__;
-export const RELEASE_NAME = "Version 2.0.0 - Drawer coureur, split view effectif et intersaison";
+export const RELEASE_NAME = "Version 2.1.0 - Multi-saison, cockpit compact et guide/FAQ V2";
 
 export const RELEASE_HIGHLIGHTS: string[] = [
-  "Drawer coureur : clic sur une ligne effectif ouvre un panneau lateral avec profil, stats, finance et deltas vs semaine precedente.",
-  "Split view Effectif avec onglets Pro / U25 / U21 / Indispos et compteurs dynamiques.",
-  "Delta forme dans le bandeau saison : evolution de la forme moyenne vs snapshot precedent.",
-  "Changement de saison : bouton Cloture la saison dans les parametres - snapshot, increment saison et journal.",
-  "Saison configurable : numero et date de depart stockes dans les parametres club, plus de constante hard-codee.",
+  "Nouveau cockpit Accueil en onglets avec timeline de saison et blocs decisionnels compacts.",
+  "Nouvelle page Planification multi-saison avec jalons, progression et duplication vers la saison suivante.",
+  "Guide debutant et FAQ en mode QuickStart/Reference, recherche live, filtres thematiques et preferences memorisees.",
+  "Timeline saisonniere partagee sur Accueil et Calendrier avec deadlines hebdomadaires visibles.",
+  "Migration de stockage renforcée et harmonisation responsive desktop/mobile sur toute la V2.",
 ];
 
 export const RELEASE_CHANGELOG: Array<{
@@ -16,53 +16,41 @@ export const RELEASE_CHANGELOG: Array<{
   {
     title: "Cap produit",
     items: [
-      "Passer du tableau brut a un cockpit decisionnel : chaque coureur doit etre lisible en un clic sans quitter la page.",
-      "Donner de la temporalite aux KPIs : deltas semaine sur forme, valeur et salaire pour capter les tendances.",
-      "Formaliser le cycle de vie saisonnier : cloture propre avec snapshot, journal et mise a jour du compteur saison.",
+      "Reduire drastiquement le scroll avec des vues compactes et orientees action.",
+      "Introduire un pilotage multi-saison explicite pour preparer les objectifs sportifs et economiques.",
+      "Conserver la robustesse locale via migration/sanitation des donnees existantes.",
     ],
   },
   {
-    title: "Drawer coureur",
+    title: "Cockpit Accueil V2",
     items: [
-      "Panneau lateral sticky (RiderDrawer) : profil cycliste, forces/faiblesses, barres de stats colorees par seuil.",
-      "KPIs finance : salaire/semaine, valeur marche, primes 7j avec deltas colores vs snapshot precedent.",
-      "Detail foncier : endurance, resistance, recuperation avec barres visuelles.",
-      "Badges categorie colores (Pro / U25 / U21) et statut forme/blessure integres.",
-      "Re-clic sur la ligne selectionnee ferme le drawer ; clic hors ligne ouvre un nouveau profil.",
+      "Onglets Cette semaine / Equipe / Pilotage pour naviguer vite sans perdre le contexte.",
+      "Timeline saisonniere compacte dans le cockpit avec semaine courante et deadlines.",
+      "Raccourci direct vers la planification multi-saison depuis la barre d'outils.",
     ],
   },
   {
-    title: "Split view Effectif",
+    title: "Planification multi-saison",
     items: [
-      "Grille 1fr / 400px activee a l'ouverture du drawer, colonne unique sinon.",
-      "Onglets Pro / U25 / U21 / Indispos avec compteurs dynamiques.",
-      "Indispos = coureurs avec forme < 35 ou blessure active non vide.",
-      "Ligne cliquable (cursor pointer + hover) et mise en surbrillance de la selection active.",
-      "Responsive < 900px : drawer passe en colonne unique sous la table.",
+      "Nouveau stockage versionne des jalons avec fallback legacy et normalisation des donnees.",
+      "Creation/suivi de jalons par categorie, semaine et saison, avec etat termine/reouvrir.",
+      "Duplication des jalons ouverts vers la saison suivante pour accelerer les transitions.",
     ],
   },
   {
-    title: "Delta forme (SeasonHeader)",
+    title: "Guide debutant + FAQ V2",
     items: [
-      "Forme moyenne de l'effectif calculee a chaque render et comparee au snapshot RiderHistory precedent.",
-      "Badge Forme +X / -X en vert/rouge dans le bandeau sticky saison, a cote du solde.",
+      "Mode QuickStart pour les actions prioritaires et mode Reference pour l'exhaustivite.",
+      "Recherche live avec mise en evidence des correspondances et filtres thematiques.",
+      "Preferences de vue stockees localement avec garde-fous sur les anciens formats.",
     ],
   },
   {
-    title: "Changement de saison",
+    title: "Responsive et cohérence visuelle",
     items: [
-      "Bouton Cloture la saison dans Parametres avec ConfirmDialog detaillant les actions.",
-      "A la confirmation : snapshot effectif capture, compteur saison incremente, date de depart avancee de 70 jours.",
-      "Le vieillissement et la reclassification Pro/U25/U21 restent geres a l'import des coureurs.",
-      "Entree journal de gestion de type season-transition creee automatiquement.",
-    ],
-  },
-  {
-    title: "Saison configurable",
-    items: [
-      "Champs baseSeason et seasonStartIso ajoutes a ClubSettings (localStorage).",
-      "SeasonHeaderV2 lit la saison depuis les settings au lieu de constantes compilees.",
-      "Retrocompatibilite totale : fallback sur saison 97 / 15 avril 2026 si aucune valeur stockee.",
+      "Uniformisation des barres d'outils, tabs, chips et actions sur desktop et mobile.",
+      "Comportements de grille et de formulaires stabilises sur les breakpoints critiques.",
+      "Validation compile/build finale pour garantir l'absence de regression technique.",
     ],
   },
 ];

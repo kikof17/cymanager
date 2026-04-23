@@ -16,6 +16,7 @@ const StatisticsPage = lazy(() => import("./pages/StatisticsPage"));
 const TransfersPage = lazy(() => import("./pages/TransfersPage"));
 const CalendarPage = lazy(() => import("./pages/CalendarPage"));
 const ResultPage = lazy(() => import("./pages/ResultPage"));
+const MultiSeasonPlanningPage = lazy(() => import("./pages/MultiSeasonPlanningPage"));
 
 function RouteFallback() {
   return (
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="/classement" element={<RankingPage />} />
           <Route path="/statistiques" element={<StatisticsPage />} />
           <Route path="/finance" element={<FinancePage />} />
+          <Route path="/planification" element={<MultiSeasonPlanningPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>

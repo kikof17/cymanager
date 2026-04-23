@@ -4,16 +4,15 @@ Cymanager est une application React + TypeScript orientée gestion de club Cycli
 
 ## État produit
 
-La version applicative courante est la 1.6.0.
+La version applicative courante est la 2.1.0.
 
-Cette version ouvre le cycle recommandations métier et cohérence transverse du club avec :
+Cette version ouvre le cycle V2 (multi-saison + UX compacte) avec :
 
-- identité stable des courses et migration des anciennes références
-- validation et réparation des résultats rattachés aux courses
-- recommandations croisées entre entraînement, finance, résultats et statistiques
-- lecture des indisponibilités effectif selon blessure et forme critique
-- historique hebdomadaire des indisponibilités intégré au backup club
-- plan d'entraînement limité à 3 types hebdomadaires avec intensité proposée
+- cockpit Accueil compact en onglets avec timeline de saison
+- planification multi-saison avec jalons sportifs/finance/entraînement
+- calendrier enrichi d'une timeline et des deadlines hebdomadaires
+- guide débutant et FAQ en modes QuickStart/Référence avec recherche et filtres
+- robustesse renforcée de migration localStorage et cohérence responsive desktop/mobile
 
 ## Stack technique
 
@@ -45,5 +44,5 @@ Il n'y a pas de commande de déploiement manuelle à lancer localement.
 
 ## Roadmap
 
-Le socle 1.6.0 est désormais posé autour de la cohérence transverse du club.
-Le prochain chantier majeur peut se concentrer sur le polissage produit, l'affinage UX et les prochains signaux d'aide à la décision.
+Le socle 2.1.0 est désormais posé autour d'un pilotage compact et multi-saison.
+Le prochain chantier majeur peut se concentrer sur l'automatisation des recommandations et le polissage des workflows métier.

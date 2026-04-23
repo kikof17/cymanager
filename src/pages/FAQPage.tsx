@@ -1,5 +1,6 @@
-﻿import { useEffect, useState, type ReactNode } from "react";
+﻿import { useEffect, useMemo, useState, type ReactNode } from "react";
 import Card from "../components/common/Card";
+import CollapsibleBox from "../components/common/CollapsibleBox";
 import PageTitle from "../components/common/PageTitle";
 
 type FaqSectionDefinition = {
@@ -10,6 +11,8 @@ type FaqSectionDefinition = {
 type FaqSection = FaqSectionDefinition & {
   html: string;
 };
+
+type FaqTheme = "all" | "rules" | "team" | "market" | "training" | "races";
 
 const sectionDefinitions: FaqSectionDefinition[] = [
   { id: "but-du-jeu", title: "But du jeu" },
@@ -184,26 +187,294 @@ function buildSectionsFromHtml(rawHtml: string): FaqSection[] {
     .filter((section) => section.html.length > 0);
 }
 
-function scrollToSection(sectionId: string) {
-  const target = document.getElementById(sectionId);
-
-  if (!target) {
-    return;
-  }
-
-  target.scrollIntoView({ behavior: "smooth", block: "start" });
-  window.history.replaceState(null, "", `${window.location.pathname}#${sectionId}`);
-}
-
 const faqHighlights: Array<{ label: string; value: ReactNode }> = [
   { label: "Source", value: "FAQ HTML officielle" },
   { label: "Organisation", value: "Rubriques fidèles + sommaire latéral" },
   { label: "Objectif", value: "Reprendre la mise en forme native du site" },
 ];
 
+const faqQuickStartEntries = [
+  { id: "la-saison", reason: "Comprendre le rythme 10 semaines et la logique des phases." },
+  { id: "entrainement", reason: "Eviter les erreurs de forme et les choix d'entraînement incohérents." },
+  { id: "transferts", reason: "Sécuriser achats/ventes sans dérive salariale." },
+  { id: "odc", reason: "Poser des tactiques par défaut fiables en cas d'oubli." },
+  { id: "installations", reason: "Prioriser les upgrades structurels vraiment rentables." },
+];
+
+const faqSectionThemes: Record<string, FaqTheme[]> = {
+  "but-du-jeu": ["rules"],
+  "votre-equipe": ["team"],
+  "les-coureurs": ["team"],
+  "les-courses": ["races"],
+  assistant: ["rules"],
+  "la-saison": ["rules"],
+  championnats: ["races", "rules"],
+  "championnat-pro": ["races"],
+  "equipes-fantomes": ["rules"],
+  "championnats-jeunes": ["races"],
+  finances: ["rules"],
+  intersaison: ["rules", "team"],
+  transferts: ["market"],
+  "coureurs-amateurs": ["market"],
+  entrainement: ["training"],
+  installations: ["training", "team"],
+  "les-points": ["rules"],
+  "les-primes": ["rules"],
+  odc: ["races"],
+  "odc-defaut": ["races"],
+  materiel: ["team"],
+  "courses-libres": ["races"],
+  "editeur-profils": ["races"],
+  crem: ["rules"],
+  "cym-ranking": ["rules"],
+  background: ["rules"],
+  tchat: ["rules"],
+  reinitialiser: ["team"],
+};
+
+const faqThemeLabels: Array<{ id: FaqTheme; label: string }> = [
+  { id: "all", label: "Tous" },
+  { id: "rules", label: "Règles" },
+  { id: "team", label: "Équipe" },
+  { id: "market", label: "Transferts" },
+  { id: "training", label: "Entraînement" },
+  { id: "races", label: "Courses" },
+];
+
+const FAQ_PREFS_KEY = "cymanager:faq:v2:prefs";
+
+type FaqPrefs = {
+  viewMode: "quick" | "reference";
+  showAllSections: boolean;
+  activeSectionId: string;
+  searchQuery: string;
+  selectedTheme: FaqTheme;
+};
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function highlightText(value: string, query: string): ReactNode {
+  const trimmed = query.trim();
+
+  if (trimmed.length === 0) {
+    return value;
+  }
+
+  const regex = new RegExp(`(${escapeRegExp(trimmed)})`, "gi");
+  const parts = value.split(regex);
+
+  return parts.map((part, index) =>
+    index % 2 === 1 ? (
+      <mark key={`${part}-${index}`} className="search-highlight">
+        {part}
+      </mark>
+    ) : (
+      <span key={`${part}-${index}`}>{part}</span>
+    )
+  );
+}
+
+function highlightHtmlContent(html: string, query: string): string {
+  const trimmed = query.trim();
+
+  if (trimmed.length === 0) {
+    return html;
+  }
+
+  const parser = new DOMParser();
+  const documentRoot = parser.parseFromString(`<div id="root">${html}</div>`, "text/html");
+  const root = documentRoot.getElementById("root");
+
+  if (!root) {
+    return html;
+  }
+
+  const regex = new RegExp(escapeRegExp(trimmed), "gi");
+  const walker = documentRoot.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const textNodes: Text[] = [];
+
+  let currentNode = walker.nextNode();
+
+  while (currentNode) {
+    textNodes.push(currentNode as Text);
+    currentNode = walker.nextNode();
+  }
+
+  textNodes.forEach((textNode) => {
+    const value = textNode.nodeValue ?? "";
+
+    if (!regex.test(value)) {
+      return;
+    }
+
+    regex.lastIndex = 0;
+    const fragment = documentRoot.createDocumentFragment();
+    let lastIndex = 0;
+
+    value.replace(regex, (match, offset) => {
+      if (offset > lastIndex) {
+        fragment.appendChild(documentRoot.createTextNode(value.slice(lastIndex, offset)));
+      }
+
+      const mark = documentRoot.createElement("mark");
+      mark.className = "search-highlight";
+      mark.textContent = match;
+      fragment.appendChild(mark);
+      lastIndex = offset + match.length;
+      return match;
+    });
+
+    if (lastIndex < value.length) {
+      fragment.appendChild(documentRoot.createTextNode(value.slice(lastIndex)));
+    }
+
+    textNode.parentNode?.replaceChild(fragment, textNode);
+  });
+
+  return root.innerHTML;
+}
+
+function stripHtmlTags(value: string): string {
+  return value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function loadFaqPrefs(): FaqPrefs {
+  try {
+    const raw = localStorage.getItem(FAQ_PREFS_KEY);
+
+    if (!raw) {
+      return {
+        viewMode: "quick",
+        showAllSections: false,
+        activeSectionId: sectionDefinitions[0]?.id ?? "but-du-jeu",
+        searchQuery: "",
+        selectedTheme: "all",
+      };
+    }
+
+    const parsed = JSON.parse(raw) as Partial<FaqPrefs>;
+
+    return {
+      viewMode: parsed.viewMode === "reference" ? "reference" : "quick",
+      showAllSections: parsed.showAllSections === true,
+      activeSectionId:
+        typeof parsed.activeSectionId === "string" && parsed.activeSectionId.length > 0
+          ? parsed.activeSectionId
+          : sectionDefinitions[0]?.id ?? "but-du-jeu",
+      searchQuery: typeof parsed.searchQuery === "string" ? parsed.searchQuery : "",
+      selectedTheme:
+        parsed.selectedTheme === "rules" ||
+        parsed.selectedTheme === "team" ||
+        parsed.selectedTheme === "market" ||
+        parsed.selectedTheme === "training" ||
+        parsed.selectedTheme === "races"
+          ? parsed.selectedTheme
+          : "all",
+    };
+  } catch {
+    return {
+      viewMode: "quick",
+      showAllSections: false,
+      activeSectionId: sectionDefinitions[0]?.id ?? "but-du-jeu",
+      searchQuery: "",
+      selectedTheme: "all",
+    };
+  }
+}
+
 export default function FAQPage() {
+  const initialPrefs = useMemo(() => loadFaqPrefs(), []);
   const [faqSections, setFaqSections] = useState<FaqSection[]>([]);
   const [loadingState, setLoadingState] = useState<"loading" | "ready" | "error">("loading");
+  const [viewMode, setViewMode] = useState<"quick" | "reference">(initialPrefs.viewMode);
+  const [showAllSections, setShowAllSections] = useState(initialPrefs.showAllSections);
+  const [activeSectionId, setActiveSectionId] = useState(initialPrefs.activeSectionId);
+  const [searchQuery, setSearchQuery] = useState(initialPrefs.searchQuery);
+  const [selectedTheme, setSelectedTheme] = useState<FaqTheme>(initialPrefs.selectedTheme);
+
+  const normalizedQuery = searchQuery.trim().toLocaleLowerCase("fr");
+
+  const filteredFaqSections = useMemo(() => {
+    if (normalizedQuery.length === 0) {
+      return faqSections.filter((section) =>
+        selectedTheme === "all"
+          ? true
+          : (faqSectionThemes[section.id] ?? []).includes(selectedTheme)
+      );
+    }
+
+    return faqSections.filter((section) => {
+      if (
+        selectedTheme !== "all" &&
+        !(faqSectionThemes[section.id] ?? []).includes(selectedTheme)
+      ) {
+        return false;
+      }
+
+      const plainText = stripHtmlTags(section.html).slice(0, 1500);
+      const haystack = `${section.title} ${plainText}`.toLocaleLowerCase("fr");
+      return haystack.includes(normalizedQuery);
+    });
+  }, [faqSections, normalizedQuery, selectedTheme]);
+
+  const activeSection = useMemo(
+    () => filteredFaqSections.find((section) => section.id === activeSectionId) ?? filteredFaqSections[0] ?? null,
+    [activeSectionId, filteredFaqSections]
+  );
+
+  const quickStartSections = useMemo(() => {
+    return faqQuickStartEntries
+      .map((entry) => {
+        const section = filteredFaqSections.find((candidate) => candidate.id === entry.id);
+
+        if (!section) {
+          return null;
+        }
+
+        return {
+          ...entry,
+          section,
+        };
+      })
+      .filter((entry): entry is { id: string; reason: string; section: FaqSection } => entry !== null);
+  }, [filteredFaqSections]);
+
+  function handleSelectSection(sectionId: string) {
+    setActiveSectionId(sectionId);
+    setShowAllSections(false);
+  }
+
+  useEffect(() => {
+    localStorage.setItem(
+      FAQ_PREFS_KEY,
+      JSON.stringify({
+        viewMode,
+        showAllSections,
+        activeSectionId,
+        searchQuery,
+        selectedTheme,
+      } satisfies FaqPrefs)
+    );
+  }, [viewMode, showAllSections, activeSectionId, searchQuery, selectedTheme]);
+
+  const highlightedHtmlBySectionId = useMemo(() => {
+    return filteredFaqSections.reduce<Record<string, string>>((acc, section) => {
+      acc[section.id] = highlightHtmlContent(section.html, normalizedQuery);
+      return acc;
+    }, {});
+  }, [filteredFaqSections, normalizedQuery]);
+
+  useEffect(() => {
+    if (!activeSection) {
+      return;
+    }
+
+    if (activeSection.id !== activeSectionId) {
+      setActiveSectionId(activeSection.id);
+    }
+  }, [activeSection, activeSectionId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -275,7 +546,7 @@ export default function FAQPage() {
     <div className="page-stack">
       <PageTitle
         title="FAQ"
-        subtitle="Reprise intégrale de la FAQ HTML avec navigation latérale et présentation cohérente avec le site."
+        subtitle="Version V2: accès rapide aux réponses critiques puis navigation compacte par rubrique."
       />
 
       <Card>
@@ -311,40 +582,150 @@ export default function FAQPage() {
         </div>
       ) : null}
 
-      <div className="guide-layout">
-        <aside className="guide-toc card">
-          <h3 className="card-title">Sommaire FAQ</h3>
-          <nav className="guide-toc-nav">
-            {faqSections.map((section) => (
+      {loadingState === "ready" ? (
+        <Card className="guide-mode-card">
+          <div className="guide-mode-switch">
+            <button
+              type="button"
+              className={viewMode === "quick" ? "tab-btn tab-btn-active" : "tab-btn"}
+              onClick={() => setViewMode("quick")}
+            >
+              QuickStart FAQ
+            </button>
+            <button
+              type="button"
+              className={viewMode === "reference" ? "tab-btn tab-btn-active" : "tab-btn"}
+              onClick={() => setViewMode("reference")}
+            >
+              Référence complète
+            </button>
+          </div>
+
+            <div className="guide-search-row">
+              <input
+                type="search"
+                className="input guide-search-input"
+                placeholder="Rechercher une rubrique FAQ"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+              />
+              {searchQuery.trim().length > 0 ? (
+                <button type="button" className="ghost-button" onClick={() => setSearchQuery("")}>
+                  Effacer
+                </button>
+              ) : null}
+            </div>
+
+          <div className="guide-theme-row" role="list" aria-label="Filtres FAQ">
+            {faqThemeLabels.map((theme) => (
               <button
-                key={section.id}
+                key={theme.id}
                 type="button"
-                className="guide-toc-link"
-                onClick={() => scrollToSection(section.id)}
+                className={selectedTheme === theme.id ? "guide-theme-chip is-active" : "guide-theme-chip"}
+                onClick={() => setSelectedTheme(theme.id)}
               >
-                {section.title}
+                {theme.label}
               </button>
             ))}
-          </nav>
-        </aside>
+          </div>
 
-        <div className="guide-content">
-          {faqSections.map((section) => (
-            <Card key={section.id}>
-              <section id={section.id} className="guide-section-anchor">
-                <header className="guide-section-header">
-                  <p className="guide-kicker">FAQ</p>
-                  <h3 className="guide-section-title">{section.title}</h3>
-                </header>
+          {viewMode === "quick" ? (
+            <div className="guide-quickstart-grid">
+              {quickStartSections.map((entry) => (
+                <article key={entry.id} className="guide-quickstart-step">
+                  <p className="guide-kicker">{highlightText(entry.section.title, searchQuery)}</p>
+                  <p>{highlightText(entry.reason, searchQuery)}</p>
+                  <button
+                    type="button"
+                    className="ghost-button"
+                    onClick={() => {
+                      setViewMode("reference");
+                      handleSelectSection(entry.id);
+                    }}
+                  >
+                    Ouvrir la réponse
+                  </button>
+                </article>
+              ))}
 
-                <div className="faq-content">
-                  <div className="faq-html-content" dangerouslySetInnerHTML={{ __html: section.html }} />
+              {quickStartSections.length === 0 ? (
+                <p className="muted">Aucun résultat pour cette recherche dans le QuickStart FAQ.</p>
+              ) : null}
+            </div>
+          ) : (
+            <div className="guide-reference-layout">
+              <div className="guide-reference-toolbar">
+                <label className="guide-reference-select-label" htmlFor="faq-section-select">
+                  Rubrique active
+                </label>
+                <select
+                  id="faq-section-select"
+                  className="input guide-reference-select"
+                  value={activeSection?.id ?? ""}
+                  onChange={(event) => handleSelectSection(event.target.value)}
+                >
+                  {filteredFaqSections.map((section) => (
+                    <option key={section.id} value={section.id}>
+                      {section.title}
+                    </option>
+                  ))}
+                </select>
+
+                <button
+                  type="button"
+                  className="ghost-button"
+                  onClick={() => setShowAllSections((current) => !current)}
+                >
+                  {showAllSections ? "Afficher uniquement la rubrique active" : "Afficher toutes les rubriques"}
+                </button>
+              </div>
+
+              {showAllSections ? (
+                <div className="guide-content">
+                  {filteredFaqSections.map((section) => (
+                    <CollapsibleBox
+                      key={section.id}
+                      title={section.title}
+                      defaultExpanded={section.id === activeSectionId}
+                    >
+                      <section id={section.id} className="guide-section-anchor">
+                        <div className="faq-content">
+                          <div
+                            className="faq-html-content"
+                            dangerouslySetInnerHTML={{ __html: highlightedHtmlBySectionId[section.id] ?? section.html }}
+                          />
+                        </div>
+                      </section>
+                    </CollapsibleBox>
+                  ))}
+
+                  {filteredFaqSections.length === 0 ? (
+                    <p className="muted">Aucune rubrique ne correspond à cette recherche.</p>
+                  ) : null}
                 </div>
-              </section>
-            </Card>
-          ))}
-        </div>
-      </div>
+              ) : activeSection ? (
+                <Card>
+                  <section id={activeSection.id} className="guide-section-anchor">
+                    <header className="guide-section-header">
+                      <p className="guide-kicker">FAQ</p>
+                      <h3 className="guide-section-title">{highlightText(activeSection.title, searchQuery)}</h3>
+                    </header>
+
+                    <div className="faq-content">
+                      <div
+                        className="faq-html-content"
+                        dangerouslySetInnerHTML={{ __html: highlightedHtmlBySectionId[activeSection.id] ?? activeSection.html }}
+                      />
+                    </div>
+                  </section>
+                </Card>
+              ) : (
+                <p className="muted">Aucune rubrique ne correspond à cette recherche.</p>
+              )}
+            </div>
+          )}
+        </Card>
+      ) : null}
     </div>
   );
 }

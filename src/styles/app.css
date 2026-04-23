@@ -4361,3 +4361,492 @@ select:focus {
     min-width: 150px;
   }
 }
+
+.home-v2-toolbar {
+  padding: 16px;
+}
+
+.home-v2-toolbar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ghost-button,
+.primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(137, 180, 255, 0.35);
+  color: var(--text);
+  background: rgba(91, 149, 255, 0.12);
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ghost-button:hover,
+.primary-button:hover,
+.ghost-button:focus,
+.primary-button:focus {
+  background: rgba(91, 149, 255, 0.2);
+}
+
+.primary-button {
+  border-color: rgba(137, 180, 255, 0.6);
+  background: rgba(91, 149, 255, 0.26);
+}
+
+.ghost-button.danger {
+  border-color: rgba(212, 106, 106, 0.45);
+  background: rgba(212, 106, 106, 0.18);
+}
+
+.home-v2-finance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.home-v2-finance-row,
+.home-v2-action-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.home-v2-action-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.home-v2-action-list a {
+  color: var(--text-soft);
+  text-decoration: none;
+}
+
+.home-v2-action-list a:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.planning-page {
+  gap: 16px;
+}
+
+.planning-kpi-card,
+.planning-toolbar-card {
+  padding: 16px;
+}
+
+.planning-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.planning-kpi-label {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.84rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.planning-kpi-value {
+  margin: 6px 0 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.planning-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.planning-season-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.planning-layout {
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.planning-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.planning-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+.planning-form input,
+.planning-form select,
+.planning-form textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(137, 180, 255, 0.22);
+  background: rgba(12, 19, 31, 0.72);
+  color: var(--text);
+  padding: 10px 12px;
+}
+
+.planning-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.planning-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(137, 180, 255, 0.2);
+  border-radius: 14px;
+  background: rgba(12, 19, 31, 0.55);
+}
+
+.planning-item.is-done {
+  opacity: 0.7;
+}
+
+.planning-item-title {
+  margin: 0 0 6px;
+  color: var(--text-soft);
+}
+
+.planning-item-main strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.planning-item-main .muted {
+  margin: 0;
+}
+
+.planning-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 1100px) {
+  .planning-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .planning-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .home-v2-toolbar-content,
+  .planning-toolbar,
+  .planning-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .planning-item-actions {
+    justify-content: flex-start;
+  }
+
+  .planning-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.season-roadmap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.season-roadmap-compact {
+  gap: 10px;
+}
+
+.season-roadmap-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.season-roadmap-title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.season-roadmap-header .muted {
+  margin: 4px 0 0;
+}
+
+.season-roadmap-deadlines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.season-roadmap-deadline-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(137, 180, 255, 0.2);
+  background: rgba(91, 149, 255, 0.14);
+  font-size: 0.78rem;
+  color: var(--text-soft);
+}
+
+.season-roadmap-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.season-roadmap-week {
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.season-roadmap-week.is-current {
+  border-color: rgba(137, 180, 255, 0.44);
+  box-shadow: inset 0 0 0 1px rgba(137, 180, 255, 0.2);
+  background: rgba(91, 149, 255, 0.16);
+}
+
+.season-roadmap-week-label {
+  margin: 0 0 6px;
+  color: var(--text-soft);
+  font-size: 0.78rem;
+}
+
+.season-roadmap-event {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.season-roadmap-event-neutral {
+  color: var(--text);
+}
+
+.season-roadmap-event-warning {
+  color: #ffecbf;
+}
+
+.season-roadmap-event-danger {
+  color: #ffd7d7;
+}
+
+.season-roadmap-event-success {
+  color: #d8f5e1;
+}
+
+@media (max-width: 1200px) {
+  .season-roadmap-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .season-roadmap-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.guide-mode-card {
+  padding: 16px;
+}
+
+.guide-mode-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.guide-search-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.guide-search-input {
+  flex: 1 1 auto;
+}
+
+.guide-theme-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.guide-theme-chip {
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(137, 180, 255, 0.24);
+  background: rgba(91, 149, 255, 0.08);
+  color: var(--text-soft);
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.guide-theme-chip.is-active {
+  background: rgba(91, 149, 255, 0.24);
+  border-color: rgba(137, 180, 255, 0.45);
+  color: var(--text);
+}
+
+.search-highlight {
+  background: rgba(199, 146, 54, 0.34);
+  color: #ffe7bd;
+  border-radius: 4px;
+  padding: 0 3px;
+}
+
+.guide-quickstart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.guide-quickstart-step {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(137, 180, 255, 0.18);
+  background: rgba(12, 19, 31, 0.52);
+}
+
+.guide-quickstart-step p {
+  margin: 0;
+}
+
+.guide-reference-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.guide-reference-toolbar {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.guide-reference-select-label {
+  color: var(--text-soft);
+  font-weight: 600;
+}
+
+.guide-reference-select {
+  min-width: 0;
+}
+
+@media (max-width: 1100px) {
+  .guide-quickstart-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .tab-btn {
+    min-width: 0;
+    padding: 10px 12px;
+    font-size: 0.84rem;
+  }
+
+  .home-v2-tabs {
+    gap: 6px;
+  }
+
+  .home-v2-tab-panel {
+    padding: 12px;
+  }
+
+  .home-v2-header {
+    gap: 8px;
+  }
+
+  .planning-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .planning-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .guide-mode-toggle,
+  .faq-mode-toggle {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .guide-mode-btn,
+  .faq-mode-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .guide-reference-toolbar {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .guide-search-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .guide-reference-toolbar .btn,
+  .faq-reference-toolbar .btn {
+    width: 100%;
+  }
+
+  .guide-search-input,
+  .faq-search-input,
+  .guide-reference-select,
+  .faq-reference-select {
+    width: 100%;
+  }
+}
