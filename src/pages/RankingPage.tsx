@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import PageTitle from "../components/common/PageTitle";
 import Card from "../components/common/Card";
 import { extractPointsFromResults, getAllResultsFromStorage, reconcileStoredResultsWithCourses, saveAllResultsToStorage } from "../lib/scoring/extractPoints";
+import { getAllTourGCResultsFromStorage } from "../lib/scoring/tourGCResults";
+import { getStoredResultCategory, getTodoResultCategory } from "../lib/utils/courseCategory";
 import {
   BASELINE_EFFECTIVE_DATE,
   BASELINE_INDIVIDUAL_RANKINGS,
@@ -10,7 +12,6 @@ import { loadClubSettings } from "../lib/storage/settingsStorage";
 import type { RiderPoints, StoredResult } from "../lib/scoring/extractPoints";
 import type { BaselineRankingRow } from "../lib/ranking/seasonBaseline";
 import { loadManualTodos } from "../lib/storage/todoStorage";
-import { getStoredResultCategory } from "../lib/utils/courseCategory";
 import { getTodoScheduledAt } from "../lib/utils/courseDates";
 import type { TodoItem } from "../types/todo";
 
@@ -218,15 +219,60 @@ function buildRankingData(): RankingData {
     });
   });
 
-  const pro = Array.from(proMap.values()).sort((a, b) => b.points - a.points);
-  const u25 = Array.from(u25Map.values()).sort((a, b) => b.points - a.points);
-  const u21 = Array.from(u21Map.values()).sort((a, b) => b.points - a.points);
+  // Intégration des points du classement général des tours (MT/GT)
+  const tourGCResults = getAllTourGCResultsFromStorage();
+
+  Object.entries(tourGCResults).forEach(([tourKey, gcText]) => {
+    const stageTodos = todos.filter((todo) => todo.tourKey === tourKey);
+
+    if (stageTodos.length === 0) {
+      return;
+    }
+
+    const category = getTodoResultCategory(stageTodos[0]);
+    const sortedStages = [...stageTodos].sort(
+      (a, b) => (a.stageNumber ?? 0) - (b.stageNumber ?? 0)
+    );
+    const lastStage = sortedStages[sortedStages.length - 1];
+    const gcPoints = extractPointsFromResults({ [`gc-${tourKey}`]: gcText });
+    const targetMap = category === "u25" ? u25Map : category === "u21" ? u21Map : proMap;
+    const deltaTargetMap = category === "u25" ? u25DeltaMap : category === "u21" ? u21DeltaMap : proDeltaMap;
+    const includeInBaselineIncrement = isCourseAfterBaseline(lastStage);
+
+    gcPoints.forEach(({ name, team, points: riderPoints }) => {
+      if (!targetMap.has(name)) {
+        targetMap.set(name, { name, team, points: riderPoints });
+      } else {
+        const previous = targetMap.get(name)!;
+        targetMap.set(name, { ...previous, points: previous.points + riderPoints });
+      }
+
+      if (!includeInBaselineIncrement) {
+        return;
+      }
+
+      if (!deltaTargetMap.has(name)) {
+        deltaTargetMap.set(name, { name, team, points: riderPoints });
+        return;
+      }
+
+      const previousDelta = deltaTargetMap.get(name)!;
+      deltaTargetMap.set(name, {
+        ...previousDelta,
+        points: previousDelta.points + riderPoints,
+      });
+    });
+  });
+
+  const proFinal = Array.from(proMap.values()).sort((a, b) => b.points - a.points);
+  const u25Final = Array.from(u25Map.values()).sort((a, b) => b.points - a.points);
+  const u21Final = Array.from(u21Map.values()).sort((a, b) => b.points - a.points);
 
   return {
     divisions,
-    pro,
-    u25,
-    u21,
+    pro: proFinal,
+    u25: u25Final,
+    u21: u21Final,
     proTeams: [],
     u25Teams: [],
     u21Teams: [],

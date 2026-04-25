@@ -95,6 +95,7 @@ const BACKUP_SLOT_LABELS: Record<string, string> = {
 	"cymanager:management-history": "Journal de gestion",
 	"cymanager:transfer-history": "Historique Transferts",
 	"cymanager:availability-history": "Historique indisponibilité",
+	"cymanager:tour-gc-results": "Classements généraux des tours",
 };
 
 function countEntries(value: unknown): number {

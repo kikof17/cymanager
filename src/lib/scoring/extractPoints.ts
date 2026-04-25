@@ -216,9 +216,18 @@ export function extractPointsFromResults(results: Record<string, StoredResult>):
     const lines = result.trim().split(/\r?\n/);
     if (lines.length < 2) return;
     const headers = lines[0].split('\t');
-    const nameIdx = headers.findIndex((h) => h.toLowerCase().includes('nom'));
-    const teamIdx = headers.findIndex((h) => h.toLowerCase().includes('equipe'));
-    const pointsIdx = headers.findIndex((h) => h.toLowerCase().includes('point'));
+    const nameIdx = headers.findIndex((h) => {
+      const n = h.toLowerCase().trim();
+      return n.includes('nom') || n.includes('coureur') || n.includes('rider') || n === 'name';
+    });
+    const teamIdx = headers.findIndex((h) => {
+      const n = h.toLowerCase().trim();
+      return n.includes('equipe') || n.includes('team');
+    });
+    const pointsIdx = headers.findIndex((h) => {
+      const n = h.toLowerCase().trim();
+      return n.includes('point') || n === 'pts' || n.startsWith('pts ') || n.startsWith('pts\t');
+    });
     if (nameIdx === -1 || teamIdx === -1 || pointsIdx === -1) return;
     lines.slice(1).forEach((line) => {
       const cells = line.split('\t');

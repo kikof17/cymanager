@@ -41,6 +41,7 @@ export type CymanagerBackupData = {
 	managementHistory?: unknown;
 	transferHistory?: unknown;
 	availabilityHistory?: unknown;
+	tourGCResults?: unknown;
 };
 
 export type CymanagerBackupMetadata = {
@@ -72,6 +73,7 @@ export const CYMANAGER_BACKUP_SECTION_VERSIONS: CymanagerBackupMetadata["section
 	managementHistory: 1,
 	transferHistory: 1,
 	availabilityHistory: 1,
+	tourGCResults: 1,
 };
 
 export const CYMANAGER_BACKUP_SLOTS: BackupSlot[] = [
@@ -90,6 +92,7 @@ export const CYMANAGER_BACKUP_SLOTS: BackupSlot[] = [
 	{ exportKey: "managementHistory", storageKey: "cymanager:management-history", kind: "array" },
 	{ exportKey: "transferHistory", storageKey: "cymanager:transfer-history", kind: "array" },
 	{ exportKey: "availabilityHistory", storageKey: "cymanager:availability-history", kind: "array" },
+	{ exportKey: "tourGCResults", storageKey: "cymanager:tour-gc-results", kind: "object" },
 ];
 
 function readRawJson(storageKey: string): unknown | undefined {

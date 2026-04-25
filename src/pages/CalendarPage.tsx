@@ -16,6 +16,7 @@ import { loadClubSettings } from '../lib/storage/settingsStorage';
 import { getTodoResultCategory } from '../lib/utils/courseCategory';
 import { getTodoScheduledAt } from '../lib/utils/courseDates';
 import { getCourseDisplayTitle, groupCourseTodos } from '../lib/utils/stageRaces';
+import { getAllTourGCResultsFromStorage, saveTourGCResultToStorage } from '../lib/scoring/tourGCResults';
 
 import { countUnstableCalendarIdentities, migrateCalendarRaceIdentities } from '../lib/storage/raceIdentityMigration';
 import { saveManualTodos, loadManualTodos, loadTodoStatuses, saveTodoStatuses } from '../lib/storage/todoStorage';
@@ -283,6 +284,7 @@ const CalendarPage: React.FC = () => {
   const [resultModalId, setResultModalId] = useState<string|null>(null);
   const [resultDrafts, setResultDrafts] = useState<Record<string, string>>({});
   const [activeResultCourseId, setActiveResultCourseId] = useState<string | null>(null);
+  const [gcDraft, setGcDraft] = useState<string>('');
 
   const resultModalCourses = useMemo(() => {
     if (!resultModalId) {
@@ -351,10 +353,12 @@ const CalendarPage: React.FC = () => {
 
   function handleOpenResultModal(id: string) {
     const storedResults = loadStoredResults();
+    const storedGCResults = getAllTourGCResultsFromStorage();
     const matchingGroup = groupedCalendarTodos.find((group) =>
       group.todos.some((todo) => todo.id === id)
     );
     const modalCourses = matchingGroup?.todos ?? [];
+    const tourKey = matchingGroup?.isTour ? matchingGroup.key : null;
 
     setResultModalId(id);
     setActiveResultCourseId(id);
@@ -364,14 +368,24 @@ const CalendarPage: React.FC = () => {
         return drafts;
       }, {})
     );
+    setGcDraft(tourKey ? (storedGCResults[tourKey] ?? '') : '');
   }
   function handleCloseResultModal() {
     setResultModalId(null);
     setActiveResultCourseId(null);
     setResultDrafts({});
+    setGcDraft('');
   }
 
   function handleSaveCurrentResult() {
+    if (activeResultCourseId === 'gc') {
+      const tourKey = resultModalCourses[0]?.tourKey;
+      if (tourKey && gcDraft.trim()) {
+        saveTourGCResultToStorage(tourKey, gcDraft);
+      }
+      return;
+    }
+
     if (!activeResultCourse) {
       return;
     }
@@ -381,9 +395,21 @@ const CalendarPage: React.FC = () => {
 
   function handleSaveAllResults() {
     persistResultsForCourses(resultModalCourses.map((course) => course.id));
+    const tourKey = resultModalCourses[0]?.tourKey;
+    if (tourKey && gcDraft.trim()) {
+      saveTourGCResultToStorage(tourKey, gcDraft);
+    }
   }
 
   function handleSaveAndNextResult() {
+    if (activeResultCourseId === 'gc') {
+      const tourKey = resultModalCourses[0]?.tourKey;
+      if (tourKey && gcDraft.trim()) {
+        saveTourGCResultToStorage(tourKey, gcDraft);
+      }
+      return;
+    }
+
     if (!activeResultCourse) {
       return;
     }
@@ -395,6 +421,8 @@ const CalendarPage: React.FC = () => {
 
     if (nextCourse) {
       setActiveResultCourseId(nextCourse.id);
+    } else if (resultModalCourses[0]?.tourKey) {
+      setActiveResultCourseId('gc');
     }
   }
 
@@ -898,7 +926,7 @@ const CalendarPage: React.FC = () => {
           {resultModalCourses.length > 1 ? (
             <div className="calendar-result-stage-list">
               {resultModalCourses.map((course) => {
-                const isActive = course.id === activeResultCourse?.id;
+                const isActive = course.id === activeResultCourseId;
                 const isFilled = (resultDrafts[course.id] ?? '').trim().length > 0;
 
                 return (
@@ -913,30 +941,57 @@ const CalendarPage: React.FC = () => {
                   </button>
                 );
               })}
+              <button
+                type="button"
+                className={activeResultCourseId === 'gc' ? 'calendar-result-stage-chip calendar-result-stage-chip-active' : 'calendar-result-stage-chip'}
+                onClick={() => setActiveResultCourseId('gc')}
+              >
+                <span>Classement général</span>
+                <span>{gcDraft.trim().length > 0 ? 'Renseigné' : 'À saisir'}</span>
+              </button>
             </div>
           ) : null}
 
           <div className="calendar-result-course-meta">
-            <strong>{activeResultCourse?.title}</strong>
-            <span>{activeResultCourse ? formatCalendarDate(getTodoScheduledAt(activeResultCourse) ?? activeResultCourse.createdAt) : ''}</span>
+            {activeResultCourseId === 'gc' ? (
+              <>
+                <strong>Classement général final du tour</strong>
+                <span>Points championnats du classement général</span>
+              </>
+            ) : (
+              <>
+                <strong>{activeResultCourse?.title}</strong>
+                <span>{activeResultCourse ? formatCalendarDate(getTodoScheduledAt(activeResultCourse) ?? activeResultCourse.createdAt) : ''}</span>
+              </>
+            )}
           </div>
 
-          <textarea
-            value={activeResultCourse ? (resultDrafts[activeResultCourse.id] ?? '') : ''}
-            onChange={(event) => {
-              if (!activeResultCourse) {
-                return;
-              }
+          {activeResultCourseId === 'gc' ? (
+            <textarea
+              value={gcDraft}
+              onChange={(event) => setGcDraft(event.target.value)}
+              rows={12}
+              className="textarea calendar-result-input"
+              placeholder={"Colle ici le classement général final du tour (tableau PCM avec points championnats)"}
+            />
+          ) : (
+            <textarea
+              value={activeResultCourse ? (resultDrafts[activeResultCourse.id] ?? '') : ''}
+              onChange={(event) => {
+                if (!activeResultCourse) {
+                  return;
+                }
 
-              setResultDrafts((current) => ({
-                ...current,
-                [activeResultCourse.id]: event.target.value,
-              }));
-            }}
-            rows={12}
-            className="textarea calendar-result-input"
-            placeholder={"Colle ici le résultat de la course (tableau)"}
-          />
+                setResultDrafts((current) => ({
+                  ...current,
+                  [activeResultCourse.id]: event.target.value,
+                }));
+              }}
+              rows={12}
+              className="textarea calendar-result-input"
+              placeholder={"Colle ici le résultat de la course (tableau)"}
+            />
+          )}
           <div className="calendar-result-actions">
             <button className="button" onClick={handleCloseResultModal} type="button">Annuler</button>
             {resultModalCourses.length > 1 ? (
