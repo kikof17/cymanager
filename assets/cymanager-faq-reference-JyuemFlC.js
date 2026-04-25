@@ -1,4 +1,4 @@
-import{r as e}from"./jsx-runtime-D-oznMWL.js";var t=e({default:()=>n}),n=`<!DOCTYPE html>
+import{i as e}from"./jsx-runtime-DWSWI4JT.js";var t=e({default:()=>n}),n=`<!DOCTYPE html>
 <!-- saved from url=(0055)https://www.cymanager.com/ecran_principal.php?page=faq# -->
 <html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>body {transition: opacity ease-in 0.2s; } 
 body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } 
