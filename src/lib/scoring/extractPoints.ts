@@ -257,6 +257,10 @@ export function getAllResultsFromStorage(): Record<string, StoredResult> {
 export function saveAllResultsToStorage(results: Record<string, StoredResult>): void {
   try {
     localStorage.setItem("cymanager:results", JSON.stringify(normalizeStoredResults(results)));
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("cymanager:results-updated"));
+    }
   } catch (error) {
     console.error("Erreur d'écriture localStorage results", error);
   }

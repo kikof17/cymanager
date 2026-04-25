@@ -39,6 +39,10 @@ export function saveTourGCResultToStorage(tourKey: string, resultText: string): 
     const existing = getAllTourGCResultsFromStorage();
     existing[tourKey] = resultText;
     localStorage.setItem(TOUR_GC_RESULTS_KEY, JSON.stringify(existing));
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("cymanager:tour-gc-results-updated"));
+    }
   } catch (error) {
     console.error("Erreur d'écriture localStorage tour GC results", error);
   }
@@ -49,6 +53,10 @@ export function removeTourGCResultFromStorage(tourKey: string): void {
     const existing = getAllTourGCResultsFromStorage();
     delete existing[tourKey];
     localStorage.setItem(TOUR_GC_RESULTS_KEY, JSON.stringify(existing));
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("cymanager:tour-gc-results-updated"));
+    }
   } catch (error) {
     console.error("Erreur suppression localStorage tour GC result", error);
   }

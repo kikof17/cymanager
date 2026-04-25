@@ -29,6 +29,19 @@ type RankingData = {
   mergedIndividuals: Record<RankingCategory, BaselineRankingRow[]>;
 };
 
+function getRankingStorageSignature(): string {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  const results = window.localStorage.getItem("cymanager:results") ?? "";
+  const tourGCResults = window.localStorage.getItem("cymanager:tour-gc-results") ?? "";
+  const manualTodos = window.localStorage.getItem("cymanager:manual-todos") ?? "";
+  const clubSettings = window.localStorage.getItem("cymanager:club-settings") ?? "";
+
+  return [results, tourGCResults, manualTodos, clubSettings].join("||");
+}
+
 function isCourseAfterBaseline(todo: TodoItem | undefined): boolean {
   if (!todo) {
     return false;
@@ -149,7 +162,9 @@ function buildRankingData(): RankingData {
     u25: settings.divisionU25,
     u21: settings.divisionU21,
   };
-  const todos: TodoItem[] = loadManualTodos().filter((todo) => todo.id.startsWith("calendar-"));
+  const todos: TodoItem[] = loadManualTodos().filter(
+    (todo) => todo.source === "manual" && todo.category === "courses"
+  );
 
   let shouldPersist = false;
   Object.keys(results).forEach((courseId) => {
@@ -297,11 +312,12 @@ export default function RankingPage() {
   const [tab, setTab] = useState<"individuel" | "equipes">("individuel");
   const [individualCategory, setIndividualCategory] = useState<RankingCategory>("pro");
   const [teamCategory, setTeamCategory] = useState<RankingCategory>("pro");
-  const [refreshCounter, setRefreshCounter] = useState(0);
+  const [storageSignature, setStorageSignature] = useState<string>(() => getRankingStorageSignature());
 
   useEffect(() => {
     function triggerRefresh() {
-      setRefreshCounter((current) => current + 1);
+      const nextSignature = getRankingStorageSignature();
+      setStorageSignature((current) => (current === nextSignature ? current : nextSignature));
     }
 
     function handleStorage(event: StorageEvent) {
@@ -322,11 +338,22 @@ export default function RankingPage() {
     }
 
     window.addEventListener("storage", handleStorage);
+    window.addEventListener("focus", triggerRefresh);
+    document.addEventListener("visibilitychange", triggerRefresh);
     window.addEventListener("cymanager:finance-updated", triggerRefresh);
+    window.addEventListener("cymanager:results-updated", triggerRefresh);
+    window.addEventListener("cymanager:tour-gc-results-updated", triggerRefresh);
+
+    const intervalId = window.setInterval(triggerRefresh, 1500);
 
     return () => {
       window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("focus", triggerRefresh);
+      document.removeEventListener("visibilitychange", triggerRefresh);
       window.removeEventListener("cymanager:finance-updated", triggerRefresh);
+      window.removeEventListener("cymanager:results-updated", triggerRefresh);
+      window.removeEventListener("cymanager:tour-gc-results-updated", triggerRefresh);
+      window.clearInterval(intervalId);
     };
   }, []);
   const {
@@ -335,7 +362,7 @@ export default function RankingPage() {
     u25,
     u21,
     mergedIndividuals,
-  } = useMemo(() => buildRankingData(), [refreshCounter]);
+  } = useMemo(() => buildRankingData(), [storageSignature]);
   const categoryOptions = useMemo(() => buildCategoryOptions(divisions), [divisions]);
   const ridersByCategory: Record<RankingCategory, RiderPoints[]> = { pro, u25, u21 };
   const mergedRows = mergedIndividuals[individualCategory];
