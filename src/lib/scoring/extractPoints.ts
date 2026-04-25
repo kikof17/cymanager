@@ -50,6 +50,14 @@ function toIsoDate(value: unknown): string | null {
   return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
 }
 
+function normalizeHeader(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
 export function createStoredResult(
   result: string,
   course?: Pick<TodoItem, "raceKey" | "courseCategory" | "title" | "details" | "scheduledAt" | "createdAt"> | null
@@ -217,16 +225,16 @@ export function extractPointsFromResults(results: Record<string, StoredResult>):
     if (lines.length < 2) return;
     const headers = lines[0].split('\t');
     const nameIdx = headers.findIndex((h) => {
-      const n = h.toLowerCase().trim();
+      const n = normalizeHeader(h);
       return n.includes('nom') || n.includes('coureur') || n.includes('rider') || n === 'name';
     });
     const teamIdx = headers.findIndex((h) => {
-      const n = h.toLowerCase().trim();
+      const n = normalizeHeader(h);
       return n.includes('equipe') || n.includes('team');
     });
     const pointsIdx = headers.findIndex((h) => {
-      const n = h.toLowerCase().trim();
-      return n.includes('point') || n === 'pts' || n.startsWith('pts ') || n.startsWith('pts\t');
+      const n = normalizeHeader(h);
+      return n.includes('point') || /^pts?\.?($|\s)/.test(n);
     });
     if (nameIdx === -1 || teamIdx === -1 || pointsIdx === -1) return;
     lines.slice(1).forEach((line) => {
