@@ -382,6 +382,7 @@ const CalendarPage: React.FC = () => {
       const tourKey = resultModalCourses[0]?.tourKey;
       if (tourKey && gcDraft.trim()) {
         saveTourGCResultToStorage(tourKey, gcDraft);
+        window.dispatchEvent(new Event('cymanager:finance-updated'));
       }
       return;
     }
@@ -398,6 +399,7 @@ const CalendarPage: React.FC = () => {
     const tourKey = resultModalCourses[0]?.tourKey;
     if (tourKey && gcDraft.trim()) {
       saveTourGCResultToStorage(tourKey, gcDraft);
+      window.dispatchEvent(new Event('cymanager:finance-updated'));
     }
   }
 
@@ -406,6 +408,7 @@ const CalendarPage: React.FC = () => {
       const tourKey = resultModalCourses[0]?.tourKey;
       if (tourKey && gcDraft.trim()) {
         saveTourGCResultToStorage(tourKey, gcDraft);
+        window.dispatchEvent(new Event('cymanager:finance-updated'));
       }
       return;
     }

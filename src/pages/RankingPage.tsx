@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import PageTitle from "../components/common/PageTitle";
 import Card from "../components/common/Card";
 import { extractPointsFromResults, getAllResultsFromStorage, reconcileStoredResultsWithCourses, saveAllResultsToStorage } from "../lib/scoring/extractPoints";
@@ -297,13 +297,45 @@ export default function RankingPage() {
   const [tab, setTab] = useState<"individuel" | "equipes">("individuel");
   const [individualCategory, setIndividualCategory] = useState<RankingCategory>("pro");
   const [teamCategory, setTeamCategory] = useState<RankingCategory>("pro");
+  const [refreshCounter, setRefreshCounter] = useState(0);
+
+  useEffect(() => {
+    function triggerRefresh() {
+      setRefreshCounter((current) => current + 1);
+    }
+
+    function handleStorage(event: StorageEvent) {
+      if (!event.key) {
+        return;
+      }
+
+      const watchedKeys = new Set([
+        "cymanager:results",
+        "cymanager:tour-gc-results",
+        "cymanager:manual-todos",
+        "cymanager:club-settings",
+      ]);
+
+      if (watchedKeys.has(event.key)) {
+        triggerRefresh();
+      }
+    }
+
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("cymanager:finance-updated", triggerRefresh);
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("cymanager:finance-updated", triggerRefresh);
+    };
+  }, []);
   const {
     divisions,
     pro,
     u25,
     u21,
     mergedIndividuals,
-  } = useMemo(() => buildRankingData(), []);
+  } = useMemo(() => buildRankingData(), [refreshCounter]);
   const categoryOptions = useMemo(() => buildCategoryOptions(divisions), [divisions]);
   const ridersByCategory: Record<RankingCategory, RiderPoints[]> = { pro, u25, u21 };
   const mergedRows = mergedIndividuals[individualCategory];
