@@ -367,9 +367,9 @@ export default function RankingPage() {
   const ridersByCategory: Record<RankingCategory, RiderPoints[]> = { pro, u25, u21 };
   const mergedRows = mergedIndividuals[individualCategory];
   const teamsByCategory: Record<RankingCategory, TeamPoints[]> = {
-    pro: aggregateTeams(mergedIndividuals.pro),
-    u25: aggregateTeams(mergedIndividuals.u25),
-    u21: aggregateTeams(mergedIndividuals.u21),
+    pro: aggregateTeams(ridersByCategory.pro),
+    u25: aggregateTeams(ridersByCategory.u25),
+    u21: aggregateTeams(ridersByCategory.u21),
   };
   const selectedRiders = ridersByCategory[individualCategory];
   const selectedTeams = teamsByCategory[teamCategory];
@@ -425,7 +425,33 @@ export default function RankingPage() {
           </Card>
 
           <Card title={individualTitle}>
-            {mergedRows.length > 0 ? (
+            {selectedRiders.length > 0 ? (
+              <div className="table-container">
+                <table className="data-table styled-table">
+                  <thead>
+                    <tr>
+                      <th>Cl.</th>
+                      <th>Nom</th>
+                      <th>Equipe</th>
+                      <th>Points</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedRiders.map((rider, index) => {
+                      const isTeamRider = rider.team === "Kritoff Team";
+                      return (
+                        <tr key={`${rider.name}-${index}`} className={isTeamRider ? "highlight-row" : undefined}>
+                          <td>{formatRank(index + 1)}</td>
+                          <td>{rider.name}</td>
+                          <td>{rider.team}</td>
+                          <td>{rider.points}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : mergedRows.length > 0 ? (
               <div className="table-container">
                 <table className="data-table styled-table">
                   <thead>
@@ -457,34 +483,8 @@ export default function RankingPage() {
                   </tbody>
                 </table>
               </div>
-            ) : selectedRiders.length === 0 ? (
-              <div>Aucun classement disponible.</div>
             ) : (
-              <div className="table-container">
-                <table className="data-table styled-table">
-                  <thead>
-                    <tr>
-                      <th>Cl.</th>
-                      <th>Nom</th>
-                      <th>Equipe</th>
-                      <th>Points</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {selectedRiders.map((rider, index) => {
-                      const isTeamRider = rider.team === "Kritoff Team";
-                      return (
-                        <tr key={`${rider.name}-${index}`} className={isTeamRider ? "highlight-row" : undefined}>
-                          <td>{formatRank(index + 1)}</td>
-                          <td>{rider.name}</td>
-                          <td>{rider.team}</td>
-                          <td>{rider.points}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+              <div>Aucun classement disponible.</div>
             )}
           </Card>
         </div>
